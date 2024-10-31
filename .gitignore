@@ -1,0 +1,17 @@
+HELP.md
+
+### IDE ###
+.idea/
+.vscode/
+.vs/
+
+
+### Cache ###
+.gradle/
+.build/
+.kotlin/
+
+/data/
+/cache/
+
+/composeApp/

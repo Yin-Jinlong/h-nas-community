@@ -1,0 +1,30 @@
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: (
+    'primary': (
+      'base': #EA5,
+    ),
+  ),
+);
+
+@use '@yin-jinlong/h-ui/style/src/tools/fns' as *;
+@use '@yin-jinlong/h-ui/style/src/index';
+
+@import 'element-plus/theme-chalk/src/index';
+
+*:focus-visible {
+  outline: none;
+}
+
+html, body {
+  height: 100%;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+  width: 100%;
+}
+
+.bg-dot {
+  backdrop-filter: saturate(50%) blur(3px);
+  background-image: radial-gradient(transparent 1px, get-css(color-background, simple) 1px);
+  background-size: 3px 3px;
+}
