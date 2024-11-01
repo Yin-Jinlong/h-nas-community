@@ -148,18 +148,31 @@ const previewList = computed<string[]>(() => {
 })
 const activeFile = ref<FileInfo>()
 const infoTable = computed(() => {
+    let f = activeFile.value
     return [
         {
             label: '路径',
-            value: activeFile.value?.path ?? ''
+            value: f?.path ?? ''
+        },
+        {
+            label: '文件类型',
+            value: f?.fileType === 'FILE' ? '文件' : '目录'
+        },
+        {
+            label: '类型',
+            value: f?.type
+        },
+        {
+            label: '创建时间',
+            value: new Date(f?.createTime ?? 0).toLocaleString()
         },
         {
             label: '修改时间',
-            value: new Date(activeFile.value?.updateTime ?? 0).toLocaleString()
+            value: new Date(f?.updateTime ?? 0).toLocaleString()
         },
         {
             label: '大小',
-            value: toHumanSize(activeFile.value?.size ?? 0)
+            value: toHumanSize(f?.size ?? 0)
         }
     ]
 })
