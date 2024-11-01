@@ -44,7 +44,7 @@ class ContentController(
     }
 
     @PostMapping("/api/folder")
-    fun createFolder(@RequestParam("path") path: String, user: Uid) {
+    fun createFolder(@RequestParam("path") path: String, @RequestParam user: Uid) {
         if (!userService.isLogin(user))
             throw ErrorCode.USER_NOT_LOGIN.error
         val dir = path.substringBeforeLast("/", "/")
