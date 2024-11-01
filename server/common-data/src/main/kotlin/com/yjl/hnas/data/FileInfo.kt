@@ -25,4 +25,8 @@ data class FileInfo(
     val createTime: Long,
     val updateTime: Long,
     val size: Long
-)
+) : Comparable<FileInfo> {
+    override fun compareTo(other: FileInfo): Int {
+        return path.compareTo(other.path)
+    }
+}
