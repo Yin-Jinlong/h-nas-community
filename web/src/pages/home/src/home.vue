@@ -4,13 +4,6 @@
         <div class="contents" data-fill-size>
             <el-empty v-if="!files.length"/>
             <div class="file-container">
-                <div
-                        v-for="f in folders"
-                        class="file-box" data-fill-size
-                        data-flex-column-center>
-                    <file-grid-view :info="f"/>
-                    <div class="file-name">{{ f }}</div>
-                </div>
                 <div v-for="f in files"
                      :key="f.path"
                      class="file-box"
@@ -147,7 +140,6 @@ import {HMessage} from '@yin-jinlong/h-ui'
 
 const nowIndex = ref(-1)
 const files = reactive<FileInfo[]>([])
-const folders = reactive<string[]>([])
 const showFileInfoDialog = ref(false)
 const previewMap = reactive(new Map<FileInfo, number>())
 const previewList = computed<string[]>(() => {
