@@ -1,8 +1,10 @@
 export declare interface FileInfo {
     path: string
-    reqPath: string
+    fileType: 'FOLDER' | 'FILE'
     type: string
+    subType: string
     preview?: string
+    createTime: number
     updateTime: number
     size: number
 }
