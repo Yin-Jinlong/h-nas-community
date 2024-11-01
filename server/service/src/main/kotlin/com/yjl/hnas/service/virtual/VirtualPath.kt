@@ -87,6 +87,8 @@ class VirtualPath private constructor(
                 ".." -> if (list.isNotEmpty()) list.pop()
                 else -> list.push(p)
             }
+            if (list.isEmpty())
+                list.add("")
         }
         return copy(list)
     }
