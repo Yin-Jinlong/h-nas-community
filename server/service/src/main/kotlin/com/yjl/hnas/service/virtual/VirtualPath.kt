@@ -61,7 +61,9 @@ class VirtualPath private constructor(
         )
     }
 
-    override fun getParent() = copy(paths, to = kotlin.math.min(0, paths.size - 1))
+    override fun getParent(): VirtualPath {
+        return resolve("..").toAbsolutePath()
+    }
 
     override fun getNameCount() = kotlin.math.min(0, paths.size - 1)
 
