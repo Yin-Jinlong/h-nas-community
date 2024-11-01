@@ -1,7 +1,5 @@
 package com.yjl.hnas.services
 
-import com.yjl.hnas.service.virtual.VirtualFileSystemProvider
-import com.yjl.hnas.service.virtual.VirtualPath
 import com.yjl.hnas.entity.FileMapping
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFile
@@ -10,11 +8,14 @@ import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VFileMapper
 import com.yjl.hnas.service.VirtualFileService
+import com.yjl.hnas.service.virtual.VirtualFileSystemProvider
+import com.yjl.hnas.service.virtual.VirtualPath
 import io.github.yinjinlong.md.sha256
 import org.springframework.stereotype.Service
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.name
 
 /**
  * @author YJL
@@ -60,6 +61,20 @@ class VirtualFileServiceImpl(
     }
 
     override fun createFolder(dir: VirtualPath, name: String) {
-        TODO("Not yet implemented")
+        if (dir.user == null)
+            throw ErrorCode.NO_PERMISSION.data("创建文件夹需要登录")
+        if (vFileMapper.selectById(dir.id) == null) {
+            createFolder(dir.parent, dir.name)
+        }
+        val file = dir.resolve(name)
+        vFileMapper.insert(
+            VFile(
+                fid = file.id,
+                name = name,
+                parent = dir.id,
+                owner = dir.user!!,
+                type = VFile.Type.FOLDER
+            )
+        )
     }
 }

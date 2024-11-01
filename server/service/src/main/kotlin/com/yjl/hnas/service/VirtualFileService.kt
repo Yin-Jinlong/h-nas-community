@@ -27,4 +27,7 @@ interface VirtualFileService {
     fun getFiles(path: VirtualPath): List<VFile>
 
     fun createFolder(dir: VirtualPath, name: String)
+
+    val VirtualPath.id: VFileId
+        get() = getVFileId(this)
 }

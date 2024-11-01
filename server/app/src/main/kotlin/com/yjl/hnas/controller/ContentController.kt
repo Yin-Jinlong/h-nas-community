@@ -3,6 +3,7 @@ package com.yjl.hnas.controller
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.error.ErrorCode
+import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.utils.virtual
 import jakarta.validation.constraints.NotBlank
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam
  */
 @Controller
 class ContentController(
+    val userService: UserService,
     val virtualFileService: VirtualFileService
 ) {
 
@@ -43,8 +45,12 @@ class ContentController(
 
     @PostMapping("/api/folder")
     fun createFolder(@RequestParam("path") path: String, user: Uid) {
-//        virtualFileService.getVFile()
-//        virtualFileService.createFolder()
+        if (!userService.isLogin(user))
+            throw ErrorCode.USER_NOT_LOGIN.error
+        val dir = path.substringBeforeLast("/", "/")
+        val name = path.substringAfterLast("/")
+        val vp = virtualFileService.toVirtualPath(user, dir)
+        virtualFileService.createFolder(vp, name)
     }
 //
 //    @DeleteMapping("/api/file/{path}")
