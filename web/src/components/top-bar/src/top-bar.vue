@@ -163,7 +163,12 @@ const logInfo = reactive({
 })
 
 function createFolder() {
-    newFolder(newFolderData.name).then(res => {
+    let uid = user.value?.uid
+    if (!uid) {
+        HMessage.error('没有登录！')
+        return
+    }
+    newFolder(newFolderData.name, uid, true).then(res => {
         if (res) {
             HMessage.success('创建成功')
             showNewFolderDialog.value = false
