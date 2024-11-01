@@ -9,6 +9,10 @@ export declare interface RespData<T> {
     data?: T
 }
 
+const FORM_HEADER = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+}
+
 async function get<R>(url: string, config?: AxiosRequestConfig<R>) {
     let resp = await axios.get<RespData<R>>(url, config)
     if (resp.data && resp.data.code === 0)
@@ -57,8 +61,13 @@ export async function deleteFile(path: string): Promise<RespData<any>> {
     return resp.data
 }
 
-export async function newFolder(folder: string) {
-    return post<boolean>('api/folder', 'path=' + folder)
+export async function newFolder(folder: string, uid: number) {
+    return post<boolean>('api/folder', {
+        path: folder,
+        uid: uid
+    }, {
+        headers: FORM_HEADER
+    })
         .then(resp => true)
         .catch(catchError)
 }
@@ -68,9 +77,7 @@ export async function login(logId: string, password?: string) {
         logId: logId,
         password: password
     }, {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        headers: FORM_HEADER
     }).then(resp => resp.data)
         .catch(catchError)
 }
@@ -80,9 +87,7 @@ export async function logon(userName: string, password: string) {
         username: userName,
         password: password
     }, {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        headers: FORM_HEADER
     }).then(resp => true)
         .catch(catchError)
 }
