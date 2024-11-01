@@ -1,4 +1,5 @@
-import {createApp} from 'vue'
+import {vDisabled} from '@yin-jinlong/h-ui'
+import {createApp, ObjectDirective} from 'vue'
 import {createRouter, createWebHashHistory} from 'vue-router'
 
 import App from './App.vue'
@@ -16,4 +17,5 @@ let router = createRouter({
 
 const app = createApp(App)
 app.use(router)
+app.directive('disabled', vDisabled as ObjectDirective)
 app.mount(document.body)
