@@ -40,7 +40,7 @@ class ContentController(
         val vp = virtualFileService.toVirtualPath(uid, p)
         return virtualFileService.getFiles(vp).map {
             it.virtual(vp).toFileInfo()
-        }
+        }.sorted()
     }
 
     @PostMapping("/api/folder")
