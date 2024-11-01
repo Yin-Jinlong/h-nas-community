@@ -15,7 +15,7 @@ interface VFileMapper {
     //  查  //
     //******//
 
-    @Select("select * from vfile where fid = #{id}")
+    @Select("select * from vfile where fid = #{fid}")
     fun selectById(id: VFileId): VFile?
 
     @Select("select * from vfile where parent = #{parent}")
@@ -25,6 +25,6 @@ interface VFileMapper {
     //  增  //
     //******//
 
-    @Insert("insert into vfile(fid, name, parent, owner,create_time,update_time, type) VALUES (#{id}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{type})")
+    @Insert("insert into vfile(fid, name, parent, owner,create_time,update_time, type) VALUES (#{fid}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{type})")
     fun insert(vFile: VFile): Int
 }
