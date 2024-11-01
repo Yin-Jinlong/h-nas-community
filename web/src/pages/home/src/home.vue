@@ -1,5 +1,5 @@
 <template>
-    <top-bar :on-uploaded="onUploaded"/>
+    <top-bar :on-uploaded="onUploaded" @new-folder="newFolder"/>
     <el-scrollbar>
         <div class="contents" data-fill-size>
             <el-empty v-if="!files.length"/>
@@ -130,12 +130,13 @@
 <script lang="ts" setup>
 
 import {FileGridView, TopBar} from '@/components'
+import {user} from '@/utils/globals'
 import {MoreFilled} from '@element-plus/icons-vue'
 import {toHumanSize} from '@/utils/size-utils'
 import {pathGetName} from '@/utils/path-utils'
 import {computed} from 'vue'
 import {FileInfo} from '@/types/file-info'
-import {deleteFile, getFiles} from '@/utils/api'
+import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
 
 const nowIndex = ref(-1)
@@ -179,7 +180,7 @@ function showPreview(f: FileInfo,) {
 }
 
 function updateFiles() {
-    getFiles().then(data => {
+    API.getFiles().then(data => {
         files.length = 0
         previewMap.clear()
         let i = 0
@@ -201,6 +202,21 @@ function update() {
     updateFiles()
 }
 
+function newFolder(name: string, ok: () => void) {
+    let uid = user.value?.uid
+    if (!uid) {
+        HMessage.error('没有登录！')
+        return
+    }
+    API.newFolder(name, uid, true).then(res => {
+        if (res) {
+            HMessage.success('创建成功')
+            update()
+            ok()
+        }
+    })
+}
+
 function onUploaded() {
     update()
 }
@@ -208,16 +224,16 @@ function onUploaded() {
 function onCommand(args: any) {
     switch (args[0]) {
         case 'del':
-            deleteFile(args[1].path).then(res => {
-                if (res.code === 0) {
-                    HMessage.success('删除成功')
-                    update()
-                } else {
-                    HMessage.error(res.msg ?? '未知错误')
-                }
-            }).catch(e => {
-                HMessage.error(e.message)
-            })
+            // deleteFile(args[1].path).then(res => {
+            //     if (res.code === 0) {
+            //         HMessage.success('删除成功')
+            //         update()
+            //     } else {
+            //         HMessage.error(res.msg ?? '未知错误')
+            //     }
+            // }).catch(e => {
+            //     HMessage.error(e.message)
+            // })
             break
         case 'info':
             activeFile.value = args[1]
