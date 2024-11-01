@@ -168,5 +168,5 @@ class VirtualPath private constructor(
         return Objects.hash(fs, user, paths)
     }
 
-
+    fun isRoot(): Boolean = isAbsolute && paths[1] == ""
 }
