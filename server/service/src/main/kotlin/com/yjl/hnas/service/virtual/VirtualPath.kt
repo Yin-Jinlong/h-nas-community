@@ -53,7 +53,12 @@ class VirtualPath private constructor(
     override fun getRoot() = VirtualPath(fs, user, listOf("", ""))
 
     override fun getFileName(): VirtualPath {
-        return getName(paths.size - 1)
+        return copy(
+            listOf(
+                if (paths.isEmpty()) ""
+                else paths.last()
+            )
+        )
     }
 
     override fun getParent() = copy(paths, to = kotlin.math.min(0, paths.size - 1))
