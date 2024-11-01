@@ -61,10 +61,11 @@ export async function deleteFile(path: string): Promise<RespData<any>> {
     return resp.data
 }
 
-export async function newFolder(folder: string, uid: number) {
+export async function newFolder(folder: string, uid: number, isPublic: boolean) {
     return post<boolean>('api/folder', {
         path: folder,
-        uid: uid
+        user: uid,
+        'public': isPublic
     }, {
         headers: FORM_HEADER
     })
