@@ -1,7 +1,7 @@
 <template>
     <div class="top-bar bg-dot" data-fill-width data-flex>
         <div style="flex: 1">
-            <h-button type="primary" @click="showNewFolderDialog = true">
+            <h-button v-disabled="!user" type="primary" @click="showNewFolderDialog = true">
                 创建目录
             </h-button>
         </div>
