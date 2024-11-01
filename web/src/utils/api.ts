@@ -82,6 +82,14 @@ export async function login(logId: string, password?: string) {
         .catch(catchError)
 }
 
+export async function tryLogin(logId: string) {
+    return post<UserInfo>('api/user/login', {
+        logId: logId,
+    }, {
+        headers: FORM_HEADER
+    }).then(resp => resp.data)
+}
+
 export async function logon(userName: string, password: string) {
     return post<boolean>('api/user/logon', {
         username: userName,
