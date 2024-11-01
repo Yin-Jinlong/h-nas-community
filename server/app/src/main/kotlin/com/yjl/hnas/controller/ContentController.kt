@@ -44,13 +44,17 @@ class ContentController(
     }
 
     @PostMapping("/api/folder")
-    fun createFolder(@RequestParam("path") path: String, @RequestParam user: Uid) {
+    fun createFolder(
+        @RequestParam("path") path: String,
+        @RequestParam user: Uid,
+        @RequestParam(defaultValue = "false") public: Boolean,
+    ) {
         if (!userService.isLogin(user))
             throw ErrorCode.USER_NOT_LOGIN.error
         val dir = path.substringBeforeLast("/", "/")
         val name = path.substringAfterLast("/")
-        val vp = virtualFileService.toVirtualPath(user, dir)
-        virtualFileService.createFolder(vp, name)
+        val vp = virtualFileService.toVirtualPath(if (public) null else user, dir)
+        virtualFileService.createFolder(vp, name, user, public)
     }
 //
 //    @DeleteMapping("/api/file/{path}")
