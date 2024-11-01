@@ -60,7 +60,7 @@
                                     placeholder="密码"
                                     show-password type="password"/>
                         </el-form-item>
-                        <h-button data-fill-width type="primary" @click="tryLogin">
+                        <h-button data-fill-width type="primary" @click.prevent="tryLogin">
                             登录
                         </h-button>
                     </el-form>
