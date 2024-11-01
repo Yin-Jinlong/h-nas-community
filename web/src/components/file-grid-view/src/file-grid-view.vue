@@ -1,6 +1,6 @@
 <template>
     <el-image
-            v-if="typeof info==='object' &&info.preview"
+            v-if="info.fileType==='FILE' &&info.preview"
             :alt="info.path"
             :src="info.preview"
             :title="info.path"
@@ -15,11 +15,9 @@
             </el-skeleton>
         </template>
     </el-image>
-    <el-icon v-else-if="typeof info==='string'">
-
-    </el-icon>
     <el-icon v-else size="8em">
-        <unknown-file/>
+        <folder v-if="info.fileType=='FOLDER'"/>
+        <unknown-file v-else/>
     </el-icon>
 </template>
 
@@ -28,6 +26,7 @@
 </style>
 
 <script lang="ts" setup>
+import Folder from '@/components/file-grid-view/src/folder.vue'
 import UnknownFile from './unknown-file.vue'
 import {FileGridViewProps} from './props'
 
