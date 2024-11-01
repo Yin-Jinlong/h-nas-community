@@ -142,7 +142,7 @@
 </style>
 
 <script lang="ts" setup>
-import {login, logon, newFolder} from '@/utils/api'
+import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {Upload} from '@element-plus/icons-vue'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
@@ -151,6 +151,9 @@ import {TopBarProps} from './props'
 const showLoDialog = ref(false)
 const showNewFolderDialog = ref(false)
 const props = defineProps<TopBarProps>()
+const emits = defineEmits({
+    newFolder: (name: string, ok: () => void) => void {}
+})
 
 const newFolderData = reactive({
     name: '',
@@ -163,21 +166,13 @@ const logInfo = reactive({
 })
 
 function createFolder() {
-    let uid = user.value?.uid
-    if (!uid) {
-        HMessage.error('没有登录！')
-        return
-    }
-    newFolder(newFolderData.name, uid, true).then(res => {
-        if (res) {
-            HMessage.success('创建成功')
-            showNewFolderDialog.value = false
-        }
+    emits('newFolder', newFolderData.name, () => {
+        showNewFolderDialog.value = false
     })
 }
 
 function tryLogin() {
-    login(logInfo.logId, logInfo.password).then(res => {
+    API.login(logInfo.logId, logInfo.password).then(res => {
         console.log(res)
         if (res) {
             HMessage.success('登录成功')
@@ -188,7 +183,7 @@ function tryLogin() {
 }
 
 function tryLogon() {
-    logon(logInfo.logId, logInfo.password).then(res => {
+    API.logon(logInfo.logId, logInfo.password).then(res => {
         if (res) {
             HMessage.success('注册成功')
             showLoDialog.value = false
