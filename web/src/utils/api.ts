@@ -46,7 +46,7 @@ function catchError(e: AxiosError<any> | RespData<any>): undefined {
     }
 }
 
-export async function getFiles() {
+async function getFiles() {
     return get<FileInfo[]>('api/files', {
         params: {
             path: '/'
@@ -56,12 +56,12 @@ export async function getFiles() {
         .catch(catchError)
 }
 
-export async function deleteFile(path: string): Promise<RespData<any>> {
+async function deleteFile(path: string): Promise<RespData<any>> {
     let resp = await axios.delete('api/file/' + path)
     return resp.data
 }
 
-export async function newFolder(folder: string, uid: number, isPublic: boolean) {
+async function newFolder(folder: string, uid: number, isPublic: boolean) {
     return post<boolean>('api/folder', {
         path: folder,
         user: uid,
@@ -73,7 +73,7 @@ export async function newFolder(folder: string, uid: number, isPublic: boolean) 
         .catch(catchError)
 }
 
-export async function login(logId: string, password?: string) {
+async function login(logId: string, password?: string) {
     return post<UserInfo>('api/user/login', {
         logId: logId,
         password: password
@@ -83,7 +83,7 @@ export async function login(logId: string, password?: string) {
         .catch(catchError)
 }
 
-export async function tryLogin(logId: string) {
+async function tryLogin(logId: string) {
     return post<UserInfo>('api/user/login', {
         logId: logId,
     }, {
@@ -91,7 +91,7 @@ export async function tryLogin(logId: string) {
     }).then(resp => resp.data)
 }
 
-export async function logon(userName: string, password: string) {
+async function logon(userName: string, password: string) {
     return post<boolean>('api/user/logon', {
         username: userName,
         password: password
@@ -100,3 +100,14 @@ export async function logon(userName: string, password: string) {
     }).then(resp => true)
         .catch(catchError)
 }
+
+const API = {
+    login,
+    tryLogin,
+    logon,
+    getFiles,
+    deleteFile,
+    newFolder
+}
+
+export default API
