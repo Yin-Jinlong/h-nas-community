@@ -9,6 +9,8 @@ enum class ErrorCode(
 ) {
     OK(0, "OK"),
 
+    BAD_TOKEN(100, "token无效"),
+
     BAD_REQUEST(1, "Bad Request"),
     BAD_ARGUMENTS(2, "参数错误"),
 
