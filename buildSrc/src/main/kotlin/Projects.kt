@@ -14,4 +14,6 @@ fun DependencyHandler.entity() = server("entity")
 
 fun DependencyHandler.service() = server("service")
 
+fun DependencyHandler.token() = server("token")
+
 fun DependencyHandler.utils() = server("utils")

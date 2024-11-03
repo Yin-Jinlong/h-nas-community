@@ -17,6 +17,7 @@ dependencies {
     implementation(commomData())
     implementation(entity())
     implementation(service())
+    implementation(token())
     implementation(utils())
 
     implementation(libs.spring.boot.api.starter)
