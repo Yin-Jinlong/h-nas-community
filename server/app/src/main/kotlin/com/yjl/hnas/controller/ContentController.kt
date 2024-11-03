@@ -9,8 +9,6 @@ import com.yjl.hnas.utils.virtual
 import jakarta.validation.constraints.NotBlank
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
 
 /**
  * @author YJL
@@ -43,19 +41,6 @@ class ContentController(
         }.sorted()
     }
 
-    @PostMapping("/api/folder")
-    fun createFolder(
-        @RequestParam("path") path: String,
-        @RequestParam user: Uid,
-        @RequestParam(defaultValue = "false") public: Boolean,
-    ) {
-        if (!userService.isLogin(user))
-            throw ErrorCode.USER_NOT_LOGIN.error
-        val dir = path.substringBeforeLast("/", "/")
-        val name = path.substringAfterLast("/")
-        val vp = virtualFileService.toVirtualPath(if (public) null else user, dir)
-        virtualFileService.createFolder(vp, name, user, public)
-    }
 //
 //    @DeleteMapping("/api/file/{path}")
 //    fun deleteFile(@PathVariable path: String) {
