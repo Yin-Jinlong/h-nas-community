@@ -1,7 +1,9 @@
 package com.yjl.hnas.service
 
+import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.User
 import com.yjl.hnas.entity.Uid
+import com.yjl.hnas.token.Token
 
 /**
  * @author YJL
@@ -10,26 +12,21 @@ interface UserService {
 
     fun genPassword(password: String): String
 
-    fun isLogin(uid: Uid): Boolean
-
-    /**
-     * 根据id获取已登录用户信息
-     */
-    fun getById(id: Uid): User?
+    fun isLogin(token: Token<UserInfo>): Boolean
 
     /**
      *
      * @param password 原始密码
      */
-    fun login(uid: Uid, password: String): User
+    fun login(uid: Uid, password: String): Token<UserInfo>
 
     /**
      *
      * @param password 原始密码
      */
-    fun login(username: String, password: String): User
+    fun login(username: String, password: String): Token<UserInfo>
 
-    fun logout(uid: Uid)
+    fun logout(token: Token<UserInfo>)
 
     /**
      *
