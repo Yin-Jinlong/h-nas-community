@@ -3,7 +3,7 @@ package com.yjl.hnas.data
 import com.yjl.hnas.entity.VFile
 
 /**
- * 文件信息，返回给前端的
+ * 文件信息
  *
  * @property path 文件原始路径
  * @property fileType 文件类型

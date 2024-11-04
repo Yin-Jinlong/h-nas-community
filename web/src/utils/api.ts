@@ -1,5 +1,3 @@
-import {FileInfo} from '@/types/file-info'
-import {UserInfo} from '@/types/user'
 import {HMessage} from '@yin-jinlong/h-ui'
 import axios, {AxiosError, AxiosRequestConfig} from 'axios'
 

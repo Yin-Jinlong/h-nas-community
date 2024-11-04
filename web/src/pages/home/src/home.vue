@@ -135,7 +135,6 @@ import {MoreFilled} from '@element-plus/icons-vue'
 import {toHumanSize} from '@/utils/size-utils'
 import {pathGetName} from '@/utils/path-utils'
 import {computed} from 'vue'
-import {FileInfo} from '@/types/file-info'
 import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
 

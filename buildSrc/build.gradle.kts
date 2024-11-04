@@ -9,5 +9,5 @@ repositories {
 }
 
 dependencies {
-
+    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.20")
 }
