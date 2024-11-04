@@ -50,8 +50,8 @@ fun <A : Annotation> KClass<*>.hasAnno(anno: KClass<A>) = java.hasAnno(anno)
  * - 参数注解 > 方法注解 > 类注解
  */
 fun <A : Annotation> MethodParameter.hasAnno(anno: KClass<A>): Boolean {
-    return hasParameterAnnotation(anno.java) ||
-            hasMethodAnnotation(anno.java) ||
+    return parameter::class.hasAnno(anno) ||
+            method::class.hasAnno(anno) ||
             declaringClass.hasAnno(anno)
 }
 
@@ -61,6 +61,6 @@ fun <A : Annotation> MethodParameter.hasAnno(anno: KClass<A>): Boolean {
  * - 方法注解 > 类注解
  */
 fun <A : Annotation> AnnotatedMethod.hasAnno(anno: KClass<A>): Boolean {
-    return hasMethodAnnotation(anno.java) ||
+    return method::class.hasAnno(anno) ||
             method.declaringClass.hasAnno(anno)
 }
