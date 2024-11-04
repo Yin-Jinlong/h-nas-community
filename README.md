@@ -27,7 +27,7 @@
 生成前端类型文件
 
 ```shell
-./gradlew :server:common-data:genDts
+./gradlew :web:genDts
 ```
 
 加载`node`前端项目
