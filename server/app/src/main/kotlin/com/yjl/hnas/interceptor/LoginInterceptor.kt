@@ -29,12 +29,17 @@ class LoginInterceptor(
         return false
     }
 
+    private fun shouldLogin(handler: HandlerMethod): Boolean {
+        return handler.hasMethodAnnotation(ShouldLogin::class.java) ||
+                handler.method.declaringClass.getAnnotation(ShouldLogin::class.java) != null
+    }
+
     override fun preHandle(
         request: HttpServletRequest,
         response: HttpServletResponse,
         handler: HandlerMethod
     ): Boolean {
-        if (handler.hasMethodAnnotation(ShouldLogin::class.java)) {
+        if (shouldLogin(handler)) {
             val tr = (request.getHeader(HttpHeader.AUTHORIZATION.name)
                 ?: return response.error(ErrorCode.NO_PERMISSION)
                     ).token()
