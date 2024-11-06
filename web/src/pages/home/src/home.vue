@@ -262,7 +262,7 @@ function showPreview(f: FileInfo,) {
 }
 
 function updateFiles() {
-    API.getFiles('/' + nowPaths.join('/')).then(data => {
+    API.getFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
         files.length = 0
         previewMap.clear()
         let i = 0
