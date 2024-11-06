@@ -47,9 +47,9 @@ import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
 const emits = defineEmits({
-    'click': (e: MouseEvent) => {
+    'click': (e: MouseEvent, info: FileInfo) => {
     },
-    'dblclick': (last: MouseEvent) => {
+    'dblclick': (last: MouseEvent, info: FileInfo) => {
     }
 })
 
@@ -59,11 +59,11 @@ function onClick(e: MouseEvent) {
     if (clickTimeout) {
         clearTimeout(clickTimeout)
         clickTimeout = 0
-        emits('dblclick', e)
+        emits('dblclick', e, props.info)
     } else {
         clickTimeout = setTimeout(() => {
             clickTimeout = 0
-            emits('click', e)
+            emits('click', e, props.info)
         }, props.dbClickInterval) as unknown as number
     }
 }
