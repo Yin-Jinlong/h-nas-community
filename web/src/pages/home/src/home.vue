@@ -39,7 +39,9 @@
                      class="file-box"
                      data-fill-size data-flex-column-center
                      @click="showPreview(f)">
-                    <file-grid-view :info="f"/>
+                    <file-grid-view :info="f"
+                                    @click="onClick"
+                                    @dblclick="onDblClick"/>
                     <div class="file-name">{{ getName(f.path) }}</div>
                     <div class="file-op-menu">
                         <el-dropdown @command="onCommand">
@@ -324,13 +326,27 @@ function onCommand(args: any) {
     }
 }
 
+function onClick(e: MouseEvent) {
+
+}
+
+function onDblClick(e: MouseEvent, info: FileInfo) {
+    if (info.fileType == 'FOLDER')
+        enterFolder(info.path.substring(info.path.lastIndexOf('/') + 1))
+}
+
 onMounted(() => {
 
 })
 
 watch(() => route.params.path as string[] | undefined, (nv?: string[]) => {
     nowPaths.length = 0
-    nowPaths.push(...nv ?? [])
+    if (nv?.length) {
+        if (!nv[0].length) {
+            nv.shift()
+        }
+        nowPaths.push(...nv)
+    }
     updateFiles()
 }, {
     immediate: true
