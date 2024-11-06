@@ -64,7 +64,7 @@ fun <A : Annotation> KClass<*>.hasAnno(anno: KClass<A>) = java.hasAnno(anno)
 fun <A : Annotation> MethodParameter.hasAnno(
     anno: KClass<A>
 ) = methodParameterCache.getOrPut(this to anno.java) {
-    parameter::class.hasAnno(anno) ||
+    parameter.isAnnotationPresent(anno.java) ||
             this.method?.javaClass?.hasAnno(anno) == true ||
             declaringClass.hasAnno(anno)
 }
@@ -77,6 +77,6 @@ fun <A : Annotation> MethodParameter.hasAnno(
 fun <A : Annotation> AnnotatedMethod.hasAnno(
     anno: KClass<A>
 ) = annotatedMethodCache.getOrPut(this to anno.java) {
-    method::class.hasAnno(anno) ||
+    hasMethodAnnotation(anno.java) ||
             method.declaringClass.hasAnno(anno)
 }
