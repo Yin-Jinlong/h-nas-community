@@ -2,6 +2,36 @@
     <top-bar :on-uploaded="onUploaded" @new-folder="newFolder"/>
     <el-scrollbar>
         <div class="contents" data-fill-size>
+            <div class="breadcrumbs">
+                <el-breadcrumb separator="/">
+                    <el-breadcrumb-item>
+                        <el-dropdown @command="onChangeRoot">
+                            <template #default>
+                                <div class="breadcrumb" data-flex-center data-pointer>
+                                    {{ isPublic ? '公开' : '个人' }}
+                                    <el-icon>
+                                        <arrow-down/>
+                                    </el-icon>
+                                </div>
+                            </template>
+                            <template #dropdown>
+                                <el-dropdown-item :command="[true]">
+                                    公开
+                                </el-dropdown-item>
+                                <el-dropdown-item :command="[false]">
+                                    个人
+                                </el-dropdown-item>
+                            </template>
+                        </el-dropdown>
+                    </el-breadcrumb-item>
+                    <el-breadcrumb-item to="/">
+                        root
+                    </el-breadcrumb-item>
+                    <el-breadcrumb-item v-for="(p,i) in nowPaths" class="breadcrumb" @click="toPath(i)">
+                        {{ p }}
+                    </el-breadcrumb-item>
+                </el-breadcrumb>
+            </div>
             <el-empty v-if="!files.length"/>
             <div class="file-container">
                 <div v-for="f in files"
@@ -75,6 +105,25 @@
   padding-top: $top-bar-height;
 }
 
+.breadcrumbs {
+  cursor: pointer;
+  padding: 0.5em 0.3em;
+}
+
+.breadcrumb {
+  font-weight: bold;
+  text-decoration: underline;
+  transition: all 0.2s ease-out;
+
+  &:hover {
+    color: get-css(color, primary);
+  }
+
+  :deep(.el-breadcrumb__inner) {
+    color: inherit;
+  }
+
+}
 
 .file-container {
   align-content: center;
@@ -131,14 +180,19 @@
 
 import {FileGridView, TopBar} from '@/components'
 import {user} from '@/utils/globals'
-import {MoreFilled} from '@element-plus/icons-vue'
+import {ArrowDown, MoreFilled} from '@element-plus/icons-vue'
 import {toHumanSize} from '@/utils/size-utils'
 import {pathGetName} from '@/utils/path-utils'
 import {computed} from 'vue'
 import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
 
+const route = useRoute()
+const router = useRouter()
+
 const nowIndex = ref(-1)
+const isPublic = ref(true)
+const nowPaths = reactive<string[]>([])
 const files = reactive<FileInfo[]>([])
 const showFileInfoDialog = ref(false)
 const previewMap = reactive(new Map<FileInfo, number>())
@@ -176,6 +230,22 @@ const infoTable = computed(() => {
     ]
 })
 
+function onChangeRoot(cmdArr: boolean[]) {
+    isPublic.value = cmdArr[0]
+    updateFiles()
+}
+
+function toPath(i: number) {
+    router.push({
+        path: '/' + nowPaths.slice(0, i + 1).join('/')
+    })
+}
+
+function enterFolder(name: string) {
+    nowPaths.push(name)
+    toPath(nowPaths.length - 1)
+}
+
 function getName(path: string) {
     return path.split('/').pop()
 }
@@ -192,7 +262,7 @@ function showPreview(f: FileInfo,) {
 }
 
 function updateFiles() {
-    API.getFiles().then(data => {
+    API.getFiles('/' + nowPaths.join('/')).then(data => {
         files.length = 0
         previewMap.clear()
         let i = 0
@@ -255,6 +325,15 @@ function onCommand(args: any) {
 }
 
 onMounted(() => {
-    update()
+
 })
+
+watch(() => route.params.path as string[] | undefined, (nv?: string[]) => {
+    nowPaths.length = 0
+    nowPaths.push(...nv ?? [])
+    updateFiles()
+}, {
+    immediate: true
+})
+
 </script>
