@@ -32,7 +32,7 @@ afterEvaluate {
 
     // 每次编译时都生成dts
     tasks.getByName("classes") {
-        dependsOn("genDts")
+        shouldRunAfter("genDts")
     }
 
 }
