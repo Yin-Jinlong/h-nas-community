@@ -3,6 +3,7 @@ package com.yjl.hnas.interceptor
 import com.google.gson.Gson
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.error.ErrorCode
+import com.yjl.hnas.utils.hasAnno
 import com.yjl.hnas.utils.token
 import io.github.yinjinlong.spring.boot.response.JsonResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -30,8 +31,7 @@ class LoginInterceptor(
     }
 
     private fun shouldLogin(handler: HandlerMethod): Boolean {
-        return handler.hasMethodAnnotation(ShouldLogin::class.java) ||
-                handler.method.declaringClass.getAnnotation(ShouldLogin::class.java) != null
+        return handler.hasAnno(ShouldLogin::class)
     }
 
     override fun preHandle(
