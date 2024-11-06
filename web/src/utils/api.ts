@@ -44,10 +44,10 @@ function catchError(e: AxiosError<any> | RespData<any>): undefined {
     }
 }
 
-async function getFiles() {
+async function getFiles(path: string) {
     return get<FileInfo[]>('api/files', {
         params: {
-            path: '/'
+            path: path
         }
     })
         .then(resp => resp.data)
