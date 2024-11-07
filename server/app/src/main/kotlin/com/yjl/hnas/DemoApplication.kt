@@ -1,8 +1,6 @@
 package com.yjl.hnas
 
 import com.google.gson.Gson
-import com.yjl.hnas.service.VirtualFileService
-import com.yjl.hnas.service.virtual.VirtualFileSystem
 import com.yjl.hnas.token.Token
 import io.github.yinjinlong.spring.boot.annotations.UseWrappedReturnValue
 import jakarta.annotation.PostConstruct
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 @SpringBootApplication(scanBasePackages = ["io.github.yinjinlong.spring.boot", "com.yjl.hnas"])
 @Lazy(false)
 class DemoApplication(
-    val virtualFileService: VirtualFileService,
     val gson: Gson
 ) {
 
@@ -32,7 +29,6 @@ class DemoApplication(
             100
         )
         System.clearProperty(Token.PropertyKey)
-        VirtualFileSystem.init(virtualFileService)
     }
 
     @GetMapping("/**")

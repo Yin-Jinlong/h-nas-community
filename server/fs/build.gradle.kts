@@ -5,8 +5,6 @@ plugins {
 dependencies {
     compileOnly(entity())
     compileOnly(commomData())
-    compileOnly(fs())
-    compileOnly(token())
 
     testImplementation(kotlin("test"))
 }

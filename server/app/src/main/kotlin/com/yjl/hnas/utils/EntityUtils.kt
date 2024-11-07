@@ -1,11 +1,21 @@
 package com.yjl.hnas.utils
 
-import com.yjl.hnas.service.virtual.VirtualFile
-import com.yjl.hnas.service.virtual.VirtualPath
-import com.yjl.hnas.entity.VFile
+import com.yjl.hnas.data.FileInfo
+import com.yjl.hnas.entity.view.VirtualFile
+import com.yjl.hnas.fs.VirtualablePath
+import kotlin.io.path.pathString
 
-fun VFile.virtual(dir: VirtualPath): VirtualFile {
-    return VirtualFile(dir.resolve(name), this)
+fun VirtualFile.toFileInfo(dir: VirtualablePath<*, *, *>): FileInfo {
+    return FileInfo(
+        path = dir.resolve(name).pathString,
+        fileType = fileType,
+        type = type,
+        subType = subType,
+        preview = null,
+        createTime = createTime,
+        updateTime = updateTime,
+        size = 0
+    )
 }
 
 

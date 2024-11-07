@@ -11,6 +11,7 @@ fun DependencyHandler.annotation() = server("annotation")
 fun DependencyHandler.commomData() = server("common-data")
 
 fun DependencyHandler.entity() = server("entity")
+fun DependencyHandler.fs() = server("fs")
 
 fun DependencyHandler.service() = server("service")
 

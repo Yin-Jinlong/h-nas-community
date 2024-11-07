@@ -1,33 +1,25 @@
 package com.yjl.hnas.service
 
-import com.yjl.hnas.service.virtual.VirtualPath
-import com.yjl.hnas.entity.FileMapping
-import com.yjl.hnas.entity.Uid
-import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
+import com.yjl.hnas.entity.view.VirtualFile
+import com.yjl.hnas.fs.PubPath
+import com.yjl.hnas.fs.UserFilePath
+import com.yjl.hnas.fs.VirtualPathManager
 
 /**
  * @author YJL
  */
-interface VirtualFileService {
+interface VirtualFileService : VirtualPathManager {
 
-    fun getVFileId(uid: Uid?, path: String): String
+    fun genId(access: String, path: String): VFileId
 
-    fun getVFileId(virtualPath: VirtualPath): String
+    val PubPath.id: VFileId
+        get() = genId("", path)
 
-    fun toVirtualPath(uid: Uid?, path: String): VirtualPath
+    val UserFilePath.id: VFileId
+        get() = genId("$uid", path)
 
-    fun getVFile(path: VirtualPath): VFile
-
-    fun getFileMapping(fid: VFileId): FileMapping?
-
-    fun getFileMapping(path: VirtualPath): FileMapping
-
-
-    fun getFiles(path: VirtualPath): List<VFile>
-
-    fun createFolder(dir: VirtualPath, name: String, owner: Uid, public: Boolean)
-
-    val VirtualPath.id: VFileId
-        get() = getVFileId(this)
+    fun getFilesByParent(parent: VFileId): List<VirtualFile>
+    fun getFilesByParent(parent: PubPath): List<VirtualFile> = getFilesByParent(parent.toAbsolutePath().id)
+    fun getFilesByParent(parent: UserFilePath): List<VirtualFile> = getFilesByParent(parent.toAbsolutePath().id)
 }

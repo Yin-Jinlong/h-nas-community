@@ -16,6 +16,7 @@ dependencies {
     implementation(annotation())
     implementation(commomData())
     implementation(entity())
+    implementation(fs())
     implementation(service())
     implementation(token())
     implementation(utils())

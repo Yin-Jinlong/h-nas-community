@@ -20,9 +20,15 @@ typealias VFileId = String
 )
 data class VFile(
 
+    /**
+     * 文件id
+     *
+     * - 公开文件 `"" path`
+     * - 私有文件 `uid path`
+     */
     @Id
     @Column(length = ID_LENGTH)
-    @Comment("文件id, base64<<sha256<<(owner,full_path)")
+    @Comment("文件id, base64<<sha256<<(access,full_path)")
     var fid: VFileId = "",
 
     @Column(length = NAME_LENGTH, nullable = false)

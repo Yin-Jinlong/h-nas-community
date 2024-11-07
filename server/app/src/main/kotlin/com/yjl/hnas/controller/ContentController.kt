@@ -1,57 +1,76 @@
 package com.yjl.hnas.controller
 
+import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileInfo
-import com.yjl.hnas.entity.Uid
+import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.error.ErrorCode
+import com.yjl.hnas.fs.*
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
-import com.yjl.hnas.utils.virtual
+import com.yjl.hnas.token.Token
+import com.yjl.hnas.utils.toFileInfo
+import jakarta.annotation.PostConstruct
 import jakarta.validation.constraints.NotBlank
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
+
 
 /**
  * @author YJL
  */
 @Controller
 class ContentController(
+    val pubFileSystemProvider: PubFileSystemProvider,
+    val userFileSystemProvider: UserFileSystemProvider,
     val userService: UserService,
     val virtualFileService: VirtualFileService
 ) {
+    lateinit var pubFileSystem: PubFileSystem
 
-//    @Autowired
-//    lateinit var contentService: ContentService
-
-//    @GetMapping("/api/files")
-//    fun getFiles(folder: String?): List<FileInfo> {
-//        return contentService.getFiles(folder ?: "").map {
-//            it.toFileInfo(folderService)
-//        }
-//    }
+    @PostConstruct
+    fun inti() {
+        pubFileSystem = pubFileSystemProvider.getFileSystem()
+    }
 
     @GetMapping("/api/files")
-    fun getFiles(@NotBlank(message = "path 不能为空") path: String, uid: Uid?): List<FileInfo> {
+    fun getFiles(@NotBlank(message = "path 不能为空") path: String, token: Token<UserInfo>?): List<FileInfo> {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
-        val vp = virtualFileService.toVirtualPath(uid, p)
-        return virtualFileService.getFiles(vp).map {
-            it.virtual(vp).toFileInfo()
+        val vp: VirtualablePath<*, *, *>
+
+        val files = if (token == null) {
+            virtualFileService.getFilesByParent(pubFileSystem.getPath(p).also {
+                vp = it
+            })
+        } else {
+            val fs = userFileSystemProvider.getFileSystem(token.data.uid)
+            virtualFileService.getFilesByParent(fs.getPath(p).also {
+                vp = it
+            })
+        }
+
+        return files.map {
+            it.toFileInfo(vp)
         }.sorted()
     }
 
-//
-//    @DeleteMapping("/api/file/{path}")
-//    fun deleteFile(@PathVariable path: String) {
-//        contentService.deleteFile(path)
-//    }
-//
-//    @GetMapping("/api/thumbnail/{path}")
-//    fun getThumbnail(@PathVariable path: String): File {
-//        val file = contentService.getFile(path) ?: throw ClientError(ErrorCode.NO_SUCH_FILE)
-//        if (!contentService.hasValidThumbnail(file))
-//            contentService.createThumbnail(file)
-//        return contentService.getThumbnail(file.md5)
-//    }
+    @PostMapping("/api/folder")
+    fun createFolder(
+        @RequestParam("path") path: String,
+        @ShouldLogin user: Token<UserInfo>,
+        @RequestParam(defaultValue = "false") public: Boolean,
+    ) {
+        if (!userService.isLogin(user))
+            throw ErrorCode.USER_NOT_LOGIN.error
+        TODO()
+//        val dir = path.substringBeforeLast("/", "/")
+//        val name = path.substringAfterLast("/")
+//        val vp = virtualFileService.toVirtualPath(user.data.uid, dir)
+//        virtualFileService.createFolder(vp, name, user.data.uid, public)
+    }
+
 }
