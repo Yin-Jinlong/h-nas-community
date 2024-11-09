@@ -142,6 +142,8 @@ abstract class AbstractPath<
         return clone()
     }
 
+    fun isRoot() = absolute && path.isEmpty()
+
     override fun toString(): String {
         val p = if (isAbsolute) "/$path" else path
         return p
