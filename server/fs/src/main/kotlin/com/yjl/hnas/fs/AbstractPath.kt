@@ -32,7 +32,11 @@ abstract class AbstractPath<
 
     private val paths = this.path.split("/")
 
-    protected abstract fun clone(path: String, absolute: Boolean): P
+    protected abstract fun clone(path: String): P
+
+    fun clone(path: String, absolute: Boolean): P {
+        return clone(if ((!path.startsWith("/")) && absolute) "/$path" else path)
+    }
 
     override fun compareTo(other: Path): Int {
         val path = fs.check(other)

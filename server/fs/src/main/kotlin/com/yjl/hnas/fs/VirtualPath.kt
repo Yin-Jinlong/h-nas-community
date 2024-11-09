@@ -9,7 +9,7 @@ class VirtualPath(
     fs: VirtualFileSystem,
     path: String,
 ) : AbstractPath<VirtualFileSystemProvider, VirtualFileSystem, VirtualPath>(fs, path) {
-    override fun clone(path: String, absolute: Boolean): VirtualPath {
+    override fun clone(path: String): VirtualPath {
         return VirtualPath(fs, path)
     }
 

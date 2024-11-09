@@ -14,7 +14,7 @@ class UserFilePath(
     val uid: Uid
         get() = fs.uid
 
-    override fun clone(path: String, absolute: Boolean): UserFilePath {
+    override fun clone(path: String): UserFilePath {
         return UserFilePath(fs, path)
     }
 
