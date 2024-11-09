@@ -1,5 +1,6 @@
+import {token} from '@/utils/globals'
 import {HMessage} from '@yin-jinlong/h-ui'
-import axios, {AxiosError, AxiosRequestConfig} from 'axios'
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios'
 
 export declare interface RespData<T> {
     code: number
@@ -7,8 +8,10 @@ export declare interface RespData<T> {
     data?: T
 }
 
+
 const FORM_HEADER = {
-    'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': token.value
 }
 
 async function get<R>(url: string, config?: AxiosRequestConfig<R>) {
@@ -18,10 +21,17 @@ async function get<R>(url: string, config?: AxiosRequestConfig<R>) {
     throw resp.data
 }
 
-async function post<R, D = any>(url: string, data: D, config?: AxiosRequestConfig<R>) {
+async function post<R, D = any>(
+    url: string,
+    data: D,
+    config?: AxiosRequestConfig<R>,
+    onResp?: (resp: AxiosResponse<RespData<R>>) => void
+) {
     let resp = await axios.post<RespData<R>>(url, data, config)
-    if (resp.data && resp.data.code === 0)
+    if (resp.data && resp.data.code === 0) {
+        onResp?.(resp)
         return resp.data
+    }
     throw resp.data
 }
 
@@ -77,6 +87,12 @@ async function login(logId: string, password?: string) {
         password: password
     }, {
         headers: FORM_HEADER
+    }, resp => {
+        let auth = resp.headers['authorization']
+        if (auth) {
+            token.value = auth
+            FORM_HEADER.Authorization = auth
+        }
     }).then(resp => resp.data)
         .catch(catchError)
 }
