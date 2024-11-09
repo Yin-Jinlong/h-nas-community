@@ -6,6 +6,7 @@ dependencies {
     compileOnly(entity())
     compileOnly(commomData())
 
+    testImplementation(entity())
     testImplementation(kotlin("test"))
 }
 

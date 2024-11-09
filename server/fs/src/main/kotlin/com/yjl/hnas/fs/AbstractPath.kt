@@ -17,6 +17,7 @@ abstract class AbstractPath<
 ) : Path, Cloneable {
 
     private val absolute: Boolean = path.startsWith("/")
+    private val prefix = if (absolute) "/" else ""
 
     val path = path.let {
         if (path.endsWith("/"))
@@ -33,10 +34,6 @@ abstract class AbstractPath<
     private val paths = this.path.split("/")
 
     protected abstract fun clone(path: String): P
-
-    fun clone(path: String, absolute: Boolean): P {
-        return clone(if ((!path.startsWith("/")) && absolute) "/$path" else path)
-    }
 
     override fun compareTo(other: Path): Int {
         val path = fs.check(other)
@@ -56,18 +53,18 @@ abstract class AbstractPath<
     override fun isAbsolute() = absolute
 
     override fun getRoot(): P {
-        return clone("/", true)
+        return clone("/")
     }
 
     override fun getFileName(): P {
-        return clone(paths.last(), false)
+        return clone(paths.last())
     }
 
     override fun getParent(): P {
         if (nameCount <= 1)
-            return root
-        val ps = toAbsolutePath().paths.dropLast(1)
-        return clone(ps.joinToString("/"), true)
+            return if (absolute) root else clone("")
+        val ps = paths.dropLast(1)
+        return clone(ps.joinToString("/", prefix = prefix))
     }
 
     override fun getNameCount(): Int {
@@ -75,13 +72,13 @@ abstract class AbstractPath<
     }
 
     override fun getName(index: Int): P {
-        return clone(paths[index], false)
+        return clone(paths[index])
     }
 
     override fun subpath(beginIndex: Int, endIndex: Int): P {
         if (beginIndex !in paths.indices || endIndex !in 0..paths.size)
             throw IllegalArgumentException("Invalid index")
-        return clone(paths.subList(beginIndex, endIndex).joinToString("/"), false)
+        return clone(paths.subList(beginIndex, endIndex).joinToString("/", prefix = prefix))
     }
 
     override fun startsWith(other: Path): Boolean {
@@ -95,7 +92,11 @@ abstract class AbstractPath<
     }
 
     override fun normalize(): P {
-        val p = path.substringAfterLast("//")
+        val ri = path.lastIndexOf("//")
+        var prefix = this.prefix
+        val p = if (ri >= 0) path.substring(ri + 2).also {
+            prefix = "/"
+        } else path
         val ps = p.split("/")
         val r = mutableListOf<String>()
         ps.forEach {
@@ -105,16 +106,16 @@ abstract class AbstractPath<
                 else -> r.add(it)
             }
         }
-        return clone(r.joinToString("/"), true)
+        return clone(r.joinToString("/", prefix = prefix))
     }
 
     override fun resolve(other: String): P {
-        return resolve(clone(other, false))
+        return resolve(clone(other))
     }
 
     override fun resolve(other: Path): P {
         val p = fs.check(other)
-        return clone("$path/${p.path}", true).normalize()
+        return clone("$prefix$path/${p.prefix}${p.path}").normalize()
     }
 
     override fun relativize(other: Path): P {
@@ -128,7 +129,7 @@ abstract class AbstractPath<
                 it.substring(1)
             else
                 it
-        }, false)
+        })
     }
 
     override fun toUri(): URI {
@@ -139,7 +140,7 @@ abstract class AbstractPath<
         if (isAbsolute)
             return clone()
         val p = normalize()
-        return p.clone(p.path, true)
+        return p.clone(p.path)
     }
 
     override fun toRealPath(vararg options: LinkOption?): P {
@@ -148,13 +149,10 @@ abstract class AbstractPath<
 
     fun isRoot() = absolute && path.isEmpty()
 
-    override fun toString(): String {
-        val p = if (isAbsolute) "/$path" else path
-        return p
-    }
+    override fun toString() = "$prefix$path"
 
     override fun clone(): P {
-        return clone(path, absolute)
+        return clone(path)
     }
 
     override fun equals(other: Any?): Boolean {
