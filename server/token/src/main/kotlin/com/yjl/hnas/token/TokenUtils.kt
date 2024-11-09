@@ -4,6 +4,7 @@ import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.PBEParameterSpec
 
@@ -14,7 +15,7 @@ object TokenUtils {
 
     private lateinit var password: String
 
-    private val salt = SecureRandom().generateSeed(8)
+    private val salt = SecureRandom().generateSeed(16)
 
     private var iterationCount: Int = 50
     private lateinit var spec: PBEParameterSpec
@@ -29,7 +30,8 @@ object TokenUtils {
         val key = PBEKeySpec(password.toCharArray())
         val factory = SecretKeyFactory.getInstance(Token.DEFAULT_ALGORITHM)
         this.key = factory.generateSecret(key)
-        spec = PBEParameterSpec(salt, iterationCount)
+        val ivSpec = IvParameterSpec(salt)
+        spec = PBEParameterSpec(salt, iterationCount, ivSpec)
     }
 
     fun gen(data: ByteArray, algorithm: String): ByteArray {
