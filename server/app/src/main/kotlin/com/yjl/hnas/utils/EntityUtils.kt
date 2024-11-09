@@ -12,8 +12,8 @@ fun VirtualFile.toFileInfo(dir: VirtualablePath<*, *, *>): FileInfo {
         type = type,
         subType = subType,
         preview = null,
-        createTime = createTime,
-        updateTime = updateTime,
+        createTime = createTime.time,
+        updateTime = updateTime.time,
         size = 0
     )
 }

@@ -5,6 +5,7 @@ import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.*
+import com.yjl.hnas.fs.attr.FileOwnerAttribute
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.token.Token
@@ -66,11 +67,11 @@ class ContentController(
     ) {
         if (!userService.isLogin(user))
             throw ErrorCode.USER_NOT_LOGIN.error
+        if (public) {
+            val p = pubFileSystem.getPath(path)
+            pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
+        }
         TODO()
-//        val dir = path.substringBeforeLast("/", "/")
-//        val name = path.substringAfterLast("/")
-//        val vp = virtualFileService.toVirtualPath(user.data.uid, dir)
-//        virtualFileService.createFolder(vp, name, user.data.uid, public)
     }
 
 }
