@@ -37,6 +37,12 @@ class PubPathTest {
     val pathAbs = fs.getPath("/a/b/c")
 
     @Test
+    fun testAbsolute() {
+        val abs = path.toAbsolutePath()
+        assertEquals("/a/b/c", abs.pathString)
+    }
+
+    @Test
     fun testPathString() {
         assertEquals("a/b/c", path.pathString)
     }
