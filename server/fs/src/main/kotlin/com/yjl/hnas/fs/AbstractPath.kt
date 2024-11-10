@@ -31,13 +31,15 @@ abstract class AbstractPath<
             it
     }
 
+    val fullPath = prefix + this.path
+
     private val paths = this.path.split("/")
 
     protected abstract fun clone(path: String): P
 
     override fun compareTo(other: Path): Int {
         val path = fs.check(other)
-        return path.path.compareTo(this.path)
+        return path.fullPath.compareTo(this.path)
     }
 
     override fun register(
@@ -83,12 +85,12 @@ abstract class AbstractPath<
 
     override fun startsWith(other: Path): Boolean {
         val p = fs.check(other)
-        return toAbsolutePath().path.startsWith(p.toAbsolutePath().path)
+        return toAbsolutePath().fullPath.startsWith(p.toAbsolutePath().fullPath)
     }
 
     override fun endsWith(other: Path): Boolean {
         val p = fs.check(other)
-        return toAbsolutePath().path.endsWith(p.toAbsolutePath().path)
+        return toAbsolutePath().fullPath.endsWith(p.toAbsolutePath().fullPath)
     }
 
     override fun normalize(): P {
@@ -115,7 +117,7 @@ abstract class AbstractPath<
 
     override fun resolve(other: Path): P {
         val p = fs.check(other)
-        return clone("$prefix$path/${p.prefix}${p.path}").normalize()
+        return clone("$fullPath/${p.fullPath}").normalize()
     }
 
     override fun relativize(other: Path): P {
@@ -140,19 +142,19 @@ abstract class AbstractPath<
         if (isAbsolute)
             return clone()
         val p = normalize()
-        return p.clone(p.path)
+        return p.clone(p.fullPath)
     }
 
     override fun toRealPath(vararg options: LinkOption?): P {
-        return clone()
+        return toAbsolutePath()
     }
 
     fun isRoot() = absolute && path.isEmpty()
 
-    override fun toString() = "$prefix$path"
+    override fun toString() = fullPath
 
     override fun clone(): P {
-        return clone(path)
+        return clone(fullPath)
     }
 
     override fun equals(other: Any?): Boolean {
