@@ -292,7 +292,7 @@ function newFolder(name: string, ok: () => void) {
         HMessage.error('没有登录！')
         return
     }
-    API.newFolder(name, uid, true).then(res => {
+    API.newFolder(nowPaths.join('/') + '/' + name, uid, true).then(res => {
         if (res) {
             HMessage.success('创建成功')
             update()
