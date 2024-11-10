@@ -68,8 +68,9 @@ class ContentController(
         if (!userService.isLogin(user))
             throw ErrorCode.USER_NOT_LOGIN.error
         if (public) {
-            val p = pubFileSystem.getPath(path)
+            val p = pubFileSystem.getPath(path).toAbsolutePath()
             pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
+            return
         }
         TODO()
     }
