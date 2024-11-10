@@ -33,7 +33,7 @@ class PubFileSystemProvider(
         val p = check(dir)
         if (manager.folderExists(p))
             throw FileAlreadyExistsException("${p.path} already exists")
-        val ownerAttr = attrs.find { it is FileOwnerAttribute } as FileOwnerAttribute?
+        val ownerAttr = getAttribute(attrs, FileOwnerAttribute::class)
             ?: throw IllegalArgumentException("owner is required")
         manager.createFolder(p, ownerAttr.value())
     }

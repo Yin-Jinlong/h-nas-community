@@ -7,6 +7,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.FileAttributeView
 import java.nio.file.spi.FileSystemProvider
+import kotlin.reflect.KClass
 
 /**
  * @author YJL
@@ -47,6 +48,10 @@ abstract class AbstractFileSystemProvider<
 
     override fun newDirectoryStream(dir: Path, filter: DirectoryStream.Filter<in Path>): DirectoryStream<Path> {
         throw UnsupportedOperationException()
+    }
+
+    fun <A : FileAttribute<*>> getAttribute(attrs: Array<out FileAttribute<*>>, type: KClass<A>): A? {
+        return attrs.find { type.java.isAssignableFrom(it.javaClass) } as A?
     }
 
     override fun createDirectory(dir: Path, vararg attrs: FileAttribute<*>) {
