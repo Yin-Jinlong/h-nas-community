@@ -44,12 +44,12 @@ class ContentController(
         val vp: VirtualablePath<*, *, *>
 
         val files = if (token == null) {
-            virtualFileService.getFilesByParent(pubFileSystem.getPath(p).also {
+            virtualFileService.getFilesByParent(pubFileSystem.getPath(p).toAbsolutePath().also {
                 vp = it
             })
         } else {
             val fs = userFileSystemProvider.getFileSystem(token.data.uid)
-            virtualFileService.getFilesByParent(fs.getPath(p).also {
+            virtualFileService.getFilesByParent(fs.getPath(p).toAbsolutePath().also {
                 vp = it
             })
         }
