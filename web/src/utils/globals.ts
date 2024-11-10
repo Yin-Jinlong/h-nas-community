@@ -5,7 +5,11 @@ function getUser() {
     return text ? JSON.parse(text) : null
 }
 
-export const token = ref<string | null>(null)
+function getToken() {
+    return localStorage.getItem('token')
+}
+
+export const token = ref<string | null>(getToken())
 
 export const user = ref<UserInfo | null>(
     getUser()
