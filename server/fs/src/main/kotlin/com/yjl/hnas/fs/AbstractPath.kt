@@ -26,7 +26,7 @@ abstract class AbstractPath<
             it
     }.let {
         if (it.startsWith("/"))
-            it.substring(1)
+            it.replace(Regex("^/"), "")
         else
             it
     }
@@ -94,9 +94,9 @@ abstract class AbstractPath<
     }
 
     override fun normalize(): P {
-        val ri = path.lastIndexOf("//")
+        val ri = fullPath.lastIndexOf("//")
         var prefix = this.prefix
-        val p = if (ri >= 0) path.substring(ri + 2).also {
+        val p = if (ri >= 0) fullPath.substring(ri + 2).also {
             prefix = "/"
         } else path
         val ps = p.split("/")
@@ -112,7 +112,7 @@ abstract class AbstractPath<
     }
 
     override fun resolve(other: String): P {
-        return resolve(clone(other))
+        return resolve(fs.getPath(other))
     }
 
     override fun resolve(other: Path): P {
