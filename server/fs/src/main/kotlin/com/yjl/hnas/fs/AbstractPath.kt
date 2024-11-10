@@ -142,7 +142,7 @@ abstract class AbstractPath<
         if (isAbsolute)
             return clone()
         val p = normalize()
-        return p.clone(p.fullPath)
+        return p.clone("/$path")
     }
 
     override fun toRealPath(vararg options: LinkOption?): P {
