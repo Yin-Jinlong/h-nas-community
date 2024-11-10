@@ -32,6 +32,14 @@ AbstractFileSystemProvider<*, FSP, FS, P>, FS : AbstractFileSystem<FSP, FS, P>, 
         throw UnsupportedOperationException()
     }
 
+    fun contactParts(first: String, vararg more: String): String {
+        val list = mutableListOf(first, *more)
+        for (i in list.indices) {
+            list[i] = list[i].replace('\\', '/')
+        }
+        return list.joinToString("/")
+    }
+
     abstract override fun getPath(first: String, vararg more: String): P
 
     override fun getPathMatcher(syntaxAndPattern: String?): PathMatcher {

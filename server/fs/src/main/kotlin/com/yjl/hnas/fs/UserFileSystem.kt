@@ -11,10 +11,7 @@ class UserFileSystem(
     val uid: Uid,
 ) : VirtualableFileSystem<UserFileSystemProvider, UserFileSystem, UserFilePath>(fsp) {
     override fun getPath(first: String, vararg more: String): UserFilePath {
-        return UserFilePath(
-            this,
-            first + if (more.isEmpty()) "" else more.joinToString("/", "/"),
-        )
+        return UserFilePath(this, contactParts(first, *more)).normalize()
     }
 
     override fun check(path: Path): UserFilePath {

@@ -10,10 +10,7 @@ class VirtualFileSystem(
     provider: VirtualFileSystemProvider
 ) : AbstractFileSystem<VirtualFileSystemProvider, VirtualFileSystem, VirtualPath>(provider) {
     override fun getPath(first: String, vararg more: String): VirtualPath {
-        return VirtualPath(
-            this,
-            first + if (more.isEmpty()) "" else more.joinToString("/", "/"),
-        )
+        return VirtualPath(this, contactParts(first, *more)).normalize()
     }
 
     override fun check(path: Path): VirtualPath {
