@@ -149,7 +149,7 @@ abstract class AbstractPath<
         return toAbsolutePath()
     }
 
-    fun isRoot() = absolute && path.isEmpty()
+    fun isRoot() = path.isEmpty()
 
     override fun toString() = fullPath
 
