@@ -14,6 +14,6 @@ class VirtualPath(
     }
 
     override fun toFile(): File {
-        return fs.toFile(this)
+        return fs.toFile(toAbsolutePath())
     }
 }
