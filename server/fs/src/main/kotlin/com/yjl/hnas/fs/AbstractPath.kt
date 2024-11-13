@@ -2,6 +2,7 @@ package com.yjl.hnas.fs
 
 import java.net.URI
 import java.nio.file.*
+import java.nio.file.attribute.FileAttribute
 import java.util.*
 
 /**
@@ -15,6 +16,8 @@ abstract class AbstractPath<
     protected val fs: FS,
     path: String,
 ) : Path, Cloneable {
+
+    val bundleAttrs = mutableMapOf<String, FileAttribute<*>>()
 
     private val absolute: Boolean = path.startsWith("/")
     private val prefix = if (absolute) "/" else ""
