@@ -3,21 +3,7 @@
     <el-scrollbar height="100%">
         <div class="contents"
              data-fill-size
-             data-relative
-             tabindex="-1"
-             @dragleave="onDragCancel"
-             @mouseout="onDragCancel"
-             @drop.prevent="onDragEnd"
-             @dragenter.prevent="onDragStart"
-             @dragover.prevent="onDragOver">
-            <div :class="{'dragger':true,'drag':uploadIsDragging}"
-                 data-absolute
-                 data-fill-size
-                 data-flex-center>
-                <div v-if="uploadIsDragging">
-                    {{ uploadInfoText }}
-                </div>
-            </div>
+             data-flex-column>
             <div class="breadcrumbs">
                 <el-breadcrumb separator="/">
                     <el-breadcrumb-item>
@@ -48,69 +34,85 @@
                     </el-breadcrumb-item>
                 </el-breadcrumb>
             </div>
-            <el-empty v-if="!files.length"/>
-            <div class="file-container">
-                <div v-for="f in files"
-                     :key="f.path"
-                     class="file-box"
-                     data-fill-size data-flex-column-center
-                     @click="showPreview(f)">
-                    <file-grid-view :info="f"
-                                    @click="onClick"
-                                    @dblclick="onDblClick"/>
-                    <div class="file-name">{{ getName(f.path) }}</div>
-                    <div class="file-op-menu">
-                        <el-dropdown @command="onCommand">
-                            <template #default>
-                                <el-icon color="var(--h-color-gray-4)" size="20">
-                                    <MoreFilled/>
-                                </el-icon>
-                            </template>
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item :command="['del',f]">
-                                        删除
-                                    </el-dropdown-item>
-                                    <el-dropdown-item :command="['info',f]">
-                                        信息
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
+            <div data-relative
+                 style="flex: 1"
+                 @dragleave="onDragCancel"
+                 @mouseout="onDragCancel"
+                 @drop.prevent="onDragEnd"
+                 @dragenter.prevent="onDragStart"
+                 @dragover.prevent="onDragOver">
+                <div :class="{'dragger':true,'drag':uploadIsDragging}"
+                     data-absolute
+                     data-fill-size
+                     data-flex-center>
+                    <div v-if="uploadIsDragging">
+                        {{ uploadInfoText }}
                     </div>
                 </div>
-            </div>
-            <el-dialog v-model="showFileInfoDialog">
-                <template #header>
-                    <h3>{{ pathGetName(activeFile?.path ?? '') }}</h3>
-                </template>
-                <template #default>
-                    <div data-flex>
-                        <file-grid-view v-if="activeFile" :info="activeFile"/>
-                        <table style="margin-left: 1em">
-                            <tbody>
-                            <tr v-for="r in infoTable">
-                                <td>
-                                    <div data-fill-size
-                                         data-flex-center
-                                         style="justify-content: end;padding: 0.25em 0.2em 0.25em 0;">
-                                        <label>{{ r.label }}：</label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span>{{ r.value }}</span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <el-empty v-if="!files.length"/>
+                <div class="file-container">
+                    <div v-for="f in files"
+                         :key="f.path"
+                         class="file-box"
+                         data-fill-size data-flex-column-center
+                         @click="showPreview(f)">
+                        <file-grid-view :info="f"
+                                        @click="onClick"
+                                        @dblclick="onDblClick"/>
+                        <div class="file-name">{{ getName(f.path) }}</div>
+                        <div class="file-op-menu">
+                            <el-dropdown @command="onCommand">
+                                <template #default>
+                                    <el-icon color="var(--h-color-gray-4)" size="20">
+                                        <MoreFilled/>
+                                    </el-icon>
+                                </template>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item :command="['del',f]">
+                                            删除
+                                        </el-dropdown-item>
+                                        <el-dropdown-item :command="['info',f]">
+                                            信息
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </div>
                     </div>
-                </template>
-            </el-dialog>
-            <el-image-viewer
-                    v-if="nowIndex>=0"
-                    :initial-index="nowIndex"
-                    :url-list="previewList"
-                    @close="nowIndex=-1"/>
+                </div>
+                <el-dialog v-model="showFileInfoDialog">
+                    <template #header>
+                        <h3>{{ pathGetName(activeFile?.path ?? '') }}</h3>
+                    </template>
+                    <template #default>
+                        <div data-flex>
+                            <file-grid-view v-if="activeFile" :info="activeFile"/>
+                            <table style="margin-left: 1em">
+                                <tbody>
+                                <tr v-for="r in infoTable">
+                                    <td>
+                                        <div data-fill-size
+                                             data-flex-center
+                                             style="justify-content: end;padding: 0.25em 0.2em 0.25em 0;">
+                                            <label>{{ r.label }}：</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span>{{ r.value }}</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                </el-dialog>
+                <el-image-viewer
+                        v-if="nowIndex>=0"
+                        :initial-index="nowIndex"
+                        :url-list="previewList"
+                        @close="nowIndex=-1"/>
+            </div>
         </div>
     </el-scrollbar>
 </template>
@@ -201,8 +203,7 @@
   border-style: solid;
   border-width: 0.2rem;
   box-sizing: border-box;
-  height: calc(100% - #{$top-bar-height});
-  top: $top-bar-height;
+  height: 100%;
   transition: all 0.2s ease-out;
 
   &.drag {
