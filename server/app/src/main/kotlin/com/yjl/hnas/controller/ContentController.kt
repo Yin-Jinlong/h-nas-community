@@ -2,19 +2,23 @@ package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileInfo
-import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.*
+import com.yjl.hnas.fs.PubFileSystem
+import com.yjl.hnas.fs.PubFileSystemProvider
+import com.yjl.hnas.fs.UserFileSystemProvider
+import com.yjl.hnas.fs.VirtualablePath
 import com.yjl.hnas.fs.attr.FileOwnerAttribute
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
-import com.yjl.hnas.token.Token
+import com.yjl.hnas.utils.UserToken
 import com.yjl.hnas.utils.toFileInfo
 import jakarta.annotation.PostConstruct
+import jakarta.servlet.ServletInputStream
 import jakarta.validation.constraints.NotBlank
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 
 
@@ -36,7 +40,7 @@ class ContentController(
     }
 
     @GetMapping("/api/files")
-    fun getFiles(@NotBlank(message = "path 不能为空") path: String, token: Token<UserInfo>?): List<FileInfo> {
+    fun getFiles(@NotBlank(message = "path 不能为空") path: String, token: UserToken?): List<FileInfo> {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
@@ -62,7 +66,7 @@ class ContentController(
     @PostMapping("/api/folder")
     fun createFolder(
         @RequestParam("path") path: String,
-        @ShouldLogin user: Token<UserInfo>,
+        @ShouldLogin user: UserToken,
         @RequestParam(defaultValue = "false") public: Boolean,
     ) {
         if (!userService.isLogin(user))
