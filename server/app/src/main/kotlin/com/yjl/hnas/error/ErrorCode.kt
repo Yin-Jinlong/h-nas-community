@@ -13,6 +13,7 @@ enum class ErrorCode(
 
     BAD_REQUEST(1, "Bad Request"),
     BAD_ARGUMENTS(2, "参数错误"),
+    BAD_HEADER(3, "Header错误"),
 
     NO_SUCH_FILE(1001, "文件不存在"),
     FILE_EXISTS(1002, "文件已存在"),
