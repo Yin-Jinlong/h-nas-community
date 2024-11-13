@@ -1,5 +1,6 @@
 package com.yjl.hnas.service
 
+import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFileId
 import com.yjl.hnas.entity.view.VirtualFile
 import com.yjl.hnas.fs.PubPath
@@ -13,6 +14,8 @@ import kotlin.io.path.pathString
 interface VirtualFileService : VirtualPathManager {
 
     fun genId(access: String, path: String): VFileId
+    fun genId(path: PubPath) = path.id
+    fun genId(path: UserFilePath): VFileId = path.id
     fun genPubId(path: String): VFileId = genId("", path)
 
     val PubPath.id: VFileId
@@ -24,4 +27,6 @@ interface VirtualFileService : VirtualPathManager {
     fun getFilesByParent(parent: VFileId): List<VirtualFile>
     fun getFilesByParent(parent: PubPath): List<VirtualFile> = getFilesByParent(parent.toAbsolutePath().id)
     fun getFilesByParent(parent: UserFilePath): List<VirtualFile> = getFilesByParent(parent.toAbsolutePath().id)
+
+    fun createPubFile(user: Uid, path: PubPath, hash: String, type: String, subType: String)
 }
