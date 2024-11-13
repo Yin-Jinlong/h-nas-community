@@ -7,7 +7,6 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.FileAttributeView
 import java.nio.file.spi.FileSystemProvider
-import kotlin.reflect.KClass
 
 /**
  * @author YJL
