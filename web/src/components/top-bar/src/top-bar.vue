@@ -6,13 +6,6 @@
             </h-button>
         </div>
         <div>
-            <el-button @click="">
-                <el-icon>
-                    <Upload/>
-                </el-icon>
-            </el-button>
-        </div>
-        <div>
             <el-dropdown v-if="user">
                 <template #default>
                     <el-button>
@@ -159,7 +152,6 @@
 <script lang="ts" setup>
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
-import {Upload} from '@element-plus/icons-vue'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
 import {FormInstance, FormRules} from 'element-plus'
 import {computed} from 'vue'
