@@ -24,6 +24,10 @@ class VirtualFileSystemProvider(
 
     override fun newFileSystem(uri: URI, env: MutableMap<String, *>): VirtualFileSystem {
         checkScheme(uri)
+        return getFileSystem()
+    }
+
+    fun getFileSystem(): VirtualFileSystem {
         return VirtualFileSystem(this)
     }
 
