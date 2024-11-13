@@ -1,6 +1,6 @@
 package com.yjl.hnas.fs
 
-import com.yjl.hnas.fs.attr.FileOwnerAttribute
+import com.yjl.hnas.entity.Uid
 import java.net.URI
 import java.nio.file.DirectoryStream
 import java.nio.file.FileAlreadyExistsException
@@ -33,9 +33,9 @@ class PubFileSystemProvider(
         val p = check(dir)
         if (manager.folderExists(p))
             throw FileAlreadyExistsException("${p.path} already exists")
-        val ownerAttr = getAttribute(attrs, FileOwnerAttribute::class)
+        val ownerAttr = getAttribute(attrs, com.yjl.hnas.fs.attr.FileAttribute.OWNER)
             ?: throw IllegalArgumentException("owner is required")
-        manager.createFolder(p, ownerAttr.value())
+        manager.createFolder(p, ownerAttr.value() as Uid)
     }
 
     override fun newDirectoryStream(dir: Path, filter: DirectoryStream.Filter<in Path>): DirectoryStream<Path> {
