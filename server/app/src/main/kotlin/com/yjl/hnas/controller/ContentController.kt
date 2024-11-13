@@ -3,18 +3,16 @@ package com.yjl.hnas.controller
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.PubFileSystem
-import com.yjl.hnas.fs.PubFileSystemProvider
-import com.yjl.hnas.fs.UserFileSystemProvider
-import com.yjl.hnas.fs.VirtualablePath
-import com.yjl.hnas.fs.attr.FileOwnerAttribute
+import com.yjl.hnas.fs.*
+import com.yjl.hnas.fs.attr.FileAttribute
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
-import com.yjl.hnas.utils.UserToken
-import com.yjl.hnas.utils.toFileInfo
+import com.yjl.hnas.tika.FileDetector
+import com.yjl.hnas.utils.*
 import jakarta.annotation.PostConstruct
 import jakarta.servlet.ServletInputStream
 import jakarta.validation.constraints.NotBlank
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -79,4 +77,44 @@ class ContentController(
         TODO()
     }
 
+    @Async
+    @PostMapping("/api/file/public/upload")
+    fun uploadFile(
+        @ShouldLogin token: UserToken,
+        @RequestHeader("Content-ID") pathBase64: String,
+        @RequestHeader("Content-Length") fileSize: Long,
+        @RequestHeader("Hash") sha256Base64: String,
+        rawIn: ServletInputStream
+    ) {
+        val path = pathBase64.unBase64Url
+        val pp = pubFileSystem.getPath(path)
+        val ins = rawIn.buffered()
+        ins.mark(1024)
+        val type = FileDetector.detectMagic(ins)
+        ins.reset()
+
+        pp.bundleAttrs[FileAttribute.HASH] = FileHashAttribute(sha256Base64)
+        pp.bundleAttrs[FileAttribute.TYPE] = FileTypeAttribute(type)
+        val vp = pp.toVirtual()
+        val vf = vp.toFile()
+        try {
+            val vfp = vf.parentFile
+            if (!vfp.exists())
+                vfp.mkdirs()
+            vf.outputStream().use {
+                ins.copyTo(it)
+            }
+            virtualFileService.createPubFile(
+                token.data.uid,
+                pp,
+                hash = sha256Base64,
+                type.type,
+                type.subtype
+            )
+        } catch (e: Exception) {
+            if (vf.exists() && !vf.delete())
+                vf.deleteOnExit()
+            throw ErrorCode.SERVER_ERROR.error
+        }
+    }
 }
