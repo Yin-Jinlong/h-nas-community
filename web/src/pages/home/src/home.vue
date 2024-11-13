@@ -1,7 +1,23 @@
 <template>
     <top-bar :on-uploaded="onUploaded" @new-folder="newFolder"/>
-    <el-scrollbar>
-        <div class="contents" data-fill-size>
+    <el-scrollbar height="100%">
+        <div class="contents"
+             data-fill-size
+             data-relative
+             tabindex="-1"
+             @dragleave="onDragCancel"
+             @mouseout="onDragCancel"
+             @drop.prevent="onDragEnd"
+             @dragenter.prevent="onDragStart"
+             @dragover.prevent="onDragOver">
+            <div :class="{'dragger':true,'drag':uploadIsDragging}"
+                 data-absolute
+                 data-fill-size
+                 data-flex-center>
+                <div v-if="uploadIsDragging">
+                    {{ uploadInfoText }}
+                </div>
+            </div>
             <div class="breadcrumbs">
                 <el-breadcrumb separator="/">
                     <el-breadcrumb-item>
@@ -176,15 +192,37 @@
   width: 100%;
 }
 
+:deep(.el-scrollbar__view) {
+  height: calc(100% - #{$top-bar-height});
+}
+
+.dragger {
+  border-color: transparent;
+  border-style: solid;
+  border-width: 0.2rem;
+  box-sizing: border-box;
+  height: calc(100% - #{$top-bar-height});
+  top: $top-bar-height;
+  transition: all 0.2s ease-out;
+
+  &.drag {
+    background-color: rgb(128, 128, 128, 0.4);
+    border-color: get-css(color, primary);
+    border-style: dashed;
+  }
+
+}
+
 </style>
 
 <script lang="ts" setup>
 
 import {FileGridView, TopBar} from '@/components'
-import {user} from '@/utils/globals'
+import {token, user} from '@/utils/globals'
 import {ArrowDown, MoreFilled} from '@element-plus/icons-vue'
 import {toHumanSize} from '@/utils/size-utils'
 import {pathGetName} from '@/utils/path-utils'
+import axios from 'axios'
 import {computed} from 'vue'
 import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
@@ -194,6 +232,8 @@ const router = useRouter()
 
 const nowIndex = ref(-1)
 const isPublic = ref(true)
+const uploadIsDragging = ref(false)
+const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
 const files = reactive<FileInfo[]>([])
 const showFileInfoDialog = ref(false)
@@ -324,6 +364,68 @@ function onCommand(args: any) {
             showFileInfoDialog.value = true
             break
     }
+}
+
+let lastCancelTimeout = 0
+
+function checkCancel() {
+    if (lastCancelTimeout) {
+        clearTimeout(lastCancelTimeout)
+        lastCancelTimeout = 0
+    }
+}
+
+function accept(e: DragEvent): boolean {
+    if (!e.dataTransfer!.types.includes('Files')) {
+        e.dataTransfer!.dropEffect = 'none'
+        uploadInfoText.value = '不支持的类型'
+        return false
+    }
+    e.dataTransfer!.dropEffect = 'copy'
+    return true
+}
+
+function onDragStart(e: DragEvent) {
+    checkCancel()
+    uploadIsDragging.value = true
+    if (!accept(e))
+        return
+    uploadInfoText.value = '松开开始上传'
+}
+
+function onDragOver(e: DragEvent) {
+    uploadIsDragging.value = true
+    checkCancel()
+    if (!accept(e))
+        return
+}
+
+function onDragEnd(e: DragEvent) {
+    uploadIsDragging.value = false
+    if (!accept(e))
+        return
+    let files = e.dataTransfer!.files
+    console.log(files)
+    for (let i = 0; i < files.length; i++) {
+        upload(files[i])
+    }
+}
+
+async function upload(file: File) {
+    API.upload(nowPaths.join('/'), file).then(res => {
+        if (res) {
+            HMessage.success('上传成功')
+            updateFiles()
+        }
+    })
+}
+
+function onDragCancel() {
+    checkCancel()
+    lastCancelTimeout = setTimeout(() => {
+        uploadIsDragging.value = false
+        lastCancelTimeout = 0
+    }, 100) as unknown as number
 }
 
 function onClick(e: MouseEvent) {
