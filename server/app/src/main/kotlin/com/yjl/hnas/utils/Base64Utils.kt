@@ -4,13 +4,15 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalEncodingApi::class)
+private val Base64Url = Base64.UrlSafe.withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
+
+@OptIn(ExperimentalEncodingApi::class)
 val ByteArray.base64: String
     get() = Base64.encode(this)
 
 @OptIn(ExperimentalEncodingApi::class)
 val ByteArray.base64Url: String
-    get() = Base64.UrlSafe.encode(this)
-
+    get() = Base64Url.encode(this)
 
 @OptIn(ExperimentalEncodingApi::class)
 val String.unBase64: String
@@ -18,4 +20,4 @@ val String.unBase64: String
 
 @OptIn(ExperimentalEncodingApi::class)
 val String.unBase64Url: String
-    get() = Base64.UrlSafe.decode(this).decodeToString()
+    get() = Base64Url.decode(this).decodeToString()
