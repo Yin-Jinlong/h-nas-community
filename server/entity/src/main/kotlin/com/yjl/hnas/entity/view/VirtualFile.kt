@@ -18,8 +18,8 @@ vfile.fid,
 vfile.name,
 vfile.parent,
 vfile.type as file_type,
-ifnull(file_mapping.type,'folder'),
-ifnull(file_mapping.sub_type,'folder'),
+ifnull(file_mapping.type,'folder') as type,
+ifnull(file_mapping.sub_type,'folder') as sub_type,
 vfile.create_time,
 vfile.update_time
 from vfile
