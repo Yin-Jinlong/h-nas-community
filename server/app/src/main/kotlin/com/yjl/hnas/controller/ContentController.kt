@@ -98,11 +98,13 @@ class ContentController(
         val vp = pp.toVirtual()
         val vf = vp.toFile()
         try {
-            val vfp = vf.parentFile
-            if (!vfp.exists())
-                vfp.mkdirs()
-            vf.outputStream().use {
-                ins.copyTo(it)
+            if (!vf.exists()) {
+                val vfp = vf.parentFile
+                if (!vfp.exists())
+                    vfp.mkdirs()
+                vf.outputStream().use {
+                    ins.copyTo(it)
+                }
             }
             virtualFileService.createPubFile(
                 token.data.uid,
