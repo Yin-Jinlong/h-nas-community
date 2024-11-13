@@ -50,8 +50,8 @@ abstract class AbstractFileSystemProvider<
         throw UnsupportedOperationException()
     }
 
-    fun <A : FileAttribute<*>> getAttribute(attrs: Array<out FileAttribute<*>>, type: KClass<A>): A? {
-        return attrs.find { type.java.isAssignableFrom(it.javaClass) } as A?
+    fun getAttribute(attrs: Array<out FileAttribute<*>>, name: String): FileAttribute<*>? {
+        return attrs.find { it.name() == name }
     }
 
     override fun createDirectory(dir: Path, vararg attrs: FileAttribute<*>) {
