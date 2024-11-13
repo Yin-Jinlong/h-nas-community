@@ -22,6 +22,9 @@ abstract class AbstractPath<
     private val absolute: Boolean = path.startsWith("/")
     private val prefix = if (absolute) "/" else ""
 
+    /**
+     * 不带首个/
+     */
     val path = path.let {
         if (path.endsWith("/"))
             it.substring(0, it.length - 1)
@@ -34,6 +37,9 @@ abstract class AbstractPath<
             it
     }
 
+    /**
+     * 完整路径
+     */
     val fullPath = prefix + this.path
 
     private val paths = this.path.split("/")
