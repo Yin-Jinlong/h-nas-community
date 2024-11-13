@@ -26,11 +26,11 @@ object FileDetector : Detector {
         else type
     }
 
-    fun detectMagic(input: InputStream): MediaType? {
+    fun detectMagic(input: InputStream): MediaType {
         return mimeTypes.detect(input, emptyMetadata)
     }
 
-    fun detectName(name: String): MediaType? {
+    fun detectName(name: String): MediaType {
         return mimeTypes.detect(null, Metadata().apply {
             this.set(TikaCoreProperties.RESOURCE_NAME_KEY, name)
         })
