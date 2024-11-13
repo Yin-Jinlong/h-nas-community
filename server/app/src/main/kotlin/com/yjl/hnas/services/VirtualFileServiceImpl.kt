@@ -5,6 +5,7 @@ import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
 import com.yjl.hnas.entity.view.VirtualFile
+import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.mapper.FileMappingMapper
@@ -73,7 +74,7 @@ class VirtualFileServiceImpl(
                 dataPath = path.fullPath,
                 hash = path.toVirtual().toFile().sha256.base64Url.also {
                     if (hash.trimEnd('=') != it.trimEnd('='))
-                        throw IllegalArgumentException("hash not match")
+                        throw ErrorCode.BAD_HEADER.data("bad hash")
                 },
                 type = type,
                 subType = subType

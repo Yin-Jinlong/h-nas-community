@@ -2,6 +2,7 @@ package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileInfo
+import com.yjl.hnas.error.ClientError
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.*
 import com.yjl.hnas.fs.attr.FileAttribute
@@ -97,7 +98,7 @@ class ContentController(
         pp.bundleAttrs[FileAttribute.TYPE] = FileTypeAttribute(type)
         val vp = pp.toVirtual()
         val vf = vp.toFile()
-        try {
+        runCatching {
             if (!vf.exists()) {
                 val vfp = vf.parentFile
                 if (!vfp.exists())
@@ -113,10 +114,10 @@ class ContentController(
                 type.type,
                 type.subtype
             )
-        } catch (e: Exception) {
+        }.onFailure {
             if (vf.exists() && !vf.delete())
                 vf.deleteOnExit()
-            throw ErrorCode.SERVER_ERROR.error
+            throw if (it is ClientError) it else ErrorCode.SERVER_ERROR.error
         }
     }
 }
