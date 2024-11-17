@@ -175,7 +175,7 @@ abstract class AbstractPath<
             return false
 
         return fs === other.fs &&
-                path == other.path
+                fullPath == other.fullPath
     }
 
     override fun hashCode(): Int {
