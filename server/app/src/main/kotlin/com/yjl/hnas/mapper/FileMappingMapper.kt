@@ -2,10 +2,7 @@ package com.yjl.hnas.mapper
 
 import com.yjl.hnas.entity.FileMapping
 import com.yjl.hnas.entity.VFileId
-import org.apache.ibatis.annotations.Insert
-import org.apache.ibatis.annotations.Mapper
-import org.apache.ibatis.annotations.Select
-import org.apache.ibatis.annotations.Update
+import org.apache.ibatis.annotations.*
 
 /**
  * @author YJL
@@ -19,6 +16,9 @@ interface FileMappingMapper {
 
     @Select("select * from file_mapping where fid = #{fid}")
     fun selectById(id: VFileId): FileMapping?
+
+    @Select("select COUNT(*) from file_mapping where hash=#{hash} limit 2")
+    fun countHash(hash: String): Int
 
     //******//
     //  增  //
@@ -38,4 +38,6 @@ interface FileMappingMapper {
     //  删  //
     //******//
 
+    @Delete("delete from file_mapping where fid = #{id}")
+    fun deleteById(id: VFileId): Int
 }
