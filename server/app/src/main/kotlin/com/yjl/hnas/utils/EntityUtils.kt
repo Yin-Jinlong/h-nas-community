@@ -3,13 +3,11 @@ package com.yjl.hnas.utils
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.view.VirtualFile
-import com.yjl.hnas.fs.VirtualablePath
 import com.yjl.hnas.service.FileMappingService
-import kotlin.io.path.pathString
 
-fun VirtualFile.toFileInfo(fileMappingService: FileMappingService, dir: VirtualablePath<*, *, *>): FileInfo {
+fun VirtualFile.toFileInfo(fileMappingService: FileMappingService): FileInfo {
     return FileInfo(
-        path = dir.resolve(name).pathString,
+        name = name,
         fileType = fileType,
         type = type,
         subType = subType,

@@ -48,21 +48,15 @@ class ContentController(
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
-        val vp: VirtualablePath<*, *, *>
-
         val files = if (token == null) {
-            virtualFileService.getFilesByParent(pubFileSystem.getPath(p).toAbsolutePath().also {
-                vp = it
-            })
+            virtualFileService.getFilesByParent(pubFileSystem.getPath(p).toAbsolutePath())
         } else {
             val fs = userFileSystemProvider.getFileSystem(token.data.uid)
-            virtualFileService.getFilesByParent(fs.getPath(p).toAbsolutePath().also {
-                vp = it
-            })
+            virtualFileService.getFilesByParent(fs.getPath(p).toAbsolutePath())
         }
 
         return files.map {
-            it.toFileInfo(fileMappingService, vp)
+            it.toFileInfo(fileMappingService)
         }.sorted()
     }
 

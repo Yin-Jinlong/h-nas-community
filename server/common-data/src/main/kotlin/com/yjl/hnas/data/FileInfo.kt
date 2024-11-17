@@ -5,7 +5,7 @@ import com.yjl.hnas.entity.VFile
 /**
  * 文件信息
  *
- * @property path 文件原始路径
+ * @property name 文件名
  * @property fileType 文件类型
  * @property type 文件类型
  * @property subType 文件子类型
@@ -17,7 +17,7 @@ import com.yjl.hnas.entity.VFile
  * @author YJL
  */
 data class FileInfo(
-    val path: String,
+    val name: String,
     val fileType: VFile.Type,
     val type: String,
     val subType: String,
