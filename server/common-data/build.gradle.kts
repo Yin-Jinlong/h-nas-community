@@ -25,14 +25,12 @@ afterEvaluate {
                 project(":server:entity").layout.projectDirectory.asFile,
             )
         )
-        sourceDirs.add(
-            project.layout.projectDirectory
-        )
+        sourceDirs += project.layout.projectDirectory.asFile
     }
 
     // 每次编译时都生成dts
     tasks.getByName("classes") {
-        shouldRunAfter("genDts")
+        dependsOn("genDts")
     }
 
 }

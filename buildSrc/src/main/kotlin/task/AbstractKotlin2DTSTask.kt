@@ -17,8 +17,8 @@ import java.io.File
  */
 abstract class AbstractKotlin2DTSTask : DefaultTask(), Disposable {
 
-    @InputFiles
-    val sourceDirs: ListProperty<Directory>
+    @Input
+    val sourceDirs: MutableList<File> = mutableListOf()
 
     @Input
     val links: MutableList<File> = mutableListOf()
@@ -28,7 +28,6 @@ abstract class AbstractKotlin2DTSTask : DefaultTask(), Disposable {
 
     init {
         val of = project.objects
-        sourceDirs = of.listProperty(Directory::class.java)
         outputFile = of.fileProperty()
     }
 
