@@ -125,4 +125,14 @@ class ContentController(
             throw it as? ClientError ?: ErrorCode.SERVER_ERROR.error
         }
     }
+
+    @DeleteMapping("/public")
+    fun deleteFile(
+        @ShouldLogin token: UserToken,
+        path: String,
+    ) {
+        val pp = pubFileSystem.getPath(path)
+        if (!pubFileSystemProvider.deleteIfExists(pp))
+            throw ErrorCode.NO_SUCH_FILE.data(path)
+    }
 }
