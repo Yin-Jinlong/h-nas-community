@@ -16,7 +16,6 @@ typealias VFileId = String
         Index(name = "fid", columnList = "parent"),
         Index(name = "hash", columnList = "hash"),
         Index(name = "owner", columnList = "owner"),
-        Index(name = "type", columnList = "type"),
     ]
 )
 data class VFile(
@@ -32,9 +31,6 @@ data class VFile(
     @Comment("文件id, base64<<sha256<<(access,full_path)")
     var fid: VFileId = "",
 
-    @Column(length = HASH_LENGTH, nullable = false)
-    @Comment("文件hash")
-    var hash: String = "",
 
     @Column(length = NAME_LENGTH, nullable = false)
     @Comment("文件名")
@@ -43,6 +39,10 @@ data class VFile(
     @Column(length = ID_LENGTH, nullable = true)
     @Comment("所在目录")
     var parent: VFileId? = null,
+
+    @Column(length = HASH_LENGTH, nullable = false)
+    @Comment("文件hash")
+    var hash: String = "",
 
     @Column(nullable = false)
     @Comment("文件拥有者")
@@ -55,11 +55,6 @@ data class VFile(
     @Column(nullable = false)
     @Comment("文件修改时间")
     var updateTime: Timestamp = Timestamp(0),
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Comment("文件类型")
-    var type: Type = Type.FILE,
 ) {
     companion object {
         const val NAME_LENGTH = 128
@@ -80,7 +75,10 @@ data class VFile(
         FILE
     }
 
-    fun isFile() = type == Type.FILE
+    val type: Type
+        get() = if (hash.isEmpty()) Type.FOLDER else Type.FILE
 
-    fun isFolder() = type == Type.FOLDER
+    fun isFile() = hash.isNotEmpty()
+
+    fun isFolder() = hash.isEmpty()
 }

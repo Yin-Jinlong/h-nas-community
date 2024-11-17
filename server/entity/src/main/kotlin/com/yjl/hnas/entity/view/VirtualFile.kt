@@ -17,7 +17,6 @@ select
 vfile.hash,
 vfile.name,
 vfile.parent,
-vfile.type as file_type,
 ifnull(file_mapping.type,'folder') as type,
 ifnull(file_mapping.sub_type,'folder') as sub_type,
 vfile.create_time,
@@ -33,9 +32,10 @@ class VirtualFile {
     var hash: VFileId = ""
     var name: String = ""
     var parent: VFileId? = null
-    var fileType: VFile.Type = VFile.Type.FILE
-    val type: String = ""
-    val subType: String = ""
+    val fileType: VFile.Type
+        get() = if (type == "folder") VFile.Type.FOLDER else VFile.Type.FILE
+    var type: String = ""
+    var subType: String = ""
     val createTime: Timestamp = Timestamp(0)
     val updateTime: Timestamp = Timestamp(0)
 }

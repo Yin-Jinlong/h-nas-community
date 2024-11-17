@@ -35,13 +35,12 @@ class VFileServiceImpl(
         vFileMapper.insert(
             VFile(
                 fid = genId(path),
-                hash = hash.reBase64Url,
                 name = path.name,
                 parent = genId(p),
+                hash = hash.reBase64Url,
                 owner = owner,
                 createTime = time,
                 updateTime = time,
-                type = VFile.Type.FILE
             )
         )
     }
@@ -59,7 +58,6 @@ class VFileServiceImpl(
                     owner = 0,
                     createTime = t.timestamp,
                     updateTime = t.timestamp,
-                    type = VFile.Type.FOLDER
                 )
             )
             return
@@ -76,7 +74,6 @@ class VFileServiceImpl(
                 owner = owner,
                 createTime = time.timestamp,
                 updateTime = time.timestamp,
-                type = VFile.Type.FOLDER
             )
         )
     }
