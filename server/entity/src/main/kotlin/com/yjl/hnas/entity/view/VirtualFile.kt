@@ -14,7 +14,7 @@ import java.sql.Timestamp
 @View(
     query = """
 select 
-vfile.fid,
+vfile.hash,
 vfile.name,
 vfile.parent,
 vfile.type as file_type,
@@ -23,14 +23,14 @@ ifnull(file_mapping.sub_type,'folder') as sub_type,
 vfile.create_time,
 vfile.update_time
 from vfile
-    left join file_mapping on vfile.fid=file_mapping.fid
+    left join file_mapping on vfile.hash=file_mapping.hash
 """
 )
 @Entity
 @Table
 class VirtualFile {
     @Id
-    var fid: VFileId = ""
+    var hash: VFileId = ""
     var name: String = ""
     var parent: VFileId? = null
     var fileType: VFile.Type = VFile.Type.FILE

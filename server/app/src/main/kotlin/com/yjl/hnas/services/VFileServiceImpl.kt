@@ -7,6 +7,7 @@ import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.mapper.VFileMapper
 import com.yjl.hnas.service.VFileService
 import com.yjl.hnas.utils.base64Url
+import com.yjl.hnas.utils.reBase64Url
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
 import org.springframework.stereotype.Service
@@ -28,12 +29,13 @@ class VFileServiceImpl(
         return vFileMapper.selectById(id) != null
     }
 
-    override fun addVFile(owner: Uid, path: PubPath) {
+    override fun addVFile(owner: Uid, path: PubPath, hash: String) {
         val p = path.parent
         val time = System.currentTimeMillis().timestamp
         vFileMapper.insert(
             VFile(
                 fid = genId(path),
+                hash = hash.reBase64Url,
                 name = path.name,
                 parent = genId(p),
                 owner = owner,
@@ -81,5 +83,13 @@ class VFileServiceImpl(
 
     override fun delete(id: VFileId) {
         vFileMapper.deleteById(id)
+    }
+
+    override fun getHandlerCount(hash: String): Int {
+        return vFileMapper.countHash(hash)
+    }
+
+    override fun getById(id: VFileId): VFile? {
+        return vFileMapper.selectById(id)
     }
 }

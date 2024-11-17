@@ -1,10 +1,14 @@
 package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.Uid
+import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
+import com.yjl.hnas.entity.view.VirtualFile
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.UserFilePath
+import com.yjl.hnas.fs.VirtualPath
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.name
 
 /**
  * @author YJL
@@ -19,11 +23,24 @@ interface VFileService {
     fun exists(path: PubPath): Boolean = exists(genId(path.toAbsolutePath()))
     fun exists(path: UserFilePath): Boolean = exists(genId(path.toAbsolutePath()))
 
-    fun addVFile(owner: Uid, path: PubPath)
+    fun addVFile(owner: Uid, path: PubPath, hash: String)
 
     fun addFolder(owner: Uid, path: PubPath)
 
     fun delete(id: VFileId)
     fun delete(path: PubPath) = delete(genId(path))
     fun delete(path: UserFilePath) = delete(genId(path))
+
+
+    /**
+     *
+     * @return 0没有，1有一个，2有更多
+     */
+    fun getHandlerCount(hash: String): Int
+
+    fun getHandlerCount(path: VirtualPath): Int = getHandlerCount(path.name)
+
+    fun getById(id: VFileId): VFile?
+
+    fun get(path: PubPath) = getById(genId(path.toAbsolutePath()))
 }

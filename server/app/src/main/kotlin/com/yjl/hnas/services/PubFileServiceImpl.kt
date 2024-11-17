@@ -34,7 +34,8 @@ class PubFileServiceImpl(
     }
 
     override fun toVirtualPath(path: PubPath): VirtualPath {
-        val mapping = fileMappingService.getMapping(vFileService.genId(path))
+        val vf = vFileService.get(path)
+        val mapping = vf?.hash?.let { fileMappingService.getMapping(it) }
 
         if (mapping == null) {
             val hash = path.bundleAttrs[FileAttribute.HASH]?.value() as String?
@@ -57,23 +58,19 @@ class PubFileServiceImpl(
         vFileService.addFolder(owner, path.toAbsolutePath())
     }
 
-    private fun del(path: PubPath) {
-        vFileService.delete(path)
-        fileMappingService.deleteMapping(vFileService.genId(path))
-    }
-
     override fun deleteFile(path: PubPath) {
         if (!fileExists(path))
             throw NoSuchFileException(path.pathString)
-        val count = fileMappingService.getHandlerCount(toVirtualPath(path))
+        val count = vFileService.getHandlerCount(toVirtualPath(path))
         if (count == 0)
             throw RuntimeException("No hash for path : $path")
         if (count == 1) {
             val f = path.toFile()
-            del(path)
+            vFileService.delete(path)
+            fileMappingService.deleteMapping(vFileService.genId(path))
             f.del()
         } else {
-            del(path)
+            vFileService.delete(path)
         }
     }
 }

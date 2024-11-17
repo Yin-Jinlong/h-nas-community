@@ -14,6 +14,7 @@ typealias VFileId = String
     indexes = [
         Index(name = "fid", columnList = "name"),
         Index(name = "fid", columnList = "parent"),
+        Index(name = "hash", columnList = "hash"),
         Index(name = "owner", columnList = "owner"),
         Index(name = "type", columnList = "type"),
     ]
@@ -30,6 +31,10 @@ data class VFile(
     @Column(length = ID_LENGTH)
     @Comment("文件id, base64<<sha256<<(access,full_path)")
     var fid: VFileId = "",
+
+    @Column(length = HASH_LENGTH, nullable = false)
+    @Comment("文件hash")
+    var hash: String = "",
 
     @Column(length = NAME_LENGTH, nullable = false)
     @Comment("文件名")

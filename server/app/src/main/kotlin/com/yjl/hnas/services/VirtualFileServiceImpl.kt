@@ -20,7 +20,7 @@ import java.nio.file.AccessMode
  * @author YJL
  */
 @Service
-open class VirtualFileServiceImpl(
+class VirtualFileServiceImpl(
     val vFileService: VFileService,
     val fileMappingService: FileMappingService,
     val virtualFileMapper: VirtualFileMapper,
@@ -55,7 +55,8 @@ open class VirtualFileServiceImpl(
             throw ErrorCode.FILE_EXISTS.data(path)
         if (!vFileService.exists(path.parent))
             vFileService.addFolder(user, path.parent)
-        vFileService.addVFile(user, path)
-        fileMappingService.addMapping(path, hash)
+        vFileService.addVFile(user, path, hash)
+        if (vFileService.getHandlerCount(hash) == 1)
+            fileMappingService.addMapping(path, hash)
     }
 }

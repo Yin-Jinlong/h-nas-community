@@ -82,7 +82,7 @@ class ContentController(
 
     @Async
     @PostMapping("/public/upload")
-    open fun uploadFile(
+    fun uploadFile(
         @ShouldLogin token: UserToken,
         @RequestHeader("Content-ID") pathBase64: String,
         @RequestHeader("Content-Length") fileSize: Long,

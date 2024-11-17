@@ -1,6 +1,5 @@
 package com.yjl.hnas.entity
 
-import com.yjl.hnas.utils.FileUtils
 import jakarta.persistence.*
 import org.hibernate.annotations.Comment
 
@@ -9,8 +8,6 @@ import org.hibernate.annotations.Comment
  */
 @Table(
     indexes = [
-        Index(name = "fid", columnList = "fid"),
-        Index(name = "hash", columnList = "hash"),
         Index(name = "type", columnList = "type"),
     ]
 )
@@ -19,17 +16,13 @@ import org.hibernate.annotations.Comment
 data class FileMapping(
 
     @Id
-    @Column(length = VFile.ID_LENGTH)
-    @Comment("文件id")
-    var fid: VFileId = "",
+    @Column(length = VFile.HASH_LENGTH)
+    @Comment("文件hash, base64<<sha256<<data")
+    var hash: String = "",
 
     @Column(length = VFile.PATH_LENGTH)
     @Comment("文件路径")
     var dataPath: String = "",
-
-    @Column(length = VFile.HASH_LENGTH)
-    @Comment("文件hash, base64<<sha256<<data")
-    var hash: String = "",
 
     @Column(length = 32)
     @Comment("类型")
@@ -47,6 +40,4 @@ data class FileMapping(
             "video" to "",
         )
     }
-
-    fun toFile() = FileUtils.getData(dataPath)
 }

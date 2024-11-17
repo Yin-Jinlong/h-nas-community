@@ -22,11 +22,14 @@ interface VFileMapper {
     @Select("select * from vfile where parent = #{parent}")
     fun selectsByParent(parent: VFileId): List<VFile>
 
+    @Select("select count(1) from vfile where hash = #{hash}")
+    fun countHash(hash: String): Int
+
     //******//
     //  增  //
     //******//
 
-    @Insert("insert into vfile(fid, name, parent, owner,create_time,update_time, type) VALUES (#{fid}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{type})")
+    @Insert("insert into vfile(fid,hash, name, parent, owner,create_time,update_time, type) VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{type})")
     fun insert(vFile: VFile): Int
 
     //******//
