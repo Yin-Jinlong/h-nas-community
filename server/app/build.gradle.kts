@@ -22,8 +22,9 @@ dependencies {
     implementation(utils())
 
     implementation(libs.spring.boot.api.starter)
-    implementation(libs.spring.boot.starter.data.redis)
     implementation(libs.webp.imageio)
+    implementation("io.github.yin-jinlong:message-digest-kotlin:0.1.4")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
