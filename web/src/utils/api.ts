@@ -37,6 +37,16 @@ async function post<R, D = any>(
     throw resp.data
 }
 
+async function del<R = any, D = any>(
+    url: string,
+    config?: AxiosRequestConfig<D>
+) {
+    let resp = await axios.delete<RespData<R>>(url, config)
+    if (resp.data && resp.data.code === 0)
+        return resp.data
+    throw resp.data
+}
+
 function catchError(e: AxiosError<any> | RespData<any>): undefined {
     let data: RespData<any>
     if (e instanceof Error) {
@@ -57,7 +67,7 @@ function catchError(e: AxiosError<any> | RespData<any>): undefined {
 }
 
 async function getFiles(path: string) {
-    return get<FileInfo[]>('api/files', {
+    return get<FileInfo[]>('api/file/files', {
         params: {
             path: path
         }
@@ -66,13 +76,19 @@ async function getFiles(path: string) {
         .catch(catchError)
 }
 
-async function deleteFile(path: string): Promise<RespData<any>> {
-    let resp = await axios.delete('api/file/' + path)
-    return resp.data
+async function deleteFile(path: string, pub: boolean) {
+    return del<void>('api/file/public', {
+        headers: FORM_HEADER,
+        params: {
+            path: path
+        }
+    })
+        .then(resp => true)
+        .catch(catchError)
 }
 
 async function newFolder(folder: string, uid: number, isPublic: boolean) {
-    return post<boolean>('api/folder', {
+    return post<boolean>('api/file/folder', {
         path: folder,
         user: uid,
         'public': isPublic
@@ -155,7 +171,8 @@ async function getHash(file: File): Promise<string> {
 
 async function upload(path: string, file: File, pub: boolean = true) {
     return new Promise(async resolve => {
-        post<boolean>(`/api/file/${pub ? 'public/' : ''}upload`, await file.arrayBuffer(), {
+        let data = await file.arrayBuffer()
+        post<boolean>(pub ? 'api/file/public/upload' : '', data, {
             headers: {
                 'Authorization': token.value,
                 'Content-ID': Base64.encodeURL(path + '/' + file.name),
