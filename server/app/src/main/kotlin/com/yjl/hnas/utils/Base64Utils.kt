@@ -7,17 +7,13 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 private val Base64Url = Base64.UrlSafe.withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
 
 @OptIn(ExperimentalEncodingApi::class)
-val ByteArray.base64: String
-    get() = Base64.encode(this)
-
-@OptIn(ExperimentalEncodingApi::class)
 val ByteArray.base64Url: String
     get() = Base64Url.encode(this)
 
 @OptIn(ExperimentalEncodingApi::class)
-val String.unBase64: String
-    get() = Base64.decode(this).decodeToString()
-
-@OptIn(ExperimentalEncodingApi::class)
 val String.unBase64Url: String
     get() = Base64Url.decode(this).decodeToString()
+
+@OptIn(ExperimentalEncodingApi::class)
+val String.reBase64Url: String
+    get() = Base64Url.encode(Base64Url.decode(this))
