@@ -2,6 +2,7 @@ package com.yjl.hnas.mapper
 
 import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
+import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
@@ -27,4 +28,11 @@ interface VFileMapper {
 
     @Insert("insert into vfile(fid, name, parent, owner,create_time,update_time, type) VALUES (#{fid}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{type})")
     fun insert(vFile: VFile): Int
+
+    //******//
+    //  删  //
+    //******//
+
+    @Delete("delete from vfile where fid = #{id}")
+    fun deleteById(id: VFileId): Int
 }
