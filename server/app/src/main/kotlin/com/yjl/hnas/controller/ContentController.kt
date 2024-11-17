@@ -4,7 +4,10 @@ import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.error.ClientError
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.*
+import com.yjl.hnas.fs.PubFileSystem
+import com.yjl.hnas.fs.PubFileSystemProvider
+import com.yjl.hnas.fs.UserFileSystemProvider
+import com.yjl.hnas.fs.VirtualablePath
 import com.yjl.hnas.fs.attr.FileAttribute
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
@@ -15,16 +18,15 @@ import jakarta.servlet.ServletInputStream
 import jakarta.validation.constraints.NotBlank
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
+import java.nio.file.Files
 
 
 /**
  * @author YJL
  */
 @Controller
+@RequestMapping("/api/file")
 class ContentController(
     val pubFileSystemProvider: PubFileSystemProvider,
     val userFileSystemProvider: UserFileSystemProvider,
@@ -38,7 +40,7 @@ class ContentController(
         pubFileSystem = pubFileSystemProvider.getFileSystem()
     }
 
-    @GetMapping("/api/files")
+    @GetMapping("/files")
     fun getFiles(@NotBlank(message = "path 不能为空") path: String, token: UserToken?): List<FileInfo> {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
@@ -62,7 +64,7 @@ class ContentController(
         }.sorted()
     }
 
-    @PostMapping("/api/folder")
+    @PostMapping("/folder")
     fun createFolder(
         @RequestParam("path") path: String,
         @ShouldLogin user: UserToken,
@@ -79,8 +81,8 @@ class ContentController(
     }
 
     @Async
-    @PostMapping("/api/file/public/upload")
-    fun uploadFile(
+    @PostMapping("/public/upload")
+    open fun uploadFile(
         @ShouldLogin token: UserToken,
         @RequestHeader("Content-ID") pathBase64: String,
         @RequestHeader("Content-Length") fileSize: Long,
@@ -89,17 +91,22 @@ class ContentController(
     ) {
         val path = pathBase64.unBase64Url
         val pp = pubFileSystem.getPath(path)
+        if (Files.exists(pp))
+            throw ErrorCode.FILE_EXISTS.data(path)
+
+        val hash = sha256Base64.reBase64Url
+
         val ins = rawIn.buffered()
         ins.mark(1024)
         val type = FileDetector.detectMagic(ins)
         ins.reset()
-
-        pp.bundleAttrs[FileAttribute.HASH] = FileHashAttribute(sha256Base64)
         pp.bundleAttrs[FileAttribute.TYPE] = FileTypeAttribute(type)
+        pp.bundleAttrs[FileAttribute.HASH] = FileHashAttribute(hash)
         val vp = pp.toVirtual()
         val vf = vp.toFile()
         runCatching {
             if (!vf.exists()) {
+
                 val vfp = vf.parentFile
                 if (!vfp.exists())
                     vfp.mkdirs()
@@ -110,9 +117,7 @@ class ContentController(
             virtualFileService.createPubFile(
                 token.data.uid,
                 pp,
-                hash = sha256Base64,
-                type.type,
-                type.subtype
+                hash = hash
             )
         }.onFailure {
             if (vf.exists() && !vf.delete())
