@@ -346,22 +346,19 @@ function onUploaded() {
     update()
 }
 
-function onCommand(args: any) {
-    switch (args[0]) {
+function onCommand(args: [string, FileInfo]) {
+    let [cmd, f] = args
+    switch (cmd) {
         case 'del':
-            // deleteFile(args[1].path).then(res => {
-            //     if (res.code === 0) {
-            //         HMessage.success('删除成功')
-            //         update()
-            //     } else {
-            //         HMessage.error(res.msg ?? '未知错误')
-            //     }
-            // }).catch(e => {
-            //     HMessage.error(e.message)
-            // })
+            API.deleteFile(f.path, true).then(res => {
+                if (res) {
+                    HMessage.success('删除成功')
+                    update()
+                }
+            })
             break
         case 'info':
-            activeFile.value = args[1]
+            activeFile.value = f
             showFileInfoDialog.value = true
             break
     }
