@@ -1,12 +1,12 @@
 <template>
-    <div :title="fileName"
+    <div :title="info.name"
          class="box"
          @click="onClick">
         <el-image
                 v-if="info.fileType==='FILE' &&info.preview"
-                :alt="info.path"
+                :alt="info.name"
                 :src="info.preview"
-                :title="info.path"
+                :title="info.name"
                 class="img"
                 fit="cover"
                 loading="lazy">
@@ -47,11 +47,6 @@ import UnknownFile from './unknown-file.vue'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
-const fileName = computed(() => {
-    let p = props.info.path
-    let i = p.lastIndexOf('/')
-    return i >= 0 ? p.substring(i + 1) : p
-})
 const emits = defineEmits({
     'click': (e: MouseEvent, info: FileInfo) => {
     },

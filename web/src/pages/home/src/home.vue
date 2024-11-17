@@ -52,14 +52,14 @@
                 <el-empty v-if="!files.length"/>
                 <div class="file-container">
                     <div v-for="f in files"
-                         :key="f.path"
+                         :key="f.name"
                          class="file-box"
                          data-fill-size data-flex-column-center
                          @click="showPreview(f)">
                         <file-grid-view :info="f"
                                         @click="onClick"
                                         @dblclick="onDblClick"/>
-                        <div class="file-name">{{ getName(f.path) }}</div>
+                        <div class="file-name">{{ f.name }}</div>
                         <div class="file-op-menu">
                             <el-dropdown @command="onCommand">
                                 <template #default>
@@ -83,7 +83,7 @@
                 </div>
                 <el-dialog v-model="showFileInfoDialog">
                     <template #header>
-                        <h3>{{ pathGetName(activeFile?.path ?? '') }}</h3>
+                        <h3>{{ activeFile?.name ?? '' }}</h3>
                     </template>
                     <template #default>
                         <div data-flex>
@@ -248,7 +248,7 @@ const infoTable = computed(() => {
     return [
         {
             label: '路径',
-            value: f?.path ?? ''
+            value: getPath(f?.name ?? '')
         },
         {
             label: '文件类型',
@@ -289,8 +289,9 @@ function enterFolder(name: string) {
     toPath(nowPaths.length - 1)
 }
 
-function getName(path: string) {
-    return path.split('/').pop()
+function getPath(name: string) {
+    let s = nowPaths.join('/') + '/' + name
+    return nowPaths.length ? '/' + s : s
 }
 
 function toImageUrl(path: string) {
@@ -306,12 +307,14 @@ function showPreview(f: FileInfo,) {
 
 function updateFiles() {
     API.getFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
+        if (!data)
+            return
         files.length = 0
         previewMap.clear()
         let i = 0
 
         console.log('files', data)
-        data?.forEach(f => {
+        data.forEach(f => {
             if (f.preview) {
                 previewMap.set(f, i++)
             }
@@ -333,7 +336,7 @@ function newFolder(name: string, ok: () => void) {
         HMessage.error('没有登录！')
         return
     }
-    API.newFolder(nowPaths.join('/') + '/' + name, uid, true).then(res => {
+    API.newFolder(getPath(name), uid, true).then(res => {
         if (res) {
             HMessage.success('创建成功')
             update()
@@ -350,7 +353,7 @@ function onCommand(args: [string, FileInfo]) {
     let [cmd, f] = args
     switch (cmd) {
         case 'del':
-            API.deleteFile(f.path, true).then(res => {
+            API.deleteFile(getPath(f.name), true).then(res => {
                 if (res) {
                     HMessage.success('删除成功')
                     update()
@@ -432,7 +435,7 @@ function onClick(e: MouseEvent) {
 
 function onDblClick(e: MouseEvent, info: FileInfo) {
     if (info.fileType == 'FOLDER')
-        enterFolder(info.path.substring(info.path.lastIndexOf('/') + 1))
+        enterFolder(info.name)
 }
 
 onMounted(() => {
