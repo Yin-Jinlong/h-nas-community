@@ -12,4 +12,6 @@ abstract class VirtualablePath<
 ) : AbstractPath<FSP, FS, P>(fs, path) {
 
     fun toVirtual() = fs.toVirtual(this as P)
+
+    override fun toFile() = toVirtual().toFile()
 }
