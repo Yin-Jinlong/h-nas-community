@@ -39,11 +39,11 @@ class FileMappingServiceImpl(
         )
     }
 
-    override fun getMapping(id: String): FileMapping? {
-        return fileMappingMapper.selectByHash(id)
+    override fun getMapping(hash: String): FileMapping? {
+        return fileMappingMapper.selectByHash(hash)
     }
 
-    override fun deleteMapping(id: String) {
-        fileMappingMapper.deleteById(id)
+    override fun deleteMapping(hash: String) {
+        fileMappingMapper.deleteById(hash)
     }
 }

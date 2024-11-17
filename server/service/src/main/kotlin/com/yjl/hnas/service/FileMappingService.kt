@@ -10,7 +10,7 @@ interface FileMappingService {
 
     fun addMapping(path: PubPath, hash: String)
 
-    fun getMapping(id: String): FileMapping?
+    fun getMapping(hash: String): FileMapping?
 
-    fun deleteMapping(id: String)
+    fun deleteMapping(hash: String)
 }
