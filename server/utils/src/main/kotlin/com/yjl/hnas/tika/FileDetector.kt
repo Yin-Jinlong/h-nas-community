@@ -20,7 +20,7 @@ object FileDetector : Detector {
     private val emptyMetadata = Metadata()
 
     override fun detect(input: InputStream?, metadata: Metadata?): MediaType {
-        val type = mimeTypes.detect(input, metadata)
+        val type = mimeTypes.detect(input, metadata ?: emptyMetadata)
         return if (type == MediaType.OCTET_STREAM)
             textDetector.detect(input, metadata)
         else type
