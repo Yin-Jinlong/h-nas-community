@@ -9,6 +9,7 @@ import com.yjl.hnas.fs.PubFileSystemProvider
 import com.yjl.hnas.fs.UserFileSystemProvider
 import com.yjl.hnas.fs.VirtualablePath
 import com.yjl.hnas.fs.attr.FileAttribute
+import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
@@ -31,6 +32,7 @@ class ContentController(
     val pubFileSystemProvider: PubFileSystemProvider,
     val userFileSystemProvider: UserFileSystemProvider,
     val userService: UserService,
+    val fileMappingService: FileMappingService,
     val virtualFileService: VirtualFileService
 ) {
     lateinit var pubFileSystem: PubFileSystem
@@ -60,7 +62,7 @@ class ContentController(
         }
 
         return files.map {
-            it.toFileInfo(vp)
+            it.toFileInfo(fileMappingService, vp)
         }.sorted()
     }
 

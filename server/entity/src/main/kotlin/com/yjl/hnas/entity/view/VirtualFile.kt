@@ -20,7 +20,8 @@ vfile.parent,
 ifnull(file_mapping.type,'folder') as type,
 ifnull(file_mapping.sub_type,'folder') as sub_type,
 vfile.create_time,
-vfile.update_time
+vfile.update_time,
+file_mapping.size
 from vfile
     left join file_mapping on vfile.hash=file_mapping.hash
 """
@@ -38,4 +39,5 @@ class VirtualFile {
     var subType: String = ""
     val createTime: Timestamp = Timestamp(0)
     val updateTime: Timestamp = Timestamp(0)
+    var size: Long = -1
 }

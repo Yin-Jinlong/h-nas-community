@@ -28,8 +28,8 @@ interface FileMappingMapper {
     //  改  //
     //******//
 
-    @Update("update file_mapping set data_path = #{dataPath}, hash = #{hash}, type = #{type}, sub_type = #{subType} where hash = #{hash}")
-    fun updateById(fileMapping: FileMapping): Int
+    @Update("update file_mapping set size=#{size} where hash = #{hash}")
+    fun updateSize(hash: String, size: Long): Int
 
     //******//
     //  删  //

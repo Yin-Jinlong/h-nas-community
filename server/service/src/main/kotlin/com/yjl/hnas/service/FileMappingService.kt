@@ -13,4 +13,6 @@ interface FileMappingService {
     fun getMapping(hash: String): FileMapping?
 
     fun deleteMapping(hash: String)
+
+    fun getSize(hash: String): Long
 }

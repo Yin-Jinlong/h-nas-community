@@ -1,11 +1,13 @@
 package com.yjl.hnas.utils
 
 import com.yjl.hnas.data.FileInfo
+import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.view.VirtualFile
 import com.yjl.hnas.fs.VirtualablePath
+import com.yjl.hnas.service.FileMappingService
 import kotlin.io.path.pathString
 
-fun VirtualFile.toFileInfo(dir: VirtualablePath<*, *, *>): FileInfo {
+fun VirtualFile.toFileInfo(fileMappingService: FileMappingService, dir: VirtualablePath<*, *, *>): FileInfo {
     return FileInfo(
         path = dir.resolve(name).pathString,
         fileType = fileType,
@@ -14,7 +16,12 @@ fun VirtualFile.toFileInfo(dir: VirtualablePath<*, *, *>): FileInfo {
         preview = null,
         createTime = createTime.time,
         updateTime = updateTime.time,
-        size = 0
+        size = if (fileType == VFile.Type.FOLDER) -1 else size.let {
+            if (it == -1L) {
+                fileMappingService.getSize(hash)
+            } else
+                it
+        }
     )
 }
 

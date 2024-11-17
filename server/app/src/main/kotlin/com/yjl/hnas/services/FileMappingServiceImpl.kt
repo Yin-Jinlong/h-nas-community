@@ -10,6 +10,7 @@ import com.yjl.hnas.utils.base64Url
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
+import java.io.File
 
 /**
  * @author YJL
@@ -34,7 +35,8 @@ class FileMappingServiceImpl(
                 hash = fileHash,
                 dataPath = vp.path,
                 type = type.type,
-                subType = type.subtype
+                subType = type.subtype,
+                size = file.length()
             )
         )
     }
@@ -45,5 +47,14 @@ class FileMappingServiceImpl(
 
     override fun deleteMapping(hash: String) {
         fileMappingMapper.deleteById(hash)
+    }
+
+    override fun getSize(hash: String): Long {
+        val fm = getMapping(hash) ?: throw IllegalArgumentException("hash not found")
+        if (fm.size < 0) {
+            fm.size = File(fm.dataPath).length()
+            fileMappingMapper.updateSize(hash, fm.size)
+        }
+        return fm.size
     }
 }

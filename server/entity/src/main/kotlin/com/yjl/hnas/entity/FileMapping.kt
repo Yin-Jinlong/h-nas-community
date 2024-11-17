@@ -31,6 +31,10 @@ data class FileMapping(
     @Column(length = 32)
     @Comment("子类型")
     override var subType: String = "",
+
+    @Column(columnDefinition = "bigint default(-1)")
+    @Comment("文件大小")
+    var size: Long = -1
 ) : FileWithType {
 
     companion object {
