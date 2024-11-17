@@ -12,8 +12,7 @@ typealias VFileId = String
 @Entity
 @Table(
     indexes = [
-        Index(name = "fid", columnList = "name"),
-        Index(name = "fid", columnList = "parent"),
+        Index(name = "parent", columnList = "parent"),
         Index(name = "hash", columnList = "hash"),
         Index(name = "owner", columnList = "owner"),
     ]
@@ -36,13 +35,13 @@ data class VFile(
     @Comment("文件名")
     var name: String = "",
 
-    @Column(length = ID_LENGTH, nullable = true)
+    @Column(length = ID_LENGTH)
     @Comment("所在目录")
     var parent: VFileId? = null,
 
-    @Column(length = HASH_LENGTH, nullable = false)
+    @Column(length = HASH_LENGTH)
     @Comment("文件hash")
-    var hash: String = "",
+    var hash: String? = null,
 
     @Column(nullable = false)
     @Comment("文件拥有者")
@@ -76,9 +75,9 @@ data class VFile(
     }
 
     val type: Type
-        get() = if (hash.isEmpty()) Type.FOLDER else Type.FILE
+        get() = if (hash == null) Type.FOLDER else Type.FILE
 
-    fun isFile() = hash.isNotEmpty()
+    fun isFile() = hash != null
 
-    fun isFolder() = hash.isEmpty()
+    fun isFolder() = hash == null
 }

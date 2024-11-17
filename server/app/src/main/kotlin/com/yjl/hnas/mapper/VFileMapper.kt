@@ -29,7 +29,7 @@ interface VFileMapper {
     //  增  //
     //******//
 
-    @Insert("insert into vfile(fid,hash, name, parent, owner,create_time,update_time, type) VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{type})")
+    @Insert("insert into vfile(fid,hash, name, parent, owner,create_time,update_time) VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime})")
     fun insert(vFile: VFile): Int
 
     //******//
