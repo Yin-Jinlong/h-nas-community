@@ -117,7 +117,7 @@ class ContentController(
         }.onFailure {
             if (vf.exists() && !vf.delete())
                 vf.deleteOnExit()
-            throw if (it is ClientError) it else ErrorCode.SERVER_ERROR.error
+            throw it as? ClientError ?: ErrorCode.SERVER_ERROR.error
         }
     }
 }
