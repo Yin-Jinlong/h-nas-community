@@ -22,7 +22,11 @@ class PubPathTest {
             TODO("Not yet implemented")
         }
 
-        override fun folderExists(path: PubPath): Boolean {
+        override fun deleteFile(path: PubPath) {
+
+        }
+
+        override fun fileExists(path: PubPath): Boolean {
             return true
         }
 
