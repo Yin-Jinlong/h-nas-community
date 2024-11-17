@@ -9,12 +9,14 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
 import org.eclipse.jetty.http.HttpHeader
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 /**
  * @author YJL
  */
 @RestController
+@RequestMapping("/api/user")
 class UserController(
     val userService: UserService
 ) {
@@ -32,7 +34,7 @@ class UserController(
             userService.login(logId, password)
     }
 
-    @PostMapping("/api/user/login")
+    @PostMapping("login")
     fun login(
         token: Token<UserInfo>?,
         logId: String?,
@@ -45,7 +47,7 @@ class UserController(
         }
     }
 
-    @PostMapping("/api/user/logon")
+    @PostMapping("logon")
     fun register(@NotBlank(message = "用户名不能为空") username: String, @Password password: String) {
         userService.register(username, password)
     }
