@@ -3,6 +3,7 @@ package com.yjl.hnas.services
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
+import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.mapper.VFileMapper
 import com.yjl.hnas.service.VFileService
@@ -92,8 +93,15 @@ class VFileServiceImpl(
         )
     }
 
-    override fun delete(id: VFileId) {
+    fun delete(id: VFileId) {
         vFileMapper.deleteById(id)
+    }
+
+    override fun delete(path: PubPath) {
+        val id = genId(path)
+        val vf = vFileMapper.selectById(id) ?: throw ErrorCode.NO_SUCH_FILE.error
+        delete(id)
+        updateParentSize(path.parent, -vf.size)
     }
 
     override fun getHandlerCount(hash: String): Int {

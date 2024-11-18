@@ -26,9 +26,7 @@ interface VFileService {
 
     fun addFolder(owner: Uid, path: PubPath)
 
-    fun delete(id: VFileId)
-    fun delete(path: PubPath) = delete(genId(path))
-    fun delete(path: UserFilePath) = delete(genId(path))
+    fun delete(path: PubPath)
 
 
     /**
