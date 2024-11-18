@@ -7,7 +7,7 @@ import com.yjl.hnas.token.Token
 import com.yjl.hnas.validator.Password
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
-import org.eclipse.jetty.http.HttpHeader
+import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -42,7 +42,7 @@ class UserController(
         resp: HttpServletResponse
     ): UserInfo {
         return (token ?: login(logId, password)).let {
-            resp.addHeader(HttpHeader.AUTHORIZATION.name, it.token)
+            resp.addHeader(HttpHeaders.AUTHORIZATION, it.token)
             it.data
         }
     }

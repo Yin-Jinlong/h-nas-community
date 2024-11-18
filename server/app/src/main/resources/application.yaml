@@ -9,13 +9,14 @@ spring:
       maximum-pool-size: 9
   banner:
     location: classpath:banner.txt
-  responseJsonFactory: com.yjl.hnas.resp.RespFactory
   jpa:
     hibernate:
       ddl-auto: update
   main:
     lazy-initialization: true
 server:
+  resp:
+    factory: com.yjl.hnas.resp.RespFactory
   port: 8888
   compression:
     enabled: true

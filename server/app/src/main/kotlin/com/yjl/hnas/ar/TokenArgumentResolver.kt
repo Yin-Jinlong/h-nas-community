@@ -5,8 +5,8 @@ import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.token.Token
 import com.yjl.hnas.utils.hasAnno
 import com.yjl.hnas.utils.token
-import org.eclipse.jetty.http.HttpHeader
 import org.springframework.core.MethodParameter
+import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
@@ -30,7 +30,7 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
     ): Token<*>? {
-        val auth = webRequest.getHeader(HttpHeader.AUTHORIZATION.name)
+        val auth = webRequest.getHeader(HttpHeaders.AUTHORIZATION)
             ?: if (shouldLogin(parameter))
                 throw ErrorCode.NO_PERMISSION.error
             else return null

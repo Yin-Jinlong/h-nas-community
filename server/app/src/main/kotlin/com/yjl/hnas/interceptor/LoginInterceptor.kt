@@ -8,8 +8,8 @@ import com.yjl.hnas.utils.token
 import io.github.yinjinlong.spring.boot.response.JsonResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.eclipse.jetty.http.HttpHeader
-import org.eclipse.jetty.http.HttpStatus
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.web.method.HandlerMethod
 
 /**
@@ -23,8 +23,8 @@ class LoginInterceptor(
     fun HttpServletResponse.error(
         errorCode: ErrorCode
     ): Boolean {
-        status = HttpStatus.BAD_REQUEST_400
-        addHeader(HttpHeader.CONTENT_TYPE.name, "application/json")
+        status = HttpStatus.BAD_REQUEST.value()
+        addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
         val json = gson.toJson(JsonResponse.clientError(errorCode.error))
         writer.write(json)
         return false
@@ -40,7 +40,7 @@ class LoginInterceptor(
         handler: HandlerMethod
     ): Boolean {
         if (shouldLogin(handler)) {
-            val tr = (request.getHeader(HttpHeader.AUTHORIZATION.name)
+            val tr = (request.getHeader(HttpHeaders.AUTHORIZATION)
                 ?: return response.error(ErrorCode.NO_PERMISSION)
                     ).token()
             if (tr == null)
