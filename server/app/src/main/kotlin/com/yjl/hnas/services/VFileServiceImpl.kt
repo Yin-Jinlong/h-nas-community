@@ -11,8 +11,8 @@ import com.yjl.hnas.utils.base64Url
 import com.yjl.hnas.utils.reBase64Url
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.io.path.name
 
 /**
@@ -60,6 +60,7 @@ class VFileServiceImpl(
         updateParentSize(p, size)
     }
 
+    @Transactional
     override fun addFolder(owner: Uid, path: PubPath) {
         if (exists(path))
             return
@@ -97,6 +98,7 @@ class VFileServiceImpl(
         vFileMapper.deleteById(id)
     }
 
+    @Transactional
     override fun delete(path: PubPath) {
         val id = genId(path)
         val vf = vFileMapper.selectById(id) ?: throw ErrorCode.NO_SUCH_FILE.error

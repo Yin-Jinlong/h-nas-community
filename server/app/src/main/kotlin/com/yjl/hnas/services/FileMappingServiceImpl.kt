@@ -10,6 +10,7 @@ import com.yjl.hnas.utils.base64Url
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.io.File
 
 /**
@@ -20,6 +21,7 @@ class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper
 ) : FileMappingService {
 
+    @Transactional
     override fun addMapping(path: PubPath, size: Long, hash: String) {
         val vp = path.toVirtual()
         val file = vp.toFile()
@@ -48,6 +50,7 @@ class FileMappingServiceImpl(
         return fileMappingMapper.selectByHash(hash)
     }
 
+    @Transactional
     override fun deleteMapping(hash: String) {
         fileMappingMapper.deleteById(hash)
     }

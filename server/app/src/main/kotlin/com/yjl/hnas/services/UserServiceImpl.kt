@@ -9,6 +9,7 @@ import com.yjl.hnas.service.UserService
 import com.yjl.hnas.token.Token
 import io.github.yinjinlong.md.sha256
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -52,6 +53,7 @@ class UserServiceImpl(
 
     }
 
+    @Transactional
     override fun register(username: String, password: String): User {
         mapper.selectByUsername(username)?.let {
             throw ErrorCode.USER_EXISTS.data(username)

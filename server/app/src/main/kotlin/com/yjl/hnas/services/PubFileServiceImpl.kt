@@ -11,6 +11,7 @@ import com.yjl.hnas.service.VFileService
 import com.yjl.hnas.utils.del
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.nio.file.AccessMode
 import java.nio.file.NoSuchFileException
 import kotlin.io.path.absolutePathString
@@ -54,10 +55,12 @@ class PubFileServiceImpl(
         return vFileService.exists(id)
     }
 
+    @Transactional
     override fun createFolder(path: PubPath, owner: Uid) {
         vFileService.addFolder(owner, path.toAbsolutePath())
     }
 
+    @Transactional
     override fun deleteFile(path: PubPath) {
         if (!fileExists(path))
             throw NoSuchFileException(path.pathString)
