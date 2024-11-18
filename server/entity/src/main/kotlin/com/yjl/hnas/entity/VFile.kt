@@ -54,6 +54,10 @@ data class VFile(
     @Column(nullable = false)
     @Comment("文件修改时间")
     var updateTime: Timestamp = Timestamp(0),
+
+    @Column(columnDefinition = "bigint default(-1)")
+    @Comment("文件/目录大小")
+    var size: Long = 0
 ) {
     companion object {
         const val NAME_LENGTH = 128

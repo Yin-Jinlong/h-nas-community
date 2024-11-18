@@ -14,7 +14,12 @@ fun VirtualFile.toFileInfo(fileMappingService: FileMappingService): FileInfo {
         preview = null,
         createTime = createTime.time,
         updateTime = updateTime.time,
-        size = if (fileType == VFile.Type.FOLDER) -1 else size.let {
+        size = if (fileType == VFile.Type.FOLDER) {
+            size.also {
+                if (it < 0)
+                    throw IllegalStateException("文件夹没有大小：$fid")
+            }
+        } else size.let {
             if (it == -1L) {
                 fileMappingService.getSize(hash)
             } else

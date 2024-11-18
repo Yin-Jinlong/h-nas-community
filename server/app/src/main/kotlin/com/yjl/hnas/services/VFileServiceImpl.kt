@@ -10,6 +10,7 @@ import com.yjl.hnas.utils.base64Url
 import com.yjl.hnas.utils.reBase64Url
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import kotlin.io.path.name
 
@@ -29,7 +30,18 @@ class VFileServiceImpl(
         return vFileMapper.selectById(id) != null
     }
 
-    override fun addVFile(owner: Uid, path: PubPath, hash: String) {
+    fun updateParentSize(dir: PubPath, size: Long) {
+        val pvf = vFileMapper.selectById(genId(dir))
+            ?: throw IllegalStateException("父目录不存在：$dir")
+        vFileMapper.updateSize(pvf.fid, pvf.size + size)
+        val p = dir.parent
+        if (p.isRoot() && dir.isRoot())
+            return
+        updateParentSize(p, size)
+    }
+
+    @Transactional
+    override fun addVFile(owner: Uid, path: PubPath, size: Long, hash: String) {
         val p = path.parent
         val time = System.currentTimeMillis().timestamp
         vFileMapper.insert(
@@ -41,8 +53,10 @@ class VFileServiceImpl(
                 owner = owner,
                 createTime = time,
                 updateTime = time,
+                size = size
             )
         )
+        updateParentSize(p, size)
     }
 
     override fun addFolder(owner: Uid, path: PubPath) {

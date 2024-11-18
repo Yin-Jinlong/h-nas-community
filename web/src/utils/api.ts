@@ -149,7 +149,7 @@ async function getHash(file: File): Promise<string> {
                 sha256.update(CryptoJs.lib.WordArray.create(e.target!.result as ArrayBuffer))
 
                 if (index < ReadCount - 1)
-                    await readChunk(index + 1)
+                    resolve(await readChunk(index + 1))
                 else {
                     resolve(CryptoJs.enc.Base64url.stringify(sha256.finalize()))
                 }
@@ -171,12 +171,12 @@ async function getHash(file: File): Promise<string> {
 
 async function upload(path: string, file: File, pub: boolean = true) {
     return new Promise(async resolve => {
-        let data = await file.arrayBuffer()
-        post<boolean>(pub ? 'api/file/public/upload' : '', data, {
+        let hash = await getHash(file)
+        post<boolean>(pub ? 'api/file/public/upload' : '', file, {
             headers: {
                 'Authorization': token.value,
                 'Content-ID': Base64.encodeURL(path + '/' + file.name),
-                'Hash': await getHash(file),
+                'Hash': hash,
                 'Content-Type': 'application/octet-stream'
             }
         })

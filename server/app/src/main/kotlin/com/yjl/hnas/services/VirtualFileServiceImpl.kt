@@ -49,14 +49,15 @@ class VirtualFileServiceImpl(
     override fun createPubFile(
         user: Uid,
         path: PubPath,
+        size: Long,
         hash: String
     ) {
         if (vFileService.exists(path))
             throw ErrorCode.FILE_EXISTS.data(path)
         if (!vFileService.exists(path.parent))
             vFileService.addFolder(user, path.parent)
-        vFileService.addVFile(user, path, hash)
+        vFileService.addVFile(user, path, size, hash)
         if (vFileService.getHandlerCount(hash) == 1)
-            fileMappingService.addMapping(path, hash)
+            fileMappingService.addMapping(path, size, hash)
     }
 }

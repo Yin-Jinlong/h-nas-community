@@ -20,7 +20,7 @@ class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper
 ) : FileMappingService {
 
-    override fun addMapping(path: PubPath, hash: String) {
+    override fun addMapping(path: PubPath, size: Long, hash: String) {
         val vp = path.toVirtual()
         val file = vp.toFile()
         val fileHash = file.sha256.base64Url
@@ -36,7 +36,10 @@ class FileMappingServiceImpl(
                 dataPath = vp.path,
                 type = type.type,
                 subType = type.subtype,
-                size = file.length()
+                size = file.length().also {
+                    if (it != size)
+                        throw IllegalStateException("size not match : $it != $size")
+                }
             )
         )
     }

@@ -7,7 +7,6 @@ import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubFileSystem
 import com.yjl.hnas.fs.PubFileSystemProvider
 import com.yjl.hnas.fs.UserFileSystemProvider
-import com.yjl.hnas.fs.VirtualablePath
 import com.yjl.hnas.fs.attr.FileAttribute
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.UserService
@@ -113,6 +112,7 @@ class ContentController(
             virtualFileService.createPubFile(
                 token.data.uid,
                 pp,
+                vf.length(),
                 hash = hash
             )
         }.onFailure {

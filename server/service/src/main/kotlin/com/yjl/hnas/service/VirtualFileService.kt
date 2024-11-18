@@ -16,5 +16,5 @@ interface VirtualFileService : VirtualPathManager {
     fun getFilesByParent(parent: PubPath): List<VirtualFile>
     fun getFilesByParent(parent: UserFilePath): List<VirtualFile>
 
-    fun createPubFile(user: Uid, path: PubPath, hash: String)
+    fun createPubFile(user: Uid, path: PubPath, size: Long, hash: String)
 }

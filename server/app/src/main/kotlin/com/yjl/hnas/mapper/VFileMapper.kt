@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
+import org.apache.ibatis.annotations.Update
 
 /**
  * @author YJL
@@ -29,8 +30,15 @@ interface VFileMapper {
     //  增  //
     //******//
 
-    @Insert("insert into vfile(fid,hash, name, parent, owner,create_time,update_time) VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime})")
+    @Insert("insert into vfile(fid,hash, name, parent, owner,create_time,update_time,size) VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{size})")
     fun insert(vFile: VFile): Int
+
+    //******//
+    //  改  //
+    //******//
+
+    @Update("update vfile set size = #{size} where fid = #{fid}")
+    fun updateSize(fid: VFileId, size: Long): Int
 
     //******//
     //  删  //

@@ -3,7 +3,6 @@ package com.yjl.hnas.service
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
-import com.yjl.hnas.entity.view.VirtualFile
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.UserFilePath
 import com.yjl.hnas.fs.VirtualPath
@@ -23,7 +22,7 @@ interface VFileService {
     fun exists(path: PubPath): Boolean = exists(genId(path.toAbsolutePath()))
     fun exists(path: UserFilePath): Boolean = exists(genId(path.toAbsolutePath()))
 
-    fun addVFile(owner: Uid, path: PubPath, hash: String)
+    fun addVFile(owner: Uid, path: PubPath, size: Long, hash: String)
 
     fun addFolder(owner: Uid, path: PubPath)
 

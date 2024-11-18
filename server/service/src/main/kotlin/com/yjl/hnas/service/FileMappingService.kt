@@ -8,7 +8,7 @@ import com.yjl.hnas.fs.PubPath
  */
 interface FileMappingService {
 
-    fun addMapping(path: PubPath, hash: String)
+    fun addMapping(path: PubPath, size: Long, hash: String)
 
     fun getMapping(hash: String): FileMapping?
 
