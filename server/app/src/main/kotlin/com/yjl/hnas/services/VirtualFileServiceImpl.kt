@@ -30,6 +30,8 @@ class VirtualFileServiceImpl(
     }
 
     override fun getFilesByParent(parent: VFileId): List<VirtualFile> {
+        if (!vFileService.exists(parent))
+            throw ErrorCode.NO_SUCH_FILE.error
         return virtualFileMapper.selectsByParent(parent)
     }
 
