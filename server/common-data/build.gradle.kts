@@ -25,7 +25,7 @@ afterEvaluate {
                 project(":server:entity").layout.projectDirectory.asFile,
             )
         )
-        sourceDirs += project.layout.projectDirectory.asFile
+        sourceDirs += project.layout.projectDirectory.asFile.resolve("src/main/kotlin")
     }
 
     // 每次编译时都生成dts
