@@ -1,6 +1,7 @@
 package com.yjl.hnas.token
 
 import com.google.gson.Gson
+import io.github.yinjinlong.md.sha256
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -22,16 +23,23 @@ class Token<T> private constructor(
 
         lateinit var gson: Gson
 
-        const val PropertyKey = "hnas.token.password"
+        const val SeeddKey = "hnas.token.seed"
+        const val PasswordKey = "hnas.token.password"
 
         var DEFAULT_ALGORITHM: String = "PBEWITHHMACSHA256ANDAES_256"
 
         fun init(
             gson: Gson,
-            password: String, iterationCount: Int
         ) {
             this.gson = gson
-            TokenUtils.init(password, iterationCount)
+            val seedStr = System.getProperty(SeeddKey) ?: "yjl"
+            TokenUtils.init(
+                seedStr.sha256.slice(0..<16).toByteArray(),
+                System.getProperty(PasswordKey) ?: "yjl",
+                100
+            )
+            System.clearProperty(SeeddKey)
+            System.clearProperty(PasswordKey)
         }
 
         @OptIn(ExperimentalEncodingApi::class)
