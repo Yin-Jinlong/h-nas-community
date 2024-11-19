@@ -50,8 +50,9 @@ async function del<R = any, D = any>(
 function catchError(e: AxiosError<any> | RespData<any>): undefined {
     let data: RespData<any>
     if (e instanceof Error) {
-        if (e.response) {
-            data = e.response.data
+        let resp = e.response
+        if (resp && resp.data?.code) {
+            data = resp.data
         } else {
             HMessage.error(e.message)
             throw e

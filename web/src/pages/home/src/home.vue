@@ -320,9 +320,6 @@ function updateFiles() {
             }
             files.push(f)
         })
-    }).catch(e => {
-        console.log(e)
-        HMessage.error(e.message ?? '未知错误')
     })
 }
 
