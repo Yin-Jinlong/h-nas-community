@@ -2,6 +2,7 @@ package com.yjl.hnas.interceptor
 
 import com.google.gson.Gson
 import com.yjl.hnas.annotation.ShouldLogin
+import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.utils.hasAnno
 import com.yjl.hnas.utils.token
@@ -42,7 +43,7 @@ class LoginInterceptor(
         if (shouldLogin(handler)) {
             val tr = (request.getHeader(HttpHeaders.AUTHORIZATION)
                 ?: return response.error(ErrorCode.NO_PERMISSION)
-                    ).token()
+                    ).token(UserInfo::class)
             if (tr == null)
                 return response.error(ErrorCode.BAD_TOKEN)
         }

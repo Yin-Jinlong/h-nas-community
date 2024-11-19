@@ -26,10 +26,6 @@ class UserServiceImpl(
         return Base64.Default.encode(password.sha256)
     }
 
-    override fun isLogin(token: Token<UserInfo>): Boolean {
-        return token.isAvailable()
-    }
-
     fun genToken(u: User): Token<UserInfo> {
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 30)

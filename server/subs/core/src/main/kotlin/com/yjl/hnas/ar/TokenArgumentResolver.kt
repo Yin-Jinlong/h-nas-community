@@ -34,6 +34,7 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
             ?: if (shouldLogin(parameter))
                 throw ErrorCode.NO_PERMISSION.error
             else return null
-        return auth.token() ?: if (parameter.isOptional) null else throw ErrorCode.BAD_TOKEN.error
+        return auth.token(parameter.parameterType.kotlin)
+            ?: if (parameter.isOptional) null else throw ErrorCode.BAD_TOKEN.error
     }
 }

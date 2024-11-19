@@ -10,7 +10,6 @@ dependencies {
     api(annotation())
     api(commomData())
     api(entity())
-    api(fs())
     api(service())
     api(token())
     api(utils())

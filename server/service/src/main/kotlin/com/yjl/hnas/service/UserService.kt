@@ -10,9 +10,11 @@ import com.yjl.hnas.token.Token
  */
 interface UserService {
 
+    /**
+     *
+     * @param password 原始密码
+     */
     fun genPassword(password: String): String
-
-    fun isLogin(token: Token<UserInfo>): Boolean
 
     /**
      *

@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
 
+    implementation(fs())
     implementation(serviceCore())
     implementation(libs.webp.imageio)
 

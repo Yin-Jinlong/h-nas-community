@@ -9,7 +9,6 @@ import com.yjl.hnas.fs.PubFileSystemProvider
 import com.yjl.hnas.fs.UserFileSystemProvider
 import com.yjl.hnas.fs.attr.FileAttribute
 import com.yjl.hnas.service.FileMappingService
-import com.yjl.hnas.service.UserService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.*
