@@ -1,7 +1,5 @@
 package com.yjl.hnas.fs
 
-import com.yjl.hnas.entity.Uid
-
 /**
  * @author YJL
  */
@@ -15,7 +13,7 @@ interface PubPathManager : PathManager<PubPath> {
      * 创建文件夹，不会做判断
      */
     @Throws
-    fun createFolder(path: PubPath, owner: Uid)
+    fun createFolder(path: PubPath, owner: Long)
 
     @Throws(NoSuchFileException::class)
     fun deleteFile(path: PubPath)

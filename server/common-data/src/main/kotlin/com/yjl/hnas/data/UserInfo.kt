@@ -1,6 +1,6 @@
 package com.yjl.hnas.data
 
-import com.yjl.hnas.entity.User
+import com.yjl.hnas.entity.IUser
 
 /**
  * 用户信息
@@ -16,7 +16,7 @@ data class UserInfo(
     val nick: String,
 ) {
     companion object {
-        fun of(user: User): UserInfo {
+        fun of(user: IUser): UserInfo {
             return UserInfo(user.uid, user.username, user.nick)
         }
     }

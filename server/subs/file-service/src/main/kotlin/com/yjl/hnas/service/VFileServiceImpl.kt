@@ -1,6 +1,7 @@
 package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.Uid
+import com.yjl.hnas.entity.IVFile
 import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
 import com.yjl.hnas.error.ErrorCode
@@ -109,7 +110,7 @@ class VFileServiceImpl(
         return vFileMapper.countHash(hash)
     }
 
-    override fun getById(id: VFileId): VFile? {
+    override fun getById(id: VFileId): IVFile? {
         return vFileMapper.selectById(id)
     }
 }

@@ -1,6 +1,5 @@
 package com.yjl.hnas.fs
 
-import com.yjl.hnas.entity.Uid
 import java.net.URI
 
 /**
@@ -11,7 +10,7 @@ class UserFilePath(
     path: String
 ) : VirtualablePath<UserFileSystemProvider, UserFileSystem, UserFilePath>(fs, path) {
 
-    val uid: Uid
+    val uid: Long
         get() = fs.uid
 
     override fun clone(path: String): UserFilePath {

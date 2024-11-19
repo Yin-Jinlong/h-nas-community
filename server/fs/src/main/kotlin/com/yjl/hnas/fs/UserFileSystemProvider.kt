@@ -1,6 +1,5 @@
 package com.yjl.hnas.fs
 
-import com.yjl.hnas.entity.Uid
 import java.net.URI
 import java.nio.file.Path
 import java.nio.file.attribute.FileAttribute
@@ -34,7 +33,7 @@ class UserFileSystemProvider(
         )
     }
 
-    fun getFileSystem(uid: Uid): UserFileSystem {
+    fun getFileSystem(uid: Long): UserFileSystem {
         return UserFileSystem(this, uid)
     }
 

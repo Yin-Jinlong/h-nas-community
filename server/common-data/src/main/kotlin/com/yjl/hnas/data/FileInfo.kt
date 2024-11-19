@@ -1,6 +1,6 @@
 package com.yjl.hnas.data
 
-import com.yjl.hnas.entity.VFile
+import com.yjl.hnas.entity.IVFile
 
 /**
  * 文件信息
@@ -18,7 +18,7 @@ import com.yjl.hnas.entity.VFile
  */
 data class FileInfo(
     val name: String,
-    val fileType: VFile.Type,
+    val fileType: IVFile.Type,
     val type: String,
     val subType: String,
     val preview: String?,

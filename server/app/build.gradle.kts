@@ -14,7 +14,6 @@ java {
 }
 
 dependencies {
-    implementation(libs.webp.imageio)
     implementation(libs.spring.cloud.starter.netflix.eureka.server)
     implementation(libs.spring.boot.starter.actuator)
 

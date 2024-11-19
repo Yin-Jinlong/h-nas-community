@@ -1,7 +1,7 @@
 package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.Uid
-import com.yjl.hnas.entity.VFile
+import com.yjl.hnas.entity.IVFile
 import com.yjl.hnas.entity.VFileId
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.UserFilePath
@@ -37,7 +37,7 @@ interface VFileService {
 
     fun getHandlerCount(path: VirtualPath): Int = getHandlerCount(path.name)
 
-    fun getById(id: VFileId): VFile?
+    fun getById(id: VFileId): IVFile?
 
     fun get(path: PubPath) = getById(genId(path.toAbsolutePath()))
 }

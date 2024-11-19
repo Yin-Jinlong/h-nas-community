@@ -2,7 +2,7 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFileId
-import com.yjl.hnas.entity.view.VirtualFile
+import com.yjl.hnas.entity.view.IVirtualFile
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.UserFilePath
@@ -26,17 +26,17 @@ class VirtualFileServiceImpl(
 
     }
 
-    override fun getFilesByParent(parent: VFileId): List<VirtualFile> {
+    override fun getFilesByParent(parent: VFileId): List<IVirtualFile> {
         if (!vFileService.exists(parent))
             throw ErrorCode.NO_SUCH_FILE.error
         return virtualFileMapper.selectsByParent(parent)
     }
 
-    override fun getFilesByParent(parent: PubPath): List<VirtualFile> {
+    override fun getFilesByParent(parent: PubPath): List<IVirtualFile> {
         return getFilesByParent(vFileService.genId(parent))
     }
 
-    override fun getFilesByParent(parent: UserFilePath): List<VirtualFile> {
+    override fun getFilesByParent(parent: UserFilePath): List<IVirtualFile> {
         return getFilesByParent(vFileService.genId(parent))
     }
 

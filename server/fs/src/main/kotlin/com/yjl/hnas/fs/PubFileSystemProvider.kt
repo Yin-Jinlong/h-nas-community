@@ -1,7 +1,5 @@
 package com.yjl.hnas.fs
 
-import com.yjl.hnas.entity.Uid
-import java.io.FileNotFoundException
 import java.net.URI
 import java.nio.file.DirectoryStream
 import java.nio.file.FileAlreadyExistsException
@@ -36,7 +34,7 @@ class PubFileSystemProvider(
             throw FileAlreadyExistsException("${p.path} already exists")
         val ownerAttr = getAttribute(attrs, com.yjl.hnas.fs.attr.FileAttribute.OWNER)
             ?: throw IllegalArgumentException("owner is required")
-        manager.createFolder(p, ownerAttr.value() as Uid)
+        manager.createFolder(p, ownerAttr.value() as Long)
     }
 
     override fun delete(path: Path) {

@@ -1,6 +1,7 @@
 package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.FileMapping
+import com.yjl.hnas.entity.IFileMapping
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.mapper.FileMappingMapper
@@ -45,7 +46,7 @@ class FileMappingServiceImpl(
         )
     }
 
-    override fun getMapping(hash: String): FileMapping? {
+    override fun getMapping(hash: String): IFileMapping? {
         return fileMappingMapper.selectByHash(hash)
     }
 

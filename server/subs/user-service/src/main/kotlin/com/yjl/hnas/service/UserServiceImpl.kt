@@ -2,6 +2,7 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.Uid
+import com.yjl.hnas.entity.IUser
 import com.yjl.hnas.entity.User
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.mapper.UserMapper
@@ -26,10 +27,10 @@ class UserServiceImpl(
         return Base64.Default.encode(password.sha256)
     }
 
-    fun genToken(u: User): Token<UserInfo> {
+    fun genToken(u: IUser): Token<UserInfo> {
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 30)
-        return Token.Companion.gen(UserInfo.Companion.of(u), time)
+        return Token.gen(UserInfo.of(u), time)
     }
 
     override fun login(uid: Uid, password: String): Token<UserInfo> {
@@ -49,7 +50,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun register(username: String, password: String): User {
+    override fun register(username: String, password: String): IUser {
         mapper.selectByUsername(username)?.let {
             throw ErrorCode.USER_EXISTS.data(username)
         }
@@ -58,7 +59,7 @@ class UserServiceImpl(
             username,
             username,
             genPassword(password),
-            User.PasswordType.SHA256
+            IUser.PasswordType.SHA256
         ).apply {
             mapper.insert(this)
         }

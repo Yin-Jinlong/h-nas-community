@@ -26,62 +26,35 @@ data class VFile(
      * - 私有文件 `uid path`
      */
     @Id
-    @Column(length = ID_LENGTH)
+    @Column(length = IVFile.ID_LENGTH)
     @Comment("文件id, base64<<sha256<<(access,full_path)")
-    var fid: VFileId = "",
+    override var fid: VFileId = "",
 
-
-    @Column(length = NAME_LENGTH, nullable = false)
+    @Column(length = IVFile.NAME_LENGTH, nullable = false)
     @Comment("文件名")
-    var name: String = "",
+    override var name: String = "",
 
-    @Column(length = ID_LENGTH)
+    @Column(length = IVFile.ID_LENGTH)
     @Comment("所在目录")
-    var parent: VFileId? = null,
+    override var parent: VFileId? = null,
 
-    @Column(length = HASH_LENGTH)
+    @Column(length = IVFile.HASH_LENGTH)
     @Comment("文件hash")
-    var hash: String? = null,
+    override var hash: String? = null,
 
     @Column(nullable = false)
     @Comment("文件拥有者")
-    var owner: Uid = 0,
+    override var owner: Uid = 0,
 
     @Column(nullable = false)
     @Comment("文件创建时间")
-    var createTime: Timestamp = Timestamp(0),
+    override var createTime: Timestamp = Timestamp(0),
 
     @Column(nullable = false)
     @Comment("文件修改时间")
-    var updateTime: Timestamp = Timestamp(0),
+    override var updateTime: Timestamp = Timestamp(0),
 
     @Column(columnDefinition = "bigint default(-1)")
     @Comment("文件/目录大小")
-    var size: Long = 0
-) {
-    companion object {
-        const val NAME_LENGTH = 128
-        const val PATH_LENGTH = 1024
-        const val ID_LENGTH = 45
-        const val HASH_LENGTH = 45
-    }
-
-    enum class Type {
-        /**
-         * 文件夹
-         */
-        FOLDER,
-
-        /**
-         * 文件
-         */
-        FILE
-    }
-
-    val type: Type
-        get() = if (hash == null) Type.FOLDER else Type.FILE
-
-    fun isFile() = hash != null
-
-    fun isFolder() = hash == null
-}
+    override var size: Long = 0
+) : IVFile

@@ -1,6 +1,5 @@
 package com.yjl.hnas.fs
 
-import com.yjl.hnas.entity.Uid
 import java.nio.file.Path
 
 /**
@@ -8,7 +7,7 @@ import java.nio.file.Path
  */
 class UserFileSystem(
     fsp: UserFileSystemProvider,
-    val uid: Uid,
+    val uid: Long,
 ) : VirtualableFileSystem<UserFileSystemProvider, UserFileSystem, UserFilePath>(fsp) {
     override fun getPath(first: String, vararg more: String): UserFilePath {
         return UserFilePath(this, contactParts(first, *more)).normalize()

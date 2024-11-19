@@ -1,7 +1,7 @@
 package com.yjl.hnas.service
 
 import com.yjl.hnas.data.UserInfo
-import com.yjl.hnas.entity.User
+import com.yjl.hnas.entity.IUser
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.token.Token
 
@@ -34,6 +34,6 @@ interface UserService {
      *
      * @param password 原始密码
      */
-    fun register(username: String, password: String): User
+    fun register(username: String, password: String): IUser
 
 }

@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-    compileOnly(entity())
     compileOnly(commomData())
 
     testImplementation(entity())

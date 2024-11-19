@@ -1,6 +1,5 @@
 package com.yjl.hnas.entity.view
 
-import com.yjl.hnas.entity.VFile
 import com.yjl.hnas.entity.VFileId
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -29,17 +28,15 @@ from vfile
 )
 @Entity
 @Table
-class VirtualFile {
+class VirtualFile : IVirtualFile {
     @Id
-    var fid: VFileId = ""
-    var hash: VFileId = ""
-    var name: String = ""
-    var parent: VFileId? = null
-    val fileType: VFile.Type
-        get() = if (type == "folder") VFile.Type.FOLDER else VFile.Type.FILE
-    var type: String = ""
-    var subType: String = ""
-    val createTime: Timestamp = Timestamp(0)
-    val updateTime: Timestamp = Timestamp(0)
-    var size: Long = -1
+    override var fid: VFileId = ""
+    override var hash: VFileId = ""
+    override var name: String = ""
+    override var parent: VFileId? = null
+    override var type: String = ""
+    override var subType: String = ""
+    override val createTime: Timestamp = Timestamp(0)
+    override val updateTime: Timestamp = Timestamp(0)
+    override var size: Long = -1
 }

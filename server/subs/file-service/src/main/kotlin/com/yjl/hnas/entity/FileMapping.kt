@@ -16,13 +16,13 @@ import org.hibernate.annotations.Comment
 data class FileMapping(
 
     @Id
-    @Column(length = VFile.HASH_LENGTH)
+    @Column(length = IVFile.HASH_LENGTH)
     @Comment("文件hash, base64<<sha256<<data")
-    var hash: String = "",
+    override var hash: String = "",
 
-    @Column(length = VFile.PATH_LENGTH)
+    @Column(length = IVFile.PATH_LENGTH)
     @Comment("文件路径")
-    var dataPath: String = "",
+    override var dataPath: String = "",
 
     @Column(length = 32)
     @Comment("类型")
@@ -34,14 +34,5 @@ data class FileMapping(
 
     @Column(columnDefinition = "bigint default(-1)")
     @Comment("文件大小")
-    var size: Long = -1
-) : FileWithType {
-
-    companion object {
-
-        val PreviewTypes = listOf(
-            "image" to "",
-            "video" to "",
-        )
-    }
-}
+    override var size: Long = -1
+) : IFileMapping
