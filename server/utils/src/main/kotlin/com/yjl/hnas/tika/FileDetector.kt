@@ -19,21 +19,14 @@ object FileDetector : Detector {
 
     private val emptyMetadata = Metadata()
 
-    override fun detect(input: InputStream?, metadata: Metadata?): MediaType {
-        val type = mimeTypes.detect(input, metadata ?: emptyMetadata)
-        return if (type == MediaType.OCTET_STREAM)
-            textDetector.detect(input, metadata)
-        else type
-    }
-
-    fun detectMagic(input: InputStream): MediaType {
-        return mimeTypes.detect(input, emptyMetadata)
-    }
-
-    fun detectName(name: String): MediaType {
-        return mimeTypes.detect(null, Metadata().apply {
-            this.set(TikaCoreProperties.RESOURCE_NAME_KEY, name)
+    fun detect(input: InputStream, fileName: String): MediaType {
+        return mimeTypes.detect(input, Metadata().apply {
+            set(TikaCoreProperties.RESOURCE_NAME_KEY, fileName)
         })
+    }
+
+    override fun detect(input: InputStream?, metadata: Metadata?): MediaType {
+        return mimeTypes.detect(input, metadata ?: emptyMetadata)
     }
 
     fun maybeText(input: InputStream): Boolean {

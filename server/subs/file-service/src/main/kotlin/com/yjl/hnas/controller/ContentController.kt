@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.nio.file.Files
+import kotlin.io.path.name
 
 
 /**
@@ -89,7 +90,7 @@ class ContentController(
 
         val ins = rawIn.buffered()
         ins.mark(1024)
-        val type = FileDetector.detectMagic(ins)
+        val type = FileDetector.detect(ins, pp.name)
         ins.reset()
         pp.bundleAttrs[FileAttribute.TYPE] = FileTypeAttribute(type)
         pp.bundleAttrs[FileAttribute.HASH] = FileHashAttribute(hash)
