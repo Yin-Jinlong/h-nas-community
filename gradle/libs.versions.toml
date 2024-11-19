@@ -16,6 +16,7 @@ mybatis-spring-boot = "3.0.3"
 spring = "3.3.4"
 spring-boot-apiStarter = "0.3.1"
 spring-core = "6.1.13"
+spring-cloud = "4.1.3"
 spring-dependency-management = "1.1.6"
 spring-starter-data-jpa = "3.3.5"
 tika = "3.0.0"
@@ -37,11 +38,15 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 mybatis-spring-boot-starter-test = { module = "org.mybatis.spring.boot:mybatis-spring-boot-starter-test", version.ref = "mybatis-spring-boot" }
-spring-core = { module = "org.springframework:spring-core", version.ref = "spring-core" }
 spring-boot-api-starter = { module = "io.github.yin-jinlong:spring-boot-api-starter", version.ref = "spring-boot-apiStarter" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-starter-data-jpa" }
 spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-cloud-starter-gateway = { module = "org.springframework.cloud:spring-cloud-starter-gateway", version.ref = "spring-cloud" }
+spring-cloud-starter-netflix-eureka-client = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client", version.ref = "spring-cloud" }
+spring-cloud-starter-netflix-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server", version.ref = "spring-cloud" }
+spring-core = { module = "org.springframework:spring-core", version.ref = "spring-core" }
 tika = { module = "org.apache.tika:tika", version.ref = "tika" }
 tika-core = { module = "org.apache.tika:tika-core", version.ref = "tikaCore" }
 webp-imageio = { module = "org.sejda.imageio:webp-imageio", version.ref = "webpImageio" }

@@ -1,16 +1,15 @@
-package com.yjl.hnas.services
+package com.yjl.hnas.service
 
 import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.User
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.mapper.UserMapper
-import com.yjl.hnas.service.UserService
 import com.yjl.hnas.token.Token
 import io.github.yinjinlong.md.sha256
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.Calendar
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -24,7 +23,7 @@ class UserServiceImpl(
 
     @OptIn(ExperimentalEncodingApi::class)
     override fun genPassword(password: String): String {
-        return Base64.encode(password.sha256)
+        return Base64.Default.encode(password.sha256)
     }
 
     override fun isLogin(token: Token<UserInfo>): Boolean {
@@ -34,7 +33,7 @@ class UserServiceImpl(
     fun genToken(u: User): Token<UserInfo> {
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 30)
-        return Token.gen(UserInfo.of(u), time)
+        return Token.Companion.gen(UserInfo.Companion.of(u), time)
     }
 
     override fun login(uid: Uid, password: String): Token<UserInfo> {

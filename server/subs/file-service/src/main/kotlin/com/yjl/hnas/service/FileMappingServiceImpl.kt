@@ -1,10 +1,9 @@
-package com.yjl.hnas.services
+package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.FileMapping
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.mapper.FileMappingMapper
-import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.base64Url
 import io.github.yinjinlong.md.sha256

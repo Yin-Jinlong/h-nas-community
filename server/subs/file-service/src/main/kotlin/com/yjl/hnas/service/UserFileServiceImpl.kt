@@ -1,7 +1,6 @@
-package com.yjl.hnas.services
+package com.yjl.hnas.service
 
 import com.yjl.hnas.fs.UserFilePath
-import com.yjl.hnas.service.UserFileService
 import org.springframework.stereotype.Service
 import java.nio.file.AccessMode
 

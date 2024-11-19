@@ -1,5 +1,4 @@
 plugins {
-    java
     alias(libs.plugins.license)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.spring)
@@ -7,17 +6,12 @@ plugins {
     alias(libs.plugins.spring.dependency.management)
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
 dependencies {
-    implementation(libs.webp.imageio)
-    implementation(libs.spring.cloud.starter.netflix.eureka.server)
+    implementation(libs.spring.cloud.starter.gateway)
+    implementation(libs.spring.cloud.starter.netflix.eureka.client)
     implementation(libs.spring.boot.starter.actuator)
 
+    testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
     testRuntimeOnly(libs.junit.platform.launcher)
 }

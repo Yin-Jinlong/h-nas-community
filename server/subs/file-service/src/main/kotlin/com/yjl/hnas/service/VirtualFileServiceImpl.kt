@@ -1,4 +1,4 @@
-package com.yjl.hnas.services
+package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFileId
@@ -8,9 +8,6 @@ import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.UserFilePath
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.mapper.VirtualFileMapper
-import com.yjl.hnas.service.FileMappingService
-import com.yjl.hnas.service.VFileService
-import com.yjl.hnas.service.VirtualFileService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File

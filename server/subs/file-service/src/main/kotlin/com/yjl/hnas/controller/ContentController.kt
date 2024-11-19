@@ -26,11 +26,10 @@ import java.nio.file.Files
  * @author YJL
  */
 @Controller
-@RequestMapping("/api/file")
+@RequestMapping("/file")
 class ContentController(
     val pubFileSystemProvider: PubFileSystemProvider,
     val userFileSystemProvider: UserFileSystemProvider,
-    val userService: UserService,
     val fileMappingService: FileMappingService,
     val virtualFileService: VirtualFileService
 ) {
@@ -65,8 +64,6 @@ class ContentController(
         @ShouldLogin user: UserToken,
         @RequestParam(defaultValue = "false") public: Boolean,
     ) {
-        if (!userService.isLogin(user))
-            throw ErrorCode.USER_NOT_LOGIN.error
         if (public) {
             val p = pubFileSystem.getPath(path).toAbsolutePath()
             pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))

@@ -1,7 +1,6 @@
 package com.yjl.hnas.mapper
 
 import com.yjl.hnas.entity.FileMapping
-import com.yjl.hnas.entity.VFileId
 import org.apache.ibatis.annotations.*
 
 /**

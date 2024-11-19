@@ -18,3 +18,5 @@ fun DependencyHandler.service() = server("service")
 fun DependencyHandler.token() = server("token")
 
 fun DependencyHandler.utils() = server("utils")
+
+fun DependencyHandler.serviceCore() = server("subs:core")

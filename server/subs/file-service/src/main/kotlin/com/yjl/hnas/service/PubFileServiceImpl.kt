@@ -1,13 +1,10 @@
-package com.yjl.hnas.services
+package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.fs.attr.FileAttribute
-import com.yjl.hnas.service.FileMappingService
-import com.yjl.hnas.service.PubFileService
-import com.yjl.hnas.service.VFileService
 import com.yjl.hnas.utils.del
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service

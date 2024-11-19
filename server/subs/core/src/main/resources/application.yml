@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/h_nas
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: user
+    password: 123456
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 9
+  banner:
+    location: classpath:banner.txt
+  jpa:
+    hibernate:
+      ddl-auto: update
+  main:
+    lazy-initialization: true
+server:
+  resp:
+    factory: com.yjl.hnas.resp.RespFactory
+  compression:
+    enabled: true
+    mime-types:
+      - text/*
+      - application/javascript
+      - application/json
+      - application/xml
+    min-response-size: 64B
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8000/eureka/

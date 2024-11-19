@@ -1,4 +1,4 @@
-package com.yjl.hnas.services
+package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VFile
@@ -6,7 +6,6 @@ import com.yjl.hnas.entity.VFileId
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.mapper.VFileMapper
-import com.yjl.hnas.service.VFileService
 import com.yjl.hnas.utils.base64Url
 import com.yjl.hnas.utils.reBase64Url
 import com.yjl.hnas.utils.timestamp
