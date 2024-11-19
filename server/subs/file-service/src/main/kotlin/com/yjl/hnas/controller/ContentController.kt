@@ -101,8 +101,13 @@ class ContentController(
                 val vfp = vf.parentFile
                 if (!vfp.exists())
                     vfp.mkdirs()
-                vf.outputStream().use {
-                    ins.copyTo(it)
+                try {
+                    vf.outputStream().use {
+                        ins.copyTo(it)
+                    }
+                } catch (e: Exception) {
+                    if (vf.exists() && !vf.delete())
+                        vf.deleteOnExit()
                 }
             }
             virtualFileService.createPubFile(
@@ -112,8 +117,6 @@ class ContentController(
                 hash = hash
             )
         }.onFailure {
-            if (vf.exists() && !vf.delete())
-                vf.deleteOnExit()
             throw it as? ClientError ?: ErrorCode.SERVER_ERROR.error
         }
     }

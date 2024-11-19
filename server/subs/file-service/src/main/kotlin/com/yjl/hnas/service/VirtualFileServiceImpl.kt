@@ -56,7 +56,7 @@ class VirtualFileServiceImpl(
         if (!vFileService.exists(path.parent))
             vFileService.addFolder(user, path.parent)
         vFileService.addVFile(user, path, size, hash)
-        if (vFileService.getHandlerCount(hash) == 1)
+        if (fileMappingService.getMapping(hash) == null)
             fileMappingService.addMapping(path, size, hash)
     }
 }

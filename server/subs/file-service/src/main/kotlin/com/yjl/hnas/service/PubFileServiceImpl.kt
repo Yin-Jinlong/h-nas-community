@@ -59,15 +59,25 @@ class PubFileServiceImpl(
 
     @Transactional
     override fun deleteFile(path: PubPath) {
-        if (!fileExists(path))
+        val vf = vFileService.get(path)
+        if (vf == null)
             throw NoSuchFileException(path.pathString)
-        val count = vFileService.getHandlerCount(toVirtualPath(path))
+        if (vf.isFolder()) {
+            vFileService.delete(path)
+            return
+        }
+        val count = vFileService.getHandlerCount(
+            vf.hash ?: throw IllegalStateException("hash is null")
+        )
         if (count == 0)
             throw RuntimeException("No hash for path : $path")
         if (count == 1) {
-            val f = path.toFile()
+            val fm = fileMappingService.getMapping(vf.hash!!)
+                ?: throw IllegalStateException("hash not found: ${vf.hash}")
+            val vp = virtualFileSystem.getPath("data", fm.type, fm.subType, fm.hash)
+            val f = vp.toFile()
             vFileService.delete(path)
-            fileMappingService.deleteMapping(vFileService.genId(path))
+            fileMappingService.deleteMapping(vf.hash!!)
             f.del()
         } else {
             vFileService.delete(path)
