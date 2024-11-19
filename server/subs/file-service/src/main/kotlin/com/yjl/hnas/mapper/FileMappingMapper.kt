@@ -20,7 +20,7 @@ interface FileMappingMapper {
     //  增  //
     //******//
 
-    @Insert("insert into file_mapping(hash,data_path,type,sub_type ) VALUES (#{hash}, #{dataPath}, #{type}, #{subType})")
+    @Insert("insert into file_mapping(hash,data_path,type,sub_type ,size) VALUES (#{hash}, #{dataPath}, #{type}, #{subType}, #{size})")
     fun insert(fileMapping: FileMapping): Int
 
     //******//
