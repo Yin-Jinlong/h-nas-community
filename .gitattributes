@@ -1,3 +1,4 @@
 * text=auto
 gradlew text eol=lf
+LICENSE text eol=lf
 pnpm-lock.yaml text eol=lf

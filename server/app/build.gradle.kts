@@ -1,5 +1,6 @@
 plugins {
     java
+    alias(libs.plugins.license)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.spring)
     alias(libs.plugins.spring.boot)
@@ -39,4 +40,8 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+licenseReport {
+    showVersions = true
 }

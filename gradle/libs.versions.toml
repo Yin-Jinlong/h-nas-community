@@ -10,12 +10,13 @@ compose-plugin = "1.6.11"
 composeBom = "2024.10.00"
 kotlin = "2.0.20"
 kotlinx-coroutines = "1.9.0"
+license = "0.9.8"
 lifecycleRuntimeKtx = "2.8.6"
 mybatis-spring-boot = "3.0.3"
 spring = "3.3.4"
+spring-boot-apiStarter = "0.3.1"
 spring-core = "6.1.13"
 spring-dependency-management = "1.1.6"
-spring-boot-apiStarter = "0.3.0"
 spring-starter-data-jpa = "3.3.5"
 tika = "3.0.0"
 tikaCore = "3.0.0"
@@ -52,6 +53,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlin = { id = "org.jetbrains.kotlin.jvm" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+license = { id = "com.jaredsburrows.license", version.ref = "license" }
 spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }

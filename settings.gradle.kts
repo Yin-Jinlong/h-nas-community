@@ -8,7 +8,6 @@ pluginManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
-        maven("https://maven.aliyun.com/repository/gradle-plugin/")
         mavenCentral()
         gradlePluginPortal()
     }

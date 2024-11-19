@@ -44,3 +44,8 @@ cd web && pnpm i
 cd web && pnpm run dev
 ```
 
+## License
+
+`Apache 2.0`
+
+Copyright (c) 2024-PRESENT Yin-Jinlong@github
