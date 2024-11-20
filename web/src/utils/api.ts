@@ -133,8 +133,12 @@ async function logon(userName: string, password: string) {
         .catch(catchError)
 }
 
-function publicPreview(path: string) {
+function publicFileURL(path: string) {
     return `api/file/public?path=${path}`
+}
+
+function publicPreviewURL(path: string) {
+    return `api/file/public/preview?path=${path}`
 }
 
 async function getHash(file: File): Promise<string> {
@@ -197,7 +201,8 @@ const API = {
     deletePublicFile,
     newPublicFolder,
     uploadPublic,
-    publicPreview
+    publicFileURL,
+    publicPreviewURL
 }
 
 export default API

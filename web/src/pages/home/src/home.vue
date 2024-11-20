@@ -295,7 +295,7 @@ function getPath(name: string) {
 }
 
 function toImageUrl(name: string) {
-    return API.publicPreview(getPath(name))
+    return API.publicFileURL(getPath(name))
 }
 
 function showPreview(f: FileInfo,) {
