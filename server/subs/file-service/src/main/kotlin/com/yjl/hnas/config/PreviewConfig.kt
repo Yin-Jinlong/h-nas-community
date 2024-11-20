@@ -3,6 +3,7 @@ package com.yjl.hnas.config
 import com.yjl.hnas.preview.FilePreviewGenerator
 import com.yjl.hnas.preview.ImagePreviewGenerator
 import com.yjl.hnas.preview.PreviewGeneratorFactory
+import com.yjl.hnas.preview.XMindPreviewGenerator
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,5 +27,8 @@ class PreviewConfig {
 
     @Bean
     fun imagePreviewGenerator(): FilePreviewGenerator = ImagePreviewGenerator()
+
+    @Bean
+    fun xMindPreviewGenerator(): FilePreviewGenerator = XMindPreviewGenerator()
 
 }

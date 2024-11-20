@@ -141,6 +141,8 @@ class PubFileController(
                 ?: throw ErrorCode.NO_SUCH_FILE.error
         } catch (e: IllegalArgumentException) {
             throw ErrorCode.NO_SUCH_FILE.error
+        } catch (e: Exception) {
+            throw ErrorCode.BAD_FILE_FORMAT.data(path)
         }
     }
 

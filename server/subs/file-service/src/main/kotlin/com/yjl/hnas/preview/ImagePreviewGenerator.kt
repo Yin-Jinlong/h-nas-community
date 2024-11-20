@@ -9,11 +9,13 @@ import javax.imageio.ImageIO
  * @author YJL
  */
 open class ImagePreviewGenerator : FilePreviewGenerator(
-    setOf(
-        MediaType.image("png"),
-        MediaType.image("jpeg"),
-    )
+    MediaType.image("png"),
+    MediaType.image("jpeg"),
 ) {
+    companion object {
+        val INSTANCE = ImagePreviewGenerator()
+    }
+
     override fun generate(input: InputStream): BufferedImage {
         val img = ImageIO.read(input)
         val size = getSize(img)

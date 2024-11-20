@@ -8,8 +8,12 @@ import java.io.InputStream
  * @author YJL
  */
 abstract class FilePreviewGenerator(
-    val types: Set<MediaType>
+    vararg types: MediaType
 ) : PreviewGenerator {
+
+    val types = HashSet<MediaType>().apply {
+        addAll(types)
+    }
 
     fun getSize(img: BufferedImage): Size {
         val aspectRatio = img.width.toFloat() / img.height
