@@ -43,9 +43,9 @@ class PubFileServiceImpl(
                 ?: throw IllegalArgumentException("path must have type attr")
             if (hash.contains("/"))
                 throw IllegalArgumentException("hash must not contain '/'")
-            return virtualFileSystem.getPath("data", type.type, type.subtype, hash)
+            return virtualFileSystem.getPath(type.type, type.subtype, hash)
         }
-        return virtualFileSystem.getPath("data", mapping.type, mapping.subType, mapping.hash).apply {
+        return virtualFileSystem.getPath(mapping.type, mapping.subType, mapping.hash).apply {
             bundleAttrs[FileAttribute.TYPE] = FileTypeAttribute(
                 MediaType.parse("${mapping.type}/${mapping.subType}")
             )

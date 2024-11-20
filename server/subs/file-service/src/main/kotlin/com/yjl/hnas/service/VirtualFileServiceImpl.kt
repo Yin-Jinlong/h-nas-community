@@ -45,7 +45,7 @@ class VirtualFileServiceImpl(
     }
 
     override fun convertToFile(path: VirtualPath): File {
-        return File(path.path)
+        return File("data", path.path)
     }
 
     @Transactional
