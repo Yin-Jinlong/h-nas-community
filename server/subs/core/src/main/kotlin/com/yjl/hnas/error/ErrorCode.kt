@@ -20,6 +20,7 @@ enum class ErrorCode(
 
     NO_SUCH_FILE(1001, "文件不存在"),
     FILE_EXISTS(1002, "文件已存在"),
+    BAD_FILE_FORMAT(1003, "文件格式错误"),
 
     USER_LOGIN_ERROR(2000, "用户名/id/密码错误"),
     NO_SUCH_USER(2001, "用户不存在"),

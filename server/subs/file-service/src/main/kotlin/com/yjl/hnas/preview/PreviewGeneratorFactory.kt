@@ -47,7 +47,7 @@ class PreviewGeneratorFactory(
         } catch (e: Exception) {
             if (file.exists())
                 file.del()
-            e.printStackTrace()
+            throw e
         }
         return file
     }
