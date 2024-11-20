@@ -11,6 +11,7 @@ import javax.imageio.ImageIO
 open class ImagePreviewGenerator : FilePreviewGenerator(
     MediaType.image("png"),
     MediaType.image("jpeg"),
+    MediaType.image("webp"),
 ) {
     companion object {
         val INSTANCE = ImagePreviewGenerator()
