@@ -8,6 +8,7 @@ import java.util.*
 import javax.imageio.IIOImage
 import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
+import javax.imageio.ImageWriter
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam
 import kotlin.io.path.name
 
@@ -20,11 +21,11 @@ class PreviewGeneratorFactory(
 
     private val generators = HashMap<MediaType, PreviewGenerator>()
 
-    private val jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next()!!
+    private fun jpgWriter() = ImageIO.getImageWritersByFormatName("jpg").next()!!
 
     private val jpgParm = JPEGImageWriteParam(Locale.getDefault()).apply {
         compressionMode = ImageWriteParam.MODE_EXPLICIT
-        compressionQuality = 0.9f
+        compressionQuality = 0.3f
     }
 
     fun getPreview(path: VirtualPath, mediaType: MediaType): File? {
@@ -40,8 +41,10 @@ class PreviewGeneratorFactory(
                     if (!p.exists())
                         p.mkdirs()
                 }.outputStream().use { outs ->
-                    jpgWriter.output = ImageIO.createImageOutputStream(outs)
-                    jpgWriter.write(null, IIOImage(img, null, null), jpgParm)
+                    jpgWriter().apply {
+                        output = ImageIO.createImageOutputStream(outs)
+                        write(null, IIOImage(img, null, null), jpgParm)
+                    }
                 }
             }
         } catch (e: Exception) {
