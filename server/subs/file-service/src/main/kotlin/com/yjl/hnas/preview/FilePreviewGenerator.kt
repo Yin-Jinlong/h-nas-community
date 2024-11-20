@@ -24,8 +24,6 @@ abstract class FilePreviewGenerator(
         }
     }
 
-    abstract override fun generate(input: InputStream): BufferedImage
-
     data class Size(
         val width: Int,
         val height: Int

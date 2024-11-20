@@ -10,6 +10,7 @@ import com.yjl.hnas.fs.PubFileSystemProvider
 import com.yjl.hnas.fs.VirtualFileSystem
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.attr.FileAttribute
+import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
@@ -142,7 +143,7 @@ class PubFileController(
                 ?: throw ErrorCode.NO_SUCH_FILE.error
         } catch (e: IllegalArgumentException) {
             throw ErrorCode.NO_SUCH_FILE.error
-        } catch (e: Exception) {
+        } catch (e: PreviewException) {
             throw ErrorCode.BAD_FILE_FORMAT.data(path)
         }
     }

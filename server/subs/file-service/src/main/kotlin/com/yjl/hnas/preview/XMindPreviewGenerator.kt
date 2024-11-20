@@ -22,7 +22,7 @@ open class XMindPreviewGenerator : FilePreviewGenerator(
             }
             entry = nextEntry
         }
-        throw IllegalStateException("No thumbnail found in xmind file")
+        throw PreviewException("Bad format", IllegalStateException("No thumbnail found in xmind file"))
     }
 
     override fun generate(input: InputStream): BufferedImage {

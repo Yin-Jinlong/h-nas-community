@@ -12,6 +12,7 @@ interface PreviewGenerator {
         const val MAX_SIZE = 400
     }
 
+    @Throws(PreviewException::class)
     fun generate(input: InputStream): BufferedImage
 
 }
