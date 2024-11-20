@@ -16,6 +16,9 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 @Order(-1)
 class ClientAdvices {
 
+    @ExceptionHandler(NoSuchFileException::class)
+    fun noSuchFileError(e: NoSuchFileException) = RespJson(ErrorCode.NO_SUCH_FILE)
+
     @ExceptionHandler(MissingRequestHeaderException::class)
     fun missHeaderError(e: MissingRequestHeaderException) = RespJson(ErrorCode.BAD_HEADER, e.headerName)
 

@@ -1,6 +1,8 @@
 package com.yjl.hnas.entity.view
 
 import com.yjl.hnas.entity.VFileId
+import com.yjl.hnas.fs.VirtualFileSystem
+import com.yjl.hnas.fs.VirtualPath
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
@@ -21,7 +23,8 @@ ifnull(file_mapping.type,'folder') as type,
 ifnull(file_mapping.sub_type,'folder') as sub_type,
 vfile.create_time,
 vfile.update_time,
-vfile.size
+vfile.size,
+file_mapping.data_path
 from vfile
     left join file_mapping on vfile.hash=file_mapping.hash
 """
@@ -39,4 +42,9 @@ class VirtualFile : IVirtualFile {
     override val createTime: Timestamp = Timestamp(0)
     override val updateTime: Timestamp = Timestamp(0)
     override var size: Long = -1
+    override var dataPath: String? = null
+
+    fun toVirtualPath(virtualFileSystem: VirtualFileSystem): VirtualPath {
+        return virtualFileSystem.getPath(dataPath ?: throw IllegalStateException("no data path"))
+    }
 }

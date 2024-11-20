@@ -9,7 +9,7 @@ import com.yjl.hnas.entity.IVFile
  * @property fileType 文件类型
  * @property type 文件类型
  * @property subType 文件子类型
- * @property preview 预览地址
+ * @property preview 可以预览
  * @property createTime 创建时间
  * @property updateTime 更新时间
  * @property size 文件大小
@@ -21,7 +21,7 @@ data class FileInfo(
     val fileType: IVFile.Type,
     val type: String,
     val subType: String,
-    val preview: String?,
+    val preview: Boolean?,
     val createTime: Long,
     val updateTime: Long,
     val size: Long

@@ -26,6 +26,10 @@ class VirtualFileServiceImpl(
 
     }
 
+    override fun getFile(path: PubPath): IVirtualFile? {
+        return virtualFileMapper.selectById(vFileService.genId(path))
+    }
+
     override fun getFilesByParent(parent: VFileId): List<IVirtualFile> {
         if (!vFileService.exists(parent))
             throw ErrorCode.NO_SUCH_FILE.error

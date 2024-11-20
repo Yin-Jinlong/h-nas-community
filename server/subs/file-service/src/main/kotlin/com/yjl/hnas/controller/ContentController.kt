@@ -2,12 +2,12 @@ package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileInfo
+import com.yjl.hnas.entity.view.VirtualFile
 import com.yjl.hnas.error.ClientError
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.PubFileSystem
-import com.yjl.hnas.fs.PubFileSystemProvider
-import com.yjl.hnas.fs.UserFileSystemProvider
+import com.yjl.hnas.fs.*
 import com.yjl.hnas.fs.attr.FileAttribute
+import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
@@ -15,9 +15,11 @@ import com.yjl.hnas.utils.*
 import jakarta.annotation.PostConstruct
 import jakarta.servlet.ServletInputStream
 import jakarta.validation.constraints.NotBlank
+import org.apache.tika.mime.MediaType
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
+import java.io.File
 import java.nio.file.Files
 import kotlin.io.path.name
 
@@ -28,23 +30,28 @@ import kotlin.io.path.name
 @Controller
 @RequestMapping("/file")
 class ContentController(
+    val previewGeneratorFactory: PreviewGeneratorFactory,
     val pubFileSystemProvider: PubFileSystemProvider,
     val userFileSystemProvider: UserFileSystemProvider,
+    val virtualFileSystemProvider: VirtualFileSystemProvider,
     val fileMappingService: FileMappingService,
     val virtualFileService: VirtualFileService
 ) {
     lateinit var pubFileSystem: PubFileSystem
 
+    lateinit var virtualFileSystem: VirtualFileSystem
+
     @PostConstruct
     fun inti() {
         pubFileSystem = pubFileSystemProvider.getFileSystem()
+        virtualFileSystem = virtualFileSystemProvider.getFileSystem()
     }
 
     @GetMapping("/files")
     fun getFiles(@NotBlank(message = "path 不能为空") path: String, token: UserToken?): List<FileInfo> {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
-        val p = path.trim().ifEmpty { "/" }
+        val p = path.deUrl.trim().ifEmpty { "/" }
 
         val files = if (token == null) {
             virtualFileService.getFilesByParent(pubFileSystem.getPath(p).toAbsolutePath())
@@ -54,7 +61,7 @@ class ContentController(
         }
 
         return files.map {
-            it.toFileInfo(fileMappingService)
+            it.toFileInfo(previewGeneratorFactory, fileMappingService)
         }.sorted()
     }
 
@@ -65,7 +72,7 @@ class ContentController(
         @RequestParam(defaultValue = "false") public: Boolean,
     ) {
         if (public) {
-            val p = pubFileSystem.getPath(path).toAbsolutePath()
+            val p = pubFileSystem.getPath(path.deUrl).toAbsolutePath()
             pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
             return
         }
@@ -127,8 +134,35 @@ class ContentController(
         @ShouldLogin token: UserToken,
         path: String,
     ) {
-        val pp = pubFileSystem.getPath(path)
+        val pp = pubFileSystem.getPath(path.deUrl)
         if (!pubFileSystemProvider.deleteIfExists(pp))
             throw ErrorCode.NO_SUCH_FILE.data(path)
+    }
+
+    @GetMapping("/public/preview")
+    fun getPreview(path: String): File {
+        val pp = pubFileSystem.getPath(path.deUrl)
+        try {
+            val vp = pp.toVirtual()
+            val type = vp.bundleAttrs[FileAttribute.TYPE]?.value() as MediaType?
+                ?: throw IllegalArgumentException("path must have type attr")
+            return previewGeneratorFactory.getPreview(vp, type)
+                ?: throw ErrorCode.NO_SUCH_FILE.error
+        } catch (e: IllegalArgumentException) {
+            throw ErrorCode.NO_SUCH_FILE.error
+        }
+    }
+
+    @GetMapping("/public/get")
+    fun getPublicFile(path: String): File {
+        val pp = pubFileSystem.getPath(path.deUrl)
+        val vf = virtualFileService.getFile(pp) as VirtualFile?
+            ?: throw ErrorCode.NO_SUCH_FILE.error
+        try {
+            val vp = vf.toVirtualPath(virtualFileSystem)
+            return vp.toFile()
+        } catch (e: IllegalStateException) {
+            throw ErrorCode.NO_SUCH_FILE.error
+        }
     }
 }

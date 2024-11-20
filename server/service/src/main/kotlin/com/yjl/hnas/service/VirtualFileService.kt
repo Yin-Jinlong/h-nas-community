@@ -12,6 +12,8 @@ import com.yjl.hnas.fs.VirtualPathManager
  */
 interface VirtualFileService : VirtualPathManager {
 
+    fun getFile(path: PubPath): IVirtualFile?
+
     fun getFilesByParent(parent: VFileId): List<IVirtualFile>
     fun getFilesByParent(parent: PubPath): List<IVirtualFile>
     fun getFilesByParent(parent: UserFilePath): List<IVirtualFile>

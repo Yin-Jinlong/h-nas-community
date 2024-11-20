@@ -10,6 +10,9 @@ import org.apache.ibatis.annotations.Select
  */
 @Mapper
 interface VirtualFileMapper {
+    @Select("select * from virtual_file where fid = #{fid}")
+    fun selectById(fid: VFileId): VirtualFile
+
     @Select("select * from virtual_file where parent = #{fid}")
     fun selectsByParent(fid: VFileId): List<VirtualFile>
 }

@@ -56,7 +56,8 @@
                          class="file-box"
                          data-fill-size data-flex-column-center
                          @click="showPreview(f)">
-                        <file-grid-view :info="f"
+                        <file-grid-view :dir="nowPaths.join('/')"
+                                        :info="f"
                                         @click="onClick"
                                         @dblclick="onDblClick"/>
                         <div class="file-name">{{ f.name }}</div>
@@ -87,7 +88,7 @@
                     </template>
                     <template #default>
                         <div data-flex>
-                            <file-grid-view v-if="activeFile" :info="activeFile"/>
+                            <file-grid-view v-if="activeFile" :dir="nowPaths.join('/')" :info="activeFile"/>
                             <table style="margin-left: 1em">
                                 <tbody>
                                 <tr v-for="r in infoTable">
@@ -240,7 +241,7 @@ const files = reactive<FileInfo[]>([])
 const showFileInfoDialog = ref(false)
 const previewMap = reactive(new Map<FileInfo, number>())
 const previewList = computed<string[]>(() => {
-    return files.filter(f => f.preview).map(f => toImageUrl(f.reqPath))
+    return files.filter(f => f.preview).map(f => toImageUrl(f.name))
 })
 const activeFile = ref<FileInfo>()
 const infoTable = computed(() => {
@@ -294,8 +295,8 @@ function getPath(name: string) {
     return nowPaths.length ? '/' + s : s
 }
 
-function toImageUrl(path: string) {
-    return `api/file/get/${path}`
+function toImageUrl(name: string) {
+    return `api/file/public/get?path=${getPath(name)}`
 }
 
 function showPreview(f: FileInfo,) {
@@ -439,7 +440,7 @@ onMounted(() => {
 
 })
 
-watch(() => route.params.path as string[] | undefined, (nv?: string[]) => {
+watch(() => route.params.path as string[] | undefined, async (nv?: string[]) => {
     nowPaths.length = 0
     if (nv?.length) {
         if (!nv[0].length) {
@@ -447,6 +448,7 @@ watch(() => route.params.path as string[] | undefined, (nv?: string[]) => {
         }
         nowPaths.push(...nv)
     }
+    files.length = 0
     updateFiles()
 }, {
     immediate: true

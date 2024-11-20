@@ -5,6 +5,7 @@ import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.fs.attr.FileAttribute
+import com.yjl.hnas.utils.FileTypeAttribute
 import com.yjl.hnas.utils.del
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
@@ -44,7 +45,11 @@ class PubFileServiceImpl(
                 throw IllegalArgumentException("hash must not contain '/'")
             return virtualFileSystem.getPath("data", type.type, type.subtype, hash)
         }
-        return virtualFileSystem.getPath("data", mapping.type, mapping.subType, mapping.hash)
+        return virtualFileSystem.getPath("data", mapping.type, mapping.subType, mapping.hash).apply {
+            bundleAttrs[FileAttribute.TYPE] = FileTypeAttribute(
+                MediaType.parse("${mapping.type}/${mapping.subType}")
+            )
+        }
     }
 
     override fun fileExists(path: PubPath): Boolean {

@@ -20,4 +20,5 @@ interface IVirtualFile {
     val createTime: Timestamp
     val updateTime: Timestamp
     var size: Long
+    var dataPath: String?
 }
