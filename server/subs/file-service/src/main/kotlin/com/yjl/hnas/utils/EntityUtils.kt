@@ -17,7 +17,7 @@ fun IVirtualFile.toFileInfo(
         fileType = fileType,
         type = type,
         subType = subType,
-        preview = previewGeneratorFactory.canPreview(mediaType),
+        preview = if (type == "folder") null else previewGeneratorFactory.canPreview(mediaType),
         createTime = createTime.time,
         updateTime = updateTime.time,
         size = if (fileType == IVFile.Type.FOLDER) {
