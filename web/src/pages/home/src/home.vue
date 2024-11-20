@@ -182,10 +182,10 @@
 
 }
 
-.img {
+:deep(.el-image).img {
   border-radius: 1em;
-  height: 8em;
-  width: 8em;
+  height: 100%;
+  width: 100%;
 }
 
 .file-name {
