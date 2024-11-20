@@ -241,7 +241,7 @@ const files = reactive<FileInfo[]>([])
 const showFileInfoDialog = ref(false)
 const previewMap = reactive(new Map<FileInfo, number>())
 const previewList = computed<string[]>(() => {
-    return files.filter(f => f.preview).map(f => toImageUrl(f.name))
+    return files.filter(f => f.preview && f.type === 'image').map(f => toImageUrl(f.name))
 })
 const activeFile = ref<FileInfo>()
 const infoTable = computed(() => {
@@ -316,7 +316,7 @@ function updateFiles() {
 
         console.log('files', data)
         data.forEach(f => {
-            if (f.preview) {
+            if (f.preview && f.type == 'image') {
                 previewMap.set(f, i++)
             }
             files.push(f)
