@@ -12,6 +12,7 @@ import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
+import kotlin.io.path.name
 
 /**
  * @author YJL
@@ -30,7 +31,7 @@ class FileMappingServiceImpl(
             throw ErrorCode.BAD_HEADER.data("bad hash")
         val type: MediaType
         file.inputStream().buffered().use {
-            type = FileDetector.detect(it, null)
+            type = FileDetector.detect(it, path.name)
         }
         fileMappingMapper.insert(
             FileMapping(
