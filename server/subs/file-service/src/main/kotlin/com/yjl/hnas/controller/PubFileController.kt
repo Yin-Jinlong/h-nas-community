@@ -54,10 +54,11 @@ class PubFileController(
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.deUrl.trim().ifEmpty { "/" }
 
-        val files = virtualFileService.getFilesByParent(pubFileSystem.getPath(p).toAbsolutePath())
+        val pp = pubFileSystem.getPath(p).toAbsolutePath()
+        val files = virtualFileService.getFilesByParent(pp)
 
         return files.map {
-            it.toFileInfo(previewGeneratorFactory, fileMappingService)
+            it.toFileInfo(pp, previewGeneratorFactory, fileMappingService)
         }.sorted()
     }
 

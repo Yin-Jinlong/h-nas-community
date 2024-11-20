@@ -6,6 +6,7 @@ import com.yjl.hnas.entity.IVFile
  * 文件信息
  *
  * @property name 文件名
+ * @property dir 文件路径
  * @property fileType 文件类型
  * @property type 文件类型
  * @property subType 文件子类型
@@ -18,6 +19,7 @@ import com.yjl.hnas.entity.IVFile
  */
 data class FileInfo(
     val name: String,
+    val dir: String,
     val fileType: IVFile.Type,
     val type: String,
     val subType: String,

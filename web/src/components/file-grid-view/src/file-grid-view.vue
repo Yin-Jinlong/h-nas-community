@@ -50,7 +50,7 @@ import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
 const previewPath = computed(() => {
     if (props.info.preview) {
-        return `api/file/public/preview?path=${props.dir}/${props.info.name}`
+        return `api/file/public/preview?path=${props.info.dir}/${props.info.name}`
     }
 })
 const emits = defineEmits({

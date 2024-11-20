@@ -56,8 +56,7 @@
                          class="file-box"
                          data-fill-size data-flex-column-center
                          @click="showPreview(f)">
-                        <file-grid-view :dir="nowPaths.join('/')"
-                                        :info="f"
+                        <file-grid-view :info="f"
                                         @click="onClick"
                                         @dblclick="onDblClick"/>
                         <div class="file-name">{{ f.name }}</div>
@@ -88,7 +87,7 @@
                     </template>
                     <template #default>
                         <div data-flex>
-                            <file-grid-view v-if="activeFile" :dir="nowPaths.join('/')" :info="activeFile"/>
+                            <file-grid-view v-if="activeFile" :info="activeFile"/>
                             <table style="margin-left: 1em">
                                 <tbody>
                                 <tr v-for="r in infoTable">
@@ -441,6 +440,7 @@ onMounted(() => {
 })
 
 watch(() => route.params.path as string[] | undefined, async (nv?: string[]) => {
+    files.length = 0
     nowPaths.length = 0
     if (nv?.length) {
         if (!nv[0].length) {
@@ -448,7 +448,6 @@ watch(() => route.params.path as string[] | undefined, async (nv?: string[]) => 
         }
         nowPaths.push(...nv)
     }
-    files.length = 0
     updateFiles()
 }, {
     immediate: true
