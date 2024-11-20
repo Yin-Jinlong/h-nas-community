@@ -67,8 +67,8 @@ function catchError(e: AxiosError<any> | RespData<any>): undefined {
     }
 }
 
-async function getFiles(path: string) {
-    return get<FileInfo[]>('api/file/files', {
+async function getPublicFiles(path: string) {
+    return get<FileInfo[]>('api/file/public/files', {
         params: {
             path: path
         }
@@ -77,7 +77,7 @@ async function getFiles(path: string) {
         .catch(catchError)
 }
 
-async function deleteFile(path: string, pub: boolean) {
+async function deletePublicFile(path: string) {
     return del<void>('api/file/public', {
         headers: FORM_HEADER,
         params: {
@@ -88,11 +88,10 @@ async function deleteFile(path: string, pub: boolean) {
         .catch(catchError)
 }
 
-async function newFolder(folder: string, uid: number, isPublic: boolean) {
-    return post<boolean>('api/file/folder', {
+async function newPublicFolder(folder: string, uid: number) {
+    return post<boolean>('api/file/public/folder', {
         path: folder,
         user: uid,
-        'public': isPublic
     }, {
         headers: FORM_HEADER
     })
@@ -134,6 +133,10 @@ async function logon(userName: string, password: string) {
         .catch(catchError)
 }
 
+function publicPreview(path: string) {
+    return `api/file/public?path=${path}`
+}
+
 async function getHash(file: File): Promise<string> {
     const sha256 = CryptoJs.algo.SHA256.create()
 
@@ -170,10 +173,10 @@ async function getHash(file: File): Promise<string> {
     })
 }
 
-async function upload(path: string, file: File, pub: boolean = true) {
+async function uploadPublic(path: string, file: File) {
     return new Promise(async resolve => {
         let hash = await getHash(file)
-        post<boolean>(pub ? 'api/file/public/upload' : '', file, {
+        post<boolean>('api/file/public/upload', file, {
             headers: {
                 'Authorization': token.value,
                 'Content-ID': Base64.encodeURL(path + '/' + file.name),
@@ -190,10 +193,11 @@ const API = {
     login,
     tryLogin,
     logon,
-    getFiles,
-    deleteFile,
-    newFolder,
-    upload
+    getPublicFiles,
+    deletePublicFile,
+    newPublicFolder,
+    uploadPublic,
+    publicPreview
 }
 
 export default API

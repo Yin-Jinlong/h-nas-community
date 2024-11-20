@@ -296,7 +296,7 @@ function getPath(name: string) {
 }
 
 function toImageUrl(name: string) {
-    return `api/file/public/get?path=${getPath(name)}`
+    return API.publicPreview(getPath(name))
 }
 
 function showPreview(f: FileInfo,) {
@@ -307,7 +307,7 @@ function showPreview(f: FileInfo,) {
 }
 
 function updateFiles() {
-    API.getFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
+    API.getPublicFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
         if (!data)
             return
         files.length = 0
@@ -334,7 +334,7 @@ function newFolder(name: string, ok: () => void) {
         HMessage.error('没有登录！')
         return
     }
-    API.newFolder(getPath(name), uid, true).then(res => {
+    API.newPublicFolder(getPath(name), uid).then(res => {
         if (res) {
             HMessage.success('创建成功')
             update()
@@ -351,7 +351,7 @@ function onCommand(args: [string, FileInfo]) {
     let [cmd, f] = args
     switch (cmd) {
         case 'del':
-            API.deleteFile(getPath(f.name), true).then(res => {
+            API.deletePublicFile(getPath(f.name)).then(res => {
                 if (res) {
                     HMessage.success('删除成功')
                     update()
@@ -411,7 +411,7 @@ function onDragEnd(e: DragEvent) {
 }
 
 async function upload(file: File) {
-    API.upload(nowPaths.join('/'), file).then(res => {
+    API.uploadPublic(nowPaths.join('/'), file).then(res => {
         if (res) {
             HMessage.success('上传成功')
             updateFiles()

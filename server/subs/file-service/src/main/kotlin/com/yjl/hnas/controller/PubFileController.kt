@@ -5,7 +5,10 @@ import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.entity.view.VirtualFile
 import com.yjl.hnas.error.ClientError
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.*
+import com.yjl.hnas.fs.PubFileSystem
+import com.yjl.hnas.fs.PubFileSystemProvider
+import com.yjl.hnas.fs.VirtualFileSystem
+import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.attr.FileAttribute
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
@@ -23,16 +26,14 @@ import java.io.File
 import java.nio.file.Files
 import kotlin.io.path.name
 
-
 /**
  * @author YJL
  */
 @Controller
-@RequestMapping("/file")
-class ContentController(
+@RequestMapping("/api/file/public")
+class PubFileController(
     val previewGeneratorFactory: PreviewGeneratorFactory,
     val pubFileSystemProvider: PubFileSystemProvider,
-    val userFileSystemProvider: UserFileSystemProvider,
     val virtualFileSystemProvider: VirtualFileSystemProvider,
     val fileMappingService: FileMappingService,
     val virtualFileService: VirtualFileService
@@ -47,40 +48,30 @@ class ContentController(
         virtualFileSystem = virtualFileSystemProvider.getFileSystem()
     }
 
-    @GetMapping("/files")
-    fun getFiles(@NotBlank(message = "path 不能为空") path: String, token: UserToken?): List<FileInfo> {
+    @GetMapping("files")
+    fun getFiles(@NotBlank(message = "path 不能为空") path: String): List<FileInfo> {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.deUrl.trim().ifEmpty { "/" }
 
-        val files = if (token == null) {
-            virtualFileService.getFilesByParent(pubFileSystem.getPath(p).toAbsolutePath())
-        } else {
-            val fs = userFileSystemProvider.getFileSystem(token.data.uid)
-            virtualFileService.getFilesByParent(fs.getPath(p).toAbsolutePath())
-        }
+        val files = virtualFileService.getFilesByParent(pubFileSystem.getPath(p).toAbsolutePath())
 
         return files.map {
             it.toFileInfo(previewGeneratorFactory, fileMappingService)
         }.sorted()
     }
 
-    @PostMapping("/folder")
+    @PostMapping("folder")
     fun createFolder(
         @RequestParam("path") path: String,
         @ShouldLogin user: UserToken,
-        @RequestParam(defaultValue = "false") public: Boolean,
     ) {
-        if (public) {
-            val p = pubFileSystem.getPath(path.deUrl).toAbsolutePath()
-            pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
-            return
-        }
-        TODO()
+        val p = pubFileSystem.getPath(path.deUrl).toAbsolutePath()
+        pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
     }
 
     @Async
-    @PostMapping("/public/upload")
+    @PostMapping("upload")
     fun uploadFile(
         @ShouldLogin token: UserToken,
         @RequestHeader("Content-ID") pathBase64: String,
@@ -129,7 +120,7 @@ class ContentController(
         }
     }
 
-    @DeleteMapping("/public")
+    @DeleteMapping
     fun deleteFile(
         @ShouldLogin token: UserToken,
         path: String,
@@ -139,7 +130,7 @@ class ContentController(
             throw ErrorCode.NO_SUCH_FILE.data(path)
     }
 
-    @GetMapping("/public/preview")
+    @GetMapping("preview")
     fun getPreview(path: String): File {
         val pp = pubFileSystem.getPath(path.deUrl)
         try {
@@ -153,7 +144,7 @@ class ContentController(
         }
     }
 
-    @GetMapping("/public/get")
+    @GetMapping
     fun getPublicFile(path: String): File {
         val pp = pubFileSystem.getPath(path.deUrl)
         val vf = virtualFileService.getFile(pp) as VirtualFile?

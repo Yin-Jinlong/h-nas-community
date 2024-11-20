@@ -8,14 +8,10 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/api/user/**
-          filters:
-            - StripPrefix=1
         - id: file
           uri: lb://file-service
           predicates:
             - Path=/api/file/**
-          filters:
-            - StripPrefix=1
       discovery:
         locator:
           enabled: true
