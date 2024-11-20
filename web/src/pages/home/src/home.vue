@@ -36,12 +36,15 @@
             </div>
             <div data-relative
                  style="flex: 1"
+                 @dragenter="onDragStart"
                  @dragleave="onDragCancel"
-                 @mouseout="onDragCancel"
-                 @drop.prevent="onDragEnd"
-                 @dragenter.prevent="onDragStart"
-                 @dragover.prevent="onDragOver">
-                <div :class="{'dragger':true,'drag':uploadIsDragging}"
+                 @dragover="onDragOver"
+                 @drop="onDragEnd"
+                 @mouseenter="mouseIn=true"
+                 @mouseleave="mouseIn=false"
+                 @mouseout="onDragCancel">
+                <div ref="draggerEle"
+                     :class="{'dragger':true,'drag':uploadIsDragging}"
                      data-absolute
                      data-fill-size
                      data-flex-center>
@@ -272,6 +275,8 @@ const infoTable = computed(() => {
         }
     ]
 })
+const draggerEle = ref<HTMLDivElement>()
+const mouseIn = ref(false)
 
 function onChangeRoot(cmdArr: boolean[]) {
     isPublic.value = cmdArr[0]
@@ -384,24 +389,28 @@ function accept(e: DragEvent): boolean {
 }
 
 function onDragStart(e: DragEvent) {
+    if (mouseIn.value)
+        return
     checkCancel()
-    uploadIsDragging.value = true
     if (!accept(e))
         return
+    e.preventDefault()
+    uploadIsDragging.value = true
     uploadInfoText.value = '松开开始上传'
 }
 
 function onDragOver(e: DragEvent) {
-    uploadIsDragging.value = true
-    checkCancel()
-    if (!accept(e))
+    if (!accept(e) || !uploadIsDragging.value)
         return
+    e.preventDefault()
+    checkCancel()
 }
 
 function onDragEnd(e: DragEvent) {
-    uploadIsDragging.value = false
-    if (!accept(e))
+    if (!accept(e) || !uploadIsDragging.value)
         return
+    e.preventDefault()
+    uploadIsDragging.value = false
     let files = e.dataTransfer!.files
     console.log(files)
     for (let i = 0; i < files.length; i++) {
