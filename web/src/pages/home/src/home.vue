@@ -257,7 +257,7 @@ const infoTable = computed(() => {
         },
         {
             label: '类型',
-            value: f?.type
+            value: `${f?.type}/${f?.subType}`
         },
         {
             label: '创建时间',
