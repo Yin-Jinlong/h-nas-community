@@ -32,7 +32,7 @@ abstract class Kotlin2DTS : AbstractKotlin2DTSTask() {
 
     override fun preRun() {
         linkEnv.addKotlinSourceRoots(links.toList())
-        env.addKotlinSourceRoots(sourceDirs)
+        env.addKotlinSourceRoots(sourceDirs.get())
         linkEnv.parseNodes {
             linkMap[it] = this
         }
