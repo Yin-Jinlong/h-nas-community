@@ -6,6 +6,11 @@
             </h-button>
         </div>
         <div>
+            <h-button @click="emits('refresh')">
+                <el-icon>
+                    <Refresh/>
+                </el-icon>
+            </h-button>
             <el-dropdown v-if="user">
                 <template #default>
                     <el-button>
@@ -152,6 +157,7 @@
 <script lang="ts" setup>
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
+import {Refresh} from '@element-plus/icons-vue'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
 import {FormInstance, FormRules} from 'element-plus'
 import {computed} from 'vue'
@@ -163,7 +169,8 @@ const loginFormEl = ref<FormInstance>()
 const logonFormEl = ref<FormInstance>()
 const props = defineProps<TopBarProps>()
 const emits = defineEmits({
-    newFolder: (name: string, ok: () => void) => void {}
+    newFolder: (name: string, ok: () => void) => void {},
+    refresh: () => void {},
 })
 
 

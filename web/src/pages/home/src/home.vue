@@ -1,5 +1,5 @@
 <template>
-    <top-bar :on-uploaded="onUploaded" @new-folder="newFolder"/>
+    <top-bar :on-uploaded="onUploaded" @refresh="update" @new-folder="newFolder"/>
     <el-scrollbar height="100%">
         <div class="contents"
              data-fill-size
@@ -295,7 +295,7 @@ const mouseIn = ref(false)
 
 function onChangeRoot(cmdArr: boolean[]) {
     isPublic.value = cmdArr[0]
-    updateFiles()
+    update()
 }
 
 function toPath(i: number) {
@@ -345,7 +345,6 @@ function updateFiles() {
     API.getPublicFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
         if (!data)
             return
-        files.length = 0
 
         console.log('files', data)
         nowIndex.value = -1
@@ -366,7 +365,12 @@ function updateFiles() {
 }
 
 function update() {
-    updateFiles()
+    nowIndex.value = -2
+    files.length = 0
+    images.length = 0
+    setTimeout(() => {
+        updateFiles()
+    }, 400)
 }
 
 function newFolder(name: string, ok: () => void) {
@@ -459,7 +463,7 @@ async function upload(file: File) {
     API.uploadPublic(nowPaths.join('/'), file).then(res => {
         if (res) {
             HMessage.success('上传成功')
-            updateFiles()
+            update()
         }
     })
 }
@@ -494,7 +498,7 @@ watch(() => route.params.path as string[] | undefined, async (nv?: string[]) => 
         }
         nowPaths.push(...nv)
     }
-    updateFiles()
+    update()
 }, {
     immediate: true
 })
