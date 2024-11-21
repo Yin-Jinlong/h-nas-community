@@ -20,7 +20,7 @@ import kotlin.io.path.pathString
  */
 @Service
 class PubFileServiceImpl(
-    val vFileService: VFileService,
+    val virtualFileService: VirtualFileService,
     val fileMappingService: FileMappingService,
     virtualFileSystemProvider: VirtualFileSystemProvider,
 ) : PubFileService {
@@ -28,12 +28,12 @@ class PubFileServiceImpl(
     val virtualFileSystem = virtualFileSystemProvider.getFileSystem()
 
     override fun checkAccess(path: PubPath, vararg modes: AccessMode) {
-        if (!vFileService.exists(path))
+        if (!virtualFileService.exists(path))
             throw NoSuchFileException(path.absolutePathString())
     }
 
     override fun toVirtualPath(path: PubPath): VirtualPath {
-        val vf = vFileService.get(path)
+        val vf = virtualFileService.get(path)
         val mapping = vf?.hash?.let { fileMappingService.getMapping(it) }
 
         if (mapping == null) {
@@ -53,25 +53,25 @@ class PubFileServiceImpl(
     }
 
     override fun fileExists(path: PubPath): Boolean {
-        val id = vFileService.genId(path)
-        return vFileService.exists(id)
+        val id = virtualFileService.genId(path)
+        return virtualFileService.exists(id)
     }
 
     @Transactional
     override fun createFolder(path: PubPath, owner: Uid) {
-        vFileService.addFolder(owner, path.toAbsolutePath())
+        virtualFileService.addFolder(owner, path.toAbsolutePath())
     }
 
     @Transactional
     override fun deleteFile(path: PubPath) {
-        val vf = vFileService.get(path)
+        val vf = virtualFileService.get(path)
         if (vf == null)
             throw NoSuchFileException(path.pathString)
         if (vf.isFolder()) {
-            vFileService.delete(path)
+            virtualFileService.delete(path)
             return
         }
-        val count = vFileService.getHandlerCount(
+        val count = virtualFileService.getHandlerCount(
             vf.hash ?: throw IllegalStateException("hash is null")
         )
         if (count == 0)
@@ -81,11 +81,11 @@ class PubFileServiceImpl(
                 ?: throw IllegalStateException("hash not found: ${vf.hash}")
             val vp = virtualFileSystem.getPath("data", fm.type, fm.subType, fm.hash)
             val f = vp.toFile()
-            vFileService.delete(path)
+            virtualFileService.delete(path)
             fileMappingService.deleteMapping(vf.hash!!)
             f.del()
         } else {
-            vFileService.delete(path)
+            virtualFileService.delete(path)
         }
     }
 }

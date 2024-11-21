@@ -16,11 +16,11 @@ import org.hibernate.annotations.Comment
 data class FileMapping(
 
     @Id
-    @Column(length = IVFile.HASH_LENGTH)
+    @Column(length = IVirtualFile.HASH_LENGTH)
     @Comment("文件hash, base64<<sha256<<data")
     override var hash: String = "",
 
-    @Column(length = IVFile.PATH_LENGTH, nullable = false)
+    @Column(length = IVirtualFile.PATH_LENGTH, nullable = false)
     @Comment("文件路径")
     override var dataPath: String = "",
 

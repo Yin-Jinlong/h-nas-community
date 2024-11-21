@@ -17,7 +17,7 @@ typealias VFileId = String
         Index(name = "owner", columnList = "owner"),
     ]
 )
-data class VFile(
+data class VirtualFile(
 
     /**
      * 文件id
@@ -26,19 +26,19 @@ data class VFile(
      * - 私有文件 `uid path`
      */
     @Id
-    @Column(length = IVFile.ID_LENGTH)
+    @Column(length = IVirtualFile.ID_LENGTH)
     @Comment("文件id, base64<<sha256<<(access,full_path)")
     override var fid: VFileId = "",
 
-    @Column(length = IVFile.NAME_LENGTH, nullable = false)
+    @Column(length = IVirtualFile.NAME_LENGTH, nullable = false)
     @Comment("文件名")
     override var name: String = "",
 
-    @Column(length = IVFile.ID_LENGTH)
+    @Column(length = IVirtualFile.ID_LENGTH)
     @Comment("所在目录")
     override var parent: VFileId? = null,
 
-    @Column(length = IVFile.HASH_LENGTH)
+    @Column(length = IVirtualFile.HASH_LENGTH)
     @Comment("文件hash")
     override var hash: String? = null,
 
@@ -57,4 +57,4 @@ data class VFile(
     @Column(columnDefinition = "bigint default(-1)")
     @Comment("文件/目录大小")
     override var size: Long = 0
-) : IVFile
+) : IVirtualFile

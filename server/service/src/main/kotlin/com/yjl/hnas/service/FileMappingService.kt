@@ -2,7 +2,6 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.IFileMapping
 import com.yjl.hnas.fs.PubPath
-import org.apache.tika.mime.MediaType
 
 /**
  * @author YJL
@@ -17,7 +16,7 @@ interface FileMappingService {
 
     fun getSize(hash: String): Long
 
-    fun getPreview(hash: String, dataPath: String, mediaType: MediaType): String?
+    fun getPreview(mapping: IFileMapping): String?
 
     companion object {
         var PreviewDir = "cache/缩略图"

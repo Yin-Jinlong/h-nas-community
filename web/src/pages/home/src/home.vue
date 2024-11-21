@@ -55,14 +55,15 @@
                 <el-empty v-if="!files.length"/>
                 <div class="file-container">
                     <div v-for="(f,i) in files"
-                         :key="f.name"
+                         :key="f.info.name"
                          class="file-box"
                          data-fill-size data-flex-column-center
-                         @click="showPreview(f)">
-                        <file-grid-view v-model="files[i]"
+                         @click="showPreview(f.info)">
+                        <file-grid-view v-model="files[i].extra"
+                                        :info="f.info"
                                         @click="onClick"
                                         @dblclick="onDblClick"/>
-                        <div class="file-name">{{ f.name }}</div>
+                        <div class="file-name">{{ f.info.name }}</div>
                         <div class="file-op-menu">
                             <el-dropdown @command="onCommand">
                                 <template #default>
@@ -86,11 +87,11 @@
                 </div>
                 <el-dialog v-model="showFileInfoDialog">
                     <template #header>
-                        <h3>{{ activeFile?.name ?? '' }}</h3>
+                        <h3>{{ activeFile?.info?.name ?? '' }}</h3>
                     </template>
                     <template #default>
                         <div data-flex>
-                            <file-grid-view v-if="activeFile" v-model="activeFile"/>
+                            <file-grid-view v-if="activeFile" v-model="activeFile.extra" :info="activeFile.info"/>
                             <table style="margin-left: 1em">
                                 <tbody>
                                 <tr v-for="r in infoTable">
@@ -231,6 +232,11 @@ import {computed} from 'vue'
 import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
 
+interface FileWrapper {
+    info: FileInfo
+    extra: FileExtraInfo
+}
+
 const route = useRoute()
 const router = useRouter()
 
@@ -239,39 +245,39 @@ const isPublic = ref(true)
 const uploadIsDragging = ref(false)
 const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
-const files = reactive<FileInfo[]>([])
+const files = reactive<FileWrapper[]>([])
 const showFileInfoDialog = ref(false)
 const previewMap = reactive(new Map<FileInfo, number>())
 const previewList = computed<string[]>(() => {
-    return files.filter(f => f.preview && f.type === 'image').map(f => toImageUrl(f.name))
+    return files.filter(f => f.extra.preview && f.extra.type === 'image').map(f => toImageUrl(f.info.name))
 })
-const activeFile = ref<FileInfo>()
+const activeFile = ref<FileWrapper>()
 const infoTable = computed(() => {
     let f = activeFile.value
     return [
         {
             label: '路径',
-            value: getPath(f?.name ?? '')
+            value: getPath(f?.info?.name ?? '')
         },
         {
             label: '文件类型',
-            value: f?.fileType === 'FILE' ? '文件' : '目录'
+            value: f?.info?.fileType === 'FILE' ? '文件' : '目录'
         },
         {
             label: '类型',
-            value: `${f?.type}/${f?.subType}`
+            value: `${f?.extra?.type}/${f?.extra?.subType}`
         },
         {
             label: '创建时间',
-            value: new Date(f?.createTime ?? 0).toLocaleString()
+            value: new Date(f?.info?.createTime ?? 0).toLocaleString()
         },
         {
             label: '修改时间',
-            value: new Date(f?.updateTime ?? 0).toLocaleString()
+            value: new Date(f?.info?.updateTime ?? 0).toLocaleString()
         },
         {
             label: '大小',
-            value: toHumanSize(f?.size ?? 0)
+            value: toHumanSize(f?.info?.size ?? 0)
         }
     ]
 })
@@ -310,6 +316,17 @@ function showPreview(f: FileInfo,) {
     }
 }
 
+function getInfo(i: number, file: FileWrapper) {
+    API.getPublicFileExtraInfo(file.info.dir + '/' + file.info.name).then(res => {
+        if (!res)
+            return
+        file.extra = res
+        if (res.preview && res.type == 'image') {
+            previewMap.set(file.info, i++)
+        }
+    })
+}
+
 function updateFiles() {
     API.getPublicFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
         if (!data)
@@ -320,10 +337,16 @@ function updateFiles() {
 
         console.log('files', data)
         data.forEach(f => {
-            if (f.preview && f.type == 'image') {
-                previewMap.set(f, i++)
+            let file = {
+                info: f,
+                extra: {
+                    preview: '',
+                    subType: '?',
+                    type: '?'
+                }
             }
-            files.push(f)
+            files.push(file)
+            getInfo(i++, file)
         })
     })
 }
@@ -351,11 +374,11 @@ function onUploaded() {
     update()
 }
 
-function onCommand(args: [string, FileInfo]) {
+function onCommand(args: [string, FileWrapper]) {
     let [cmd, f] = args
     switch (cmd) {
         case 'del':
-            API.deletePublicFile(getPath(f.name)).then(res => {
+            API.deletePublicFile(getPath(f.info.name)).then(res => {
                 if (res) {
                     HMessage.success('删除成功')
                     update()

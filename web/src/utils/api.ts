@@ -77,8 +77,8 @@ async function getPublicFiles(path: string) {
         .catch(catchError)
 }
 
-async function getPublicFileInfo(path: string) {
-    return get<FileInfo>('api/file/public/info', {
+async function getPublicFileExtraInfo(path: string) {
+    return get<FileExtraInfo>('api/file/public/info', {
         params: {
             path: path
         }
@@ -208,7 +208,7 @@ const API = {
     tryLogin,
     logon,
     getPublicFiles,
-    getPublicFileInfo,
+    getPublicFileExtraInfo,
     deletePublicFile,
     newPublicFolder,
     uploadPublic,

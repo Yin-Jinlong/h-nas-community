@@ -22,7 +22,7 @@
             </template>
             <template #error>
                 <el-icon size="100%">
-                    <component :is="fileIcon" v-if="info.preview===undefined"/>
+                    <component :is="fileIcon" v-if="fileIcon"/>
                     <el-skeleton v-else animated data-fill-size>
                         <template #template>
                             <el-skeleton-item style="width: 8em;height: 8em" variant="image"/>
@@ -60,7 +60,7 @@ import API from '@/utils/api'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 import UnknownFile from './unknown-file.vue'
 
-const info = defineModel<FileInfo>({
+const extra = defineModel<FileExtraInfo>({
     required: true
 })
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
@@ -79,28 +79,44 @@ function onClick(e: MouseEvent) {
     if (clickTimeout) {
         clearTimeout(clickTimeout)
         clickTimeout = 0
-        emits('dblclick', e, info.value)
+        emits('dblclick', e, props.info)
     } else {
         clickTimeout = setTimeout(() => {
             clickTimeout = 0
-            emits('click', e, info.value)
+            emits('click', e, props.info)
         }, props.dbClickInterval) as unknown as number
     }
 }
 
-async function updateIcon(info: FileInfo) {
-    let map = IconMapping[info.type]
+async function updateIcon(extra: FileExtraInfo) {
+    let map = IconMapping[extra.type]
     if (!map)
         return
-    let icon = map[info.subType]
+    let icon = map[extra.subType]
     fileIcon.value = icon ? (await icon()).default : UnknownFile
 }
 
-onMounted(() => {
-    updateIcon(info.value)
+async function getExtra() {
+    let info = await API.getPublicFileExtraInfo(props.info.dir + '/' + props.info.name)
+    if (!info)
+        return
+    extra.value.preview = info.preview
+    extra.value.type = info.type
+    extra.value.subType = info.subType
+    return info
+}
+
+onMounted(async () => {
+    if (!extra.value.type) {
+        let info = await getExtra()
+        if (info)
+            await updateIcon(info)
+        return
+    }
+    await updateIcon(extra.value)
 })
 
-watch(info, (nv) => {
+watch(extra, (nv) => {
     if (nv.preview === undefined) {
         return
     }
@@ -110,10 +126,11 @@ watch(info, (nv) => {
     }
 
     async function retry() {
-        let i = await API.getPublicFileInfo(info.value.dir + '/' + info.value.name)
-        if (i?.preview?.length) {
-            info.value.preview = i.preview
-            previewPath.value = API.publicPreviewURL(i.preview)
+        let info = await getExtra()
+        if (!info || info.type == 'folder')
+            return
+        if (info.preview?.length) {
+            previewPath.value = API.publicPreviewURL(info.preview)
             return
         }
         setTimeout(() => {

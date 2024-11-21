@@ -11,7 +11,6 @@ import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.base64Url
 import com.yjl.hnas.utils.del
 import io.github.yinjinlong.md.sha256
-import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import kotlinx.coroutines.*
 import org.apache.tika.mime.MediaType
@@ -103,14 +102,15 @@ class FileMappingServiceImpl(
     }
 
     @Transactional
-    override fun getPreview(hash: String, dataPath: String, mediaType: MediaType): String? {
+    override fun getPreview(mapping: IFileMapping): String? = with(mapping) {
+        val mediaType = MediaType.parse("$type/$subType")
         if (!previewGeneratorFactory.canPreview(mediaType))
             return null
         val name = "$dataPath.jpg"
         val cache = File(FileMappingService.PreviewDir, name)
         if (cache.exists())
             return name
-        return synchronized(genPreviewTasks) {
+        return@with synchronized(genPreviewTasks) {
             if (!genPreviewTasks.contains(hash)) {
                 genPreviewTasks += name
                 scope.launch {

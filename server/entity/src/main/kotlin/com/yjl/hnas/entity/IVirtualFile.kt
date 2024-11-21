@@ -7,7 +7,7 @@ typealias VFileId = String
 /**
  * @author YJL
  */
-interface IVFile {
+interface IVirtualFile {
 
     /**
      * 文件id

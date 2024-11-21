@@ -1,6 +1,6 @@
 package com.yjl.hnas.data
 
-import com.yjl.hnas.entity.IVFile
+import com.yjl.hnas.entity.IVirtualFile
 
 /**
  * 文件信息
@@ -8,9 +8,6 @@ import com.yjl.hnas.entity.IVFile
  * @property name 文件名
  * @property dir 文件路径
  * @property fileType 文件类型
- * @property type 文件类型
- * @property subType 文件子类型
- * @property preview 预览
  * @property createTime 创建时间
  * @property updateTime 更新时间
  * @property size 文件大小
@@ -20,10 +17,7 @@ import com.yjl.hnas.entity.IVFile
 data class FileInfo(
     val name: String,
     val dir: String,
-    val fileType: IVFile.Type,
-    val type: String,
-    val subType: String,
-    val preview: String?,
+    val fileType: IVirtualFile.Type,
     val createTime: Long,
     val updateTime: Long,
     val size: Long

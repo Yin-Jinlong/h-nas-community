@@ -1,8 +1,9 @@
 package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
+import com.yjl.hnas.data.FileExtraInfo
 import com.yjl.hnas.data.FileInfo
-import com.yjl.hnas.entity.view.VirtualFile
+import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ClientError
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubFileSystem
@@ -46,11 +47,26 @@ class PubFileController(
     }
 
     @GetMapping("info")
-    fun getInfo(path: String): FileInfo {
+    fun getInfo(path: String): FileExtraInfo {
         val pp = pubFileSystem.getPath(path.deUrl)
-        return virtualFileService.getFile(pp)
-            ?.toFileInfo(pp.parent, fileMappingService)
+        val vf = virtualFileService.get(pp)
             ?: throw ErrorCode.NO_SUCH_FILE.data(path)
+        if (vf.hash != null) {
+            val fm = fileMappingService.getMapping(vf.hash!!)
+                ?: throw ErrorCode.NO_SUCH_FILE.data(path)
+            return FileExtraInfo(
+                preview = if (fm.preview)
+                    fileMappingService.getPreview(fm)
+                else null,
+                type = fm.type,
+                subType = fm.subType
+            )
+        } else {
+            return FileExtraInfo(
+                type = "folder",
+                subType = "folder"
+            )
+        }
     }
 
     @GetMapping("files")
@@ -60,7 +76,7 @@ class PubFileController(
         val p = path.deUrl.trim().ifEmpty { "/" }
 
         val pp = pubFileSystem.getPath(p).toAbsolutePath()
-        val files = virtualFileService.getFilesByParent(pp)
+        val files = virtualFileService.getByParent(pp)
 
         return files.map {
             it.toFileInfo(pp, fileMappingService)
@@ -145,13 +161,11 @@ class PubFileController(
     @GetMapping
     fun getPublicFile(path: String): File {
         val pp = pubFileSystem.getPath(path.deUrl)
-        val vf = virtualFileService.getFile(pp) as VirtualFile?
+        val vf = virtualFileService.get(pp) as VirtualFile?
             ?: throw ErrorCode.NO_SUCH_FILE.error
-        try {
-            val vp = vf.toVirtualPath(virtualFileSystem)
-            return vp.toFile()
-        } catch (e: IllegalStateException) {
-            throw ErrorCode.NO_SUCH_FILE.error
-        }
+        val map = fileMappingService.getMapping(
+            vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error
+        ) ?: throw ErrorCode.NO_SUCH_FILE.error
+        return File("data", map.dataPath)
     }
 }
