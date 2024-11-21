@@ -22,7 +22,7 @@
             </template>
             <template #error>
                 <el-icon size="100%">
-                    <unknown-file v-if="info.preview===undefined"/>
+                    <component :is="fileIcon" v-if="info.preview===undefined"/>
                     <el-skeleton v-else animated data-fill-size>
                         <template #template>
                             <el-skeleton-item style="width: 8em;height: 8em" variant="image"/>
@@ -55,6 +55,7 @@
 
 <script lang="ts" setup>
 import Folder from '@/components/file-grid-view/src/folder.vue'
+import {IconMapping} from '@/components/file-grid-view/src/icon-mapping'
 import API from '@/utils/api'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 import UnknownFile from './unknown-file.vue'
@@ -64,6 +65,7 @@ const info = defineModel<FileInfo>({
 })
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
 const previewPath = ref<string | null>()
+const fileIcon = shallowRef<Component>()
 const emits = defineEmits({
     'click': (e: MouseEvent, info: FileInfo) => {
     },
@@ -85,6 +87,18 @@ function onClick(e: MouseEvent) {
         }, props.dbClickInterval) as unknown as number
     }
 }
+
+async function updateIcon(info: FileInfo) {
+    let map = IconMapping[info.type]
+    if (!map)
+        return
+    let icon = map[info.subType]
+    fileIcon.value = icon ? (await icon()).default : UnknownFile
+}
+
+onMounted(() => {
+    updateIcon(info.value)
+})
 
 watch(info, (nv) => {
     if (nv.preview === undefined) {
