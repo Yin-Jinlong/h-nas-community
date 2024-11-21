@@ -129,7 +129,11 @@ watch(extra, (nv) => {
         let info = await getExtra()
         if (!info || info.type == 'folder')
             return
-        if (info.preview?.length) {
+        await updateIcon(info)
+        if (info.preview === undefined)
+            return
+
+        if (info.preview.length != 0) {
             previewPath.value = API.publicPreviewURL(info.preview)
             return
         }
