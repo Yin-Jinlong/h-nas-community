@@ -58,7 +58,7 @@
                          :key="f.info.name"
                          class="file-box"
                          data-fill-size data-flex-column-center
-                         @click="showPreview(f.info)">
+                         @click="showPreview(f)">
                         <file-grid-view v-model="files[i].extra"
                                         :info="f.info"
                                         @click="onClick"
@@ -247,7 +247,7 @@ const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
 const files = reactive<FileWrapper[]>([])
 const showFileInfoDialog = ref(false)
-const previewMap = reactive(new Map<FileInfo, number>())
+const previewMap = reactive(new Map<FileWrapper, number>())
 const previewList = computed<string[]>(() => {
     return files.filter(f => f.extra.preview && f.extra.type === 'image').map(f => toImageUrl(f.info.name))
 })
@@ -309,20 +309,20 @@ function toImageUrl(name: string) {
     return API.publicFileURL(getPath(name))
 }
 
-function showPreview(f: FileInfo,) {
+function showPreview(f: FileWrapper) {
     let i = previewMap.get(f)
     if (i !== undefined) {
         nowIndex.value = i
     }
 }
 
-function getInfo(i: number, file: FileWrapper) {
+function getInfo(file: FileWrapper) {
     API.getPublicFileExtraInfo(file.info.dir + '/' + file.info.name).then(res => {
         if (!res)
             return
         file.extra = res
         if (res.preview && res.type == 'image') {
-            previewMap.set(file.info, i++)
+            previewMap.set(file, previewMap.size)
         }
     })
 }
@@ -333,7 +333,6 @@ function updateFiles() {
             return
         files.length = 0
         previewMap.clear()
-        let i = 0
 
         console.log('files', data)
         data.forEach(f => {
@@ -346,7 +345,7 @@ function updateFiles() {
                 }
             }
             files.push(file)
-            getInfo(i++, file)
+            getInfo(file)
         })
     })
 }
