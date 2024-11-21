@@ -3,34 +3,35 @@
          class="box"
          data-flex-center
          @click="onClick">
-        <el-image
-                v-if="info.fileType==='FILE'"
-                :alt="info.name"
-                :src="previewPath??''"
-                :title="info.name"
-                class="img"
-                fit="cover"
-                loading="lazy">
-            <template #placeholder>
-                <el-icon size="100%">
-                    <el-skeleton animated data-fill-size>
-                        <template #template>
-                            <el-skeleton-item style="width: 8em;height: 8em" variant="image"/>
-                        </template>
-                    </el-skeleton>
-                </el-icon>
-            </template>
-            <template #error>
-                <el-icon size="100%">
-                    <component :is="fileIcon" v-if="fileIcon"/>
-                    <el-skeleton v-else animated data-fill-size>
-                        <template #template>
-                            <el-skeleton-item style="width: 8em;height: 8em" variant="image"/>
-                        </template>
-                    </el-skeleton>
-                </el-icon>
-            </template>
-        </el-image>
+        <div v-if="info.fileType==='FILE'" class="img" data-flex-center>
+            <el-icon v-if="(previewPath?.length??0)<1" size="100%">
+                <el-skeleton :loading="previewPath===undefined" animated data-fill-size>
+                    <template #template>
+                        <el-skeleton-item :variant="modelValue.type=='image'?'image':'rect'"
+                                          style="width: 8em;height: 8em"/>
+                    </template>
+                    <component :is="fileIcon"/>
+                </el-skeleton>
+            </el-icon>
+            <el-image v-else
+                      :alt="info.name"
+                      :src="previewPath"
+                      :title="info.name"
+                      class="img"
+                      fit="cover"
+                      loading="lazy">
+                <template #placeholder>
+                    <el-icon size="100%">
+                        <el-skeleton animated data-fill-size>
+                            <template #template>
+                                <el-skeleton-item style="width: 8em;height: 8em"
+                                                  variant="image"/>
+                            </template>
+                        </el-skeleton>
+                    </el-icon>
+                </template>
+            </el-image>
+        </div>
         <el-icon v-else size="100%">
             <folder/>
         </el-icon>
@@ -51,6 +52,11 @@
   }
 
 }
+
+.img {
+  height: 100%;
+  width: 100%;
+}
 </style>
 
 <script lang="ts" setup>
@@ -64,7 +70,7 @@ const extra = defineModel<FileExtraInfo>({
     required: true
 })
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
-const previewPath = ref<string | null>()
+const previewPath = ref<string | undefined>()
 const fileIcon = shallowRef<Component>()
 const emits = defineEmits({
     'click': (e: MouseEvent, info: FileInfo) => {
@@ -120,7 +126,7 @@ watch(extra, (nv) => {
     if (nv.preview === undefined) {
         return
     }
-    if (nv.preview?.length) {
+    if (nv.preview != '') {
         previewPath.value = API.publicPreviewURL(nv.preview!)
         return
     }
@@ -130,8 +136,10 @@ watch(extra, (nv) => {
         if (!info || info.type == 'folder')
             return
         await updateIcon(info)
-        if (info.preview === undefined)
+        if (info.preview === undefined) {
+            previewPath.value = ''
             return
+        }
 
         if (info.preview.length != 0) {
             previewPath.value = API.publicPreviewURL(info.preview)

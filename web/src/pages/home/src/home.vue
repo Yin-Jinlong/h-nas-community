@@ -52,7 +52,14 @@
                         {{ uploadInfoText }}
                     </div>
                 </div>
-                <el-empty v-if="!files.length"/>
+                <el-empty v-if="nowIndex>-2&&!files.length"/>
+                <el-skeleton v-if="nowIndex==-2" animated>
+                    <template #template>
+                        <div class="file-container">
+                            <el-skeleton-item v-for="i in 8" style="width: 8em;height: 8em" variant="rect"/>
+                        </div>
+                    </template>
+                </el-skeleton>
                 <div class="file-container">
                     <div v-for="(f,i) in files"
                          :key="f.info.name"
@@ -242,7 +249,7 @@ interface FileWrapper {
 const route = useRoute()
 const router = useRouter()
 
-const nowIndex = ref(-1)
+const nowIndex = ref(-2)
 const isPublic = ref(true)
 const uploadIsDragging = ref(false)
 const uploadInfoText = ref('')
@@ -341,6 +348,7 @@ function updateFiles() {
         files.length = 0
 
         console.log('files', data)
+        nowIndex.value = -1
         data.forEach(f => {
             let file = {
                 index: files.length,
