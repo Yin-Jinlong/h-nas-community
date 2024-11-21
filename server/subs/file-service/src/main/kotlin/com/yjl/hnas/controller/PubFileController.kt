@@ -155,7 +155,7 @@ class PubFileController(
     @GetMapping("preview")
     fun getPreview(path: String): File {
         val pp = virtualFileSystem.getPath(path.deUrl).toAbsolutePath()
-        return File(FileMappingService.PreviewDir, pp.path)
+        return FileMappingService.previewFile(pp.path)
     }
 
     @GetMapping
@@ -166,6 +166,6 @@ class PubFileController(
         val map = fileMappingService.getMapping(
             vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error
         ) ?: throw ErrorCode.NO_SUCH_FILE.error
-        return File("data", map.dataPath)
+        return FileMappingService.dataFile(map.dataPath)
     }
 }
