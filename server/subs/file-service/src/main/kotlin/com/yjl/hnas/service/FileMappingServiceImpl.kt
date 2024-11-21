@@ -101,18 +101,37 @@ class FileMappingServiceImpl(
         }
     }
 
-    @Transactional
-    override fun getPreview(mapping: IFileMapping): String? = with(mapping) {
-        val mediaType = MediaType.parse("$type/$subType")
+    fun IFileMapping.type() = MediaType.parse("$type/$subType")
+
+    fun previewFile(dataPath: String): File = File(FileMappingService.PreviewDir, "$dataPath.jpg")
+
+    override fun getPreviewFile(mapping: IFileMapping): File? = with(mapping) {
+        val mediaType = type()
         if (!previewGeneratorFactory.canPreview(mediaType))
             return null
-        val name = "$dataPath.jpg"
-        val cache = File(FileMappingService.PreviewDir, name)
+        val cache = previewFile(dataPath)
         if (cache.exists())
-            return name
+            cache
+        else null
+    }
+
+    @Transactional
+    override fun getPreview(mapping: IFileMapping): String? = with(mapping) {
+        val mediaType = type()
+        if (!previewGeneratorFactory.canPreview(mediaType))
+            return null
+        val cache = previewFile(dataPath)
+        if (cache.exists())
+            return "$dataPath.jpg"
+        else {
+            cache.parentFile.apply {
+                if (!exists())
+                    mkdirs()
+            }
+        }
         return@with synchronized(genPreviewTasks) {
             if (!genPreviewTasks.contains(hash)) {
-                genPreviewTasks += name
+                genPreviewTasks += cache.name
                 scope.launch {
                     genPreview(cache, hash, dataPath, mediaType)
                     synchronized(genPreviewTasks) {

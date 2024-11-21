@@ -17,6 +17,8 @@ interface FileMappingService {
 
     fun getSize(hash: String): Long
 
+    fun getPreviewFile(mapping: IFileMapping): File?
+
     fun getPreview(mapping: IFileMapping): String?
 
     companion object {
