@@ -77,6 +77,16 @@ async function getPublicFiles(path: string) {
         .catch(catchError)
 }
 
+async function getPublicFileInfo(path: string) {
+    return get<FileInfo>('api/file/public/info', {
+        params: {
+            path: path
+        }
+    })
+        .then(resp => resp.data)
+        .catch(catchError)
+}
+
 async function deletePublicFile(path: string) {
     return del<void>('api/file/public', {
         headers: FORM_HEADER,
@@ -198,6 +208,7 @@ const API = {
     tryLogin,
     logon,
     getPublicFiles,
+    getPublicFileInfo,
     deletePublicFile,
     newPublicFolder,
     uploadPublic,

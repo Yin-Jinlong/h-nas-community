@@ -1,5 +1,4 @@
 export interface FileGridViewProps {
-    info: FileInfo
     dbClickInterval?: number
 }
 

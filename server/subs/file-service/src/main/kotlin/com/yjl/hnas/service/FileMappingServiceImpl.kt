@@ -9,11 +9,16 @@ import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.base64Url
+import com.yjl.hnas.utils.del
 import io.github.yinjinlong.md.sha256
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
+import kotlinx.coroutines.*
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
+import java.util.Vector
 import kotlin.io.path.name
 
 /**
@@ -24,6 +29,10 @@ class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper,
     val previewGeneratorFactory: PreviewGeneratorFactory,
 ) : FileMappingService {
+
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    val genPreviewTasks = Vector<String>()
 
     @Transactional
     override fun addMapping(path: PubPath, size: Long, hash: String) {
@@ -42,6 +51,7 @@ class FileMappingServiceImpl(
                 dataPath = vp.path,
                 type = type.type,
                 subType = type.subtype,
+                preview = previewGeneratorFactory.canPreview(type),
                 size = file.length().also {
                     if (it != size)
                         throw IllegalStateException("size not match : $it != $size")
@@ -68,6 +78,30 @@ class FileMappingServiceImpl(
         return fm.size
     }
 
+    suspend fun genPreview(cache: File, hash: String, dataPath: String, mediaType: MediaType) {
+        val file = File("data", dataPath)
+        try {
+            val data = previewGeneratorFactory.getPreview(file.inputStream(), mediaType) ?: return let {
+                fileMappingMapper.updatePreview(hash, true)
+            }
+            cache.parentFile.apply {
+                if (!exists())
+                    mkdirs()
+            }
+            kotlin.runCatching {
+                cache.writeBytes(data)
+            }.onSuccess {
+                fileMappingMapper.updatePreview(hash, true)
+            }.onFailure {
+                cache.del()
+            }
+        } catch (e: PreviewException) {
+            fileMappingMapper.updatePreview(hash, false)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     @Transactional
     override fun getPreview(hash: String, dataPath: String, mediaType: MediaType): String? {
         if (!previewGeneratorFactory.canPreview(mediaType))
@@ -76,25 +110,22 @@ class FileMappingServiceImpl(
         val cache = File(FileMappingService.PreviewDir, name)
         if (cache.exists())
             return name
-        val file = File("data", dataPath)
-        return try {
-            val data = previewGeneratorFactory.getPreview(file.inputStream(), mediaType) ?: return let {
-                fileMappingMapper.updatePreview(hash, true)
-                null
+        return synchronized(genPreviewTasks) {
+            if (!genPreviewTasks.contains(hash)) {
+                genPreviewTasks += name
+                scope.launch {
+                    genPreview(cache, hash, dataPath, mediaType)
+                    synchronized(genPreviewTasks) {
+                        genPreviewTasks -= hash
+                    }
+                }
             }
-            cache.parentFile.apply {
-                if (!exists())
-                    mkdirs()
-            }
-            cache.writeBytes(data)
-            fileMappingMapper.updatePreview(hash, true)
-            name
-        } catch (e: PreviewException) {
-            fileMappingMapper.updatePreview(hash, false)
-            null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            ""
         }
+    }
+
+    @PreDestroy
+    fun destroy() {
+        scope.coroutineContext.cancelChildren()
     }
 }

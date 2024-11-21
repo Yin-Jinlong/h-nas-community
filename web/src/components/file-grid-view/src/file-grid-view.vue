@@ -4,24 +4,35 @@
          data-flex-center
          @click="onClick">
         <el-image
-                v-if="info.fileType==='FILE' &&info.preview"
+                v-if="info.fileType==='FILE'"
                 :alt="info.name"
-                :src="previewPath"
+                :src="previewPath??''"
                 :title="info.name"
                 class="img"
                 fit="cover"
                 loading="lazy">
             <template #placeholder>
-                <el-skeleton animated data-fill-size>
-                    <template #template>
-                        <el-skeleton-item style="width: 8em;height: 8em" variant="image"/>
-                    </template>
-                </el-skeleton>
+                <el-icon size="100%">
+                    <el-skeleton animated data-fill-size>
+                        <template #template>
+                            <el-skeleton-item style="width: 8em;height: 8em" variant="image"/>
+                        </template>
+                    </el-skeleton>
+                </el-icon>
+            </template>
+            <template #error>
+                <el-icon size="100%">
+                    <unknown-file v-if="info.preview===undefined"/>
+                    <el-skeleton v-else animated data-fill-size>
+                        <template #template>
+                            <el-skeleton-item style="width: 8em;height: 8em" variant="image"/>
+                        </template>
+                    </el-skeleton>
+                </el-icon>
             </template>
         </el-image>
         <el-icon v-else size="100%">
-            <folder v-if="info.fileType=='FOLDER'"/>
-            <unknown-file v-else/>
+            <folder/>
         </el-icon>
     </div>
 
@@ -48,13 +59,11 @@ import API from '@/utils/api'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 import UnknownFile from './unknown-file.vue'
 
-const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
-const previewPath = computed(() => {
-    let p = props.info.preview
-    if (p) {
-        return API.publicPreviewURL(p)
-    }
+const info = defineModel<FileInfo>({
+    required: true
 })
+const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
+const previewPath = ref<string | null>()
 const emits = defineEmits({
     'click': (e: MouseEvent, info: FileInfo) => {
     },
@@ -68,13 +77,39 @@ function onClick(e: MouseEvent) {
     if (clickTimeout) {
         clearTimeout(clickTimeout)
         clickTimeout = 0
-        emits('dblclick', e, props.info)
+        emits('dblclick', e, info.value)
     } else {
         clickTimeout = setTimeout(() => {
             clickTimeout = 0
-            emits('click', e, props.info)
+            emits('click', e, info.value)
         }, props.dbClickInterval) as unknown as number
     }
 }
+
+watch(info, (nv) => {
+    if (nv.preview === undefined) {
+        return
+    }
+    if (nv.preview?.length) {
+        previewPath.value = API.publicPreviewURL(nv.preview!)
+        return
+    }
+
+    async function retry() {
+        let i = await API.getPublicFileInfo(info.value.dir + '/' + info.value.name)
+        if (i?.preview?.length) {
+            info.value.preview = i.preview
+            previewPath.value = API.publicPreviewURL(i.preview)
+            return
+        }
+        setTimeout(() => {
+            retry()
+        }, 500 + Math.random() * 500)
+    }
+
+    retry()
+}, {
+    immediate: true
+})
 
 </script>

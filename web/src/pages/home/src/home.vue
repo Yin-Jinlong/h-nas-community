@@ -54,12 +54,12 @@
                 </div>
                 <el-empty v-if="!files.length"/>
                 <div class="file-container">
-                    <div v-for="f in files"
+                    <div v-for="(f,i) in files"
                          :key="f.name"
                          class="file-box"
                          data-fill-size data-flex-column-center
                          @click="showPreview(f)">
-                        <file-grid-view :info="f"
+                        <file-grid-view v-model="files[i]"
                                         @click="onClick"
                                         @dblclick="onDblClick"/>
                         <div class="file-name">{{ f.name }}</div>
@@ -90,7 +90,7 @@
                     </template>
                     <template #default>
                         <div data-flex>
-                            <file-grid-view v-if="activeFile" :info="activeFile"/>
+                            <file-grid-view v-if="activeFile" v-model="activeFile"/>
                             <table style="margin-left: 1em">
                                 <tbody>
                                 <tr v-for="r in infoTable">

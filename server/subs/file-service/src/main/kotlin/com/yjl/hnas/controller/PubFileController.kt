@@ -45,6 +45,14 @@ class PubFileController(
         virtualFileSystem = virtualFileSystemProvider.getFileSystem()
     }
 
+    @GetMapping("info")
+    fun getInfo(path: String): FileInfo {
+        val pp = pubFileSystem.getPath(path.deUrl)
+        return virtualFileService.getFile(pp)
+            ?.toFileInfo(pp.parent, fileMappingService)
+            ?: throw ErrorCode.NO_SUCH_FILE.data(path)
+    }
+
     @GetMapping("files")
     fun getFiles(@NotBlank(message = "path 不能为空") path: String): List<FileInfo> {
         if (path.isBlank())
