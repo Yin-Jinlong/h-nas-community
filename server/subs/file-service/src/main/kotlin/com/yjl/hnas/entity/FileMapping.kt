@@ -32,6 +32,10 @@ data class FileMapping(
     @Comment("子类型")
     override var subType: String = "",
 
+    @Column(nullable = false)
+    @Comment("有效预览")
+    override var preview: Boolean = true,
+
     @Column(columnDefinition = "bigint default(-1)", nullable = false)
     @Comment("文件大小")
     override var size: Long = -1

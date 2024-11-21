@@ -5,6 +5,8 @@ import com.yjl.hnas.entity.IFileMapping
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.mapper.FileMappingMapper
+import com.yjl.hnas.preview.PreviewException
+import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.base64Url
 import io.github.yinjinlong.md.sha256
@@ -19,7 +21,8 @@ import kotlin.io.path.name
  */
 @Service
 class FileMappingServiceImpl(
-    val fileMappingMapper: FileMappingMapper
+    val fileMappingMapper: FileMappingMapper,
+    val previewGeneratorFactory: PreviewGeneratorFactory,
 ) : FileMappingService {
 
     @Transactional
@@ -63,5 +66,35 @@ class FileMappingServiceImpl(
             fileMappingMapper.updateSize(hash, fm.size)
         }
         return fm.size
+    }
+
+    @Transactional
+    override fun getPreview(hash: String, dataPath: String, mediaType: MediaType): String? {
+        if (!previewGeneratorFactory.canPreview(mediaType))
+            return null
+        val name = "$dataPath.jpg"
+        val cache = File(FileMappingService.PreviewDir, name)
+        if (cache.exists())
+            return name
+        val file = File("data", dataPath)
+        return try {
+            val data = previewGeneratorFactory.getPreview(file.inputStream(), mediaType) ?: return let {
+                fileMappingMapper.updatePreview(hash, true)
+                null
+            }
+            cache.parentFile.apply {
+                if (!exists())
+                    mkdirs()
+            }
+            cache.writeBytes(data)
+            fileMappingMapper.updatePreview(hash, true)
+            name
+        } catch (e: PreviewException) {
+            fileMappingMapper.updatePreview(hash, false)
+            null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 }

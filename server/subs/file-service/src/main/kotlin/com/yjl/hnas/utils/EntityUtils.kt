@@ -4,23 +4,22 @@ import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.entity.IVFile
 import com.yjl.hnas.entity.view.IVirtualFile
 import com.yjl.hnas.fs.PubPath
-import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
 import org.apache.tika.mime.MediaType
 
 fun IVirtualFile.toFileInfo(
     dir: PubPath,
-    previewGeneratorFactory: PreviewGeneratorFactory,
     fileMappingService: FileMappingService
 ): FileInfo {
-    val mediaType = MediaType.parse("$type/$subType")
     return FileInfo(
         name = name,
         dir = dir.fullPath,
         fileType = fileType,
         type = type,
         subType = subType,
-        preview = if (type == "folder") null else previewGeneratorFactory.canPreview(mediaType),
+        preview = if (preview) dataPath?.let {
+            fileMappingService.getPreview(hash, it, MediaType.parse("$type/$subType"))
+        } else null,
         createTime = createTime.time,
         updateTime = updateTime.time,
         size = if (fileType == IVFile.Type.FOLDER) {

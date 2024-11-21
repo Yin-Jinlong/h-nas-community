@@ -21,6 +21,7 @@ vfile.name,
 vfile.parent,
 ifnull(file_mapping.type,'folder') as type,
 ifnull(file_mapping.sub_type,'folder') as sub_type,
+file_mapping.preview,
 vfile.create_time,
 vfile.update_time,
 vfile.size,
@@ -42,6 +43,7 @@ class VirtualFile : IVirtualFile {
     override val createTime: Timestamp = Timestamp(0)
     override val updateTime: Timestamp = Timestamp(0)
     override var size: Long = -1
+    override var preview: Boolean = true
     override var dataPath: String? = null
 
     fun toVirtualPath(virtualFileSystem: VirtualFileSystem): VirtualPath {

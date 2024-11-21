@@ -10,6 +10,8 @@ interface IFileMapping : FileWithType {
 
     var dataPath: String
 
+    var preview: Boolean
+
     var size: Long
 
 }

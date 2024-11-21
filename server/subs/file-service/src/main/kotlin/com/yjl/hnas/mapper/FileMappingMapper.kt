@@ -30,6 +30,9 @@ interface FileMappingMapper {
     @Update("update file_mapping set size=#{size} where hash = #{hash}")
     fun updateSize(hash: String, size: Long): Int
 
+    @Update("update file_mapping set preview=#{preview} where hash = #{hash}")
+    fun updatePreview(hash: String, preview: Boolean): Int
+
     //******//
     //  删  //
     //******//

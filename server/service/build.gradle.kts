@@ -7,6 +7,7 @@ dependencies {
     compileOnly(commomData())
     compileOnly(fs())
     compileOnly(token())
+    compileOnly(utils())
 
     testImplementation(kotlin("test"))
 }

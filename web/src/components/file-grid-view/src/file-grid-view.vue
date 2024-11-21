@@ -49,13 +49,10 @@ import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 import UnknownFile from './unknown-file.vue'
 
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
-const path = computed(() => {
-    let info = props.info
-    return info.dir == '/' ? '/' + info.name : props.info.dir + '/' + info.name
-})
 const previewPath = computed(() => {
-    if (props.info.preview) {
-        return API.publicPreviewURL(path.value)
+    let p = props.info.preview
+    if (p) {
+        return API.publicPreviewURL(p)
     }
 })
 const emits = defineEmits({

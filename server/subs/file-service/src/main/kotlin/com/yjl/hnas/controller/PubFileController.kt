@@ -10,8 +10,6 @@ import com.yjl.hnas.fs.PubFileSystemProvider
 import com.yjl.hnas.fs.VirtualFileSystem
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.attr.FileAttribute
-import com.yjl.hnas.preview.PreviewException
-import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
@@ -19,7 +17,6 @@ import com.yjl.hnas.utils.*
 import jakarta.annotation.PostConstruct
 import jakarta.servlet.ServletInputStream
 import jakarta.validation.constraints.NotBlank
-import org.apache.tika.mime.MediaType
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
@@ -33,7 +30,6 @@ import kotlin.io.path.name
 @Controller
 @RequestMapping("/api/file/public")
 class PubFileController(
-    val previewGeneratorFactory: PreviewGeneratorFactory,
     val pubFileSystemProvider: PubFileSystemProvider,
     val virtualFileSystemProvider: VirtualFileSystemProvider,
     val fileMappingService: FileMappingService,
@@ -59,7 +55,7 @@ class PubFileController(
         val files = virtualFileService.getFilesByParent(pp)
 
         return files.map {
-            it.toFileInfo(pp, previewGeneratorFactory, fileMappingService)
+            it.toFileInfo(pp, fileMappingService)
         }.sorted()
     }
 
@@ -134,18 +130,8 @@ class PubFileController(
 
     @GetMapping("preview")
     fun getPreview(path: String): File {
-        val pp = pubFileSystem.getPath(path.deUrl)
-        try {
-            val vp = pp.toVirtual()
-            val type = vp.bundleAttrs[FileAttribute.TYPE]?.value() as MediaType?
-                ?: throw IllegalArgumentException("path must have type attr")
-            return previewGeneratorFactory.getPreview(vp, type)
-                ?: throw ErrorCode.NO_SUCH_FILE.error
-        } catch (e: IllegalArgumentException) {
-            throw ErrorCode.NO_SUCH_FILE.error
-        } catch (e: PreviewException) {
-            throw ErrorCode.BAD_FILE_FORMAT.data(path)
-        }
+        val pp = virtualFileSystem.getPath(path.deUrl).toAbsolutePath()
+        return File(FileMappingService.PreviewDir, pp.path)
     }
 
     @GetMapping
