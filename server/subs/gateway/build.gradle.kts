@@ -9,7 +9,6 @@ plugins {
 dependencies {
     implementation(libs.spring.cloud.starter.gateway)
     implementation(libs.spring.cloud.starter.netflix.eureka.client)
-    implementation(libs.spring.boot.starter.actuator)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
