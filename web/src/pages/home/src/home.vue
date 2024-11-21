@@ -80,10 +80,10 @@
                                 </template>
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item :command="['del',f]">
+                                        <el-dropdown-item :command="['del',f]" :icon="Delete">
                                             删除
                                         </el-dropdown-item>
-                                        <el-dropdown-item :command="['info',f]">
+                                        <el-dropdown-item :command="['info',f]" :icon="InfoFilled" divided>
                                             信息
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -230,11 +230,9 @@
 <script lang="ts" setup>
 
 import {FileGridView, TopBar} from '@/components'
-import {token, user} from '@/utils/globals'
-import {ArrowDown, MoreFilled} from '@element-plus/icons-vue'
+import {user} from '@/utils/globals'
+import {ArrowDown, Delete, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
 import {toHumanSize} from '@/utils/size-utils'
-import {pathGetName} from '@/utils/path-utils'
-import axios from 'axios'
 import {computed} from 'vue'
 import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
