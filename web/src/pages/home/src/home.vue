@@ -233,8 +233,10 @@ import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
 
 interface FileWrapper {
+    index: number
     info: FileInfo
     extra: FileExtraInfo
+    previewIndex?: number
 }
 
 const route = useRoute()
@@ -247,9 +249,9 @@ const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
 const files = reactive<FileWrapper[]>([])
 const showFileInfoDialog = ref(false)
-const previewMap = reactive(new Map<FileWrapper, number>())
+const images = reactive<FileWrapper[]>([])
 const previewList = computed<string[]>(() => {
-    return files.filter(f => f.extra.preview && f.extra.type === 'image').map(f => toImageUrl(f.info.name))
+    return images.map(f => toImageUrl(f.info.name))
 })
 const activeFile = ref<FileWrapper>()
 const infoTable = computed(() => {
@@ -310,9 +312,8 @@ function toImageUrl(name: string) {
 }
 
 function showPreview(f: FileWrapper) {
-    let i = previewMap.get(f)
-    if (i !== undefined) {
-        nowIndex.value = i
+    if (f.previewIndex !== undefined) {
+        nowIndex.value = f.previewIndex
     }
 }
 
@@ -322,7 +323,13 @@ function getInfo(file: FileWrapper) {
             return
         file.extra = res
         if (res.preview && res.type == 'image') {
-            previewMap.set(file, previewMap.size)
+            images.push(file)
+            images.sort((a, b) => {
+                return a.index - b.index
+            })
+            for (let i = 0; i < images.length; i++) {
+                images[i].previewIndex = i
+            }
         }
     })
 }
@@ -332,11 +339,11 @@ function updateFiles() {
         if (!data)
             return
         files.length = 0
-        previewMap.clear()
 
         console.log('files', data)
         data.forEach(f => {
             let file = {
+                index: files.length,
                 info: f,
                 extra: {
                     preview: '',
