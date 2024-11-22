@@ -128,7 +128,9 @@
                     <template #default>
                         <el-input v-model="newName" placeholder="重命名为"/>
                         <div style="margin-top: 0.5em"/>
-                        <h-button data-fill-width type="primary" @click="renameFile">提交</h-button>
+                        <h-button v-disabled="!newName.length" data-fill-width type="primary" @click="renameFile">
+                            <span>提交</span>
+                        </h-button>
                     </template>
                 </el-dialog>
                 <el-image-viewer
