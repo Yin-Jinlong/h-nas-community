@@ -328,7 +328,7 @@ function enterFolder(name: string) {
 
 function getPath(name: string) {
     let s = nowPaths.join('/') + '/' + name
-    return nowPaths.length ? '/' + s : s
+    return s.startsWith('//') ? s.substring(1) : s
 }
 
 function toImageUrl(name: string) {
@@ -342,7 +342,10 @@ function showPreview(f: FileWrapper) {
 }
 
 function getInfo(file: FileWrapper) {
-    API.getPublicFileExtraInfo(file.info.dir + '/' + file.info.name).then(res => {
+    let dir = file.info.dir
+    if (dir == '/')
+        dir = ''
+    API.getPublicFileExtraInfo(dir + '/' + file.info.name).then(res => {
         if (!res)
             return
         file.extra = res
