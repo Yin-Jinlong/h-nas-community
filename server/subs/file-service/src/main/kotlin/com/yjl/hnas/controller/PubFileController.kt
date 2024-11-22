@@ -155,7 +155,10 @@ class PubFileController(
     @GetMapping("preview")
     fun getPreview(path: String): File {
         val pp = virtualFileSystem.getPath(path.deUrl).toAbsolutePath()
-        return FileMappingService.previewFile(pp.path)
+        return FileMappingService.previewFile(pp.path).apply {
+            if (!exists())
+                throw ErrorCode.NO_SUCH_FILE.data(path)
+        }
     }
 
     @GetMapping
@@ -166,7 +169,10 @@ class PubFileController(
         val map = fileMappingService.getMapping(
             vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error
         ) ?: throw ErrorCode.NO_SUCH_FILE.error
-        return FileMappingService.dataFile(map.dataPath)
+        return FileMappingService.dataFile(map.dataPath).apply {
+            if (!exists())
+                throw ErrorCode.NO_SUCH_FILE.data(path)
+        }
     }
 
     @PostMapping("rename")
