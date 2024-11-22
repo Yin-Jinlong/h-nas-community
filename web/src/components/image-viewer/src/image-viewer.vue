@@ -89,8 +89,8 @@
 <script lang="ts" setup>
 
 import {ArrowLeftBold, ArrowRightBold, CloseBold} from '@element-plus/icons-vue'
-import Default, {ImageViewerProps} from './props'
 import {HButton} from '@yin-jinlong/h-ui'
+import Default, {ImageViewerProps} from './props'
 
 interface Options {
     scale: number
@@ -166,20 +166,30 @@ function reset() {
     update()
 }
 
+function pack(v: number, min: number, max: number) {
+    return v < min ? min : v > max ? max : v
+}
+
 function update() {
-    let style = imgEle.value?.style
-    if (!style)
+    let img = imgEle.value
+    if (!img)
         return
-
-    if (options.scale < props.minScale)
-        options.scale = props.minScale
-    else if (options.scale > props.maxScale)
-        options.scale = props.maxScale
-
     let s = options.scale
-    let x = options.offX / s
-    let y = options.offY / s
-    style.transform = `scale(${s}) translate(${x}px, ${y}px)`
+    const mr = props.minShowRate
+    const iw = img.naturalWidth * s
+    const ih = img.naturalHeight * s
+    const ww = window.innerWidth
+    const wh = window.innerHeight
+
+    options.scale = pack(options.scale, props.minScale, props.maxScale)
+    let ow = ww / 2 + iw / 2 - Math.min(ww, iw) * mr
+    let oh = wh / 2 + ih / 2 - Math.min(wh, ih) * mr
+    options.offX = pack(options.offX, -ow, ow)
+    options.offY = pack(options.offY, -oh, oh)
+
+    let x = options.offX
+    let y = options.offY
+    img.style.transform = `translate(${x}px, ${y}px) scale(${s}) `
 }
 
 function onDown(e: MouseEvent) {
