@@ -101,7 +101,9 @@
                     </template>
                     <template #default>
                         <div data-flex>
-                            <file-grid-view v-if="activeFile" v-model="activeFile.extra" :info="activeFile.info"/>
+                            <file-grid-view v-if="showFileInfoDialog&&activeFile"
+                                            v-model="activeFile.extra"
+                                            :info="activeFile.info"/>
                             <table style="margin-left: 1em">
                                 <tbody>
                                 <tr v-for="r in infoTable">
