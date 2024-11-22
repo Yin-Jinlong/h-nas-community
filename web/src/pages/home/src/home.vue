@@ -64,7 +64,8 @@
                     <div v-for="(f,i) in files"
                          :key="f.info.name"
                          class="file-box"
-                         data-fill-size data-flex-column-center
+                         data-fill-size
+                         data-flex-column-center
                          @click="showPreview(f)">
                         <file-grid-view v-model="files[i].extra"
                                         :info="f.info"
@@ -111,11 +112,12 @@
                         </h-button>
                     </template>
                 </el-dialog>
-                <el-image-viewer
-                        v-if="nowIndex>=0"
-                        :initial-index="nowIndex"
-                        :url-list="previewList"
-                        @close="nowIndex=-1"/>
+                <image-viewer v-model="showImageViewer"
+                              :count="images.length"
+                              :index="nowIndex"
+                              :on-get="getNow"
+                              :on-next="getNext"
+                              :on-prev="getPrev"/>
             </div>
         </div>
     </el-scrollbar>
@@ -222,10 +224,9 @@
 
 <script lang="ts" setup>
 
-import {FileGridView, FileInfoDialog, TopBar} from '@/components'
+import {FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
 import {user} from '@/utils/globals'
 import {ArrowDown, Delete, Edit, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
-import {computed} from 'vue'
 import API from '@/utils/api'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
 
@@ -241,6 +242,7 @@ const router = useRouter()
 
 const nowIndex = ref(-2)
 const isPublic = ref(true)
+const showImageViewer = ref(false)
 const uploadIsDragging = ref(false)
 const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
@@ -248,9 +250,6 @@ const files = reactive<FileWrapper[]>([])
 const showFileInfoDialog = ref(false)
 const showRenameDialog = ref(false)
 const images = reactive<FileWrapper[]>([])
-const previewList = computed<string[]>(() => {
-    return images.map(f => toImageUrl(f.info.name))
-})
 const newName = ref('')
 const activeFile = ref<FileWrapper>()
 const draggerEle = ref<HTMLDivElement>()
@@ -277,17 +276,57 @@ function getPath(name: string) {
     return s.startsWith('//') ? s.substring(1) : s
 }
 
-function toImageUrl(name: string) {
-    return API.publicFileURL(getPath(name))
-}
-
 function showPreview(f: FileWrapper) {
     if (f.previewIndex !== undefined) {
         nowIndex.value = f.previewIndex
+        showImageViewer.value = true
     }
 }
 
-function getInfo(file: FileWrapper) {
+function getUrl(f: FileWrapper) {
+    let dir = f.info.dir
+    if (dir == '/')
+        dir = ''
+    return API.publicFileURL(dir + '/' + f.info.name)
+}
+
+function getNow(): string | undefined {
+    let i = nowIndex.value
+    if (i < 0)
+        i = 0
+    else if (i >= files.length)
+        i = files.length - 1
+    let f = images[i]
+    nowIndex.value = i
+    if (!f)
+        return
+    return getUrl(f)
+}
+
+function getPrev(): string | undefined {
+    let i = nowIndex.value - 1
+    if (i < 0)
+        i = images.length - 1
+    let f = images[i]
+    nowIndex.value = i
+    if (!f)
+        return
+    return getUrl(f)
+}
+
+function getNext(): string | undefined {
+    let i = nowIndex.value + 1
+    if (i >= images.length)
+        i = 0
+    nowIndex.value = i
+    let f = images[i]
+    if (!f)
+        return
+    return getUrl(f)
+}
+
+function getInfo(index: number) {
+    let file = files[index]
     let dir = file.info.dir
     if (dir == '/')
         dir = ''
@@ -301,7 +340,8 @@ function getInfo(file: FileWrapper) {
                 return a.index - b.index
             })
             for (let i = 0; i < images.length; i++) {
-                images[i].previewIndex = i
+                let f = images[i]
+                f.previewIndex = i
             }
         }
     })
@@ -325,7 +365,7 @@ function updateFiles() {
                 }
             }
             files.push(file)
-            getInfo(file)
+            getInfo(file.index)
         })
     })
 }
