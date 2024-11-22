@@ -446,7 +446,7 @@ function onDragCancel() {
     }, 100) as unknown as number
 }
 
-function onClick(e: MouseEvent) {
+function onClick(e: MouseEvent, info: FileInfo, extra: FileExtraInfo) {
 
 }
 

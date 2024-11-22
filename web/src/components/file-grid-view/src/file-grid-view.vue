@@ -73,9 +73,9 @@ const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDe
 const previewPath = ref<string | undefined>()
 const fileIcon = shallowRef<Component>()
 const emits = defineEmits({
-    'click': (e: MouseEvent, info: FileInfo) => {
+    'click': (e: MouseEvent, info: FileInfo, extra: FileExtraInfo) => {
     },
-    'dblclick': (last: MouseEvent, info: FileInfo) => {
+    'dblclick': (last: MouseEvent, info: FileInfo, extra: FileExtraInfo) => {
     }
 })
 
@@ -85,11 +85,11 @@ function onClick(e: MouseEvent) {
     if (clickTimeout) {
         clearTimeout(clickTimeout)
         clickTimeout = 0
-        emits('dblclick', e, props.info)
+        emits('dblclick', e, props.info, extra.value)
     } else {
         clickTimeout = setTimeout(() => {
             clickTimeout = 0
-            emits('click', e, props.info)
+            emits('click', e, props.info, extra.value)
         }, props.dbClickInterval) as unknown as number
     }
 }
