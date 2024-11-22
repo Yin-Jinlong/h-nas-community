@@ -203,6 +203,16 @@ async function uploadPublic(path: string, file: File) {
     })
 }
 
+async function renamePublic(path: string, name: string) {
+    return post<boolean>('api/file/public/rename', {
+        path: path,
+        name: name
+    }, {
+        headers: FORM_HEADER
+    }).then(resp => true)
+        .catch(catchError)
+}
+
 const API = {
     login,
     tryLogin,
@@ -213,7 +223,8 @@ const API = {
     newPublicFolder,
     uploadPublic,
     publicFileURL,
-    publicPreviewURL
+    publicPreviewURL,
+    renamePublic
 }
 
 export default API

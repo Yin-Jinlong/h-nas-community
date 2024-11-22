@@ -142,4 +142,23 @@ class VFileServiceImpl(
         if (fileMappingService.getMapping(hash) == null)
             fileMappingService.addMapping(path, size, hash)
     }
+
+    @Transactional
+    override fun renamePublic(src: PubPath, name: String) {
+        val vf = getById(genId(src))
+            ?: throw ErrorCode.NO_SUCH_FILE.data(src)
+        val newPath = src.parent.resolve(name)
+        val new = VirtualFile(
+            fid = genId(newPath),
+            name = name,
+            parent = vf.parent,
+            hash = vf.hash,
+            owner = vf.owner,
+            createTime = vf.createTime,
+            updateTime = System.currentTimeMillis().timestamp,
+            size = vf.size
+        )
+        virtualFileMapper.insert(new)
+        virtualFileMapper.deleteById(vf.fid)
+    }
 }

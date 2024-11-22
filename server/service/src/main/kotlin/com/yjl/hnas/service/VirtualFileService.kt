@@ -45,4 +45,6 @@ interface VirtualFileService : VirtualPathManager {
     fun get(path: PubPath) = getById(genId(path.toAbsolutePath()))
 
     fun createPubFile(owner: Uid, path: PubPath, size: Long, hash: String)
+
+    fun renamePublic(src: PubPath, name: String)
 }

@@ -168,4 +168,17 @@ class PubFileController(
         ) ?: throw ErrorCode.NO_SUCH_FILE.error
         return FileMappingService.dataFile(map.dataPath)
     }
+
+    @PostMapping("rename")
+    fun rename(
+        @ShouldLogin token: UserToken,
+        path: String,
+        name: String
+    ) {
+        val src = pubFileSystem.getPath(path.deUrl).toAbsolutePath()
+        val dst = name.deUrl
+        if (dst.contains("/") || dst.contains("\\"))
+            throw ErrorCode.BAD_ARGUMENTS.data(name)
+        virtualFileService.renamePublic(src, name)
+    }
 }

@@ -80,6 +80,9 @@
                                 </template>
                                 <template #dropdown>
                                     <el-dropdown-menu>
+                                        <el-dropdown-item :command="['rename',f]" :icon="Edit">
+                                            重命名
+                                        </el-dropdown-item>
                                         <el-dropdown-item :command="['del',f]" :icon="Delete">
                                             删除
                                         </el-dropdown-item>
@@ -116,6 +119,16 @@
                                 </tbody>
                             </table>
                         </div>
+                    </template>
+                </el-dialog>
+                <el-dialog v-model="showRenameDialog">
+                    <template #header>
+                        {{ activeFile?.info?.name }}
+                    </template>
+                    <template #default>
+                        <el-input v-model="newName" placeholder="重命名为"/>
+                        <div style="margin-top: 0.5em"/>
+                        <h-button data-fill-width type="primary" @click="renameFile">提交</h-button>
                     </template>
                 </el-dialog>
                 <el-image-viewer
@@ -231,11 +244,11 @@
 
 import {FileGridView, TopBar} from '@/components'
 import {user} from '@/utils/globals'
-import {ArrowDown, Delete, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
+import {ArrowDown, Delete, Edit, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
 import {toHumanSize} from '@/utils/size-utils'
 import {computed} from 'vue'
 import API from '@/utils/api'
-import {HMessage} from '@yin-jinlong/h-ui'
+import {HMessage, HButton} from '@yin-jinlong/h-ui'
 
 interface FileWrapper {
     index: number
@@ -254,10 +267,12 @@ const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
 const files = reactive<FileWrapper[]>([])
 const showFileInfoDialog = ref(false)
+const showRenameDialog = ref(false)
 const images = reactive<FileWrapper[]>([])
 const previewList = computed<string[]>(() => {
     return images.map(f => toImageUrl(f.info.name))
 })
+const newName = ref('')
 const activeFile = ref<FileWrapper>()
 const infoTable = computed(() => {
     let f = activeFile.value
@@ -392,7 +407,12 @@ function onUploaded() {
 
 function onCommand(args: [string, FileWrapper]) {
     let [cmd, f] = args
+    activeFile.value = f
     switch (cmd) {
+        case 'rename':
+            newName.value = ''
+            showRenameDialog.value = true
+            break
         case 'del':
             API.deletePublicFile(getPath(f.info.name)).then(res => {
                 if (res) {
@@ -402,7 +422,6 @@ function onCommand(args: [string, FileWrapper]) {
             })
             break
         case 'info':
-            activeFile.value = f
             showFileInfoDialog.value = true
             break
     }
@@ -481,6 +500,18 @@ function onClick(e: MouseEvent) {
 function onDblClick(e: MouseEvent, info: FileInfo) {
     if (info.fileType == 'FOLDER')
         enterFolder(info.name)
+}
+
+function renameFile() {
+    API.renamePublic(getPath(activeFile.value!.info.name), newName.value).then(res => {
+        if (res) {
+            showRenameDialog.value = false
+            HMessage.success('重命名成功')
+
+            activeFile.value!.extra.preview = ''
+            activeFile.value!.info.name = newName.value
+        }
+    })
 }
 
 onMounted(() => {
