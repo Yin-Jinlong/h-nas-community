@@ -95,34 +95,10 @@
                         </div>
                     </div>
                 </div>
-                <el-dialog v-model="showFileInfoDialog">
-                    <template #header>
-                        <h3>{{ activeFile?.info?.name ?? '' }}</h3>
-                    </template>
-                    <template #default>
-                        <div data-flex>
-                            <file-grid-view v-if="showFileInfoDialog&&activeFile"
-                                            v-model="activeFile.extra"
-                                            :info="activeFile.info"/>
-                            <table style="margin-left: 1em">
-                                <tbody>
-                                <tr v-for="r in infoTable">
-                                    <td>
-                                        <div data-fill-size
-                                             data-flex-center
-                                             style="justify-content: end;padding: 0.25em 0.2em 0.25em 0;">
-                                            <label>{{ r.label }}：</label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span>{{ r.value }}</span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </template>
-                </el-dialog>
+                <file-info-dialog v-if="activeFile"
+                                  v-model="showFileInfoDialog"
+                                  v-model:extra="activeFile.extra"
+                                  :info="activeFile?.info"/>
                 <el-dialog v-model="showRenameDialog">
                     <template #header>
                         {{ activeFile?.info?.name }}
@@ -246,10 +222,9 @@
 
 <script lang="ts" setup>
 
-import {FileGridView, TopBar} from '@/components'
+import {FileGridView, FileInfoDialog, TopBar} from '@/components'
 import {user} from '@/utils/globals'
 import {ArrowDown, Delete, Edit, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
-import {toHumanSize} from '@/utils/size-utils'
 import {computed} from 'vue'
 import API from '@/utils/api'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
@@ -278,35 +253,6 @@ const previewList = computed<string[]>(() => {
 })
 const newName = ref('')
 const activeFile = ref<FileWrapper>()
-const infoTable = computed(() => {
-    let f = activeFile.value
-    return [
-        {
-            label: '路径',
-            value: getPath(f?.info?.name ?? '')
-        },
-        {
-            label: '文件类型',
-            value: f?.info?.fileType === 'FILE' ? '文件' : '目录'
-        },
-        {
-            label: '类型',
-            value: `${f?.extra?.type}/${f?.extra?.subType}`
-        },
-        {
-            label: '创建时间',
-            value: new Date(f?.info?.createTime ?? 0).toLocaleString()
-        },
-        {
-            label: '修改时间',
-            value: new Date(f?.info?.updateTime ?? 0).toLocaleString()
-        },
-        {
-            label: '大小',
-            value: toHumanSize(f?.info?.size ?? 0)
-        }
-    ]
-})
 const draggerEle = ref<HTMLDivElement>()
 const mouseIn = ref(false)
 
