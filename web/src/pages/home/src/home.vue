@@ -73,26 +73,7 @@
                                         @dblclick="onDblClick"/>
                         <div class="file-name">{{ f.info.name }}</div>
                         <div class="file-op-menu">
-                            <el-dropdown @command="onCommand">
-                                <template #default>
-                                    <el-icon color="var(--h-color-gray-4)" size="20">
-                                        <MoreFilled/>
-                                    </el-icon>
-                                </template>
-                                <template #dropdown>
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item :command="['rename',f]" :icon="Edit">
-                                            重命名
-                                        </el-dropdown-item>
-                                        <el-dropdown-item :command="['del',f]" :icon="Delete">
-                                            删除
-                                        </el-dropdown-item>
-                                        <el-dropdown-item :command="['info',f]" :icon="InfoFilled" divided>
-                                            信息
-                                        </el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </template>
-                            </el-dropdown>
+                            <file-grid-options @command="onCommand($event,f)"/>
                         </div>
                     </div>
                 </div>
@@ -224,7 +205,7 @@
 
 <script lang="ts" setup>
 
-import {FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
+import {FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
 import {user} from '@/utils/globals'
 import {ArrowDown, Delete, Edit, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
 import API from '@/utils/api'
@@ -398,8 +379,7 @@ function onUploaded() {
     update()
 }
 
-function onCommand(args: [string, FileWrapper]) {
-    let [cmd, f] = args
+function onCommand(cmd: string, f: FileWrapper) {
     activeFile.value = f
     switch (cmd) {
         case 'rename':
