@@ -193,9 +193,12 @@ function update() {
 }
 
 function onDown(e: MouseEvent) {
+    if (e.button != 0)
+        return
     last.x = e.clientX
     last.y = e.clientY
     down = true
+    boxEle.value!.style.cursor = 'grabbing'
 }
 
 function onMove(e: MouseEvent) {
@@ -210,6 +213,7 @@ function onMove(e: MouseEvent) {
 
 function onUp(e: MouseEvent) {
     down = false
+    boxEle.value!.style.cursor = 'default'
 }
 
 async function loadImg() {
