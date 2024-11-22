@@ -120,6 +120,7 @@ onMounted(async () => {
         return
     }
     await updateIcon(extra.value)
+    previewPath.value = ''
 })
 
 watch(extra, (nv) => {
