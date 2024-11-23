@@ -18,15 +18,14 @@
                      :style="{
                          width:loaded?undefined:'100%',
                          height:loaded?undefined:'100%',
-                         'object-fit':
-                         'contain'}"
+                         'object-fit':'contain'
+                     }"
                      loading="lazy"
                      @load="loadImg"/>
                 <h-tool-tip class="close-btn">
                     <h-button
                             color="info"
                             round
-                            style="opacity: 0.5;"
                             type="primary"
                             @click="close">
                         <el-icon>
@@ -73,9 +72,16 @@
 }
 
 .close-btn {
+  opacity: 0.2;
   position: fixed;
   right: 1em;
   top: 1em;
+  transition: all 0.2s linear;
+
+  &:hover {
+    opacity: 0.4;
+  }
+
 }
 
 .bottom-controllers {
