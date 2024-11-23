@@ -32,13 +32,14 @@ export default defineConfig({
         AutoImport({
             resolvers: [ElementPlusResolver({
                 importStyle: false,
+                directives: false
             })],
             imports: ['vue', 'vue-router'],
         }),
         Components({
             resolvers: [ElementPlusResolver({
                 importStyle: false,
-                exclude: /vloading/i
+                directives: false,
             })],
         }),
     ]

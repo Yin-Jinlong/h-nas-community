@@ -28,7 +28,10 @@
             </el-button>
         </div>
     </div>
-    <el-dialog v-model="showNewFolderDialog">
+    <el-dialog v-model="showNewFolderDialog"
+               :close-on-click-modal="!newFolderPosting"
+               :close-on-press-escape="!newFolderPosting"
+               :show-close="!newFolderPosting">
         <template #header>
             <h3>创建目录</h3>
         </template>
@@ -37,7 +40,10 @@
                 <el-input v-model="newFolderData.name" placeholder="目录名"/>
             </el-form-item>
         </el-form>
-        <h-button :disabled="!newFolderData.name.length" type="primary" @click="createFolder">
+        <h-button v-disabled="!newFolderData.name.length||newFolderPosting"
+                  v-loading.inner="newFolderPosting"
+                  type="primary"
+                  @click="createFolder">
             创建
         </h-button>
     </el-dialog>
@@ -163,18 +169,19 @@
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {Refresh} from '@element-plus/icons-vue'
-import {HMessage, HButton, vLoading} from '@yin-jinlong/h-ui'
+import {HMessage, HButton} from '@yin-jinlong/h-ui'
 import {FormInstance, FormRules} from 'element-plus'
 import {computed} from 'vue'
 import {TopBarProps} from './props'
 
 const showLogDialog = ref(false)
 const showNewFolderDialog = ref(false)
+const newFolderPosting = ref(false)
 const loginFormEl = ref<FormInstance>()
 const logonFormEl = ref<FormInstance>()
 const props = defineProps<TopBarProps>()
 const emits = defineEmits({
-    newFolder: (name: string, ok: () => void) => void {},
+    newFolder: (name: string, ok: (close: boolean) => void) => void {},
     refresh: () => void {},
 })
 const isLogging = ref(false)
@@ -245,8 +252,13 @@ const canLogOn = computed(() => {
 })
 
 function createFolder() {
-    emits('newFolder', newFolderData.name, () => {
-        showNewFolderDialog.value = false
+    if (newFolderPosting.value)
+        return
+    newFolderPosting.value = true
+    emits('newFolder', newFolderData.name, (close) => {
+        if (close)
+            showNewFolderDialog.value = false
+        newFolderPosting.value = false
     })
 }
 

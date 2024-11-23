@@ -364,7 +364,7 @@ function update() {
     }, 400)
 }
 
-function newFolder(name: string, ok: () => void) {
+function newFolder(name: string, ok: (close: boolean) => void) {
     let uid = user.value?.uid
     if (!uid) {
         HMessage.error('没有登录！')
@@ -374,8 +374,10 @@ function newFolder(name: string, ok: () => void) {
         if (res) {
             HMessage.success('创建成功')
             update()
-            ok()
+            ok(true)
         }
+    }).finally(() => {
+        ok(false)
     })
 }
 
