@@ -22,35 +22,48 @@
                          'contain'}"
                      loading="lazy"
                      @load="loadImg"/>
-                <div class="close-btn">
-                    <h-button color="info"
-                              round
-                              style="opacity: 0.5;"
-                              type="primary"
-                              @click="close">
+                <h-tool-tip class="close-btn">
+                    <h-button
+                            color="info"
+                            round
+                            style="opacity: 0.5;"
+                            type="primary"
+                            @click="close">
                         <el-icon>
                             <CloseBold/>
                         </el-icon>
                     </h-button>
-                </div>
+                    <template #tip>
+                        关闭
+                    </template>
+                </h-tool-tip>
                 <div class="bottom-controllers">
-                    <h-button round type="primary" @click="prev">
-                        <el-icon>
-                            <ArrowLeftBold/>
-                        </el-icon>
-                    </h-button>
+                    <h-tool-tip class="btns">
+                        <h-button round type="primary" @click="prev">
+                            <el-icon>
+                                <ArrowLeftBold/>
+                            </el-icon>
+                        </h-button>
+                        <template #tip>
+                            上一个
+                        </template>
+                    </h-tool-tip>
                     <h-button color="info" type="primary">
                         {{ index + 1 }}/{{ count }}
                     </h-button>
-                    <h-button round type="primary" @click="next">
-                        <el-icon>
-                            <ArrowRightBold/>
-                        </el-icon>
-                    </h-button>
+                    <h-tool-tip class="btns">
+                        <h-button round type="primary" @click="next">
+                            <el-icon>
+                                <ArrowRightBold/>
+                            </el-icon>
+                        </h-button>
+                        <template #tip>
+                            下一个
+                        </template>
+                    </h-tool-tip>
                 </div>
             </div>
         </transition>
-
     </teleport>
 </template>
 
@@ -74,14 +87,8 @@
   width: 100%;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.btns {
+  margin: 0 12px;
 }
 
 </style>
@@ -89,7 +96,7 @@
 <script lang="ts" setup>
 
 import {ArrowLeftBold, ArrowRightBold, CloseBold} from '@element-plus/icons-vue'
-import {HButton} from '@yin-jinlong/h-ui'
+import {HButton, HToolTip, vLoading} from '@yin-jinlong/h-ui'
 import Default, {ImageViewerProps} from './props'
 
 interface Options {
