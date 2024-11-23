@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.io.File
+import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import kotlin.io.path.name
 
@@ -89,7 +90,11 @@ class PubFileController(
         @ShouldLogin user: UserToken,
     ) {
         val p = pubFileSystem.getPath(path.deUrl).toAbsolutePath()
-        pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
+        try {
+            pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
+        } catch (e: FileAlreadyExistsException) {
+            throw ErrorCode.FILE_EXISTS.data(path.deUrl)
+        }
     }
 
     @Async
