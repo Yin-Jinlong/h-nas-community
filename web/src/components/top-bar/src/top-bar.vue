@@ -23,7 +23,7 @@
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
-            <el-button v-else @click="showLoDialog=true">
+            <el-button v-else @click="showLogDialog=true">
                 登录/注册
             </el-button>
         </div>
@@ -41,7 +41,10 @@
             创建
         </h-button>
     </el-dialog>
-    <el-dialog v-model="showLoDialog" :show-close="false">
+    <el-dialog v-model="showLogDialog"
+               :close-on-click-modal="!isLogging"
+               :close-on-press-escape="!isLogging"
+               :show-close="false">
         <template #default>
             <el-tabs>
                 <el-tab-pane label="登录">
@@ -64,7 +67,8 @@
                                     show-password type="password"/>
                         </el-form-item>
                         <h-button
-                                v-disabled="!canLogIn"
+                                v-disabled="!canLogIn||isLogging"
+                                v-loading.inner="isLogging"
                                 data-fill-width
                                 type="primary"
                                 @click.prevent="tryLogin">
@@ -98,7 +102,8 @@
                                     type="password"/>
                         </el-form-item>
                         <h-button
-                                v-disabled="!canLogOn"
+                                v-disabled="!canLogOn||isLogging"
+                                v-loading.inner="isLogging"
                                 data-fill-width type="primary" @click="tryLogon">
                             注册
                         </h-button>
@@ -158,12 +163,12 @@
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {Refresh} from '@element-plus/icons-vue'
-import {HMessage, HButton} from '@yin-jinlong/h-ui'
+import {HMessage, HButton, vLoading} from '@yin-jinlong/h-ui'
 import {FormInstance, FormRules} from 'element-plus'
 import {computed} from 'vue'
 import {TopBarProps} from './props'
 
-const showLoDialog = ref(false)
+const showLogDialog = ref(false)
 const showNewFolderDialog = ref(false)
 const loginFormEl = ref<FormInstance>()
 const logonFormEl = ref<FormInstance>()
@@ -172,7 +177,7 @@ const emits = defineEmits({
     newFolder: (name: string, ok: () => void) => void {},
     refresh: () => void {},
 })
-
+const isLogging = ref(false)
 
 interface LogInfo {
     logId: string,
@@ -246,15 +251,20 @@ function createFolder() {
 }
 
 function tryLogin() {
+    if (isLogging.value)
+        return
     loginFormEl.value?.validate((valid, fields) => {
         if (valid) {
+            isLogging.value = true
             API.login(logInfo.logId, logInfo.password).then(res => {
                 console.log(res)
                 if (res) {
                     HMessage.success('登录成功')
-                    showLoDialog.value = false
+                    showLogDialog.value = false
                     user.value = res
                 }
+            }).finally(() => {
+                isLogging.value = false
             })
         }
     })
@@ -263,14 +273,23 @@ function tryLogin() {
 function tryLogon() {
     logonFormEl.value?.validate((valid, fields) => {
         if (valid) {
+            isLogging.value = true
             API.logon(logInfo.logId, logInfo.password).then(res => {
                 if (res) {
                     HMessage.success('注册成功')
-                    showLoDialog.value = false
+                    showLogDialog.value = false
                 }
+            }).finally(() => {
+                isLogging.value = false
             })
         }
     })
 }
+
+watch(showLogDialog, nv => {
+    if (nv) {
+        isLogging.value = false
+    }
+})
 
 </script>

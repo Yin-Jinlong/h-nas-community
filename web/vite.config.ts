@@ -38,6 +38,7 @@ export default defineConfig({
         Components({
             resolvers: [ElementPlusResolver({
                 importStyle: false,
+                exclude: /vloading/i
             })],
         }),
     ]
