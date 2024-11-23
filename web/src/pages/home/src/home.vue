@@ -81,7 +81,10 @@
                                   v-model="showFileInfoDialog"
                                   v-model:extra="activeFile.extra"
                                   :info="activeFile?.info"/>
-                <el-dialog v-model="showRenameDialog">
+                <el-dialog v-model="showRenameDialog"
+                           :close-on-click-modal="!renamePosting"
+                           :close-on-press-escape="!renamePosting"
+                           :show-close="!renamePosting">
                     <template #header>
                         {{ activeFile?.info?.name }}
                     </template>
@@ -207,7 +210,7 @@
 
 import {FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
 import {user} from '@/utils/globals'
-import {ArrowDown, Delete, Edit, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
+import {ArrowDown} from '@element-plus/icons-vue'
 import API from '@/utils/api'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
 
@@ -230,6 +233,7 @@ const nowPaths = reactive<string[]>([])
 const files = reactive<FileWrapper[]>([])
 const showFileInfoDialog = ref(false)
 const showRenameDialog = ref(false)
+const renamePosting = ref(false)
 const images = reactive<FileWrapper[]>([])
 const newName = ref('')
 const activeFile = ref<FileWrapper>()
@@ -385,6 +389,7 @@ function onCommand(cmd: string, f: FileWrapper) {
         case 'rename':
             newName.value = ''
             showRenameDialog.value = true
+            renamePosting.value = false
             break
         case 'del':
             API.deletePublicFile(getPath(f.info.name)).then(res => {
@@ -476,6 +481,9 @@ function onDblClick(e: MouseEvent, info: FileInfo) {
 }
 
 function renameFile() {
+    if (renamePosting.value)
+        return
+    renamePosting.value = true
     API.renamePublic(getPath(activeFile.value!.info.name), newName.value).then(res => {
         if (res) {
             showRenameDialog.value = false
@@ -484,6 +492,8 @@ function renameFile() {
             activeFile.value!.extra.preview = ''
             activeFile.value!.info.name = newName.value
         }
+    }).finally(() => {
+        renamePosting.value = false
     })
 }
 
