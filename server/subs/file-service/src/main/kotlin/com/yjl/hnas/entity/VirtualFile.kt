@@ -13,6 +13,7 @@ typealias VFileId = String
 @Table(
     indexes = [
         Index(name = "parent", columnList = "parent"),
+        Index(name = "name", columnList = "name"),
         Index(name = "hash", columnList = "hash"),
         Index(name = "owner", columnList = "owner"),
     ]
