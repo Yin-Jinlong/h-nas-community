@@ -309,13 +309,12 @@ function getNext(): string | undefined {
     return getUrl(f)
 }
 
-function getInfo(index: number) {
-    let file = files[index]
+function getInfo(file: FileWrapper) {
     API.getPublicFileExtraInfo(subPath(file.info.dir, file.info.name)).then(res => {
         if (!res)
             return
         file.extra = res
-        if (res.preview && res.type == 'image') {
+        if (res.preview !== undefined && res.type == 'image') {
             images.push(file)
             images.sort((a, b) => {
                 return a.index - b.index
@@ -346,7 +345,7 @@ function updateFiles() {
                 }
             }
             files.push(file)
-            getInfo(file.index)
+            getInfo(file)
         })
     })
 }
