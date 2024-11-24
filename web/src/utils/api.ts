@@ -151,55 +151,22 @@ function publicPreviewURL(path: string) {
     return `api/file/public/preview?path=${path}`
 }
 
-async function getHash(file: File): Promise<string> {
-    const sha256 = CryptoJs.algo.SHA256.create()
-
-    const ChunkSize = 4 * 1024 * 1024
-    const ReadCount = Math.ceil(file.size / ChunkSize)
-    const reader = new FileReader()
-
-    async function readChunk(index: number) {
-        return new Promise<string>(resolve => {
-            let start = index * ChunkSize
-            let end = Math.min(file.size, start + ChunkSize)
-
-            reader.onload = async e => {
-                sha256.update(CryptoJs.lib.WordArray.create(e.target!.result as ArrayBuffer))
-
-                if (index < ReadCount - 1)
-                    resolve(await readChunk(index + 1))
-                else {
-                    resolve(CryptoJs.enc.Base64url.stringify(sha256.finalize()))
-                }
-            }
-
-            reader.readAsArrayBuffer(file.slice(start, end))
-        })
-
-    }
-
-    return new Promise<string>(async (resolve, reject) => {
-        reader.onerror = function (e) {
-            reject(e)
-        }
-
-        resolve(await readChunk(0))
-    })
-}
-
-async function uploadPublic(path: string, file: File) {
-    return new Promise(async resolve => {
-        let hash = await getHash(file)
-        post<boolean>('api/file/public/upload', file, {
+async function uploadPublic(path: string, hash: string, file: File, range: FileRange) {
+    return new Promise<boolean>(async (resolve, reject) => {
+        post<boolean>('api/file/public/upload', file.slice(range.start, range.end), {
             headers: {
                 'Authorization': token.value,
-                'Content-ID': Base64.encodeURL(path + '/' + file.name),
+                'Content-ID': Base64.encodeURL(path),
                 'Hash': hash,
-                'Content-Type': 'application/octet-stream'
-            }
+                'Content-Type': 'application/octet-stream',
+                'Content-Range': `${range.start}-${range.end}/${file.size}`
+            },
         })
-            .then(resp => resolve(true))
-            .catch(catchError)
+            .then(resp => resolve(resp.data ?? false))
+            .catch(e => {
+                catchError(e)
+                throw e
+            })
     })
 }
 

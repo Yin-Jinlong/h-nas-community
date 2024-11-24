@@ -3,6 +3,7 @@ package com.yjl.hnas.controller
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileExtraInfo
 import com.yjl.hnas.data.FileInfo
+import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.*
@@ -87,8 +88,28 @@ class PubFileController(
         @RequestHeader("Hash") sha256Base64: String,
         @RequestHeader("Content-Range") range: String,
         rawIn: ServletInputStream
-    ) {
-        TODO()
+    ): Boolean {
+        val path = getPubPath(pathBase64.unBase64Url)
+        val hash = sha256Base64.reBase64Url
+
+        val mr = RangeRegex.matchEntire(range)
+            ?: throw ErrorCode.BAD_ARGUMENTS.data(range)
+
+        val start = mr.groupValues[1].toLong()
+        val end = mr.groupValues[2].toLong()
+        val size = mr.groupValues[3].toLong()
+
+        if (end < size)
+            throw ErrorCode.BAD_ARGUMENTS.data(range)
+
+        return virtualFileService.upload(
+            token.data,
+            path,
+            hash,
+            size,
+            FileRange(start, end),
+            rawIn
+        )
     }
 
     @DeleteMapping

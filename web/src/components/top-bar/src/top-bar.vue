@@ -11,6 +11,39 @@
                     <Refresh/>
                 </el-icon>
             </h-button>
+            <el-popover width="400px">
+                <template #reference>
+                    <h-badge :value="UploadTasks.length"
+                             style="display: inline-block;font-size: 16px;margin-right: 1em">
+                        <h-button>
+                            <el-icon>
+                                <Sort/>
+                            </el-icon>
+                        </h-button>
+                    </h-badge>
+                </template>
+                <template #default>
+                    <el-empty v-if="!UploadTasks.length">
+                        <template #description>
+                            空空如也
+                        </template>
+                    </el-empty>
+                    <div>
+                        <div v-for="t in UploadTasks" class="task">
+                            <div :style="{
+                                '--p':t.progress(),
+                                background:calcBg(t.status())
+                            }"
+                                 class="progress">
+                            </div>
+                            <div>
+                                <h4>{{ t.file().name }}</h4>
+                            </div>
+                            {{ t.statusText() }} {{ (t.progress() * 100).toFixed(1) }}%
+                        </div>
+                    </div>
+                </template>
+            </el-popover>
             <el-dropdown v-if="user">
                 <template #default>
                     <el-button>
@@ -163,13 +196,32 @@
   width: 100%;
 }
 
+.task {
+  border: gray solid 1px;
+  position: relative;
+}
+
+.progress {
+  --p: 0;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  scale: var(--p, 0) 1;
+  top: 0;
+  transform-origin: left center;
+  transition: all 0.1s ease-out;
+  width: 100%;
+  z-index: -1;
+}
+
 </style>
 
 <script lang="ts" setup>
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
-import {Refresh} from '@element-plus/icons-vue'
-import {HMessage, HButton} from '@yin-jinlong/h-ui'
+import {UploadStatus, UploadTasks} from '@/utils/upload-tasks'
+import {Refresh, Sort} from '@element-plus/icons-vue'
+import {convertColor, HBadge, HButton, HMessage} from '@yin-jinlong/h-ui'
 import {FormInstance, FormRules} from 'element-plus'
 import {computed} from 'vue'
 import {TopBarProps} from './props'
@@ -250,6 +302,12 @@ const canLogOn = computed(() => {
         logInfo.password.length >= 8 &&
         logInfo.password == logInfo.password2
 })
+
+function calcBg(status: UploadStatus) {
+    return status == UploadStatus.Error ?
+        convertColor('danger', '2') :
+        convertColor('success', '2')
+}
 
 function createFolder() {
     if (newFolderPosting.value)

@@ -20,9 +20,11 @@ interface FileMappingService {
 
     companion object {
         var DataDir = "data"
+        var DataDataDir = "data/data"
         var PreviewDir = "cache/缩略图"
 
         fun dataFile(path: String) = File(DataDir, path)
+        fun dataDataFile(path: String) = File(DataDataDir, path)
 
         fun previewFile(path: String) = File(PreviewDir, path)
     }

@@ -1,19 +1,30 @@
 package com.yjl.hnas.service
 
+import com.yjl.hnas.data.FileRange
+import com.yjl.hnas.data.UserInfo
+import com.yjl.hnas.entity.FileMapping
 import com.yjl.hnas.entity.IVirtualFile
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.VirtualFile
+import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualFilesystem
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.fs.attr.FileAttributes
+import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
+import com.yjl.hnas.preview.PreviewGeneratorFactory
+import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.base64Url
+import com.yjl.hnas.utils.mkParent
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import java.io.File
+import java.io.InputStream
+import java.io.RandomAccessFile
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
@@ -27,6 +38,8 @@ import kotlin.io.path.name
 @Service
 class VirtualFileServiceImpl(
     val virtualFileMapper: VirtualFileMapper,
+    val fileMappingMapper: FileMappingMapper,
+    private val previewGeneratorFactory: PreviewGeneratorFactory,
 ) : VirtualFileService {
 
     private lateinit var fs: VirtualFilesystem
@@ -63,6 +76,116 @@ class VirtualFileServiceImpl(
         if (!exists(p) && !p.isRoot)
             throw NoSuchFileException(p.fullPath)
         return virtualFileMapper.selectsByParent(p.id)
+    }
+
+    fun tmpFile(user: UserInfo, hash: String): File {
+        return FileMappingService.dataFile("tmp/${user.uid}/$hash.tmp")
+    }
+
+    fun dataFile(hash: String): File {
+        return FileMappingService.dataDataFile(hash)
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun updateParentSize(path: VirtualPath, ds: Long) {
+        val vf = virtualFileMapper.selectById(path.id)
+            ?: throw IllegalStateException("数据库文件不存在: $path")
+        virtualFileMapper.updateSize(vf.fid, vf.size + ds)
+        val p = path.parent
+        if (p same path)
+            return
+        updateParentSize(p, ds)
+    }
+
+    @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
+    fun insertFile(user: UserInfo, path: VirtualPath, hash: String, size: Long, dataFile: File) {
+        if (size != dataFile.length())
+            throw IllegalArgumentException("文件大小不匹配: $path")
+        val time = System.currentTimeMillis().timestamp
+        val parent = path.parent
+        virtualFileMapper.insert(
+            VirtualFile(
+                fid = path.id,
+                name = path.name,
+                parent = parent.id,
+                hash = hash,
+                owner = user.uid,
+                createTime = time,
+                updateTime = time,
+                size = size
+            )
+        )
+        updateParentSize(parent, size)
+
+        if (fileMappingMapper.selectByHash(hash) == null) {
+            val ins = dataFile.inputStream().buffered()
+            val type = FileDetector.detect(ins, path.name)
+            val fileHash = ins.use { it.sha256.base64Url }
+            if (hash != fileHash)
+                throw IllegalStateException("文件hash不匹配: $fileHash!=$hash")
+            fileMappingMapper.insert(
+                FileMapping(
+                    hash = hash,
+                    dataPath = "data/$hash",
+                    type = type.type,
+                    subType = type.subtype,
+                    preview = previewGeneratorFactory.canPreview(type),
+                    size = size,
+                )
+            )
+        }
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    override fun upload(
+        user: UserInfo,
+        path: VirtualPath,
+        hash: String,
+        fileSize: Long,
+        range: FileRange,
+        ins: InputStream
+    ): Boolean {
+        if (exists(path))
+            throw ErrorCode.FILE_EXISTS.data(path.path)
+        val dataFile = dataFile(hash)
+        if (dataFile.exists()) {
+            insertFile(user, path, hash, fileSize, dataFile)
+            return true
+        }
+
+        val tmpFile = tmpFile(user, hash)
+        tmpFile.mkParent()
+
+        if (range.start == fileSize) {
+            if (!tmpFile.exists())
+                throw IllegalArgumentException("文件不存在: $path")
+            insertFile(user, path, hash, fileSize, tmpFile)
+            tmpFile.toPath().fileSystem
+            dataFile.mkParent()
+            Files.move(tmpFile.toPath(), dataFile.toPath())
+            return true
+        }
+
+        val rf = RandomAccessFile(tmpFile, "rw")
+        rf.seek(range.start)
+
+        val buf = ByteArray(1024 * 1024)
+        var read = 0L
+        while (true) {
+            val len = ins.read(buf)
+            if (len <= 0)
+                break
+            rf.write(buf, 0, len)
+            read += len
+            if (read >= range.size)
+                break
+        }
+
+        if (rf.filePointer >= fileSize)
+            rf.setLength(fileSize)
+
+        rf.close()
+        return false
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)

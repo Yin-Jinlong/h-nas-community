@@ -211,6 +211,7 @@
 import {FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
 import {user} from '@/utils/globals'
 import {subPath} from '@/utils/path'
+import {uploadPublicFile} from '@/utils/upload-tasks'
 import {ArrowDown} from '@element-plus/icons-vue'
 import API from '@/utils/api'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
@@ -439,11 +440,12 @@ function onDragOver(e: DragEvent) {
     checkCancel()
 }
 
-function onDragEnd(e: DragEvent) {
+async function onDragEnd(e: DragEvent) {
     if (!accept(e) || !uploadIsDragging.value)
         return
     e.preventDefault()
     uploadIsDragging.value = false
+    await nextTick()
     let files = e.dataTransfer!.files
     console.log(files)
     for (let i = 0; i < files.length; i++) {
@@ -451,13 +453,11 @@ function onDragEnd(e: DragEvent) {
     }
 }
 
-async function upload(file: File) {
-    API.uploadPublic(nowPaths.join('/'), file).then(res => {
-        if (res) {
-            HMessage.success('上传成功')
-            update()
-        }
+function upload(file: File) {
+    uploadPublicFile(nowPaths.join('/') + '/' + file.name, file, () => {
+        update()
     })
+    HMessage.success('已添加任务')
 }
 
 function onDragCancel() {
