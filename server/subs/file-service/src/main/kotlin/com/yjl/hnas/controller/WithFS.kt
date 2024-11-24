@@ -4,6 +4,7 @@ import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.BadPathException
 import com.yjl.hnas.fs.VirtualFileSystemProvider
+import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.NoSuchFileException
 
@@ -33,5 +34,7 @@ abstract class WithFS(
         throw ErrorCode.NO_SUCH_FILE.data(e.file)
     } catch (e: FileAlreadyExistsException) {
         throw ErrorCode.FILE_EXISTS.data(e.file)
+    } catch (e: DirectoryNotEmptyException) {
+        throw ErrorCode.FOLDER_NOT_EMPTY.data(e.file)
     }
 }
