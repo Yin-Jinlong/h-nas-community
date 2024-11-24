@@ -46,6 +46,7 @@
 
 <script lang="ts" setup>
 import {FileGridView} from '@/components'
+import {subPath} from '@/utils/path'
 import {toHumanSize} from '@/utils/size-utils'
 import {FileInfoDialogProps} from './props'
 
@@ -56,13 +57,10 @@ const extra = defineModel<FileExtraInfo>('extra', {
 })
 const props = defineProps<FileInfoDialogProps>()
 const infoTable = computed(() => {
-    let dir = props.info.dir
-    if (dir == '/')
-        dir = ''
     return [
         {
             label: '路径',
-            value: dir + '/' + props.info.name
+            value: subPath(props.info.dir, props.info.name)
         },
         {
             label: '文件类型',

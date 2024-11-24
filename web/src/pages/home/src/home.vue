@@ -210,6 +210,7 @@
 
 import {FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
 import {user} from '@/utils/globals'
+import {subPath} from '@/utils/path'
 import {ArrowDown} from '@element-plus/icons-vue'
 import API from '@/utils/api'
 import {HMessage, HButton} from '@yin-jinlong/h-ui'
@@ -269,10 +270,7 @@ function showPreview(f: FileWrapper) {
 }
 
 function getUrl(f: FileWrapper) {
-    let dir = f.info.dir
-    if (dir == '/')
-        dir = ''
-    return API.publicFileURL(dir + '/' + f.info.name)
+    return API.publicFileURL(subPath(f.info.dir, f.info.name))
 }
 
 function getNow(): string | undefined {
@@ -312,10 +310,7 @@ function getNext(): string | undefined {
 
 function getInfo(index: number) {
     let file = files[index]
-    let dir = file.info.dir
-    if (dir == '/')
-        dir = ''
-    API.getPublicFileExtraInfo(dir + '/' + file.info.name).then(res => {
+    API.getPublicFileExtraInfo(subPath(file.info.dir, file.info.name)).then(res => {
         if (!res)
             return
         file.extra = res

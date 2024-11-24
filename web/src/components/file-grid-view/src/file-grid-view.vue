@@ -63,6 +63,7 @@
 import Folder from '@/components/file-grid-view/src/folder.vue'
 import {IconMapping} from '@/components/file-grid-view/src/icon-mapping'
 import API from '@/utils/api'
+import {subPath} from '@/utils/path'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 import UnknownFile from './unknown-file.vue'
 
@@ -103,7 +104,7 @@ async function updateIcon(extra: FileExtraInfo) {
 }
 
 async function getExtra() {
-    let info = await API.getPublicFileExtraInfo(props.info.dir + '/' + props.info.name)
+    let info = await API.getPublicFileExtraInfo(subPath(props.info.dir, props.info.name))
     if (!info)
         return
     extra.value.preview = info.preview
