@@ -4,18 +4,11 @@ import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileExtraInfo
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.entity.VirtualFile
-import com.yjl.hnas.error.ClientError
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.PubFileSystem
-import com.yjl.hnas.fs.PubFileSystemProvider
-import com.yjl.hnas.fs.VirtualFileSystem
-import com.yjl.hnas.fs.VirtualFileSystemProvider
-import com.yjl.hnas.fs.attr.FileAttribute
+import com.yjl.hnas.fs.*
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
-import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.*
-import jakarta.annotation.PostConstruct
 import jakarta.servlet.ServletInputStream
 import jakarta.validation.constraints.NotBlank
 import org.springframework.scheduling.annotation.Async
@@ -24,7 +17,6 @@ import org.springframework.web.bind.annotation.*
 import java.io.File
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
-import kotlin.io.path.name
 
 /**
  * @author YJL
@@ -32,24 +24,14 @@ import kotlin.io.path.name
 @Controller
 @RequestMapping("/api/file/public")
 class PubFileController(
-    val pubFileSystemProvider: PubFileSystemProvider,
-    val virtualFileSystemProvider: VirtualFileSystemProvider,
+    virtualFileSystemProvider: VirtualFileSystemProvider,
     val fileMappingService: FileMappingService,
     val virtualFileService: VirtualFileService
-) {
-    lateinit var pubFileSystem: PubFileSystem
-
-    lateinit var virtualFileSystem: VirtualFileSystem
-
-    @PostConstruct
-    fun inti() {
-        pubFileSystem = pubFileSystemProvider.getFileSystem()
-        virtualFileSystem = virtualFileSystemProvider.getFileSystem()
-    }
+) : WithFS(virtualFileSystemProvider) {
 
     @GetMapping("info")
     fun getInfo(path: String): FileExtraInfo {
-        val pp = pubFileSystem.getPath(path.deUrl)
+        val pp = getPubPath(path)
         val vf = virtualFileService.get(pp)
             ?: throw ErrorCode.NO_SUCH_FILE.data(path)
         if (vf.hash != null) {
@@ -71,15 +53,15 @@ class PubFileController(
     }
 
     @GetMapping("files")
-    fun getFiles(@NotBlank(message = "path 不能为空") path: String): List<FileInfo> {
+    fun getFiles(@NotBlank(message = "path 不能为空") path: String): List<FileInfo> = withCatch {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
-        val p = path.deUrl.trim().ifEmpty { "/" }
+        val p = path.trim().ifEmpty { "/" }
 
-        val pp = pubFileSystem.getPath(p).toAbsolutePath()
+        val pp = getPubPath(p)
         val files = virtualFileService.getByParent(pp)
 
-        return files.map {
+        files.map {
             it.toFileInfo(pp, fileMappingService)
         }.sorted()
     }
@@ -89,11 +71,11 @@ class PubFileController(
         @RequestParam("path") path: String,
         @ShouldLogin user: UserToken,
     ) {
-        val p = pubFileSystem.getPath(path.deUrl).toAbsolutePath()
+        val p = getPubPath(path)
         try {
-            pubFileSystemProvider.createDirectory(p, FileOwnerAttribute(user.data.uid))
+            Files.createDirectory(p, FileOwnerAttribute(user.data.uid))
         } catch (e: FileAlreadyExistsException) {
-            throw ErrorCode.FILE_EXISTS.data(path.deUrl)
+            throw ErrorCode.FILE_EXISTS.data(path)
         }
     }
 
@@ -102,49 +84,11 @@ class PubFileController(
     fun uploadFile(
         @ShouldLogin token: UserToken,
         @RequestHeader("Content-ID") pathBase64: String,
-        @RequestHeader("Content-Length") fileSize: Long,
         @RequestHeader("Hash") sha256Base64: String,
+        @RequestHeader("Content-Range") range: String,
         rawIn: ServletInputStream
     ) {
-        val path = pathBase64.unBase64Url
-        val pp = pubFileSystem.getPath(path)
-        if (Files.exists(pp))
-            throw ErrorCode.FILE_EXISTS.data(path)
-
-        val hash = sha256Base64.reBase64Url
-
-        val ins = rawIn.buffered()
-        ins.mark(1024)
-        val type = FileDetector.detect(ins, pp.name)
-        ins.reset()
-        pp.bundleAttrs[FileAttribute.TYPE] = FileTypeAttribute(type)
-        pp.bundleAttrs[FileAttribute.HASH] = FileHashAttribute(hash)
-        val vp = pp.toVirtual()
-        val vf = vp.toFile()
-        runCatching {
-            if (!vf.exists()) {
-
-                val vfp = vf.parentFile
-                if (!vfp.exists())
-                    vfp.mkdirs()
-                try {
-                    vf.outputStream().use {
-                        ins.copyTo(it)
-                    }
-                } catch (e: Exception) {
-                    if (vf.exists() && !vf.delete())
-                        vf.deleteOnExit()
-                }
-            }
-            virtualFileService.createPubFile(
-                token.data.uid,
-                pp,
-                vf.length(),
-                hash = hash
-            )
-        }.onFailure {
-            throw it as? ClientError ?: ErrorCode.SERVER_ERROR.error
-        }
+        TODO()
     }
 
     @DeleteMapping
@@ -152,14 +96,14 @@ class PubFileController(
         @ShouldLogin token: UserToken,
         path: String,
     ) {
-        val pp = pubFileSystem.getPath(path.deUrl)
-        if (!pubFileSystemProvider.deleteIfExists(pp))
+        val pp = getPubPath(path)
+        if (!Files.deleteIfExists(pp))
             throw ErrorCode.NO_SUCH_FILE.data(path)
     }
 
     @GetMapping("preview")
     fun getPreview(path: String): File {
-        val pp = virtualFileSystem.getPath(path.deUrl).toAbsolutePath()
+        val pp = getPubPath(path).toAbsolutePath()
         return FileMappingService.previewFile(pp.path).apply {
             if (!exists())
                 throw ErrorCode.NO_SUCH_FILE.data(path)
@@ -168,7 +112,7 @@ class PubFileController(
 
     @GetMapping
     fun getPublicFile(path: String): File {
-        val pp = pubFileSystem.getPath(path.deUrl)
+        val pp = getPubPath(path)
         val vf = virtualFileService.get(pp) as VirtualFile?
             ?: throw ErrorCode.NO_SUCH_FILE.error
         val map = fileMappingService.getMapping(
@@ -186,10 +130,11 @@ class PubFileController(
         path: String,
         name: String
     ) {
-        val src = pubFileSystem.getPath(path.deUrl).toAbsolutePath()
-        val dst = name.deUrl
-        if (dst.contains("/") || dst.contains("\\"))
-            throw ErrorCode.BAD_ARGUMENTS.data(name)
-        virtualFileService.renamePublic(src, name)
+        val src = getPubPath(path)
+        TODO()
+    }
+
+    companion object {
+        val RangeRegex = Regex("^(\\d+)-(\\d+)/(\\d+)$")
     }
 }

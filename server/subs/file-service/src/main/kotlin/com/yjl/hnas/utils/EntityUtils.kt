@@ -2,11 +2,11 @@ package com.yjl.hnas.utils
 
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.entity.IVirtualFile
-import com.yjl.hnas.fs.PubPath
+import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.service.FileMappingService
 
 fun IVirtualFile.toFileInfo(
-    dir: PubPath,
+    dir: VirtualPath,
     fileMappingService: FileMappingService
 ): FileInfo {
     return FileInfo(

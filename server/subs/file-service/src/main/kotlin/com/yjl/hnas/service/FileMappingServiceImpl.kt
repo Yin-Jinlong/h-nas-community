@@ -2,8 +2,8 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.entity.FileMapping
 import com.yjl.hnas.entity.IFileMapping
+import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.PubPath
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
@@ -17,7 +17,9 @@ import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
-import java.util.Vector
+import java.io.InputStream
+import java.io.RandomAccessFile
+import java.util.*
 import kotlin.io.path.name
 
 /**
@@ -27,37 +29,12 @@ import kotlin.io.path.name
 class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper,
     val previewGeneratorFactory: PreviewGeneratorFactory,
+    val virtualFileService: VirtualFileService
 ) : FileMappingService {
 
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     val genPreviewTasks = Vector<String>()
-
-    @Transactional
-    override fun addMapping(path: PubPath, size: Long, hash: String) {
-        val vp = path.toVirtual()
-        val file = vp.toFile()
-        val fileHash = file.sha256.base64Url
-        if (fileHash != hash)
-            throw ErrorCode.BAD_HEADER.data("bad hash")
-        val type: MediaType
-        file.inputStream().buffered().use {
-            type = FileDetector.detect(it, path.name)
-        }
-        fileMappingMapper.insert(
-            FileMapping(
-                hash = fileHash,
-                dataPath = vp.path,
-                type = type.type,
-                subType = type.subtype,
-                preview = previewGeneratorFactory.canPreview(type),
-                size = file.length().also {
-                    if (it != size)
-                        throw IllegalStateException("size not match : $it != $size")
-                }
-            )
-        )
-    }
 
     override fun getMapping(hash: String): IFileMapping? {
         return fileMappingMapper.selectByHash(hash)
@@ -142,6 +119,90 @@ class FileMappingServiceImpl(
             ""
         }
     }
+
+    fun tmpFile(hash: String) = FileMappingService.dataFile("tmp/$hash.tmp")
+
+    /*    override fun uploadRange(
+            uid: Uid,
+            path: PubPath,
+            hash: String,
+            off: Long,
+            fileSize: Long,
+            ins: InputStream,
+            dataHash: String
+        ) {
+            val tmp = tmpFile(hash).apply {
+                parentFile.apply {
+                    if (!exists())
+                        mkdirs()
+                }
+            }
+            val rf = RandomAccessFile(tmp, "rw")
+            rf.seek(off)
+            val inBuf = ByteArray(1024 * 1024)
+            var len = 0
+            kotlin.runCatching {
+                while (true) {
+                    val l = ins.read(inBuf)
+                    if (l == -1)
+                        break
+                    len += l
+                    rf.write(inBuf, 0, l)
+                }
+            }
+            if (rf.filePointer > fileSize)
+                rf.setLength(fileSize)
+            rf.close()
+        }*/
+    /*
+        override fun uploadEnd(uid: Uid, hash: String, path: PubPath, type: MediaType?, fileSize: Long) {
+            run {
+                if (type == null)
+                    return@run
+                val file = FileMappingService.dataFile("$type/$hash")
+                if (file.exists()) {
+                    virtualFileService.createPubFile(
+                        uid,
+                        path,
+                        type,
+                        fileSize,
+                        hash = hash
+                    )
+                    return
+                }
+            }
+
+            val tmp = tmpFile(hash)
+            val fileType = tmp.inputStream().buffered().use { FileDetector.detect(it, path.name) }
+            if (type != null && fileType != type)
+                throw ErrorCode.BAD_FILE_FORMAT.data("bad file format")
+            val file = FileMappingService.dataFile("$fileType/$hash")
+            if (!file.exists()) {
+                val fileHash = tmp.sha256.base64Url
+                if (fileHash != hash)
+                    throw ErrorCode.BAD_REQUEST.data("bad hash")
+                tmp.renameTo(file)
+            }
+            virtualFileService.createPubFile(
+                uid,
+                path,
+                fileType,
+                fileSize,
+                hash = hash
+            )
+            if (getMapping(hash) == null) {
+                fileMappingMapper.insert(
+                    FileMapping(
+                        hash = hash,
+                        dataPath = "$type/$hash",
+                        type = fileType.type,
+                        subType = fileType.subtype,
+                        preview = previewGeneratorFactory.canPreview(fileType),
+                        size = fileSize
+                    )
+                )
+            }
+        }*/
 
     @PreDestroy
     fun destroy() {

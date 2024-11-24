@@ -9,13 +9,13 @@ open class FileAttribute<T>(
     val value: T
 ) : java.nio.file.attribute.FileAttribute<T> {
 
-    companion object {
-        const val OWNER = "owner"
-        const val HASH = "hash"
-        const val TYPE = "type"
-    }
-
     override fun name() = name
 
     override fun value() = value
+}
+
+object FileAttributes {
+    const val OWNER = "owner"
+    const val HASH = "hash"
+    const val TYPE = "type"
 }

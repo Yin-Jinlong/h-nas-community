@@ -19,7 +19,7 @@ interface IVirtualFile {
 
     var name: String
 
-    var parent: VFileId?
+    var parent: VFileId
 
     var hash: String?
 

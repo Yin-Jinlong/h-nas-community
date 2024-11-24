@@ -34,9 +34,9 @@ data class VirtualFile(
     @Comment("文件名")
     override var name: String = "",
 
-    @Column(length = IVirtualFile.ID_LENGTH)
+    @Column(length = IVirtualFile.ID_LENGTH, nullable = false)
     @Comment("所在目录")
-    override var parent: VFileId? = null,
+    override var parent: VFileId = "",
 
     @Column(length = IVirtualFile.HASH_LENGTH)
     @Comment("文件hash")
@@ -54,7 +54,7 @@ data class VirtualFile(
     @Comment("文件修改时间")
     override var updateTime: Timestamp = Timestamp(0),
 
-    @Column(columnDefinition = "bigint default(-1)")
+    @Column(nullable = false)
     @Comment("文件/目录大小")
     override var size: Long = 0
 ) : IVirtualFile
