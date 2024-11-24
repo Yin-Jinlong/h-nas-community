@@ -6,7 +6,7 @@ import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.*
+import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.utils.*
@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.io.File
-import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 
 /**
@@ -71,13 +70,9 @@ class PubFileController(
     fun createFolder(
         @RequestParam("path") path: String,
         @ShouldLogin user: UserToken,
-    ) {
+    ): Unit = withCatch {
         val p = getPubPath(path)
-        try {
-            Files.createDirectory(p, FileOwnerAttribute(user.data.uid))
-        } catch (e: FileAlreadyExistsException) {
-            throw ErrorCode.FILE_EXISTS.data(path)
-        }
+        Files.createDirectory(p, FileOwnerAttribute(user.data.uid))
     }
 
     @Async
@@ -116,7 +111,7 @@ class PubFileController(
     fun deleteFile(
         @ShouldLogin token: UserToken,
         path: String,
-    ) {
+    ) = withCatch {
         val pp = getPubPath(path)
         if (!Files.deleteIfExists(pp))
             throw ErrorCode.NO_SUCH_FILE.data(path)

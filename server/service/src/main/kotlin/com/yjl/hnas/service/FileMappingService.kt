@@ -26,7 +26,7 @@ interface FileMappingService {
         fun dataFile(path: String) = File(DataDir, path)
         fun dataDataFile(path: String) = File(DataDataDir, path)
 
-        fun previewFile(path: String) = File(PreviewDir, path)
+        fun previewFile(dataPath: String): File = File(PreviewDir, "$dataPath.jpg")
     }
 
 }

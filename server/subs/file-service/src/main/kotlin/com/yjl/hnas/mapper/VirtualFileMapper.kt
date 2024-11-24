@@ -19,8 +19,11 @@ interface VirtualFileMapper {
     @Select("select * from virtual_file where parent = #{parent}")
     fun selectsByParent(parent: VFileId): List<VirtualFile>
 
-    @Select("select count(1) from virtual_file where hash = #{hash}")
+    @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
     fun countHash(hash: String): Int
+
+    @Select("select count(*) from virtual_file where parent = #{fid} limit 1")
+    fun hasChildren(fid: VFileId): Boolean
 
     //******//
     //  增  //

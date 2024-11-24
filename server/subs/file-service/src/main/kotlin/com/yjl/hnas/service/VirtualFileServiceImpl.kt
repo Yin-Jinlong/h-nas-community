@@ -16,6 +16,7 @@ import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.base64Url
+import com.yjl.hnas.utils.del
 import com.yjl.hnas.utils.mkParent
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
@@ -246,8 +247,27 @@ class VirtualFileServiceImpl(
         mkdirs(owner.value() as Uid, dir.toAbsolutePath())
     }
 
+    @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun delete(path: VirtualPath) {
-        TODO("Not yet implemented")
+        val vf = virtualFileMapper.selectById(path.id)
+            ?: throw NoSuchFileException(path.fullPath)
+        val hash = vf.hash
+        if (hash == null) {
+            if (virtualFileMapper.hasChildren(vf.fid))
+                throw DirectoryNotEmptyException(path.fullPath)
+            virtualFileMapper.deleteById(vf.fid)
+            return
+        }
+        val count = virtualFileMapper.countHash(hash)
+        virtualFileMapper.deleteById(vf.fid)
+        if (count == 1) {
+            val fm = fileMappingMapper.selectByHash(hash)
+                ?: throw IllegalStateException("hash=$hash not found in mapping")
+            fileMappingMapper.deleteById(hash)
+            FileMappingService.dataFile(fm.dataPath).del()
+            if (fm.preview)
+                FileMappingService.previewFile(fm.dataPath).del()
+        }
     }
 
     override fun copy(source: VirtualPath, target: VirtualPath, options: Set<CopyOption>) {
