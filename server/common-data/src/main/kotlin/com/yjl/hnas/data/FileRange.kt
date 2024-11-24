@@ -15,7 +15,7 @@ data class FileRange(
 ) {
 
     init {
-        require(start < end) { "start must less than end" }
+        require(start <= end) { "start must <= end" }
     }
 
     companion object {
@@ -30,6 +30,9 @@ data class FileRange(
             return res
         }
     }
+
+    val size: Long
+        get() = end - start
 
     operator fun plus(o: FileRange): FileRange? {
         if (o.start < start)
