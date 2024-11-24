@@ -260,6 +260,7 @@ class VirtualFileServiceImpl(
         }
         val count = virtualFileMapper.countHash(hash)
         virtualFileMapper.deleteById(vf.fid)
+        updateParentSize(path.parent, -vf.size)
         if (count == 1) {
             val fm = fileMappingMapper.selectByHash(hash)
                 ?: throw IllegalStateException("hash=$hash not found in mapping")
