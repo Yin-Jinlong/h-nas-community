@@ -16,7 +16,7 @@ interface VirtualFileMapper {
     @Select("select * from virtual_file where fid = #{fid}")
     fun selectById(id: VFileId): VirtualFile?
 
-    @Select("select * from virtual_file where parent = #{parent}")
+    @Select("select * from virtual_file where parent = #{parent} order by hash is not null,name")
     fun selectsByParent(parent: VFileId): List<VirtualFile>
 
     @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
