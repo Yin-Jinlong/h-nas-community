@@ -1,16 +1,26 @@
 <template>
     <div class="top-bar bg-dot" data-fill-width data-flex>
         <div style="flex: 1">
-            <h-button v-disabled="!user" type="primary" @click="showNewFolderDialog = true">
-                创建目录
-            </h-button>
+            <h-tool-tip>
+                <h-button v-disabled="!user" type="primary" @click="showNewFolderDialog = true">
+                    创建目录
+                </h-button>
+                <template #tip>
+                    {{ user ? '在当前目录下创建目录' : '请先登录' }}
+                </template>
+            </h-tool-tip>
         </div>
         <div>
-            <h-button @click="emits('refresh')">
-                <el-icon>
-                    <Refresh/>
-                </el-icon>
-            </h-button>
+            <h-tool-tip>
+                <h-button @click="emits('refresh')">
+                    <el-icon>
+                        <Refresh/>
+                    </el-icon>
+                </h-button>
+                <template #tip>
+                    刷新
+                </template>
+            </h-tool-tip>
             <el-popover width="400px">
                 <template #reference>
                     <h-badge :value="UploadTasks.length"
@@ -232,7 +242,7 @@ import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {UploadStatus, UploadTasks} from '@/utils/upload-tasks'
 import {Close, Refresh, Sort} from '@element-plus/icons-vue'
-import {convertColor, HBadge, HButton, HMessage} from '@yin-jinlong/h-ui'
+import {convertColor, HBadge, HButton, HMessage, HToolTip} from '@yin-jinlong/h-ui'
 import {FormInstance, FormRules} from 'element-plus'
 import {computed} from 'vue'
 import {TopBarProps} from './props'
