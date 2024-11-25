@@ -1,6 +1,8 @@
 package com.yjl.hnas.token
 
 import com.google.gson.Gson
+import com.yjl.hnas.utils.base64Url
+import com.yjl.hnas.utils.unBase64UrlBytes
 import io.github.yinjinlong.md.sha256
 import java.nio.ByteBuffer
 import java.util.*
@@ -42,10 +44,9 @@ class Token<T> private constructor(
             System.clearProperty(PasswordKey)
         }
 
-        @OptIn(ExperimentalEncodingApi::class)
         private fun encodeData(data: ByteArray, encode: EncodeType): String {
             return when (encode) {
-                EncodeType.BASE64 -> Base64.encode(data)
+                EncodeType.BASE64 -> data.base64Url
             }
         }
 
@@ -67,10 +68,9 @@ class Token<T> private constructor(
 
         }
 
-        @OptIn(ExperimentalEncodingApi::class)
         private fun dataRaw(token: String, encode: EncodeType): ByteArray {
             return when (encode) {
-                EncodeType.BASE64 -> Base64.decode(token)
+                EncodeType.BASE64 -> token.unBase64UrlBytes
             }
         }
 

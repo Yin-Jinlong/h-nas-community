@@ -1,12 +1,14 @@
 package com.yjl.hnas.token
 
+import java.io.ByteArrayOutputStream
+import java.util.zip.Deflater
+import java.util.zip.Inflater
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.PBEParameterSpec
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * @author YJL
@@ -21,7 +23,6 @@ object TokenUtils {
     private lateinit var spec: PBEParameterSpec
     private lateinit var key: SecretKey
 
-    @OptIn(ExperimentalEncodingApi::class)
     internal fun init(
         salt: ByteArray,
         password: String,
@@ -39,16 +40,45 @@ object TokenUtils {
         spec = PBEParameterSpec(this@TokenUtils.salt, iterationCount, ivSpec)
     }
 
+    private fun zip(data: ByteArray): ByteArray {
+        val deflater = Deflater(9)
+        deflater.setInput(data)
+        deflater.finish()
+
+        val res = ByteArrayOutputStream()
+        val out = ByteArray(data.size)
+        while (!deflater.finished()) {
+            val len = deflater.deflate(out)
+            res.write(out, 0, len)
+        }
+        deflater.end()
+        return res.toByteArray()
+    }
+
+    private fun unzip(data: ByteArray): ByteArray {
+        val inflater = Inflater()
+        inflater.setInput(data)
+
+        val out = ByteArray(data.size)
+        val res = ByteArrayOutputStream()
+        while (!inflater.finished()) {
+            val len = inflater.inflate(out)
+            res.write(out, 0, len)
+        }
+        inflater.end()
+        return res.toByteArray()
+    }
+
     fun gen(data: ByteArray, algorithm: String): ByteArray {
         val cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.ENCRYPT_MODE, key, spec)
-        return cipher.doFinal(data)
+        return cipher.doFinal(zip(data))
     }
 
     fun decode(encrypted: ByteArray, algorithm: String): ByteArray {
         val cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.DECRYPT_MODE, key, spec)
-        return cipher.doFinal(encrypted)
+        return unzip(cipher.doFinal(encrypted))
     }
 
 }
