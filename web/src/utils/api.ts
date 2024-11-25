@@ -16,8 +16,11 @@ const FORM_HEADER = {
     'Authorization': token.value
 }
 
-async function get<R>(url: string, config?: AxiosRequestConfig<R>) {
-    let resp = await axios.get<RespData<R>>(url, config)
+async function get<R>(url: string, params?: object, config?: AxiosRequestConfig<R>) {
+    let resp = await axios.get<RespData<R>>(url, {
+        params: params,
+        ...config,
+    })
     if (resp.data && resp.data.code === 0)
         return resp.data
     throw resp.data
@@ -39,9 +42,13 @@ async function post<R, D = any>(
 
 async function del<R = any, D = any>(
     url: string,
+    params?: object,
     config?: AxiosRequestConfig<D>
 ) {
-    let resp = await axios.delete<RespData<R>>(url, config)
+    let resp = await axios.delete<RespData<R>>(url, {
+        params: params,
+        ...config
+    })
     if (resp.data && resp.data.code === 0)
         return resp.data
     throw resp.data
@@ -69,9 +76,7 @@ function catchError(e: AxiosError<any> | RespData<any>): undefined {
 
 async function getPublicFiles(path: string) {
     return get<FileInfo[]>('api/file/public/files', {
-        params: {
-            path: path
-        }
+        path: path
     })
         .then(resp => resp.data)
         .catch(catchError)
@@ -79,9 +84,7 @@ async function getPublicFiles(path: string) {
 
 async function getPublicFileExtraInfo(path: string) {
     return get<FileExtraInfo>('api/file/public/info', {
-        params: {
-            path: path
-        }
+        path: path
     })
         .then(resp => resp.data)
         .catch(catchError)
@@ -89,10 +92,9 @@ async function getPublicFileExtraInfo(path: string) {
 
 async function deletePublicFile(path: string) {
     return del<void>('api/file/public', {
+        path: path
+    }, {
         headers: FORM_HEADER,
-        params: {
-            path: path
-        }
     })
         .then(resp => true)
         .catch(catchError)
