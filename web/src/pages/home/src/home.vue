@@ -258,11 +258,6 @@ function enterFolder(name: string) {
     toPath(nowPaths.length - 1)
 }
 
-function getPath(name: string) {
-    let s = nowPaths.join('/') + '/' + name
-    return s.startsWith('//') ? s.substring(1) : s
-}
-
 function showPreview(f: FileWrapper) {
     if (f.previewIndex !== undefined) {
         nowIndex.value = f.previewIndex
@@ -365,7 +360,7 @@ function newFolder(name: string, ok: (close: boolean) => void) {
         HMessage.error('没有登录！')
         return
     }
-    API.newPublicFolder(getPath(name), uid).then(res => {
+    API.newPublicFolder(subPath(nowPaths, name), uid).then(res => {
         if (res) {
             HMessage.success('创建成功')
             update()
@@ -389,7 +384,7 @@ function onCommand(cmd: string, f: FileWrapper) {
             renamePosting.value = false
             break
         case 'del':
-            API.deletePublicFile(getPath(f.info.name)).then(res => {
+            API.deletePublicFile(subPath(nowPaths, f.info.name)).then(res => {
                 if (res) {
                     HMessage.success('删除成功')
                     update()
@@ -480,7 +475,7 @@ function renameFile() {
     if (renamePosting.value)
         return
     renamePosting.value = true
-    API.renamePublic(getPath(activeFile.value!.info.name), newName.value).then(res => {
+    API.renamePublic(subPath(nowPaths, activeFile.value!.info.name), newName.value).then(res => {
         if (res) {
             showRenameDialog.value = false
             HMessage.success('重命名成功')
