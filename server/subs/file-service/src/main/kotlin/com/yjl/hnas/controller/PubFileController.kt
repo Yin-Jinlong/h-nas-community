@@ -60,7 +60,7 @@ class PubFileController(
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
-        val pp = getPubPath(p)
+        val pp = getPubPath(p).toAbsolutePath()
         val files = virtualFileService.getByParent(pp)
 
         files.map {
