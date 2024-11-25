@@ -1,8 +1,11 @@
 package com.yjl.hnas.ar
 
 import com.yjl.hnas.annotation.ShouldLogin
+import com.yjl.hnas.annotation.TokenLevel
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.token.Token
+import com.yjl.hnas.token.UserTokenData
+import com.yjl.hnas.utils.UserToken
 import com.yjl.hnas.utils.hasAnno
 import com.yjl.hnas.utils.token
 import org.springframework.core.MethodParameter
@@ -38,7 +41,18 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
 
         val t = parameter.parameter.parameterizedType as ParameterizedType
         val p0 = t.actualTypeArguments[0] as Class<*>
-        return auth.token(p0.kotlin)
-            ?: if (parameter.isOptional) null else throw ErrorCode.BAD_TOKEN.error
+        val r = auth.token(p0.kotlin)
+            ?: return if (parameter.isOptional) null else throw ErrorCode.BAD_TOKEN.error
+
+        if (UserTokenData::class.java.isAssignableFrom(p0)) {
+            val token = r as UserToken
+            val tl = parameter.method!!.getAnnotation(TokenLevel::class.java)
+            if (tl != null) {
+                if (token.data.type.level < tl.min.level || token.data.type.level > tl.max.level)
+                    throw ErrorCode.NO_PERMISSION.error
+            }
+        }
+
+        return r
     }
 }

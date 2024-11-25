@@ -1,6 +1,7 @@
 package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
+import com.yjl.hnas.annotation.TokenLevel
 import com.yjl.hnas.data.FileExtraInfo
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.data.FileRange
@@ -10,6 +11,7 @@ import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
+import com.yjl.hnas.token.TokenType
 import com.yjl.hnas.utils.*
 import jakarta.servlet.ServletInputStream
 import jakarta.validation.constraints.NotBlank
@@ -69,16 +71,18 @@ class PubFileController(
     }
 
     @PostMapping("folder")
+    @TokenLevel(TokenType.FULL_ACCESS)
     fun createFolder(
         @RequestParam("path") path: String,
         @ShouldLogin user: UserToken,
     ): Unit = withCatch {
         val p = getPubPath(path)
-        Files.createDirectory(p, FileOwnerAttribute(user.data.uid))
+        Files.createDirectory(p, FileOwnerAttribute(user.data.info.uid))
     }
 
     @Async
     @PostMapping("upload")
+    @TokenLevel(TokenType.FULL_ACCESS)
     fun uploadFile(
         @ShouldLogin token: UserToken,
         @RequestHeader("Content-ID") pathBase64: String,
@@ -100,7 +104,7 @@ class PubFileController(
             throw ErrorCode.BAD_ARGUMENTS.data(range)
 
         virtualFileService.upload(
-            token.data,
+            token.data.info,
             path,
             Hash(hash),
             size,
@@ -110,6 +114,7 @@ class PubFileController(
     }
 
     @DeleteMapping
+    @TokenLevel(TokenType.FULL_ACCESS)
     fun deleteFile(
         @ShouldLogin token: UserToken,
         path: String,

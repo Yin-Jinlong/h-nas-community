@@ -1,10 +1,11 @@
-package com.yjl.hnas.service
+package com.yjl.hnas.service.impl
 
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
+import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.FileMappingService.Companion.previewFile
 import com.yjl.hnas.utils.del
 import io.github.yinjinlong.spring.boot.util.getLogger

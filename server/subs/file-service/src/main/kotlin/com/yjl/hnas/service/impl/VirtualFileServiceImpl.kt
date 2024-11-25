@@ -1,4 +1,4 @@
-package com.yjl.hnas.service
+package com.yjl.hnas.service.impl
 
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.data.UserInfo
@@ -11,6 +11,8 @@ import com.yjl.hnas.fs.attr.FileAttributes
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.preview.PreviewGeneratorFactory
+import com.yjl.hnas.service.FileMappingService
+import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.del
 import com.yjl.hnas.utils.mkParent

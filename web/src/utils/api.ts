@@ -1,4 +1,4 @@
-import {token} from '@/utils/globals'
+import {authToken, token, user} from '@/utils/globals'
 import {HMessage} from '@yin-jinlong/h-ui'
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {Base64} from 'js-base64'
@@ -10,10 +10,12 @@ export declare interface RespData<T> {
     data?: T
 }
 
+const AUTH_HEADERS = {
+    Authorization: token.value
+}
 
 const FORM_HEADER = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': token.value
+    'Content-Type': 'application/x-www-form-urlencoded'
 }
 
 async function get<R>(url: string, params?: object, config?: AxiosRequestConfig<R>) {
@@ -74,6 +76,24 @@ function catchError(e: AxiosError<any> | RespData<any>): undefined {
     }
 }
 
+async function catchWithAuth(e: AxiosError<any> | RespData<any>) {
+    let data: RespData<any>
+    if (e instanceof Error) {
+        let resp = e.response
+        if (resp && resp.data?.code) {
+            data = resp.data
+            if (data.code != 0 && authToken.value) {
+                auth().then((r) => {
+                    if (!r)
+                        return
+                    HMessage.error('请重试')
+                })
+            }
+        }
+    }
+    catchError(e)
+}
+
 async function getPublicFiles(path: string) {
     return get<FileInfo[]>('api/file/public/files', {
         path: path
@@ -94,10 +114,13 @@ async function deletePublicFile(path: string) {
     return del<void>('api/file/public', {
         path: path
     }, {
-        headers: FORM_HEADER,
+        headers: {
+            ...FORM_HEADER,
+            ...AUTH_HEADERS,
+        },
     })
         .then(resp => true)
-        .catch(catchError)
+        .catch(catchWithAuth)
 }
 
 async function newPublicFolder(folder: string, uid: number) {
@@ -105,10 +128,29 @@ async function newPublicFolder(folder: string, uid: number) {
         path: folder,
         user: uid,
     }, {
-        headers: FORM_HEADER
+        headers: {
+            ...FORM_HEADER,
+            ...AUTH_HEADERS,
+        },
     })
         .then(resp => true)
-        .catch(catchError)
+        .catch(catchWithAuth)
+}
+
+async function auth() {
+    return post('api/user/auth', {}, {
+        headers: {
+            'Authorization': authToken.value
+        },
+    }, resp => {
+        let auth = resp.headers['authorization']
+        if (auth)
+            token.value = auth
+        else {
+            authToken.value = null
+            user.value = null
+        }
+    }).catch(catchError)
 }
 
 async function login(logId: string, password?: string) {
@@ -116,12 +158,14 @@ async function login(logId: string, password?: string) {
         logId: logId,
         password: password
     }, {
-        headers: FORM_HEADER
+        headers: {
+            ...FORM_HEADER,
+            ...AUTH_HEADERS,
+        },
     }, resp => {
         let auth = resp.headers['authorization']
         if (auth) {
-            token.value = auth
-            FORM_HEADER.Authorization = auth
+            authToken.value = auth
         }
     }).then(resp => resp.data)
         .catch(catchError)
@@ -131,7 +175,10 @@ async function tryLogin(logId: string) {
     return post<UserInfo>('api/user/login', {
         logId: logId,
     }, {
-        headers: FORM_HEADER
+        headers: {
+            ...FORM_HEADER,
+            ...AUTH_HEADERS,
+        },
     }).then(resp => resp.data)
 }
 
@@ -166,7 +213,7 @@ async function uploadPublic(path: string, hash: string, file: File, range: FileR
         })
             .then(resp => resolve(resp.data ?? false))
             .catch(e => {
-                catchError(e)
+                catchWithAuth(e)
                 reject(e)
             })
     })
@@ -177,10 +224,19 @@ async function renamePublic(path: string, name: string) {
         path: path,
         name: name
     }, {
-        headers: FORM_HEADER
+        headers: {
+            ...FORM_HEADER,
+            ...AUTH_HEADERS,
+        },
     }).then(resp => true)
-        .catch(catchError)
+        .catch(catchWithAuth)
 }
+
+watch(token, (nv) => {
+    AUTH_HEADERS.Authorization = nv
+}, {
+    immediate: true
+})
 
 const API = {
     login,
