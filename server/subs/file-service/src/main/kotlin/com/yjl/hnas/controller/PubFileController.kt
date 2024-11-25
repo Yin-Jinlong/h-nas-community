@@ -84,7 +84,7 @@ class PubFileController(
         @RequestHeader("Hash") sha256Base64: String,
         @RequestHeader("Content-Range") range: String,
         rawIn: ServletInputStream
-    ): Boolean {
+    ): Boolean = withCatch {
         val path = getPubPath(pathBase64.unBase64Url)
         val hash = sha256Base64.reBase64Url
 
@@ -98,7 +98,7 @@ class PubFileController(
         if (end < size)
             throw ErrorCode.BAD_ARGUMENTS.data(range)
 
-        return virtualFileService.upload(
+        virtualFileService.upload(
             token.data,
             path,
             Hash(hash),

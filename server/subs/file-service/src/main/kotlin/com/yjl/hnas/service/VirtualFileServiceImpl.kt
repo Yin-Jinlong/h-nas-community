@@ -170,7 +170,7 @@ class VirtualFileServiceImpl(
         if (range.start == fileSize) {
             if (!tmpFile.exists())
                 throw IllegalArgumentException("文件不存在: $path")
-            val type = FileDetector.detect(tmpFile.inputStream().buffered(), path.name)
+            val type = tmpFile.inputStream().buffered().use { FileDetector.detect(it, path.name) }
             val dataFile = dataFile(type, hash)
             insertFile(user, path, hash, fileSize, tmpFile, dataPath(type, hash))
             dataFile.mkParent()
@@ -178,25 +178,25 @@ class VirtualFileServiceImpl(
             return true
         }
 
-        val rf = RandomAccessFile(tmpFile, "rw")
-        rf.seek(range.start)
+        RandomAccessFile(tmpFile, "rw").use { rf ->
+            rf.seek(range.start)
 
-        val buf = ByteArray(1024 * 1024)
-        var read = 0L
-        while (true) {
-            val len = ins.read(buf)
-            if (len <= 0)
-                break
-            rf.write(buf, 0, len)
-            read += len
-            if (read >= range.size)
-                break
+            val buf = ByteArray(1024 * 1024)
+            var read = 0L
+            while (true) {
+                val len = ins.read(buf)
+                if (len <= 0)
+                    break
+                rf.write(buf, 0, len)
+                read += len
+                if (read >= range.size)
+                    break
+            }
+
+            if (rf.filePointer >= fileSize)
+                rf.setLength(fileSize)
         }
 
-        if (rf.filePointer >= fileSize)
-            rf.setLength(fileSize)
-
-        rf.close()
         return false
     }
 
