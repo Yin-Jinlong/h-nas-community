@@ -75,12 +75,12 @@ class VirtualFileServiceImpl(
         return virtualFileMapper.selectsByParent(p.id)
     }
 
-    fun tmpFile(user: UserInfo, hash: String): File {
+    fun tmpFile(user: UserInfo, hash: Hash): File {
         return FileMappingService.dataFile("tmp/${user.uid}/$hash.tmp")
     }
 
-    fun dataFile(hash: String): File {
-        return FileMappingService.dataDataFile(hash)
+    fun dataFile(hash: Hash): File {
+        return FileMappingService.dataDataFile(hash.pathSafe)
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -123,7 +123,7 @@ class VirtualFileServiceImpl(
             fileMappingMapper.insert(
                 FileMapping(
                     hash = hash,
-                    dataPath = "data/$hash",
+                    dataPath = "data/${hash.pathSafe}",
                     type = type.type,
                     subType = type.subtype,
                     preview = previewGeneratorFactory.canPreview(type),
@@ -144,13 +144,13 @@ class VirtualFileServiceImpl(
     ): Boolean {
         if (exists(path))
             throw ErrorCode.FILE_EXISTS.data(path.path)
-        val dataFile = dataFile(hash.base64Url)
+        val dataFile = dataFile(hash)
         if (dataFile.exists()) {
             insertFile(user, path, hash, fileSize, dataFile)
             return true
         }
 
-        val tmpFile = tmpFile(user, hash.base64Url)
+        val tmpFile = tmpFile(user, hash)
         tmpFile.mkParent()
 
         if (range.start == fileSize) {

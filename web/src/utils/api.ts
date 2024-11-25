@@ -2,7 +2,7 @@ import {token} from '@/utils/globals'
 import {HMessage} from '@yin-jinlong/h-ui'
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {Base64} from 'js-base64'
-import CryptoJs from 'crypto-js'
+import qs from 'qs'
 
 export declare interface RespData<T> {
     code: number
@@ -146,11 +146,11 @@ async function logon(userName: string, password: string) {
 }
 
 function publicFileURL(path: string) {
-    return `api/file/public?path=${path}`
+    return `api/file/public?${qs.stringify({path})}`
 }
 
 function publicPreviewURL(path: string) {
-    return `api/file/public/preview?path=${path}`
+    return `api/file/public/preview?${qs.stringify({path})}`
 }
 
 async function uploadPublic(path: string, hash: string, file: File, range: FileRange) {
