@@ -237,6 +237,22 @@ class VirtualFileServiceImpl(
         )
     }
 
+    @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
+    override fun rename(path: VirtualPath, name: String) {
+        val vf = virtualFileMapper.selectById(path.id)
+            ?: throw NoSuchFileException(path.fullPath)
+        val new = path.parent.resolve(name)
+        val time = System.currentTimeMillis().timestamp
+        virtualFileMapper.insert(
+            vf.copy(
+                fid = new.id,
+                name = name,
+                updateTime = time,
+            )
+        )
+        virtualFileMapper.deleteById(vf.fid)
+    }
+
     @Transactional(rollbackFor = [Exception::class])
     fun mkdirs(owner: Uid, dir: VirtualPath) {
         if (exists(dir))

@@ -40,4 +40,10 @@ interface VirtualFileService : VirtualFileManager {
         range: FileRange,
         ins: BufferedInputStream
     ): Boolean
+
+    @Throws(
+        NoSuchFileException::class,
+        IOException::class
+    )
+    fun rename(path: VirtualPath, name: String)
 }

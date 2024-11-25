@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.io.File
 import java.nio.file.Files
+import kotlin.io.path.name
 
 /**
  * @author YJL
@@ -146,9 +147,10 @@ class PubFileController(
         @ShouldLogin token: UserToken,
         path: String,
         name: String
-    ) {
+    ) = withCatch {
         val src = getPubPath(path)
-        TODO()
+        val dts = src.parent.resolve(name)
+        virtualFileService.rename(src, dts.name)
     }
 
     companion object {
