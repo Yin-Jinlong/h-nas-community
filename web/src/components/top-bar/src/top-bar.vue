@@ -29,7 +29,7 @@
                         </template>
                     </el-empty>
                     <div>
-                        <div v-for="t in UploadTasks" class="task">
+                        <div v-for="(t,i) in UploadTasks" class="task" data-relative>
                             <div :style="{
                                 '--p':t.progress(),
                                 background:calcBg(t.status())
@@ -40,6 +40,9 @@
                                 <h4>{{ t.file().name }}</h4>
                             </div>
                             {{ t.statusText() }} {{ (t.progress() * 100).toFixed(1) }}%
+                            <el-icon v-if="t.status()>UploadStatus.Uploading" class="remove-btn" @click="removeTask(i)">
+                                <Close/>
+                            </el-icon>
                         </div>
                     </div>
                 </template>
@@ -214,13 +217,21 @@
   z-index: -1;
 }
 
+.remove-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 </style>
 
 <script lang="ts" setup>
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {UploadStatus, UploadTasks} from '@/utils/upload-tasks'
-import {Refresh, Sort} from '@element-plus/icons-vue'
+import {Close, Refresh, Sort} from '@element-plus/icons-vue'
 import {convertColor, HBadge, HButton, HMessage} from '@yin-jinlong/h-ui'
 import {FormInstance, FormRules} from 'element-plus'
 import {computed} from 'vue'
@@ -354,6 +365,10 @@ function tryLogon() {
             })
         }
     })
+}
+
+function removeTask(i: number) {
+    UploadTasks.splice(i, 1)
 }
 
 watch(showLogDialog, nv => {

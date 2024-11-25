@@ -1,15 +1,14 @@
 import API from '@/utils/api'
 import {HMessage} from '@yin-jinlong/h-ui'
 import CryptoJs from 'crypto-js'
-import {reactive} from 'vue'
 
 export enum UploadStatus {
-    Error = -1,
     Pending,
     Hash,
     Uploading,
     Success,
-    Failed
+    Failed,
+    Error = 999,
 }
 
 export interface UploadTask {
