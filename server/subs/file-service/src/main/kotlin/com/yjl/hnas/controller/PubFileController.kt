@@ -96,7 +96,7 @@ class PubFileController(
         val end = mr.groupValues[2].toLong()
         val size = mr.groupValues[3].toLong()
 
-        if (end < size)
+        if (end < start)
             throw ErrorCode.BAD_ARGUMENTS.data(range)
 
         virtualFileService.upload(
