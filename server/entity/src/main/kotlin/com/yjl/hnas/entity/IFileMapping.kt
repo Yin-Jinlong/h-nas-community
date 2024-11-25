@@ -6,7 +6,7 @@ package com.yjl.hnas.entity
  */
 interface IFileMapping : FileWithType {
 
-    var hash: String
+    var hash: Hash
 
     var dataPath: String
 

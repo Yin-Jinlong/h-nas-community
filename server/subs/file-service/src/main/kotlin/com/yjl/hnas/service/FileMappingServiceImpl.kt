@@ -1,5 +1,6 @@
 package com.yjl.hnas.service
 
+import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.preview.PreviewException
@@ -25,18 +26,18 @@ class FileMappingServiceImpl(
 
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    val genPreviewTasks = Vector<String>()
+    val genPreviewTasks = Vector<Hash>()
 
-    override fun getMapping(hash: String): IFileMapping? {
+    override fun getMapping(hash: Hash): IFileMapping? {
         return fileMappingMapper.selectByHash(hash)
     }
 
     @Transactional
-    override fun deleteMapping(hash: String) {
+    override fun deleteMapping(hash: Hash) {
         fileMappingMapper.deleteById(hash)
     }
 
-    override fun getSize(hash: String): Long {
+    override fun getSize(hash: Hash): Long {
         val fm = getMapping(hash) ?: throw IllegalArgumentException("hash not found")
         if (fm.size < 0) {
             fm.size = File(fm.dataPath).length()
@@ -45,8 +46,8 @@ class FileMappingServiceImpl(
         return fm.size
     }
 
-    suspend fun genPreview(cache: File, hash: String, dataPath: String, mediaType: MediaType) {
-        val file = File("data", dataPath)
+    suspend fun genPreview(cache: File, hash: Hash, dataPath: String, mediaType: MediaType) {
+        val file = FileMappingService.dataFile(dataPath)
         try {
             val data = previewGeneratorFactory.getPreview(file.inputStream(), mediaType) ?: return let {
                 fileMappingMapper.updatePreview(hash, true)
@@ -97,7 +98,7 @@ class FileMappingServiceImpl(
         }
         return@with synchronized(genPreviewTasks) {
             if (!genPreviewTasks.contains(hash)) {
-                genPreviewTasks += cache.name
+                genPreviewTasks += hash
                 scope.launch {
                     genPreview(cache, hash, dataPath, mediaType)
                     synchronized(genPreviewTasks) {

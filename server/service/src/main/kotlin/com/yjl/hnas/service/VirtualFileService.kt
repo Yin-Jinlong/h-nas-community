@@ -2,6 +2,7 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.data.UserInfo
+import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IVirtualFile
 import com.yjl.hnas.fs.VirtualFileManager
 import com.yjl.hnas.fs.VirtualPath
@@ -18,7 +19,7 @@ interface VirtualFileService : VirtualFileManager {
 
     fun exists(path: VirtualPath): Boolean
 
-    fun genId(path: VirtualPath): String
+    fun genId(path: VirtualPath): Hash
 
     fun get(path: VirtualPath): IVirtualFile?
 
@@ -34,7 +35,7 @@ interface VirtualFileService : VirtualFileManager {
     fun upload(
         user: UserInfo,
         path: VirtualPath,
-        hash: String,
+        hash: Hash,
         fileSize: Long,
         range: FileRange,
         ins: InputStream

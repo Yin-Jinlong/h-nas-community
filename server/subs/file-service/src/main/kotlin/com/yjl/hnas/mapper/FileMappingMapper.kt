@@ -1,6 +1,7 @@
 package com.yjl.hnas.mapper
 
 import com.yjl.hnas.entity.FileMapping
+import com.yjl.hnas.entity.Hash
 import org.apache.ibatis.annotations.*
 
 /**
@@ -14,7 +15,7 @@ interface FileMappingMapper {
     //******//
 
     @Select("select * from file_mapping where hash = #{hash}")
-    fun selectByHash(hash: String): FileMapping?
+    fun selectByHash(hash: Hash): FileMapping?
 
     //******//
     //  增  //
@@ -28,15 +29,15 @@ interface FileMappingMapper {
     //******//
 
     @Update("update file_mapping set size=#{size} where hash = #{hash}")
-    fun updateSize(hash: String, size: Long): Int
+    fun updateSize(hash: Hash, size: Long): Int
 
     @Update("update file_mapping set preview=#{preview} where hash = #{hash}")
-    fun updatePreview(hash: String, preview: Boolean): Int
+    fun updatePreview(hash: Hash, preview: Boolean): Int
 
     //******//
     //  删  //
     //******//
 
     @Delete("delete from file_mapping where hash = #{hash}")
-    fun deleteById(hash: String): Int
+    fun deleteById(hash: Hash): Int
 }

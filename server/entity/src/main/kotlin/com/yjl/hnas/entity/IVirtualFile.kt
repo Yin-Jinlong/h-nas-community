@@ -2,26 +2,20 @@ package com.yjl.hnas.entity
 
 import java.sql.Timestamp
 
-typealias VFileId = String
+typealias FileId = Hash
 
 /**
  * @author YJL
  */
 interface IVirtualFile {
 
-    /**
-     * 文件id
-     *
-     * - 公开文件 `"" path`
-     * - 私有文件 `uid path`
-     */
-    var fid: VFileId
+    var fid: FileId
 
     var name: String
 
-    var parent: VFileId
+    var parent: FileId
 
-    var hash: String?
+    var hash: Hash?
 
     var owner: Uid
 
@@ -34,8 +28,8 @@ interface IVirtualFile {
     companion object {
         const val NAME_LENGTH = 128
         const val PATH_LENGTH = 1024
-        const val ID_LENGTH = 45
-        const val HASH_LENGTH = 45
+        const val ID_LENGTH = 32
+        const val HASH_LENGTH = 32
     }
 
     enum class Type {

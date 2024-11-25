@@ -1,5 +1,6 @@
 package com.yjl.hnas.service
 
+import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
 import java.io.File
 
@@ -8,11 +9,11 @@ import java.io.File
  */
 interface FileMappingService {
 
-    fun getMapping(hash: String): IFileMapping?
+    fun getMapping(hash: Hash): IFileMapping?
 
-    fun deleteMapping(hash: String)
+    fun deleteMapping(hash: Hash)
 
-    fun getSize(hash: String): Long
+    fun getSize(hash: Hash): Long
 
     fun getPreviewFile(mapping: IFileMapping): File?
 

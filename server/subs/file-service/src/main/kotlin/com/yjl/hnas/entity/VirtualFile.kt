@@ -1,10 +1,11 @@
 package com.yjl.hnas.entity
 
+import com.yjl.hnas.converter.HashConverter
+import com.yjl.hnas.usertype.HashUserType
 import jakarta.persistence.*
 import org.hibernate.annotations.Comment
+import org.hibernate.annotations.Type
 import java.sql.Timestamp
-
-typealias VFileId = String
 
 /**
  * @author YJL
@@ -27,21 +28,26 @@ data class VirtualFile(
      * - 私有文件 `uid path`
      */
     @Id
-    @Column(length = IVirtualFile.ID_LENGTH)
+    @Type(value = HashUserType::class)
+    @Convert(converter = HashConverter::class)
+    @Column(columnDefinition = "binary(${IVirtualFile.ID_LENGTH})")
     @Comment("文件id, base64<<sha256<<(access,full_path)")
-    override var fid: VFileId = "",
+    override var fid: FileId = Hash(),
 
     @Column(length = IVirtualFile.NAME_LENGTH, nullable = false)
     @Comment("文件名")
     override var name: String = "",
 
-    @Column(length = IVirtualFile.ID_LENGTH, nullable = false)
+    @Type(value = HashUserType::class)
+    @Convert(converter = HashConverter::class)
+    @Column(columnDefinition = "binary(${IVirtualFile.ID_LENGTH})", nullable = false)
     @Comment("所在目录")
-    override var parent: VFileId = "",
+    override var parent: FileId = Hash(),
 
-    @Column(length = IVirtualFile.HASH_LENGTH)
+    @Convert(converter = HashConverter::class)
+    @Column(columnDefinition = "binary(${IVirtualFile.HASH_LENGTH})")
     @Comment("文件hash")
-    override var hash: String? = null,
+    override var hash: Hash? = null,
 
     @Column(nullable = false)
     @Comment("文件拥有者")

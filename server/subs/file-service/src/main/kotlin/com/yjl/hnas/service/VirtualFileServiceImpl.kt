@@ -2,10 +2,7 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.data.UserInfo
-import com.yjl.hnas.entity.FileMapping
-import com.yjl.hnas.entity.IVirtualFile
-import com.yjl.hnas.entity.Uid
-import com.yjl.hnas.entity.VirtualFile
+import com.yjl.hnas.entity.*
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualFilesystem
@@ -15,7 +12,6 @@ import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.tika.FileDetector
-import com.yjl.hnas.utils.base64Url
 import com.yjl.hnas.utils.del
 import com.yjl.hnas.utils.mkParent
 import com.yjl.hnas.utils.timestamp
@@ -45,7 +41,7 @@ class VirtualFileServiceImpl(
 
     private lateinit var fs: VirtualFilesystem
 
-    private val VirtualPath.id: String
+    private val VirtualPath.id: Hash
         get() = genId(this.toAbsolutePath())
 
     override fun exists(path: VirtualPath): Boolean {
@@ -64,8 +60,8 @@ class VirtualFileServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun genId(path: VirtualPath): String {
-        return path.toAbsolutePath().fullPath.sha256.base64Url
+    override fun genId(path: VirtualPath): Hash {
+        return Hash(path.toAbsolutePath().fullPath.sha256)
     }
 
     override fun get(path: VirtualPath): IVirtualFile? {
@@ -99,7 +95,7 @@ class VirtualFileServiceImpl(
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
-    fun insertFile(user: UserInfo, path: VirtualPath, hash: String, size: Long, dataFile: File) {
+    fun insertFile(user: UserInfo, path: VirtualPath, hash: Hash, size: Long, dataFile: File) {
         if (size != dataFile.length())
             throw IllegalArgumentException("文件大小不匹配: $path")
         val time = System.currentTimeMillis().timestamp
@@ -121,7 +117,7 @@ class VirtualFileServiceImpl(
         if (fileMappingMapper.selectByHash(hash) == null) {
             val ins = dataFile.inputStream().buffered()
             val type = FileDetector.detect(ins, path.name)
-            val fileHash = ins.use { it.sha256.base64Url }
+            val fileHash = Hash(ins.use { it.sha256 })
             if (hash != fileHash)
                 throw IllegalStateException("文件hash不匹配: $fileHash!=$hash")
             fileMappingMapper.insert(
@@ -141,20 +137,20 @@ class VirtualFileServiceImpl(
     override fun upload(
         user: UserInfo,
         path: VirtualPath,
-        hash: String,
+        hash: Hash,
         fileSize: Long,
         range: FileRange,
         ins: InputStream
     ): Boolean {
         if (exists(path))
             throw ErrorCode.FILE_EXISTS.data(path.path)
-        val dataFile = dataFile(hash)
+        val dataFile = dataFile(hash.base64Url)
         if (dataFile.exists()) {
             insertFile(user, path, hash, fileSize, dataFile)
             return true
         }
 
-        val tmpFile = tmpFile(user, hash)
+        val tmpFile = tmpFile(user, hash.base64Url)
         tmpFile.mkParent()
 
         if (range.start == fileSize) {
@@ -197,7 +193,7 @@ class VirtualFileServiceImpl(
                 VirtualFile(
                     fid = dir.id,
                     name = "",
-                    parent = "",
+                    parent = Hash(IVirtualFile.ID_LENGTH),
                     hash = null,
                     createTime = time,
                     updateTime = time,

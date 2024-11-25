@@ -4,6 +4,7 @@ import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.FileExtraInfo
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.data.FileRange
+import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.VirtualFileSystemProvider
@@ -100,7 +101,7 @@ class PubFileController(
         return virtualFileService.upload(
             token.data,
             path,
-            hash,
+            Hash(hash),
             size,
             FileRange(start, end),
             rawIn

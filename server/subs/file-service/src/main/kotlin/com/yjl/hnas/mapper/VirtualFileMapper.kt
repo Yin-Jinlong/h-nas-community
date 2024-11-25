@@ -1,7 +1,8 @@
 package com.yjl.hnas.mapper
 
+import com.yjl.hnas.entity.FileId
+import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.VirtualFile
-import com.yjl.hnas.entity.VFileId
 import org.apache.ibatis.annotations.*
 
 /**
@@ -14,16 +15,16 @@ interface VirtualFileMapper {
     //******//
 
     @Select("select * from virtual_file where fid = #{fid}")
-    fun selectById(id: VFileId): VirtualFile?
+    fun selectById(id: FileId): VirtualFile?
 
     @Select("select * from virtual_file where parent = #{parent} order by hash is not null,name")
-    fun selectsByParent(parent: VFileId): List<VirtualFile>
+    fun selectsByParent(parent: FileId): List<VirtualFile>
 
     @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
-    fun countHash(hash: String): Int
+    fun countHash(hash: Hash): Int
 
     @Select("select count(*) from virtual_file where parent = #{fid} limit 1")
-    fun hasChildren(fid: VFileId): Boolean
+    fun hasChildren(fid: FileId): Boolean
 
     //******//
     //  增  //
@@ -37,12 +38,12 @@ interface VirtualFileMapper {
     //******//
 
     @Update("update virtual_file set size = #{size} where fid = #{fid}")
-    fun updateSize(fid: VFileId, size: Long): Int
+    fun updateSize(fid: FileId, size: Long): Int
 
     //******//
     //  删  //
     //******//
 
     @Delete("delete from virtual_file where fid = #{id}")
-    fun deleteById(id: VFileId): Int
+    fun deleteById(id: FileId): Int
 }

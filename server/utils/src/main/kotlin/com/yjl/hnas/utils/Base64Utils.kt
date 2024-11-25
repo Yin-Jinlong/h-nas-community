@@ -15,5 +15,9 @@ val String.unBase64Url: String
     get() = Base64Url.decode(this).decodeToString()
 
 @OptIn(ExperimentalEncodingApi::class)
+val String.unBase64UrlBytes: ByteArray
+    get() = Base64Url.decode(this)
+
+@OptIn(ExperimentalEncodingApi::class)
 val String.reBase64Url: String
     get() = Base64Url.encode(Base64Url.decode(this))

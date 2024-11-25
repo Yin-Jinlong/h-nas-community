@@ -1,7 +1,10 @@
 package com.yjl.hnas.entity
 
+import com.yjl.hnas.converter.HashConverter
+import com.yjl.hnas.usertype.HashUserType
 import jakarta.persistence.*
 import org.hibernate.annotations.Comment
+import org.hibernate.annotations.Type
 
 /**
  * @author YJL
@@ -16,9 +19,11 @@ import org.hibernate.annotations.Comment
 data class FileMapping(
 
     @Id
-    @Column(length = IVirtualFile.HASH_LENGTH)
-    @Comment("文件hash, base64<<sha256<<data")
-    override var hash: String = "",
+    @Type(value = HashUserType::class)
+    @Convert(converter = HashConverter::class)
+    @Column(columnDefinition = "binary(${IVirtualFile.HASH_LENGTH})")
+    @Comment("文件hash, sha256<<data")
+    override var hash: Hash = Hash(),
 
     @Column(length = IVirtualFile.PATH_LENGTH, nullable = false)
     @Comment("文件路径")
