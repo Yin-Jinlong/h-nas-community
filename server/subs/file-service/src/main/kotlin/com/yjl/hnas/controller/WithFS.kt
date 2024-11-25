@@ -36,5 +36,7 @@ abstract class WithFS(
         throw ErrorCode.FILE_EXISTS.data(e.file)
     } catch (e: DirectoryNotEmptyException) {
         throw ErrorCode.FOLDER_NOT_EMPTY.data(e.file)
+    } catch (e: BadPathException) {
+        throw ErrorCode.BAD_ARGUMENTS.data("非法文件名")
     }
 }
