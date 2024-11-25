@@ -6,8 +6,8 @@ import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IVirtualFile
 import com.yjl.hnas.fs.VirtualFileManager
 import com.yjl.hnas.fs.VirtualPath
+import java.io.BufferedInputStream
 import java.io.IOException
-import java.io.InputStream
 import java.lang.IllegalArgumentException
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.NoSuchFileException
@@ -38,6 +38,6 @@ interface VirtualFileService : VirtualFileManager {
         hash: Hash,
         fileSize: Long,
         range: FileRange,
-        ins: InputStream
+        ins: BufferedInputStream
     ): Boolean
 }

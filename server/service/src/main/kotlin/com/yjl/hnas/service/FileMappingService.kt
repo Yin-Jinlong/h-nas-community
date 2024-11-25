@@ -24,8 +24,8 @@ interface FileMappingService {
         var DataDataDir = "data/data"
         var PreviewDir = "cache/缩略图"
 
-        fun dataFile(path: String) = File(DataDir, path)
-        fun dataDataFile(path: String) = File(DataDataDir, path)
+        fun dataSub(path: String) = File(DataDir, path)
+        fun dataFile(path: String) = File(DataDataDir, path)
 
         fun previewFile(dataPath: String): File = File(PreviewDir, "$dataPath.jpg")
     }

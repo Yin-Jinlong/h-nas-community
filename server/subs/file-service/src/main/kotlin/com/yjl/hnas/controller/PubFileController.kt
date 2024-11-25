@@ -104,7 +104,7 @@ class PubFileController(
             Hash(hash),
             size,
             FileRange(start, end),
-            rawIn
+            rawIn.buffered()
         )
     }
 

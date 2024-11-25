@@ -16,11 +16,12 @@ import com.yjl.hnas.utils.del
 import com.yjl.hnas.utils.mkParent
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
+import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import java.io.BufferedInputStream
 import java.io.File
-import java.io.InputStream
 import java.io.RandomAccessFile
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.*
@@ -76,11 +77,13 @@ class VirtualFileServiceImpl(
     }
 
     fun tmpFile(user: UserInfo, hash: Hash): File {
-        return FileMappingService.dataFile("tmp/${user.uid}/$hash.tmp")
+        return FileMappingService.dataSub("tmp/${user.uid}/$hash.tmp")
     }
 
-    fun dataFile(hash: Hash): File {
-        return FileMappingService.dataDataFile(hash.pathSafe)
+    fun dataPath(type: MediaType, hash: Hash) = "$type/$hash"
+
+    fun dataFile(type: MediaType, hash: Hash): File {
+        return FileMappingService.dataFile(dataPath(type, hash))
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -95,7 +98,14 @@ class VirtualFileServiceImpl(
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
-    fun insertFile(user: UserInfo, path: VirtualPath, hash: Hash, size: Long, dataFile: File) {
+    fun insertFile(
+        user: UserInfo,
+        path: VirtualPath,
+        hash: Hash,
+        size: Long,
+        dataFile: File,
+        dataPath: String
+    ) {
         if (size != dataFile.length())
             throw IllegalArgumentException("文件大小不匹配: $path")
         val time = System.currentTimeMillis().timestamp
@@ -123,7 +133,7 @@ class VirtualFileServiceImpl(
             fileMappingMapper.insert(
                 FileMapping(
                     hash = hash,
-                    dataPath = "data/${hash.pathSafe}",
+                    dataPath = dataPath,
                     type = type.type,
                     subType = type.subtype,
                     preview = previewGeneratorFactory.canPreview(type),
@@ -140,14 +150,18 @@ class VirtualFileServiceImpl(
         hash: Hash,
         fileSize: Long,
         range: FileRange,
-        ins: InputStream
+        ins: BufferedInputStream
     ): Boolean {
         if (exists(path))
             throw ErrorCode.FILE_EXISTS.data(path.path)
-        val dataFile = dataFile(hash)
-        if (dataFile.exists()) {
-            insertFile(user, path, hash, fileSize, dataFile)
-            return true
+
+        if (range.start == 0L) {
+            val type = FileDetector.detect(ins, path.name)
+            val dataFile = dataFile(type, hash)
+            if (dataFile.exists()) {
+                insertFile(user, path, hash, fileSize, dataFile, dataPath(type, hash))
+                return true
+            }
         }
 
         val tmpFile = tmpFile(user, hash)
@@ -156,8 +170,9 @@ class VirtualFileServiceImpl(
         if (range.start == fileSize) {
             if (!tmpFile.exists())
                 throw IllegalArgumentException("文件不存在: $path")
-            insertFile(user, path, hash, fileSize, tmpFile)
-            tmpFile.toPath().fileSystem
+            val type = FileDetector.detect(tmpFile.inputStream().buffered(), path.name)
+            val dataFile = dataFile(type, hash)
+            insertFile(user, path, hash, fileSize, tmpFile, dataPath(type, hash))
             dataFile.mkParent()
             Files.move(tmpFile.toPath(), dataFile.toPath())
             return true

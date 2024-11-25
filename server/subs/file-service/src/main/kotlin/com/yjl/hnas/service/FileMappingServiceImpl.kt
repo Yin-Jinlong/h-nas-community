@@ -7,12 +7,14 @@ import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService.Companion.previewFile
 import com.yjl.hnas.utils.del
+import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.annotation.PreDestroy
 import kotlinx.coroutines.*
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
+import java.io.FileNotFoundException
 import java.util.*
 
 /**
@@ -23,6 +25,8 @@ class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper,
     val previewGeneratorFactory: PreviewGeneratorFactory
 ) : FileMappingService {
+
+    private val logger = getLogger()
 
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -65,6 +69,8 @@ class FileMappingServiceImpl(
             }
         } catch (e: PreviewException) {
             fileMappingMapper.updatePreview(hash, false)
+        } catch (e: FileNotFoundException) {
+            logger.warning("File not found :" + e.message)
         } catch (e: Exception) {
             e.printStackTrace()
         }
