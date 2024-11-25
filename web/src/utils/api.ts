@@ -167,7 +167,7 @@ async function uploadPublic(path: string, hash: string, file: File, range: FileR
             .then(resp => resolve(resp.data ?? false))
             .catch(e => {
                 catchError(e)
-                throw e
+                reject(e)
             })
     })
 }
