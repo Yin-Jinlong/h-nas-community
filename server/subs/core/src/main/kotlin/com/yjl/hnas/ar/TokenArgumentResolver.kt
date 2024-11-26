@@ -36,7 +36,7 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
     ): Token<*>? {
         val auth = webRequest.getHeader(HttpHeaders.AUTHORIZATION)
             ?: if (shouldLogin(parameter))
-                throw ErrorCode.NO_PERMISSION.error
+                throw ErrorCode.BAD_TOKEN.error
             else return null
 
         val t = parameter.parameter.parameterizedType as ParameterizedType
@@ -49,7 +49,7 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
             val tl = parameter.method!!.getAnnotation(TokenLevel::class.java)
             if (tl != null) {
                 if (token.data.type.level < tl.min.level || token.data.type.level > tl.max.level)
-                    throw ErrorCode.NO_PERMISSION.error
+                    throw ErrorCode.BAD_TOKEN.error
             }
         }
 
