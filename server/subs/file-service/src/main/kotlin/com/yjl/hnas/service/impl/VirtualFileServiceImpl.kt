@@ -8,6 +8,7 @@ import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualFilesystem
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.fs.attr.FileAttributes
+import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.preview.PreviewGeneratorFactory
@@ -39,6 +40,7 @@ import kotlin.io.path.name
 class VirtualFileServiceImpl(
     val virtualFileMapper: VirtualFileMapper,
     val fileMappingMapper: FileMappingMapper,
+    val childrenCountMapper: ChildrenCountMapper,
     private val previewGeneratorFactory: PreviewGeneratorFactory,
 ) : VirtualFileService {
 
@@ -202,13 +204,24 @@ class VirtualFileServiceImpl(
         return false
     }
 
+    protected fun updateCount(path: VirtualPath, dSubCount: Int, dSubsCount: Int = dSubCount) {
+        val cc = childrenCountMapper.selectByFid(path.id)
+            ?: throw IllegalStateException("children_count 不存在目录：$path id: ${path.id}")
+        childrenCountMapper.updateCount(cc.fid, cc.subCount + dSubCount, cc.subsCount + dSubsCount)
+        if (path.isRoot)
+            return
+        val parent = path.parent
+        updateCount(parent, 0, dSubsCount)
+    }
+
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     protected fun insertDir(owner: Uid, dir: VirtualPath) {
+        val fid = dir.id
         if (dir.isRoot) {
             val time = System.currentTimeMillis().timestamp
             virtualFileMapper.insert(
                 VirtualFile(
-                    fid = dir.id,
+                    fid = fid,
                     name = "",
                     parent = Hash(IVirtualFile.ID_LENGTH),
                     hash = null,
@@ -216,6 +229,7 @@ class VirtualFileServiceImpl(
                     updateTime = time,
                 )
             )
+            childrenCountMapper.insert(fid)
             return
         }
 
@@ -228,7 +242,7 @@ class VirtualFileServiceImpl(
         val time = System.currentTimeMillis().timestamp
         virtualFileMapper.insert(
             VirtualFile(
-                fid = dir.id,
+                fid = fid,
                 name = dir.name,
                 parent = p.id,
                 hash = null,
@@ -237,6 +251,8 @@ class VirtualFileServiceImpl(
                 updateTime = time,
             )
         )
+        childrenCountMapper.insert(fid)
+        updateCount(p, 1)
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
@@ -278,6 +294,7 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun delete(path: VirtualPath) {
+        val parent = path.parent
         val vf = virtualFileMapper.selectById(path.id)
             ?: throw NoSuchFileException(path.fullPath)
         val hash = vf.hash
@@ -285,11 +302,14 @@ class VirtualFileServiceImpl(
             if (virtualFileMapper.hasChildren(vf.fid))
                 throw DirectoryNotEmptyException(path.fullPath)
             virtualFileMapper.deleteById(vf.fid)
+            childrenCountMapper.deleteById(vf.fid)
+            updateCount(parent, -1)
             return
         }
         val count = virtualFileMapper.countHash(hash)
         virtualFileMapper.deleteById(vf.fid)
-        updateParentSize(path.parent, -vf.size)
+        updateParentSize(parent, -vf.size)
+        updateCount(parent, -1)
         if (count == 1) {
             val fm = fileMappingMapper.selectByHash(hash)
                 ?: throw IllegalStateException("hash=$hash not found in mapping")
