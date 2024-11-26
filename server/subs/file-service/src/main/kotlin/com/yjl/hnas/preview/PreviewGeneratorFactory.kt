@@ -18,20 +18,20 @@ class PreviewGeneratorFactory {
 
     private fun jpgWriter() = ImageIO.getImageWritersByFormatName("jpg").next()!!
 
-    private val jpgParm = JPEGImageWriteParam(Locale.getDefault()).apply {
-        compressionMode = ImageWriteParam.MODE_EXPLICIT
-        compressionQuality = 0.3f
-    }
-
-    fun getPreview(ins: InputStream, mediaType: MediaType): ByteArray? {
+    fun getPreview(ins: InputStream, mediaType: MediaType, maxSize: Int, quality: Float): ByteArray? {
         val generator = generators[mediaType] ?: return null
         return kotlin.runCatching {
             ins.use {
-                val img = generator.generate(ins)
+                val img = generator.generate(ins, maxSize)
                 val out = ByteArrayOutputStream()
                 jpgWriter().apply {
                     output = ImageIO.createImageOutputStream(out)
-                    write(null, IIOImage(img, null, null), jpgParm)
+                    write(
+                        null, IIOImage(img, null, null),
+                        JPEGImageWriteParam(Locale.getDefault()).apply {
+                            compressionMode = ImageWriteParam.MODE_EXPLICIT
+                            compressionQuality = quality
+                        })
                 }
                 out.toByteArray()
             }

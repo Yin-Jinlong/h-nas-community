@@ -8,11 +8,7 @@ import java.io.InputStream
  */
 interface PreviewGenerator {
 
-    companion object {
-        const val MAX_SIZE = 400
-    }
-
     @Throws(PreviewException::class)
-    fun generate(input: InputStream): BufferedImage
+    fun generate(input: InputStream, maxSize: Int): BufferedImage
 
 }

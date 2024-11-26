@@ -17,16 +17,20 @@ interface FileMappingService {
 
     fun getPreviewFile(mapping: IFileMapping): File?
 
+    fun getThumbnail(mapping: IFileMapping): String?
+
     fun getPreview(mapping: IFileMapping): String?
 
     companion object {
         var DataDir = "data"
         var DataDataDir = "data/data"
-        var PreviewDir = "cache/缩略图"
+        var ThumbnailDir = "cache/缩略图"
+        var PreviewDir = "cache/预览图"
 
         fun dataSub(path: String) = File(DataDir, path)
         fun dataFile(path: String) = File(DataDataDir, path)
 
+        fun thumbnailFile(dataPath: String): File = File(ThumbnailDir, "$dataPath.jpg")
         fun previewFile(dataPath: String): File = File(PreviewDir, "$dataPath.jpg")
     }
 

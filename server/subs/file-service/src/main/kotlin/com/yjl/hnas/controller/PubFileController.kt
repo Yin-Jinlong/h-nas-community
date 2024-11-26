@@ -42,6 +42,9 @@ class PubFileController(
             val fm = fileMappingService.getMapping(vf.hash!!)
                 ?: throw ErrorCode.NO_SUCH_FILE.data(path)
             return FileExtraInfo(
+                thumbnail = if (fm.preview)
+                    fileMappingService.getThumbnail(fm)
+                else null,
                 preview = if (fm.preview)
                     fileMappingService.getPreview(fm)
                 else null,
@@ -122,6 +125,15 @@ class PubFileController(
         val pp = getPubPath(path)
         if (!Files.deleteIfExists(pp))
             throw ErrorCode.NO_SUCH_FILE.data(path)
+    }
+
+    @GetMapping("thumbnail")
+    fun getThumbnail(path: String): File {
+        val pp = getPubPath(path).toAbsolutePath()
+        return FileMappingService.thumbnailFile(pp.path).apply {
+            if (!exists())
+                throw ErrorCode.NO_SUCH_FILE.data(path)
+        }
     }
 
     @GetMapping("preview")

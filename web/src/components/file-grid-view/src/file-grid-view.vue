@@ -107,6 +107,7 @@ async function getExtra() {
     let info = await API.getPublicFileExtraInfo(subPath(props.info.dir, props.info.name))
     if (!info)
         return
+    extra.value.thumbnail = info.thumbnail
     extra.value.preview = info.preview
     extra.value.type = info.type
     extra.value.subType = info.subType
@@ -126,11 +127,11 @@ onMounted(async () => {
 })
 
 watch(extra, (nv) => {
-    if (nv.preview === undefined) {
+    if (nv.thumbnail === undefined) {
         return
     }
-    if (nv.preview != '') {
-        previewPath.value = API.publicPreviewURL(nv.preview!)
+    if (nv.thumbnail != '') {
+        previewPath.value = API.publicThumbnailURL(nv.thumbnail!)
         return
     }
 
@@ -139,13 +140,13 @@ watch(extra, (nv) => {
         if (!info || info.type == 'folder')
             return
         await updateIcon(info)
-        if (info.preview === undefined) {
+        if (info.thumbnail === undefined) {
             previewPath.value = ''
             return
         }
 
-        if (info.preview.length != 0) {
-            previewPath.value = API.publicPreviewURL(info.preview)
+        if (info.thumbnail.length != 0) {
+            previewPath.value = API.publicThumbnailURL(info.thumbnail)
             return
         }
         setTimeout(() => {

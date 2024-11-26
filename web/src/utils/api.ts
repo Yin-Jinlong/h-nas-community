@@ -194,6 +194,10 @@ function publicFileURL(path: string) {
     return `api/file/public?${qs.stringify({path})}`
 }
 
+function publicThumbnailURL(path: string) {
+    return `api/file/public/thumbnail?${qs.stringify({path})}`
+}
+
 function publicPreviewURL(path: string) {
     return `api/file/public/preview?${qs.stringify({path})}`
 }
@@ -245,7 +249,7 @@ const API = {
     deletePublicFile,
     newPublicFolder,
     uploadPublic,
-    publicFileURL,
+    publicThumbnailURL,
     publicPreviewURL,
     renamePublic
 }

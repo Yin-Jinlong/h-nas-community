@@ -4,9 +4,7 @@ import org.apache.tika.mime.MediaType
 import java.awt.image.BufferedImage
 import java.io.InputStream
 import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
-import javax.imageio.ImageIO
 
 /**
  * @author YJL
@@ -25,9 +23,9 @@ open class XMindPreviewGenerator : FilePreviewGenerator(
         throw PreviewException("Bad format", IllegalStateException("No thumbnail found in xmind file"))
     }
 
-    override fun generate(input: InputStream): BufferedImage {
+    override fun generate(input: InputStream, maxSize: Int): BufferedImage {
         val zipIn = ZipInputStream(input)
         zipIn.thumbnailEntry()
-        return ImagePreviewGenerator.INSTANCE.generate(zipIn)
+        return ImagePreviewGenerator.INSTANCE.generate(zipIn, maxSize)
     }
 }

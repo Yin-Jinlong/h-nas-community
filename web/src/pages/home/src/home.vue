@@ -266,7 +266,7 @@ function showPreview(f: FileWrapper) {
 }
 
 function getUrl(f: FileWrapper) {
-    return API.publicFileURL(subPath(f.info.dir, f.info.name))
+    return API.publicPreviewURL(f.extra.preview)
 }
 
 function getNow(): string | undefined {
