@@ -16,6 +16,9 @@
                 <el-dropdown-item :command="['info']" :icon="InfoFilled" divided>
                     信息
                 </el-dropdown-item>
+                <el-dropdown-item :command="['count']" :disabled="!dir" :icon="InfoFilled">
+                    子文件数量
+                </el-dropdown-item>
             </el-dropdown-menu>
         </template>
     </el-dropdown>
@@ -26,15 +29,16 @@
 </style>
 
 <script lang="ts" setup>
+import {FileGridCommand, FileGridOptionsProps} from './props'
 import {Delete, Edit, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
 
-type Command = 'rename' | 'del' | 'info'
+const props = defineProps<FileGridOptionsProps>()
 
 const emits = defineEmits({
-    'command': (cmd: Command) => void {}
+    'command': (cmd: FileGridCommand) => void {}
 })
 
-function onCommand(args: [Command]) {
+function onCommand(args: [FileGridCommand]) {
     emits('command', args[0])
 }
 </script>

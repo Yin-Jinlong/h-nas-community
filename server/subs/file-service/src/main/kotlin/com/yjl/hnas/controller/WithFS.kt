@@ -7,6 +7,7 @@ import com.yjl.hnas.fs.VirtualFileSystemProvider
 import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.NoSuchFileException
+import java.nio.file.NotDirectoryException
 
 /**
  * @author YJL
@@ -38,5 +39,7 @@ abstract class WithFS(
         throw ErrorCode.FOLDER_NOT_EMPTY.data(e.file)
     } catch (e: BadPathException) {
         throw ErrorCode.BAD_ARGUMENTS.data("非法文件名")
+    } catch (e: NotDirectoryException) {
+        throw ErrorCode.NOT_FOLDER.data(e.file)
     }
 }

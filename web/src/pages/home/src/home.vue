@@ -73,7 +73,9 @@
                                         @dblclick="onDblClick"/>
                         <div class="file-name">{{ f.info.name }}</div>
                         <div class="file-op-menu">
-                            <file-grid-options @command="onCommand($event,f)"/>
+                            <file-grid-options
+                                    :dir="f.info.fileType==='FOLDER'"
+                                    @command="onCommand($event,f)"/>
                         </div>
                     </div>
                 </div>
@@ -81,6 +83,25 @@
                                   v-model="showFileInfoDialog"
                                   v-model:extra="activeFile.extra"
                                   :info="activeFile?.info"/>
+                <el-dialog v-model="showCountDialog" width="max-content">
+                    <template #header>
+                        {{ subPath(nowPaths, activeFile?.info?.name ?? '') }}
+                    </template>
+                    <table v-loading="loadingChildrenCount" data-relative>
+                        <tr>
+                            <td><b>当前目录下：</b></td>
+                            <td>
+                                {{ dirChildrenCount?.subCount ?? '?' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>包含子目录：</b></td>
+                            <td>
+                                {{ dirChildrenCount?.subsCount ?? '?' }}
+                            </td>
+                        </tr>
+                    </table>
+                </el-dialog>
                 <el-dialog v-model="showRenameDialog"
                            :close-on-click-modal="!renamePosting"
                            :close-on-press-escape="!renamePosting"
@@ -211,7 +232,7 @@
 
 <script lang="ts" setup>
 
-import {FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
+import {FileGridCommand, FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
 import {user} from '@/utils/globals'
 import {subPath} from '@/utils/path'
 import {uploadPublicFile} from '@/utils/upload-tasks'
@@ -237,6 +258,7 @@ const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
 const files = reactive<FileWrapper[]>([])
 const showFileInfoDialog = ref(false)
+const showCountDialog = ref(false)
 const showRenameDialog = ref(false)
 const renamePosting = ref(false)
 const images = reactive<FileWrapper[]>([])
@@ -244,6 +266,8 @@ const newName = ref('')
 const activeFile = ref<FileWrapper>()
 const draggerEle = ref<HTMLDivElement>()
 const mouseIn = ref(false)
+const dirChildrenCount = ref<FolderChildrenCount>()
+const loadingChildrenCount = ref<boolean>(false)
 
 function onChangeRoot(cmdArr: boolean[]) {
     isPublic.value = cmdArr[0]
@@ -395,7 +419,7 @@ function onUploaded() {
     update()
 }
 
-function onCommand(cmd: string, f: FileWrapper) {
+function onCommand(cmd: FileGridCommand, f: FileWrapper) {
     activeFile.value = f
     switch (cmd) {
         case 'rename':
@@ -413,6 +437,17 @@ function onCommand(cmd: string, f: FileWrapper) {
             break
         case 'info':
             showFileInfoDialog.value = true
+            break
+        case 'count':
+            showCountDialog.value = true
+            loadingChildrenCount.value = true
+            dirChildrenCount.value = undefined
+            API.getDirChildrenCount(subPath(nowPaths, f.info.name)).then(res => {
+                if (!res)
+                    return
+                dirChildrenCount.value = res
+                loadingChildrenCount.value = false
+            })
             break
     }
 }

@@ -110,6 +110,13 @@ async function getPublicFileExtraInfo(path: string) {
         .catch(catchError)
 }
 
+async function getDirChildrenCount(dir: string) {
+    return get<FolderChildrenCount>('api/file/public/folder/count', {
+        path: dir
+    }).then(res => res.data)
+        .catch(catchError)
+}
+
 async function deletePublicFile(path: string) {
     return del<void>('api/file/public', {
         path: path
@@ -245,6 +252,7 @@ const API = {
     tryLogin,
     logon,
     getPublicFiles,
+    getDirChildrenCount,
     getPublicFileExtraInfo,
     deletePublicFile,
     newPublicFolder,

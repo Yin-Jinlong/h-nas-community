@@ -2,15 +2,16 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.data.UserInfo
+import com.yjl.hnas.entity.ChildrenCount
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IVirtualFile
 import com.yjl.hnas.fs.VirtualFileManager
 import com.yjl.hnas.fs.VirtualPath
 import java.io.BufferedInputStream
 import java.io.IOException
-import java.lang.IllegalArgumentException
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.NoSuchFileException
+import java.nio.file.NotDirectoryException
 
 /**
  * @author YJL
@@ -46,4 +47,9 @@ interface VirtualFileService : VirtualFileManager {
         IOException::class
     )
     fun rename(path: VirtualPath, name: String)
+
+    @Throws(
+        NotDirectoryException::class
+    )
+    fun getFolderChildrenCount(path: VirtualPath): ChildrenCount
 }

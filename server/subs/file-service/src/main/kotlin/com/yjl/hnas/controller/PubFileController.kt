@@ -5,6 +5,7 @@ import com.yjl.hnas.annotation.TokenLevel
 import com.yjl.hnas.data.FileExtraInfo
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.data.FileRange
+import com.yjl.hnas.data.FolderChildrenCount
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ErrorCode
@@ -59,6 +60,17 @@ class PubFileController(
         }
     }
 
+    @GetMapping("folder/count")
+    fun folderChildrenCount(path: String): FolderChildrenCount = withCatch {
+        val pp = getPubPath(path).toAbsolutePath()
+        val cc = virtualFileService.getFolderChildrenCount(pp)
+        FolderChildrenCount(
+            pp.path,
+            cc.subCount,
+            cc.subsCount
+        )
+    }
+
     @GetMapping("files")
     fun getFiles(@NotBlank(message = "path 不能为空") path: String): List<FileInfo> = withCatch {
         if (path.isBlank())
@@ -108,7 +120,7 @@ class PubFileController(
 
         virtualFileService.upload(
             token.data.info,
-            path,
+            path.toAbsolutePath(),
             Hash(hash),
             size,
             FileRange(start, end),

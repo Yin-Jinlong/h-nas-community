@@ -127,6 +127,7 @@ class VirtualFileServiceImpl(
             )
         )
         updateParentSize(parent, size)
+        updateCount(parent, 1)
 
         if (fileMappingMapper.selectByHash(hash) == null) {
             val ins = dataFile.inputStream().buffered()
@@ -269,6 +270,11 @@ class VirtualFileServiceImpl(
             )
         )
         virtualFileMapper.deleteById(vf.fid)
+    }
+
+    override fun getFolderChildrenCount(path: VirtualPath): ChildrenCount {
+        return childrenCountMapper.selectByFid(path.id)
+            ?: throw NotDirectoryException(path.fullPath)
     }
 
     @Transactional(rollbackFor = [Exception::class])
