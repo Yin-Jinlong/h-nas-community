@@ -82,7 +82,7 @@ async function catchWithAuth(e: AxiosError<any> | RespData<any>) {
         if (resp && resp.data?.code) {
             let data = resp.data
             let t = authToken.value
-            if ((!t && data.code == 2003)) {
+            if ((t && data.code == 100) || (!t && data.code == 2003)) {
                 reAuth().then((r) => {
                     if (!r)
                         return
