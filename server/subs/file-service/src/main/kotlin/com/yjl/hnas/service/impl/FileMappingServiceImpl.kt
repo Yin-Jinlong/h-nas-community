@@ -3,6 +3,7 @@ package com.yjl.hnas.service.impl
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
 import com.yjl.hnas.mapper.FileMappingMapper
+import com.yjl.hnas.option.PreviewOption
 import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
@@ -26,7 +27,8 @@ private typealias CacheFileFn = (String) -> File
 @Service
 class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper,
-    val previewGeneratorFactory: PreviewGeneratorFactory
+    val previewGeneratorFactory: PreviewGeneratorFactory,
+    val previewOption: PreviewOption,
 ) : FileMappingService {
 
     private val logger = getLogger()
@@ -131,12 +133,19 @@ class FileMappingServiceImpl(
 
 
     @Transactional
-    override fun getThumbnail(mapping: IFileMapping): String? =
-        genPreview(mapping, FileMappingService::thumbnailFile, 400, 0.3f)
+    override fun getThumbnail(mapping: IFileMapping): String? = genPreview(
+        mapping,
+        FileMappingService::thumbnailFile,
+        previewOption.thumbnailSize,
+        previewOption.thumbnailQuality
+    )
 
     @Transactional
-    override fun getPreview(mapping: IFileMapping): String? =
-        genPreview(mapping, FileMappingService::previewFile, 1200, 0.9f)
+    override fun getPreview(mapping: IFileMapping): String? = genPreview(
+        mapping, FileMappingService::previewFile,
+        previewOption.previewSize,
+        previewOption.previewQuality
+    )
 
     @PreDestroy
     fun destroy() {
