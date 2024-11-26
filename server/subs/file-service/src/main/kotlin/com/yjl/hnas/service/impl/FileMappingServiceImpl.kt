@@ -145,7 +145,7 @@ class FileMappingServiceImpl(
     )
 
     @Transactional
-    override fun getPreview(mapping: IFileMapping): String? = genPreview(
+    override fun getPreview(mapping: IFileMapping): String? = if (mapping.type != "image") null else genPreview(
         mapping, FileMappingService::previewFile,
         previewOption.previewSize,
         previewOption.previewQuality
