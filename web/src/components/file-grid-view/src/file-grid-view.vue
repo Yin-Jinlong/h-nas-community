@@ -60,8 +60,8 @@
 </style>
 
 <script lang="ts" setup>
-import Folder from '@/components/file-grid-view/src/folder.vue'
-import {IconMapping} from '@/components/file-grid-view/src/icon-mapping'
+import Folder from './folder.vue'
+import {IconMapping} from './icon-mapping'
 import API from '@/utils/api'
 import {subPath} from '@/utils/path'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
