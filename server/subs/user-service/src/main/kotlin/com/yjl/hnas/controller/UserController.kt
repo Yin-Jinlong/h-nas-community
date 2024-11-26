@@ -56,10 +56,9 @@ class UserController(
     fun auth(
         @ShouldLogin token: UserToken,
         resp: HttpServletResponse
-    ): String {
+    ) {
         val nt = userService.genToken(token, TokenType.FULL_ACCESS)
         resp.addHeader(HttpHeaders.AUTHORIZATION, nt.token)
-        return ""
     }
 
     @PostMapping("logon")
