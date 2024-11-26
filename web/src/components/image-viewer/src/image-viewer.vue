@@ -37,6 +37,9 @@
                     </template>
                 </h-tool-tip>
                 <div class="bottom-controllers">
+                    <h-button v-if="rawSize" class="show-raw" color="#888" type="primary" @click="showRaw">
+                        <span>查看原图 {{ toHumanSize(rawSize) }}</span>
+                    </h-button>
                     <h-tool-tip class="btns">
                         <h-button round type="primary" @click="prev">
                             <el-icon>
@@ -107,12 +110,21 @@
   margin: 0 12px;
 }
 
+.show-raw {
+  bottom: 1em;
+  font-size: 0.7em;
+  left: 1em;
+  opacity: 0.8;
+  position: absolute;
+}
+
 </style>
 
 <script lang="ts" setup>
 
 import {ArrowLeftBold, ArrowRightBold, CloseBold} from '@element-plus/icons-vue'
-import {HButton, HToolTip, vLoading} from '@yin-jinlong/h-ui'
+import {HButton, HToolTip} from '@yin-jinlong/h-ui'
+import {toHumanSize} from '@/utils/size-utils'
 import Default, {ImageViewerProps} from './props'
 
 interface Options {
@@ -124,6 +136,8 @@ interface Options {
 const props = withDefaults(defineProps<ImageViewerProps>(), Default)
 const show = defineModel<boolean>()
 const url = ref<string>()
+const raw = ref<string>()
+const rawSize = ref<number>()
 const boxEle = ref<HTMLElement>()
 const imgEle = ref<HTMLImageElement>()
 const options = reactive<Options>({
@@ -137,22 +151,46 @@ let last = {
     y: 0
 }
 
+const RawUrls = new Map<string, string>()
+
 let down = false
 
+function updateInfo(u: string | undefined) {
+    if (u?.length) {
+        let rawCache = RawUrls.get(u)
+        url.value = rawCache ? rawCache : u
+        let r = props.onGetRaw()
+        raw.value = r
+        rawSize.value = r ? props.onGetRawSize() : undefined
+        if (rawCache)
+            rawSize.value = undefined
+        if (!r)
+            RawUrls.delete(u)
+    } else {
+        url.value = undefined
+        raw.value = undefined
+        rawSize.value = undefined
+    }
+}
+
 function prev() {
-    let r = props.onPrev()
-    if (r)
-        url.value = r
+    updateInfo(props.onPrev())
 }
 
 function next() {
-    let r = props.onNext()
-    if (r)
-        url.value = r
+    updateInfo(props.onNext())
 }
 
 function close() {
     show.value = false
+}
+
+function showRaw() {
+    if (!raw.value)
+        return
+    RawUrls.set(url.value!, raw.value!)
+    url.value = raw.value
+    rawSize.value = undefined
 }
 
 function onKeyDown(e: KeyboardEvent) {
@@ -259,7 +297,7 @@ watch(url, () => {
 
 watch(show, nv => {
     if (nv) {
-        url.value = props.onGet()
+        updateInfo(props.onGet())
     }
 })
 

@@ -11,6 +11,8 @@ export declare interface ImageViewerProps {
     onGet: () => string | undefined
     onNext: () => string | undefined
     onPrev: () => string | undefined
+    onGetRaw: () => string | undefined
+    onGetRawSize: () => number | undefined
 }
 
 const Default = {

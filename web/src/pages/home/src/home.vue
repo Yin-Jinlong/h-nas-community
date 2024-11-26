@@ -96,12 +96,15 @@
                         </h-button>
                     </template>
                 </el-dialog>
-                <image-viewer v-model="showImageViewer"
-                              :count="images.length"
-                              :index="nowIndex"
-                              :on-get="getNow"
-                              :on-next="getNext"
-                              :on-prev="getPrev"/>
+                <image-viewer
+                        v-model="showImageViewer"
+                        :count="images.length"
+                        :index="nowIndex"
+                        :on-get="getNow"
+                        :on-get-raw="getRaw"
+                        :on-get-raw-size="getRawSize"
+                        :on-next="getNext"
+                        :on-prev="getPrev"/>
             </div>
         </div>
     </el-scrollbar>
@@ -266,7 +269,7 @@ function showPreview(f: FileWrapper) {
 }
 
 function getUrl(f: FileWrapper) {
-    return API.publicPreviewURL(f.extra.preview)
+    return API.publicPreviewURL(f.extra.preview!!)
 }
 
 function getNow(): string | undefined {
@@ -280,6 +283,22 @@ function getNow(): string | undefined {
     if (!f)
         return
     return getUrl(f)
+}
+
+function getRaw(): string | undefined {
+    let i = nowIndex.value
+    if (i < 0)
+        return
+    let f = images[i]
+    return API.publicFileURL(subPath(f.info.dir, f.info.name))
+}
+
+function getRawSize(): number | undefined {
+    let i = nowIndex.value
+    if (i < 0)
+        return
+    let f = images[i]
+    return f.info.size
 }
 
 function getPrev(): string | undefined {

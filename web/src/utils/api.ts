@@ -249,6 +249,7 @@ const API = {
     deletePublicFile,
     newPublicFolder,
     uploadPublic,
+    publicFileURL,
     publicThumbnailURL,
     publicPreviewURL,
     renamePublic
