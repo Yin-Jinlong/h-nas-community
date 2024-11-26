@@ -103,33 +103,37 @@ class FileMappingServiceImpl(
 
 
     @Transactional
-    private fun genPreview(mapping: IFileMapping, fn: CacheFileFn, maxSize: Int, quality: Float): String? =
-        with(mapping) {
-            val mediaType = type()
-            if (!previewGeneratorFactory.canPreview(mediaType))
-                return null
-            val cache = fn(dataPath)
-            if (cache.exists())
-                return dataPath
-            else {
-                cache.parentFile.apply {
-                    if (!exists())
-                        mkdirs()
-                }
-            }
-            return@with synchronized(genPreviewTasks) {
-                if (!genPreviewTasks.contains(hash)) {
-                    genPreviewTasks += hash
-                    scope.launch {
-                        genPreview(cache, hash, dataPath, mediaType, maxSize, quality)
-                        synchronized(genPreviewTasks) {
-                            genPreviewTasks -= hash
-                        }
-                    }
-                }
-                ""
+    protected fun genPreview(
+        mapping: IFileMapping,
+        fn: CacheFileFn,
+        maxSize: Int,
+        quality: Float
+    ): String? = with(mapping) {
+        val mediaType = type()
+        if (!previewGeneratorFactory.canPreview(mediaType))
+            return null
+        val cache = fn(dataPath)
+        if (cache.exists())
+            return dataPath
+        else {
+            cache.parentFile.apply {
+                if (!exists())
+                    mkdirs()
             }
         }
+        return@with synchronized(genPreviewTasks) {
+            if (!genPreviewTasks.contains(hash)) {
+                genPreviewTasks += hash
+                scope.launch {
+                    genPreview(cache, hash, dataPath, mediaType, maxSize, quality)
+                    synchronized(genPreviewTasks) {
+                        genPreviewTasks -= hash
+                    }
+                }
+            }
+            ""
+        }
+    }
 
 
     @Transactional
