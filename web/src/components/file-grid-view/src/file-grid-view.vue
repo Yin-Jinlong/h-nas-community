@@ -122,7 +122,7 @@ onMounted(async () => {
         return
     }
     await updateIcon(extra.value)
-    if (extra.value.preview === undefined)
+    if (extra.value.thumbnail === undefined)
         previewPath.value = ''
 })
 

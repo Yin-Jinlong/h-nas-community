@@ -349,10 +349,11 @@ function updateFiles() {
         console.log('files', data)
         nowIndex.value = -1
         data.forEach(f => {
-            let file = {
+            let file: FileWrapper = {
                 index: files.length,
                 info: f,
                 extra: {
+                    thumbnail: '',
                     preview: '',
                     subType: '?',
                     type: '?'
