@@ -2,7 +2,6 @@ package com.yjl.hnas.preview
 
 import org.apache.tika.mime.MediaType
 import java.awt.image.BufferedImage
-import java.io.InputStream
 
 /**
  * @author YJL
