@@ -65,7 +65,7 @@
                 </template>
                 <template #dropdown>
                     <el-dropdown-menu>
-                        <el-dropdown-item @click="user=null">退出</el-dropdown-item>
+                        <el-dropdown-item @click="logOut">退出</el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -239,7 +239,7 @@
 
 <script lang="ts" setup>
 import API from '@/utils/api'
-import {user} from '@/utils/globals'
+import {authToken, token, user} from '@/utils/globals'
 import {UploadStatus, UploadTasks} from '@/utils/upload-tasks'
 import {Close, Refresh, Sort} from '@element-plus/icons-vue'
 import {convertColor, HBadge, HButton, HMessage, HToolTip} from '@yin-jinlong/h-ui'
@@ -379,6 +379,12 @@ function tryLogon() {
 
 function removeTask(i: number) {
     UploadTasks.splice(i, 1)
+}
+
+function logOut() {
+    user.value = null
+    token.value = null
+    authToken.value = null
 }
 
 watch(showLogDialog, nv => {

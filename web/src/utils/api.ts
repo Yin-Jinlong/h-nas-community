@@ -77,13 +77,13 @@ function catchError(e: AxiosError<any> | RespData<any>): undefined {
 }
 
 async function catchWithAuth(e: AxiosError<any> | RespData<any>) {
-    let data: RespData<any>
     if (e instanceof Error) {
         let resp = e.response
         if (resp && resp.data?.code) {
-            data = resp.data
-            if (data.code != 0 && authToken.value) {
-                auth().then((r) => {
+            let data = resp.data
+            let t = authToken.value
+            if ((!t && data.code == 2003)) {
+                reAuth().then((r) => {
                     if (!r)
                         return
                     HMessage.error('请重试')
@@ -137,7 +137,7 @@ async function newPublicFolder(folder: string, uid: number) {
         .catch(catchWithAuth)
 }
 
-async function auth() {
+async function reAuth() {
     return post('api/user/auth', {}, {
         headers: {
             'Authorization': authToken.value
@@ -146,10 +146,6 @@ async function auth() {
         let auth = resp.headers['authorization']
         if (auth)
             token.value = auth
-        else {
-            authToken.value = null
-            user.value = null
-        }
     }).catch(catchError)
 }
 
@@ -166,6 +162,8 @@ async function login(logId: string, password?: string) {
         let auth = resp.headers['authorization']
         if (auth) {
             authToken.value = auth
+            if (!token.value)
+                reAuth()
         }
     }).then(resp => resp.data)
         .catch(catchError)

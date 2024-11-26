@@ -15,8 +15,6 @@ onMounted(() => {
             if (res) {
                 user.value = res
             }
-        }).catch(() => {
-            user.value = null
         })
 })
 </script>
