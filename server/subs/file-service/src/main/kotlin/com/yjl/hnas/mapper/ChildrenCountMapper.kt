@@ -18,7 +18,7 @@ interface ChildrenCountMapper {
     //  查  //
     //******//
 
-    @Select("select * from children_count where fid = #{fid}")
+    @Select("select fid, sub_count, subs_count from children_count where fid = #{fid}")
     fun selectByFid(fid: FileId): ChildrenCount?
 
     @Select("select * from children_count where fid = #{fid} for update")

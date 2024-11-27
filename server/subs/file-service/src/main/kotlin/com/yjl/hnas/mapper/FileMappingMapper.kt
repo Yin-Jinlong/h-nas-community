@@ -14,10 +14,10 @@ interface FileMappingMapper {
     //  查  //
     //******//
 
-    @Select("select * from file_mapping where hash = #{hash}")
+    @Select("select hash, data_path, type, sub_type, preview, size from file_mapping where hash = #{hash}")
     fun selectByHash(hash: Hash): FileMapping?
 
-    @Select("select * from file_mapping where hash = #{hash} for update")
+    @Select("select hash, data_path, type, sub_type, preview, size from file_mapping where hash = #{hash} for update")
     fun selectByHashLock(hash: Hash): FileMapping?
 
     //******//
