@@ -347,18 +347,18 @@ function update() {
     let imgBox = imgBoxEle.value
     if (!img || !imgBox)
         return
-    let s = options.scale
+    let s = pack(options.scale, props.minScale, props.maxScale)
     const mr = props.minShowRate
     const iw = img.naturalWidth * s
     const ih = img.naturalHeight * s
     const ww = window.innerWidth
     const wh = window.innerHeight
 
-    options.scale = pack(options.scale, props.minScale, props.maxScale)
     let ow = ww / 2 + iw / 2 - Math.min(ww, iw) * mr
     let oh = wh / 2 + ih / 2 - Math.min(wh, ih) * mr
     options.offX = pack(options.offX, -ow, ow)
     options.offY = pack(options.offY, -oh, oh)
+    options.scale = s
 
     let r = options.rotate
     let x = options.offX
