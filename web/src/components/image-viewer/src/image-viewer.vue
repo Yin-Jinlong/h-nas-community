@@ -244,6 +244,7 @@ function updateInfo(u: string | undefined) {
     if (u == '') {
         url.value = ''
         raw.value = undefined
+        waitUrl()
         return
     }
     if (u?.length) {
@@ -458,12 +459,6 @@ onMounted(() => {
 onUnmounted(() => {
     removeEventListener('keydown', onKeyDown)
     removeEventListener('resize', onResize)
-})
-
-watch(url, (nv) => {
-    if (nv == '') {
-        waitUrl()
-    }
 })
 
 watch(show, nv => {
