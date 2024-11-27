@@ -50,9 +50,29 @@
                             上一个
                         </template>
                     </h-tool-tip>
-                    <h-button color="info" type="primary">
+                    <h-tool-tip class="btns">
+                        <h-button round type="primary" @click="rotate(-90)">
+                            <el-icon>
+                                <RefreshLeft/>
+                            </el-icon>
+                        </h-button>
+                        <template #tip>
+                            逆时针90°
+                        </template>
+                    </h-tool-tip>
+                    <h-button color="info" style="margin: 0 6px" type="primary">
                         {{ index + 1 }}/{{ count }}
                     </h-button>
+                    <h-tool-tip class="btns">
+                        <h-button round type="primary" @click="rotate(90)">
+                            <el-icon>
+                                <RefreshRight/>
+                            </el-icon>
+                        </h-button>
+                        <template #tip>
+                            顺时针90°
+                        </template>
+                    </h-tool-tip>
                     <h-tool-tip class="btns">
                         <h-button round type="primary" @click="next">
                             <el-icon>
@@ -107,7 +127,7 @@
 }
 
 .btns {
-  margin: 0 12px;
+  margin: 0 6px;
 }
 
 .show-raw {
@@ -122,12 +142,13 @@
 
 <script lang="ts" setup>
 
-import {ArrowLeftBold, ArrowRightBold, CloseBold} from '@element-plus/icons-vue'
+import {ArrowLeftBold, ArrowRightBold, CloseBold, RefreshLeft, RefreshRight} from '@element-plus/icons-vue'
 import {HButton, HToolTip} from '@yin-jinlong/h-ui'
 import {toHumanSize} from '@/utils/size-utils'
 import Default, {ImageViewerProps} from './props'
 
 interface Options {
+    rotate: number
     scale: number
     offX: number
     offY: number
@@ -141,6 +162,7 @@ const rawSize = ref<number>()
 const boxEle = ref<HTMLElement>()
 const imgEle = ref<HTMLImageElement>()
 const options = reactive<Options>({
+    rotate: 0,
     scale: 1,
     offX: 0,
     offY: 0
@@ -171,6 +193,11 @@ function updateInfo(u: string | undefined) {
         raw.value = undefined
         rawSize.value = undefined
     }
+}
+
+function rotate(d: number) {
+    options.rotate += d
+    update()
 }
 
 function prev() {
@@ -224,6 +251,7 @@ function reset() {
         window.innerWidth / img.naturalWidth : window.innerHeight / img.naturalHeight
     options.offX = 0
     options.offY = 0
+    options.rotate = 0
     update()
 }
 
@@ -248,9 +276,11 @@ function update() {
     options.offX = pack(options.offX, -ow, ow)
     options.offY = pack(options.offY, -oh, oh)
 
+    let r = options.rotate % 360
+    options.rotate = r
     let x = options.offX
     let y = options.offY
-    img.style.transform = `translate(${x}px, ${y}px) scale(${s}) `
+    img.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg) scale(${s}) `
 }
 
 function onDown(e: MouseEvent) {
