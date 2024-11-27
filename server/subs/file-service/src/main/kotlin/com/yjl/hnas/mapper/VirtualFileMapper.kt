@@ -17,6 +17,9 @@ interface VirtualFileMapper {
     @Select("select * from virtual_file where fid = #{fid}")
     fun selectById(id: FileId): VirtualFile?
 
+    @Select("select * from virtual_file where fid = #{fid} for update")
+    fun selectByIdLock(id: FileId): VirtualFile?
+
     @Select("select * from virtual_file where parent = #{parent} order by hash is not null,name")
     fun selectsByParent(parent: FileId): List<VirtualFile>
 

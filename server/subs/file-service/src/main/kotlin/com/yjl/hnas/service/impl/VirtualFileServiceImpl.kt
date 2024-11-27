@@ -90,9 +90,8 @@ class VirtualFileServiceImpl(
         return FileMappingService.dataFile(dataPath(type, hash))
     }
 
-    @Transactional(rollbackFor = [Exception::class])
-    fun updateParentSize(path: VirtualPath, ds: Long) {
-        val vf = virtualFileMapper.selectById(path.id)
+    private tailrec fun updateParentSize(path: VirtualPath, ds: Long) {
+        val vf = virtualFileMapper.selectByIdLock(path.id)
             ?: throw IllegalStateException("数据库文件不存在: $path")
         virtualFileMapper.updateSize(vf.fid, vf.size + ds)
         val p = path.parent
@@ -205,8 +204,8 @@ class VirtualFileServiceImpl(
         return false
     }
 
-    protected fun updateCount(path: VirtualPath, dSubCount: Int, dSubsCount: Int = dSubCount) {
-        val cc = childrenCountMapper.selectByFid(path.id)
+    private tailrec fun updateCount(path: VirtualPath, dSubCount: Int, dSubsCount: Int = dSubCount) {
+        val cc = childrenCountMapper.selectByFidLock(path.id)
             ?: throw IllegalStateException("children_count 不存在目录：$path id: ${path.id}")
         childrenCountMapper.updateCount(cc.fid, cc.subCount + dSubCount, cc.subsCount + dSubsCount)
         if (path.isRoot)

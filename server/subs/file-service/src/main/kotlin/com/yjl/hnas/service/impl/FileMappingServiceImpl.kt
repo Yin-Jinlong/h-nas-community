@@ -14,7 +14,10 @@ import jakarta.annotation.PreDestroy
 import kotlinx.coroutines.*
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.DefaultTransactionDefinition
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
@@ -29,6 +32,7 @@ class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper,
     val previewGeneratorFactory: PreviewGeneratorFactory,
     val previewOption: PreviewOption,
+    val transactionManager: PlatformTransactionManager
 ) : FileMappingService {
 
     private val logger = getLogger()
@@ -36,6 +40,10 @@ class FileMappingServiceImpl(
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     val genPreviewTasks = Vector<Hash>()
+
+    val transactionDefinition = DefaultTransactionDefinition().apply {
+        propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
+    }
 
     override fun getMapping(hash: Hash): IFileMapping? {
         return fileMappingMapper.selectByHash(hash)
@@ -46,13 +54,27 @@ class FileMappingServiceImpl(
         fileMappingMapper.deleteById(hash)
     }
 
+    @Transactional
     override fun getSize(hash: Hash): Long {
-        val fm = getMapping(hash) ?: throw IllegalArgumentException("hash not found")
+        val fm = fileMappingMapper.selectByHashLock(hash) ?: throw IllegalArgumentException("hash not found")
         if (fm.size < 0) {
             fm.size = File(fm.dataPath).length()
             fileMappingMapper.updateSize(hash, fm.size)
         }
         return fm.size
+    }
+
+    private fun updatePreview(hash: Hash, preview: Boolean) {
+        val ts = transactionManager.getTransaction(transactionDefinition)
+        try {
+            val fm = fileMappingMapper.selectByHashLock(hash)
+                ?: throw IllegalStateException("FileMapping not found: $hash")
+            fileMappingMapper.updatePreview(fm.hash, preview)
+            transactionManager.commit(ts)
+        } catch (e: Exception) {
+            transactionManager.rollback(ts)
+            throw e
+        }
     }
 
     suspend fun genPreview(
@@ -67,7 +89,7 @@ class FileMappingServiceImpl(
         try {
             val data =
                 previewGeneratorFactory.getPreview(file.inputStream(), mediaType, maxSize, quality) ?: return let {
-                    fileMappingMapper.updatePreview(hash, true)
+                    updatePreview(hash, true)
                 }
             cache.parentFile.apply {
                 if (!exists())
@@ -76,12 +98,12 @@ class FileMappingServiceImpl(
             kotlin.runCatching {
                 cache.writeBytes(data)
             }.onSuccess {
-                fileMappingMapper.updatePreview(hash, true)
+                updatePreview(hash, true)
             }.onFailure {
                 cache.del()
             }
         } catch (e: PreviewException) {
-            fileMappingMapper.updatePreview(hash, false)
+            updatePreview(hash, false)
         } catch (e: FileNotFoundException) {
             logger.warning("File not found :" + e.message)
         } catch (e: Exception) {

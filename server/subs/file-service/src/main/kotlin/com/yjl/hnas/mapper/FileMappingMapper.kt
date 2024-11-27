@@ -17,6 +17,9 @@ interface FileMappingMapper {
     @Select("select * from file_mapping where hash = #{hash}")
     fun selectByHash(hash: Hash): FileMapping?
 
+    @Select("select * from file_mapping where hash = #{hash} for update")
+    fun selectByHashLock(hash: Hash): FileMapping?
+
     //******//
     //  增  //
     //******//
