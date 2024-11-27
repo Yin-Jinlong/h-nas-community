@@ -25,7 +25,7 @@ interface VirtualFileService : VirtualFileManager {
     fun get(path: VirtualPath): IVirtualFile?
 
     @Throws(NoSuchFileException::class)
-    fun getByParent(parent: VirtualPath): List<IVirtualFile>
+    fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile>
 
     @Throws(
         FileAlreadyExistsException::class,
@@ -34,7 +34,7 @@ interface VirtualFileService : VirtualFileManager {
         IOException::class
     )
     fun upload(
-        user: UserInfo,
+        owner: UserInfo,
         path: VirtualPath,
         hash: Hash,
         fileSize: Long,

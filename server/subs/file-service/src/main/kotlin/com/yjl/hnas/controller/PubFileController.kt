@@ -67,13 +67,16 @@ class PubFileController(
     }
 
     @GetMapping("files")
-    fun getFiles(@NotBlank(message = "path 不能为空") path: String): List<FileInfo> = withCatch {
+    fun getFiles(
+        @NotBlank(message = "path 不能为空") path: String,
+        type: String?
+    ): List<FileInfo> = withCatch {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
         val pp = getPubPath(p).toAbsolutePath()
-        val files = virtualFileService.getByParent(pp)
+        val files = virtualFileService.getByParent(pp, type)
 
         files.map {
             it.toFileInfo(pp, fileMappingService)
