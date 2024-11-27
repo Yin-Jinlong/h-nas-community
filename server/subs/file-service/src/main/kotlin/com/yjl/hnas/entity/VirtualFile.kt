@@ -17,6 +17,8 @@ import java.sql.Timestamp
         Index(name = "name", columnList = "name"),
         Index(name = "hash", columnList = "hash"),
         Index(name = "owner", columnList = "owner"),
+        Index(name = "user", columnList = "user"),
+        Index(name = "media_type", columnList = "mediaType"),
     ]
 )
 data class VirtualFile(
@@ -52,6 +54,14 @@ data class VirtualFile(
     @Column(nullable = false)
     @Comment("文件拥有者")
     override var owner: Uid = 0,
+
+    @Column(nullable = false)
+    @Comment("文件所在用户")
+    override var user: Uid = 0,
+
+    @Column(length = 64, nullable = false)
+    @Comment("文件类型")
+    override var mediaType: String = "",
 
     @Column(nullable = false)
     @Comment("文件创建时间")

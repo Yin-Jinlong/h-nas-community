@@ -14,13 +14,33 @@ interface VirtualFileMapper {
     //  查  //
     //******//
 
-    @Select("select fid, name, parent, hash, owner, create_time, update_time, size from virtual_file where fid = #{fid}")
+    @Select(
+        """
+select fid, name, parent, hash, owner,user,media_type, create_time, update_time, size 
+from virtual_file 
+where fid = #{fid}
+"""
+    )
     fun selectById(id: FileId): VirtualFile?
 
-    @Select("select fid, name, parent, hash, owner, create_time, update_time, size from virtual_file where fid = #{fid} for update")
+    @Select(
+        """
+select fid, name, parent, hash, owner,user,media_type, create_time, update_time, size 
+from virtual_file 
+where fid = #{fid} 
+for update
+"""
+    )
     fun selectByIdLock(id: FileId): VirtualFile?
 
-    @Select("select fid, name, parent, hash, owner, create_time, update_time, size from virtual_file where parent = #{parent} order by hash is not null,name")
+    @Select(
+        """
+select fid, name, parent, hash, owner,user,media_type, create_time, update_time, size 
+from virtual_file 
+where parent = #{parent} 
+order by hash is not null,name
+"""
+    )
     fun selectsByParent(parent: FileId): List<VirtualFile>
 
     @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
@@ -33,7 +53,12 @@ interface VirtualFileMapper {
     //  增  //
     //******//
 
-    @Insert("insert into virtual_file(fid,hash, name, parent, owner,create_time,update_time,size) VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner},#{createTime}, #{updateTime}, #{size})")
+    @Insert(
+        """
+insert into virtual_file(fid,hash, name, parent, owner,user,media_type,create_time,update_time,size) 
+VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{mediaType}, #{createTime}, #{updateTime}, #{size})
+"""
+    )
     fun insert(virtualFile: VirtualFile): Int
 
     //******//

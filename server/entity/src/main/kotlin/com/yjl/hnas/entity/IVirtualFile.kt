@@ -19,6 +19,10 @@ interface IVirtualFile {
 
     var owner: Uid
 
+    var user: Uid
+
+    var mediaType: String
+
     var createTime: Timestamp
 
     var updateTime: Timestamp

@@ -73,7 +73,7 @@ class VirtualFileServiceImpl(
         return virtualFileMapper.selectById(path.id)
     }
 
-    override fun getByParent(parent: VirtualPath): List<IVirtualFile> {
+    override fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile> {
         val p = parent.toAbsolutePath()
         if (!exists(p) && !p.isRoot)
             throw NoSuchFileException(p.fullPath)
@@ -102,10 +102,12 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     fun insertFile(
-        user: UserInfo,
+        owner: UserInfo,
+        user: Uid,
         path: VirtualPath,
         hash: Hash,
         size: Long,
+        mediaType: MediaType,
         dataFile: File,
         dataPath: String
     ) {
@@ -119,7 +121,9 @@ class VirtualFileServiceImpl(
                 name = path.name,
                 parent = parent.id,
                 hash = hash,
-                owner = user.uid,
+                owner = owner.uid,
+                user = user,
+                mediaType = mediaType.toString(),
                 createTime = time,
                 updateTime = time,
                 size = size
@@ -149,7 +153,7 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class])
     override fun upload(
-        user: UserInfo,
+        owner: UserInfo,
         path: VirtualPath,
         hash: Hash,
         fileSize: Long,
@@ -159,16 +163,18 @@ class VirtualFileServiceImpl(
         if (exists(path))
             throw ErrorCode.FILE_EXISTS.data(path.path)
 
+        val user = if (path.isPublic()) 0 else owner.uid
+
         if (range.start == 0L) {
             val type = FileDetector.detect(ins, path.name)
             val dataFile = dataFile(type, hash)
             if (dataFile.exists()) {
-                insertFile(user, path, hash, fileSize, dataFile, dataPath(type, hash))
+                insertFile(owner, user, path, hash, fileSize, type, dataFile, dataPath(type, hash))
                 return true
             }
         }
 
-        val tmpFile = tmpFile(user, hash)
+        val tmpFile = tmpFile(owner, hash)
         tmpFile.mkParent()
 
         if (range.start == fileSize) {
@@ -176,7 +182,7 @@ class VirtualFileServiceImpl(
                 throw IllegalArgumentException("文件不存在: $path")
             val type = tmpFile.inputStream().buffered().use { FileDetector.detect(it, path.name) }
             val dataFile = dataFile(type, hash)
-            insertFile(user, path, hash, fileSize, tmpFile, dataPath(type, hash))
+            insertFile(owner, user, path, hash, fileSize, type, tmpFile, dataPath(type, hash))
             dataFile.mkParent()
             Files.move(tmpFile.toPath(), dataFile.toPath())
             return true
@@ -215,7 +221,7 @@ class VirtualFileServiceImpl(
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
-    protected fun insertDir(owner: Uid, dir: VirtualPath) {
+    protected fun insertDir(owner: Uid, user: Uid, dir: VirtualPath) {
         val fid = dir.id
         if (dir.isRoot) {
             val time = System.currentTimeMillis().timestamp
@@ -235,7 +241,7 @@ class VirtualFileServiceImpl(
 
         val p = dir.parent
         if (!exists(p))
-            insertDir(owner, p)
+            insertDir(owner, user, p)
 
         if (p same dir)
             return
@@ -247,6 +253,7 @@ class VirtualFileServiceImpl(
                 parent = p.id,
                 hash = null,
                 owner = owner,
+                user = user,
                 createTime = time,
                 updateTime = time,
             )
@@ -280,7 +287,7 @@ class VirtualFileServiceImpl(
     fun mkdirs(owner: Uid, dir: VirtualPath) {
         if (exists(dir))
             throw FileAlreadyExistsException(dir.fullPath)
-        insertDir(owner, dir)
+        insertDir(owner, if (dir.isPublic()) 0 else owner, dir)
     }
 
     override fun newDirectoryStream(
