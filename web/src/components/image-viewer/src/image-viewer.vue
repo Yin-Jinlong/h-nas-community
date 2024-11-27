@@ -19,7 +19,8 @@
                          :src="url"
                          :style="orV('105%')"
                          loading="lazy"
-                         @load="loadImg"/>
+                         @load="loadImg"
+                         @loadstart="loaded=false"/>
                 </div>
                 <h-tool-tip class="close-btn">
                     <h-button
@@ -460,7 +461,6 @@ onUnmounted(() => {
 })
 
 watch(url, (nv) => {
-    loaded.value = false
     if (nv == '') {
         waitUrl()
     }
@@ -469,7 +469,6 @@ watch(url, (nv) => {
 watch(show, nv => {
     if (nv) {
         updateInfo(props.onGet())
-        loaded.value = false
     }
 })
 
