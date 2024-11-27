@@ -12,16 +12,15 @@
                  @mouseup="onUp"
                  @wheel="onWheel"
                  @mousedown.prevent="onDown">
-                <img :key="url"
-                     ref="imgEle"
-                     :src="url"
-                     :style="{
-                         width:loaded?undefined:'100%',
-                         height:loaded?undefined:'100%',
-                         'object-fit':'contain'
-                     }"
-                     loading="lazy"
-                     @load="loadImg"/>
+                <div ref="imgBoxEle" :style="orV('100%')" class="img-box"
+                     data-flex-center>
+                    <img :key="url"
+                         ref="imgEle"
+                         :src="url"
+                         :style="orV('105%')"
+                         loading="lazy"
+                         @load="loadImg"/>
+                </div>
                 <h-tool-tip class="close-btn">
                     <h-button
                             color="info"
@@ -40,69 +39,73 @@
                     <h-button v-if="rawSize" class="show-raw" color="#888" type="primary" @click="showRaw">
                         <span>查看原图 {{ toHumanSize(rawSize) }}</span>
                     </h-button>
-                    <h-tool-tip class="btns">
-                        <h-button round type="primary" @click="mirror">
-                            <el-icon>
-                                <Switch/>
-                            </el-icon>
-                        </h-button>
-                        <template #tip>
-                            左右翻转
-                        </template>
-                    </h-tool-tip>
-                    <h-tool-tip class="btns">
-                        <h-button round type="primary" @click="prev">
-                            <el-icon>
-                                <ArrowLeftBold/>
-                            </el-icon>
-                        </h-button>
-                        <template #tip>
-                            上一个
-                        </template>
-                    </h-tool-tip>
-                    <h-tool-tip class="btns">
-                        <h-button round type="primary" @click="rotate(-90)">
-                            <el-icon>
-                                <RefreshLeft/>
-                            </el-icon>
-                        </h-button>
-                        <template #tip>
-                            逆时针90°
-                        </template>
-                    </h-tool-tip>
-                    <h-button color="info" style="margin: 0 6px" type="primary">
-                        {{ index + 1 }}/{{ count }}
-                    </h-button>
-                    <h-tool-tip class="btns">
-                        <h-button round type="primary" @click="rotate(90)">
-                            <el-icon>
-                                <RefreshRight/>
-                            </el-icon>
-                        </h-button>
-                        <template #tip>
-                            顺时针90°
-                        </template>
-                    </h-tool-tip>
-                    <h-tool-tip class="btns">
-                        <h-button round type="primary" @click="next">
-                            <el-icon>
-                                <ArrowRightBold/>
-                            </el-icon>
-                        </h-button>
-                        <template #tip>
-                            下一个
-                        </template>
-                    </h-tool-tip>
-                    <h-tool-tip class="btns">
-                        <h-button round type="primary" @click="reset">
-                            <el-icon>
-                                <Refresh/>
-                            </el-icon>
-                        </h-button>
-                        <template #tip>
-                            重置
-                        </template>
-                    </h-tool-tip>
+                    <transition name="fade">
+                        <div v-if="showBtns" class="btns" data-flex-center data-transition-fast>
+                            <h-tool-tip>
+                                <h-button color="warning" round type="primary" @click="mirror">
+                                    <el-icon>
+                                        <Switch/>
+                                    </el-icon>
+                                </h-button>
+                                <template #tip>
+                                    左右翻转
+                                </template>
+                            </h-tool-tip>
+                            <h-tool-tip>
+                                <h-button color="success" round type="primary" @click="prev">
+                                    <el-icon>
+                                        <ArrowLeftBold/>
+                                    </el-icon>
+                                </h-button>
+                                <template #tip>
+                                    上一个
+                                </template>
+                            </h-tool-tip>
+                            <h-tool-tip>
+                                <h-button round type="primary" @click="rotate(-90)">
+                                    <el-icon>
+                                        <RefreshLeft/>
+                                    </el-icon>
+                                </h-button>
+                                <template #tip>
+                                    逆时针90°
+                                </template>
+                            </h-tool-tip>
+                            <h-button color="info" type="primary">
+                                {{ index + 1 }}/{{ count }}
+                            </h-button>
+                            <h-tool-tip>
+                                <h-button round type="primary" @click="rotate(90)">
+                                    <el-icon>
+                                        <RefreshRight/>
+                                    </el-icon>
+                                </h-button>
+                                <template #tip>
+                                    顺时针90°
+                                </template>
+                            </h-tool-tip>
+                            <h-tool-tip>
+                                <h-button color="success" round type="primary" @click="next">
+                                    <el-icon>
+                                        <ArrowRightBold/>
+                                    </el-icon>
+                                </h-button>
+                                <template #tip>
+                                    下一个
+                                </template>
+                            </h-tool-tip>
+                            <h-tool-tip>
+                                <h-button color="danger" round type="primary" @click="reset">
+                                    <el-icon>
+                                        <Refresh/>
+                                    </el-icon>
+                                </h-button>
+                                <template #tip>
+                                    重置
+                                </template>
+                            </h-tool-tip>
+                        </div>
+                    </transition>
                 </div>
             </div>
         </transition>
@@ -112,6 +115,15 @@
 <style lang="scss" scoped>
 .viewer-box {
   background-color: rgb(0, 0, 0, 0.5);
+}
+
+.img-box {
+  transition: transform 0s ease-out;
+
+  & > img {
+    object-fit: contain;
+    transition: transform 0.16s ease-out;
+  }
 }
 
 .close-btn {
@@ -147,7 +159,15 @@
 }
 
 .btns {
-  margin: 0 6px;
+  opacity: 0.05;
+
+  & > * {
+    margin: 0 6px;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
 .show-raw {
@@ -191,6 +211,7 @@ const raw = ref<string>()
 const rawSize = ref<number>()
 const boxEle = ref<HTMLElement>()
 const imgEle = ref<HTMLImageElement>()
+const imgBoxEle = ref<HTMLDivElement>()
 const options = reactive<Options>({
     mirrorX: false,
     mirrorY: false,
@@ -199,6 +220,7 @@ const options = reactive<Options>({
     offX: 0,
     offY: 0
 })
+const showBtns = ref(false)
 const loaded = ref(false)
 let last = {
     x: 0,
@@ -208,6 +230,14 @@ let last = {
 const RawUrls = new Map<string, string>()
 
 let down = false
+
+function orV(v: string) {
+    let s = loaded.value ? undefined : v
+    return {
+        width: s,
+        height: s
+    }
+}
 
 function updateInfo(u: string | undefined) {
     if (u?.length) {
@@ -283,28 +313,39 @@ function onWheel(e: WheelEvent) {
     update()
 }
 
-
-function reset() {
+function calcScale() {
     let img = imgEle.value!
     let winAspectRatio = window.innerWidth / window.innerHeight
     let aspectRatio = img.naturalWidth / img.naturalHeight
-    options.scale = winAspectRatio < aspectRatio ?
+    return winAspectRatio < aspectRatio ?
         window.innerWidth / img.naturalWidth : window.innerHeight / img.naturalHeight
+}
+
+function reset(u: boolean = true) {
+    options.scale = calcScale()
     options.mirrorX = false
     options.mirrorY = false
     options.offX = 0
     options.offY = 0
     options.rotate = 0
-    update()
+    if (u)
+        update()
 }
 
 function pack(v: number, min: number, max: number) {
     return v < min ? min : v > max ? max : v
 }
 
+function nextFrame(next: () => void) {
+    requestAnimationFrame(() => {
+        requestAnimationFrame(next)
+    })
+}
+
 function update() {
     let img = imgEle.value
-    if (!img)
+    let imgBox = imgBoxEle.value
+    if (!img || !imgBox)
         return
     let s = options.scale
     const mr = props.minShowRate
@@ -319,13 +360,28 @@ function update() {
     options.offX = pack(options.offX, -ow, ow)
     options.offY = pack(options.offY, -oh, oh)
 
-    let r = options.rotate % 360
-    options.rotate = r
+    let r = options.rotate
     let x = options.offX
     let y = options.offY
     let sx = options.mirrorX ? -s : s
     let sy = options.mirrorY ? -s : s
-    img.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg) scale(${sx},${sy}) `
+
+    imgBox.style.transform = `translate(${x}px, ${y}px)`
+    img.style.transform = `rotate(${r}deg) scale(${sx},${sy}) translateZ(0)`
+
+    if (Math.abs(r) >= 360) {
+        setTimeout(async () => {
+            let r = options.rotate % 360
+            img.style.transitionDuration = '0s'
+            img.style.rotate = `${r}deg`
+            options.rotate = r
+            await nextTick()
+            update()
+            nextFrame(() => {
+                img.style.transitionDuration = '0.16s'
+            })
+        }, 160)
+    }
 }
 
 function onDown(e: MouseEvent) {
@@ -353,17 +409,34 @@ function onUp(e: MouseEvent) {
 }
 
 async function loadImg() {
+    let img = imgEle.value!!
     loaded.value = true
-    await nextTick()
-    reset()
+
+    img.style.transitionDuration = '0s'
+    reset(false)
+    options.scale = calcScale() + 0.05
+    update()
+
+    nextFrame(() => {
+        img.style.transitionDuration = '0.16s'
+        reset()
+    })
+}
+
+function onResize() {
+    showBtns.value = window.innerWidth >= 800
+    update()
 }
 
 onMounted(() => {
     addEventListener('keydown', onKeyDown)
+    addEventListener('resize', onResize)
+    onResize()
 })
 
 onUnmounted(() => {
     removeEventListener('keydown', onKeyDown)
+    removeEventListener('resize', onResize)
 })
 
 watch(url, () => {
@@ -373,6 +446,7 @@ watch(url, () => {
 watch(show, nv => {
     if (nv) {
         updateInfo(props.onGet())
+        loaded.value = false
     }
 })
 
