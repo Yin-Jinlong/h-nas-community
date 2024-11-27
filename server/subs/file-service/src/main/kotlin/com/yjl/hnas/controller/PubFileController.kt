@@ -2,10 +2,7 @@ package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.annotation.TokenLevel
-import com.yjl.hnas.data.FilePreview
-import com.yjl.hnas.data.FileInfo
-import com.yjl.hnas.data.FileRange
-import com.yjl.hnas.data.FolderChildrenCount
+import com.yjl.hnas.data.*
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ErrorCode
@@ -140,7 +137,7 @@ class PubFileController(
     @GetMapping("thumbnail")
     fun getThumbnail(path: String): File {
         val pp = getPubPath(path).toAbsolutePath()
-        return FileMappingService.thumbnailFile(pp.path).apply {
+        return DataHelper.thumbnailFile(pp.path).apply {
             if (!exists())
                 throw ErrorCode.NO_SUCH_FILE.data(path)
         }
@@ -149,7 +146,7 @@ class PubFileController(
     @GetMapping("preview")
     fun getPreview(path: String): File {
         val pp = getPubPath(path).toAbsolutePath()
-        return FileMappingService.previewFile(pp.path).apply {
+        return DataHelper.previewFile(pp.path).apply {
             if (!exists())
                 throw ErrorCode.NO_SUCH_FILE.data(path)
         }
@@ -163,7 +160,7 @@ class PubFileController(
         val map = fileMappingService.getMapping(
             vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error
         ) ?: throw ErrorCode.NO_SUCH_FILE.error
-        return FileMappingService.dataFile(map.dataPath).apply {
+        return DataHelper.dataFile(map.dataPath).apply {
             if (!exists())
                 throw ErrorCode.NO_SUCH_FILE.data(path)
         }

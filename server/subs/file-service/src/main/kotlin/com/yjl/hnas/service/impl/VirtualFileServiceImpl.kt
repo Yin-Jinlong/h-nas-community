@@ -1,5 +1,6 @@
 package com.yjl.hnas.service.impl
 
+import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.*
@@ -81,13 +82,13 @@ class VirtualFileServiceImpl(
     }
 
     fun tmpFile(user: UserInfo, hash: Hash): File {
-        return FileMappingService.dataSub("tmp/${user.uid}/$hash.tmp")
+        return DataHelper.dataSub("tmp/${user.uid}/$hash.tmp")
     }
 
     fun dataPath(type: MediaType, hash: Hash) = "$type/$hash"
 
     fun dataFile(type: MediaType, hash: Hash): File {
-        return FileMappingService.dataFile(dataPath(type, hash))
+        return DataHelper.dataFile(dataPath(type, hash))
     }
 
     private tailrec fun updateParentSize(path: VirtualPath, ds: Long) {
@@ -326,9 +327,9 @@ class VirtualFileServiceImpl(
             val fm = fileMappingMapper.selectByHash(hash)
                 ?: throw IllegalStateException("hash=$hash not found in mapping")
             fileMappingMapper.deleteById(hash)
-            FileMappingService.dataFile(fm.dataPath).del()
+            DataHelper.dataFile(fm.dataPath).del()
             if (fm.preview)
-                FileMappingService.previewFile(fm.dataPath).del()
+                DataHelper.previewFile(fm.dataPath).del()
         }
     }
 

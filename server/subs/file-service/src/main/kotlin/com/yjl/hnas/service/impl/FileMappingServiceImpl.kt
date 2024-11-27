@@ -1,5 +1,6 @@
 package com.yjl.hnas.service.impl
 
+import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
 import com.yjl.hnas.mapper.FileMappingMapper
@@ -7,7 +8,6 @@ import com.yjl.hnas.option.PreviewOption
 import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
-import com.yjl.hnas.service.FileMappingService.Companion.previewFile
 import com.yjl.hnas.utils.del
 import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.annotation.PreDestroy
@@ -85,7 +85,7 @@ class FileMappingServiceImpl(
         maxSize: Int,
         quality: Float
     ) {
-        val file = FileMappingService.dataFile(dataPath)
+        val file = DataHelper.dataFile(dataPath)
         try {
             val data =
                 previewGeneratorFactory.getPreview(file.inputStream(), mediaType, maxSize, quality) ?: return let {
@@ -117,7 +117,7 @@ class FileMappingServiceImpl(
         val mediaType = type()
         if (!previewGeneratorFactory.canPreview(mediaType))
             return null
-        val cache = previewFile(dataPath)
+        val cache = DataHelper.previewFile(dataPath)
         if (cache.exists())
             cache
         else null
@@ -161,14 +161,14 @@ class FileMappingServiceImpl(
     @Transactional
     override fun getThumbnail(mapping: IFileMapping): String? = genPreview(
         mapping,
-        FileMappingService::thumbnailFile,
+        DataHelper::thumbnailFile,
         previewOption.thumbnailSize,
         previewOption.thumbnailQuality
     )
 
     @Transactional
     override fun getPreview(mapping: IFileMapping): String? = if (mapping.type != "image") null else genPreview(
-        mapping, FileMappingService::previewFile,
+        mapping, DataHelper::previewFile,
         previewOption.previewSize,
         previewOption.previewQuality
     )
