@@ -41,6 +41,16 @@
                         <span>查看原图 {{ toHumanSize(rawSize) }}</span>
                     </h-button>
                     <h-tool-tip class="btns">
+                        <h-button round type="primary" @click="mirror">
+                            <el-icon>
+                                <Switch/>
+                            </el-icon>
+                        </h-button>
+                        <template #tip>
+                            左右翻转
+                        </template>
+                    </h-tool-tip>
+                    <h-tool-tip class="btns">
                         <h-button round type="primary" @click="prev">
                             <el-icon>
                                 <ArrowLeftBold/>
@@ -81,6 +91,16 @@
                         </h-button>
                         <template #tip>
                             下一个
+                        </template>
+                    </h-tool-tip>
+                    <h-tool-tip class="btns">
+                        <h-button round type="primary" @click="reset">
+                            <el-icon>
+                                <Refresh/>
+                            </el-icon>
+                        </h-button>
+                        <template #tip>
+                            重置
                         </template>
                     </h-tool-tip>
                 </div>
@@ -142,12 +162,22 @@
 
 <script lang="ts" setup>
 
-import {ArrowLeftBold, ArrowRightBold, CloseBold, RefreshLeft, RefreshRight} from '@element-plus/icons-vue'
+import {
+    ArrowLeftBold,
+    ArrowRightBold,
+    CloseBold,
+    Refresh,
+    RefreshLeft,
+    RefreshRight,
+    Switch
+} from '@element-plus/icons-vue'
 import {HButton, HToolTip} from '@yin-jinlong/h-ui'
 import {toHumanSize} from '@/utils/size-utils'
 import Default, {ImageViewerProps} from './props'
 
 interface Options {
+    mirrorX: boolean
+    mirrorY: boolean
     rotate: number
     scale: number
     offX: number
@@ -162,6 +192,8 @@ const rawSize = ref<number>()
 const boxEle = ref<HTMLElement>()
 const imgEle = ref<HTMLImageElement>()
 const options = reactive<Options>({
+    mirrorX: false,
+    mirrorY: false,
     rotate: 0,
     scale: 1,
     offX: 0,
@@ -193,6 +225,15 @@ function updateInfo(u: string | undefined) {
         raw.value = undefined
         rawSize.value = undefined
     }
+}
+
+function mirror() {
+    if (options.rotate % 180 == 0) {
+        options.mirrorX = !options.mirrorX
+    } else {
+        options.mirrorY = !options.mirrorY
+    }
+    update()
 }
 
 function rotate(d: number) {
@@ -249,6 +290,8 @@ function reset() {
     let aspectRatio = img.naturalWidth / img.naturalHeight
     options.scale = winAspectRatio < aspectRatio ?
         window.innerWidth / img.naturalWidth : window.innerHeight / img.naturalHeight
+    options.mirrorX = false
+    options.mirrorY = false
     options.offX = 0
     options.offY = 0
     options.rotate = 0
@@ -280,7 +323,9 @@ function update() {
     options.rotate = r
     let x = options.offX
     let y = options.offY
-    img.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg) scale(${s}) `
+    let sx = options.mirrorX ? -s : s
+    let sy = options.mirrorY ? -s : s
+    img.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg) scale(${sx},${sy}) `
 }
 
 function onDown(e: MouseEvent) {
