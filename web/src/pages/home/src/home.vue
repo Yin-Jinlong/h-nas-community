@@ -294,7 +294,8 @@ function showPreview(f: FileWrapper) {
 }
 
 function getUrl(f: FileWrapper) {
-    console.log(f.preview)
+    if (f.preview.preview == '')
+        return ''
     return API.publicPreviewURL(f.preview.preview!!)
 }
 

@@ -1,7 +1,7 @@
 <template>
     <teleport to="body">
         <transition name="fade">
-            <div v-show="show&&url" ref="boxEle" :style="{
+            <div v-show="show&&url!==undefined" ref="boxEle" :style="{
             zIndex: zIndex
         }" class="viewer-box"
                  data-absolute
@@ -12,7 +12,7 @@
                  @mouseup="onUp"
                  @wheel="onWheel"
                  @mousedown.prevent="onDown">
-                <div ref="imgBoxEle" :style="orV('100%')" class="img-box"
+                <div ref="imgBoxEle" v-loading="url==''" :style="orV('100%')" class="img-box"
                      data-flex-center>
                     <img :key="url"
                          ref="imgEle"
@@ -240,6 +240,11 @@ function orV(v: string) {
 }
 
 function updateInfo(u: string | undefined) {
+    if (u == '') {
+        url.value = ''
+        raw.value = undefined
+        return
+    }
     if (u?.length) {
         let rawCache = RawUrls.get(u)
         url.value = rawCache ? rawCache : u
@@ -428,6 +433,21 @@ function onResize() {
     update()
 }
 
+let id: number | undefined
+
+function waitUrl() {
+    if (id)
+        clearInterval(id)
+    id = setInterval(() => {
+        let v = props.onGet()
+        if (v != '') {
+            url.value = v
+            clearInterval(id)
+            id = undefined
+        }
+    }, 200) as unknown as number
+}
+
 onMounted(() => {
     addEventListener('keydown', onKeyDown)
     addEventListener('resize', onResize)
@@ -439,8 +459,11 @@ onUnmounted(() => {
     removeEventListener('resize', onResize)
 })
 
-watch(url, () => {
+watch(url, (nv) => {
     loaded.value = false
+    if (nv == '') {
+        waitUrl()
+    }
 })
 
 watch(show, nv => {
