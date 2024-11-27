@@ -68,7 +68,7 @@ const infoTable = computed(() => {
         },
         {
             label: '类型',
-            value: `${props.info.mediaType}`
+            value: `${props.info.mediaType ?? '目录'}`
         },
         {
             label: '创建时间',
