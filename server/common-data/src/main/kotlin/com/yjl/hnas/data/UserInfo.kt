@@ -14,10 +14,11 @@ data class UserInfo(
     val uid: Long,
     val username: String,
     val nick: String,
+    val avatarDir: String?
 ) {
     companion object {
         fun of(user: IUser): UserInfo {
-            return UserInfo(user.uid, user.username, user.nick)
+            return UserInfo(user.uid, user.username, user.nick, user.avatar)
         }
     }
 

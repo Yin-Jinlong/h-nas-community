@@ -25,6 +25,10 @@ data class User(
     @Comment("昵称")
     override var nick: String = "",
 
+    @Column(length = IVirtualFile.NAME_LENGTH)
+    @Comment("头像")
+    override var avatar: String? = null,
+
     @Column(length = 128, nullable = false)
     @Comment("密码")
     @field:JsonIgnored

@@ -92,11 +92,9 @@ class UserServiceImpl(
             throw ErrorCode.USER_EXISTS.data(username)
         }
         return User(
-            0,
-            username,
-            username,
-            genPassword(password),
-            IUser.PasswordType.SHA256
+            username = username,
+            nick = username,
+            password = genPassword(password)
         ).apply {
             mapper.insert(this)
         }

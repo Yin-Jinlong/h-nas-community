@@ -1,5 +1,6 @@
 package com.yjl.hnas.data
 
+import com.yjl.hnas.entity.Uid
 import java.io.File
 
 /**
@@ -10,6 +11,7 @@ object DataHelper {
     private var DataDir = "data/data"
     private var ThumbnailDir = "cache/缩略图"
     private var PreviewDir = "cache/预览图"
+    private var AvatarDir = "data/avatar"
 
     /**
      * 数据目录：data/..
@@ -31,4 +33,8 @@ object DataHelper {
      */
     fun previewFile(dataPath: String): File = File(PreviewDir, "$dataPath.jpg")
 
+    /**
+     * 头像：data/avatar/...
+     */
+    fun avatarFile(uid: Uid): File = File(AvatarDir, "$uid.jpg")
 }
