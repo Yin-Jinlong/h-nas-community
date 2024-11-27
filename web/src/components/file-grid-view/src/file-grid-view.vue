@@ -7,7 +7,7 @@
             <el-icon v-if="(previewPath?.length??0)<1" size="100%">
                 <el-skeleton :loading="previewPath===undefined" animated data-fill-size>
                     <template #template>
-                        <el-skeleton-item :variant="modelValue.type=='image'?'image':'rect'"
+                        <el-skeleton-item :variant="info.mediaType?.startsWith('image')?'image':'rect'"
                                           style="width: 8em;height: 8em"/>
                     </template>
                     <component :is="fileIcon"/>
@@ -60,23 +60,23 @@
 </style>
 
 <script lang="ts" setup>
-import Folder from './folder.vue'
-import {IconMapping} from './icon-mapping'
 import API from '@/utils/api'
 import {subPath} from '@/utils/path'
+import Folder from './folder.vue'
+import {IconMapping} from './icon-mapping'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 import UnknownFile from './unknown-file.vue'
 
-const extra = defineModel<FileExtraInfo>({
+const extra = defineModel<FilePreview>({
     required: true
 })
 const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
 const previewPath = ref<string | undefined>()
 const fileIcon = shallowRef<Component>()
 const emits = defineEmits({
-    'click': (e: MouseEvent, info: FileInfo, extra: FileExtraInfo) => {
+    'click': (e: MouseEvent, info: FileInfo) => {
     },
-    'dblclick': (last: MouseEvent, info: FileInfo, extra: FileExtraInfo) => {
+    'dblclick': (last: MouseEvent, info: FileInfo) => {
     }
 })
 
@@ -86,44 +86,47 @@ function onClick(e: MouseEvent) {
     if (clickTimeout) {
         clearTimeout(clickTimeout)
         clickTimeout = 0
-        emits('dblclick', e, props.info, extra.value)
+        emits('dblclick', e, props.info)
     } else {
         clickTimeout = setTimeout(() => {
             clickTimeout = 0
-            emits('click', e, props.info, extra.value)
+            emits('click', e, props.info)
         }, props.dbClickInterval) as unknown as number
     }
 }
 
-async function updateIcon(extra: FileExtraInfo) {
-    let map = IconMapping[extra.type]
+function defaultIcon() {
+    fileIcon.value = UnknownFile
+}
+
+async function updateIcon() {
+    let mt = props.info.mediaType
+    if (!mt) {
+        return defaultIcon()
+    }
+    let i = mt.indexOf('/')
+    if (i < 1)
+        return defaultIcon()
+    let type = mt.substring(0, i)
+    let subType = mt.substring(i + 1)
+    let map = IconMapping[type]
     if (!map)
-        return
-    let icon = map[extra.subType]
+        return defaultIcon()
+    let icon = map[subType]
     fileIcon.value = icon ? (await icon()).default : UnknownFile
 }
 
 async function getExtra() {
-    let info = await API.getPublicFileExtraInfo(subPath(props.info.dir, props.info.name))
+    let info = await API.getPublicFilePreview(subPath(props.info.dir, props.info.name))
     if (!info)
         return
     extra.value.thumbnail = info.thumbnail
     extra.value.preview = info.preview
-    extra.value.type = info.type
-    extra.value.subType = info.subType
     return info
 }
 
-onMounted(async () => {
-    if (!extra.value.type) {
-        let info = await getExtra()
-        if (info)
-            await updateIcon(info)
-        return
-    }
-    await updateIcon(extra.value)
-    if (extra.value.thumbnail === undefined)
-        previewPath.value = ''
+onMounted(() => {
+    updateIcon()
 })
 
 watch(extra, (nv) => {
@@ -137,21 +140,20 @@ watch(extra, (nv) => {
 
     async function retry() {
         let info = await getExtra()
-        if (!info || info.type == 'folder')
+        if (!info)
             return
-        await updateIcon(info)
-        if (info.thumbnail === undefined) {
+        if (info.thumbnail === undefined && info.preview === undefined) {
             previewPath.value = ''
             return
         }
 
-        if (info.thumbnail.length != 0) {
+        if (info.thumbnail !== undefined && info.thumbnail.length != 0) {
             previewPath.value = API.publicThumbnailURL(info.thumbnail)
-            return
         }
-        setTimeout(() => {
-            retry()
-        }, 500 + Math.random() * 500)
+        if (info.preview == '' || info.thumbnail == '')
+            setTimeout(() => {
+                retry()
+            }, 500 + Math.random() * 500)
     }
 
     retry()

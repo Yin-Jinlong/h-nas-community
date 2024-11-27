@@ -52,7 +52,7 @@ import {FileInfoDialogProps} from './props'
 
 const modelValue = defineModel<boolean>()
 
-const extra = defineModel<FileExtraInfo>('extra', {
+const extra = defineModel<FilePreview>('preview', {
     required: true
 })
 const props = defineProps<FileInfoDialogProps>()
@@ -68,7 +68,7 @@ const infoTable = computed(() => {
         },
         {
             label: '类型',
-            value: `${extra.value.type}/${extra.value.subType}`
+            value: `${props.info.mediaType}`
         },
         {
             label: '创建时间',

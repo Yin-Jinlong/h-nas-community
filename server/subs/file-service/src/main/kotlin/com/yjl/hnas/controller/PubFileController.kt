@@ -2,7 +2,7 @@ package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.annotation.TokenLevel
-import com.yjl.hnas.data.FileExtraInfo
+import com.yjl.hnas.data.FilePreview
 import com.yjl.hnas.data.FileInfo
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.data.FolderChildrenCount
@@ -34,29 +34,24 @@ class PubFileController(
     val virtualFileService: VirtualFileService
 ) : WithFS(virtualFileSystemProvider) {
 
-    @GetMapping("info")
-    fun getInfo(path: String): FileExtraInfo {
+    @GetMapping("preview/info")
+    fun getFilePreview(path: String): FilePreview {
         val pp = getPubPath(path)
         val vf = virtualFileService.get(pp)
             ?: throw ErrorCode.NO_SUCH_FILE.data(path)
         if (vf.hash != null) {
             val fm = fileMappingService.getMapping(vf.hash!!)
                 ?: throw ErrorCode.NO_SUCH_FILE.data(path)
-            return FileExtraInfo(
+            return FilePreview(
                 thumbnail = if (fm.preview)
                     fileMappingService.getThumbnail(fm)
                 else null,
                 preview = if (fm.preview)
                     fileMappingService.getPreview(fm)
                 else null,
-                type = fm.type,
-                subType = fm.subType
             )
         } else {
-            return FileExtraInfo(
-                type = "folder",
-                subType = "folder"
-            )
+            return FilePreview()
         }
     }
 

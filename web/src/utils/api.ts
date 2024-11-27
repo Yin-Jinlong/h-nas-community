@@ -102,8 +102,8 @@ async function getPublicFiles(path: string) {
         .catch(catchError)
 }
 
-async function getPublicFileExtraInfo(path: string) {
-    return get<FileExtraInfo>('api/file/public/info', {
+async function getPublicFilePreview(path: string) {
+    return get<FilePreview>('api/file/public/preview/info', {
         path: path
     })
         .then(resp => resp.data)
@@ -253,7 +253,7 @@ const API = {
     logon,
     getPublicFiles,
     getDirChildrenCount,
-    getPublicFileExtraInfo,
+    getPublicFilePreview,
     deletePublicFile,
     newPublicFolder,
     uploadPublic,

@@ -67,10 +67,11 @@
                          data-fill-size
                          data-flex-column-center
                          @click="showPreview(f)">
-                        <file-grid-view v-model="files[i].extra"
-                                        :info="f.info"
-                                        @click="onClick"
-                                        @dblclick="onDblClick"/>
+                        <file-grid-view
+                                v-model="files[i].preview"
+                                :info="f.info"
+                                @click="onClick"
+                                @dblclick="onDblClick"/>
                         <div class="file-name">{{ f.info.name }}</div>
                         <div class="file-op-menu">
                             <file-grid-options
@@ -81,7 +82,7 @@
                 </div>
                 <file-info-dialog v-if="activeFile"
                                   v-model="showFileInfoDialog"
-                                  v-model:extra="activeFile.extra"
+                                  v-model:preview="activeFile.preview"
                                   :info="activeFile?.info"/>
                 <el-dialog v-model="showCountDialog" width="max-content">
                     <template #header>
@@ -243,7 +244,7 @@ import {HMessage, HButton} from '@yin-jinlong/h-ui'
 interface FileWrapper {
     index: number
     info: FileInfo
-    extra: FileExtraInfo
+    preview: FilePreview
     previewIndex?: number
 }
 
@@ -293,7 +294,8 @@ function showPreview(f: FileWrapper) {
 }
 
 function getUrl(f: FileWrapper) {
-    return API.publicPreviewURL(f.extra.preview!!)
+    console.log(f.preview)
+    return API.publicPreviewURL(f.preview.preview!!)
 }
 
 function getNow(): string | undefined {
@@ -347,24 +349,6 @@ function getNext(): string | undefined {
     return getUrl(f)
 }
 
-function getInfo(file: FileWrapper) {
-    API.getPublicFileExtraInfo(subPath(file.info.dir, file.info.name)).then(res => {
-        if (!res)
-            return
-        file.extra = res
-        if (res.preview !== undefined && res.type == 'image') {
-            images.push(file)
-            images.sort((a, b) => {
-                return a.index - b.index
-            })
-            for (let i = 0; i < images.length; i++) {
-                let f = images[i]
-                f.previewIndex = i
-            }
-        }
-    })
-}
-
 function updateFiles() {
     API.getPublicFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
         if (!data)
@@ -376,16 +360,22 @@ function updateFiles() {
             let file: FileWrapper = {
                 index: files.length,
                 info: f,
-                extra: {
+                preview: {
                     thumbnail: '',
                     preview: '',
-                    subType: '?',
-                    type: '?'
                 }
             }
             files.push(file)
-            getInfo(file)
+            if (f.mediaType?.startsWith('image/'))
+                images.push(file)
         })
+        images.sort((a, b) => {
+            return a.index - b.index
+        })
+        for (let i = 0; i < images.length; i++) {
+            let f = images[i]
+            f.previewIndex = i
+        }
     })
 }
 
@@ -517,7 +507,7 @@ function onDragCancel() {
     }, 100) as unknown as number
 }
 
-function onClick(e: MouseEvent, info: FileInfo, extra: FileExtraInfo) {
+function onClick(e: MouseEvent, info: FileInfo) {
 
 }
 
@@ -535,7 +525,6 @@ function renameFile() {
             showRenameDialog.value = false
             HMessage.success('重命名成功')
 
-            activeFile.value!.extra.preview = ''
             activeFile.value!.info.name = newName.value
         }
     }).finally(() => {
