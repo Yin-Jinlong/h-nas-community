@@ -1,8 +1,8 @@
 package com.yjl.hnas.service.impl
 
 import com.yjl.hnas.data.UserInfo
-import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.IUser
+import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.entity.User
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.mapper.UserMapper
@@ -15,7 +15,7 @@ import io.github.yinjinlong.md.sha256
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.Calendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -35,14 +35,14 @@ class UserServiceImpl(
     }
 
     fun genToken(
-        u: UserInfo,
+        uid: Uid,
         type: TokenType,
         filedId: Int,
         amount: Int
     ): UserToken {
         val time = Calendar.getInstance()
         time.add(filedId, amount)
-        return Token.gen(UserTokenData(u, type), time)
+        return Token.gen(UserTokenData(uid, type), time)
     }
 
     fun genBaseToken(u: IUser): UserToken {
@@ -51,7 +51,7 @@ class UserServiceImpl(
         if (v != null) {
             return Token.from(v, UserTokenData::class)
         }
-        return genToken(UserInfo.of(u), TokenType.AUTH, Calendar.DAY_OF_MONTH, 7).also {
+        return genToken(u.uid, TokenType.AUTH, Calendar.DAY_OF_MONTH, 7).also {
             stringRedisTemplate.opsForValue().set(
                 k,
                 it.token,
@@ -61,15 +61,30 @@ class UserServiceImpl(
         }
     }
 
-    override fun login(uid: Uid, password: String): UserToken {
+    override fun login(token: UserToken): UserService.LogResult {
+        val u = mapper.selectByUid(token.data.uid)
+            ?: throw ErrorCode.BAD_TOKEN.error
+        return UserService.LogResult(
+            UserInfo.of(u),
+            token
+        )
+    }
+
+    override fun login(uid: Uid, password: String): UserService.LogResult {
         return (mapper.selectByUidPassword(uid, genPassword(password))?.let {
-            genBaseToken(it)
+            UserService.LogResult(
+                UserInfo.of(it),
+                genBaseToken(it)
+            )
         } ?: throw ErrorCode.USER_LOGIN_ERROR.data(uid))
     }
 
-    override fun login(username: String, password: String): UserToken {
+    override fun login(username: String, password: String): UserService.LogResult {
         return (mapper.selectByUsernamePassword(username, genPassword(password))?.let {
-            genBaseToken(it)
+            UserService.LogResult(
+                UserInfo.of(it),
+                genBaseToken(it)
+            )
         } ?: throw ErrorCode.USER_LOGIN_ERROR.data(username))
     }
 
@@ -78,7 +93,7 @@ class UserServiceImpl(
             return token
         return when (type) {
             TokenType.AUTH -> token
-            TokenType.FULL_ACCESS -> genToken(token.data.info, type, Calendar.MINUTE, 10)
+            TokenType.FULL_ACCESS -> genToken(token.data.uid, type, Calendar.MINUTE, 10)
         }
     }
 

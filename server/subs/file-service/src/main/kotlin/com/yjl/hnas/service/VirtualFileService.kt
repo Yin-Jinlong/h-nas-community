@@ -5,6 +5,7 @@ import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.ChildrenCount
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IVirtualFile
+import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.fs.VirtualFileManager
 import com.yjl.hnas.fs.VirtualPath
 import java.io.BufferedInputStream
@@ -34,7 +35,7 @@ interface VirtualFileService : VirtualFileManager {
         IOException::class
     )
     fun upload(
-        owner: UserInfo,
+        owner: Uid,
         path: VirtualPath,
         hash: Hash,
         fileSize: Long,

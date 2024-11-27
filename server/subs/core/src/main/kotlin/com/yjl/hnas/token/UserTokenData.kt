@@ -1,11 +1,11 @@
 package com.yjl.hnas.token
 
-import com.yjl.hnas.data.UserInfo
+import com.yjl.hnas.entity.Uid
 
 /**
  * @author YJL
  */
 data class UserTokenData(
-    val info: UserInfo,
+    val uid: Uid,
     val type: TokenType
 )

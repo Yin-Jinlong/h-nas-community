@@ -87,7 +87,7 @@ class PubFileController(
         @ShouldLogin user: UserToken,
     ): Unit = withCatch {
         val p = getPubPath(path)
-        Files.createDirectory(p, FileOwnerAttribute(user.data.info.uid))
+        Files.createDirectory(p, FileOwnerAttribute(user.data.uid))
     }
 
     @Async
@@ -114,7 +114,7 @@ class PubFileController(
             throw ErrorCode.BAD_ARGUMENTS.data(range)
 
         virtualFileService.upload(
-            token.data.info,
+            token.data.uid,
             path.toAbsolutePath(),
             Hash(hash),
             size,

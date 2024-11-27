@@ -23,7 +23,7 @@ class UserController(
     val userService: UserService
 ) {
 
-    fun login(logId: String?, password: String?): UserToken {
+    fun login(logId: String?, password: String?): UserService.LogResult {
         if (logId.isNullOrBlank())
             throw ErrorCode.BAD_ARGUMENTS.data("logId")
         if (password.isNullOrBlank()) {
@@ -43,9 +43,9 @@ class UserController(
         @Password password: String?,
         resp: HttpServletResponse
     ): UserInfo {
-        return (token ?: login(logId, password)).let {
-            resp.addHeader(HttpHeaders.AUTHORIZATION, it.token)
-            it.data.info
+        return (if (token != null) userService.login(token) else login(logId, password)).let {
+            resp.addHeader(HttpHeaders.AUTHORIZATION, it.token.token)
+            it.user
         }
     }
 

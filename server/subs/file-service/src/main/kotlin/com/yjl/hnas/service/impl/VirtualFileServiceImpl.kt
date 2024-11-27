@@ -13,7 +13,6 @@ import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.preview.PreviewGeneratorFactory
-import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.del
@@ -81,8 +80,8 @@ class VirtualFileServiceImpl(
         return virtualFileMapper.selectsByParent(p.id)
     }
 
-    fun tmpFile(user: UserInfo, hash: Hash): File {
-        return DataHelper.dataSub("tmp/${user.uid}/$hash.tmp")
+    fun tmpFile(user: Uid, hash: Hash): File {
+        return DataHelper.dataSub("tmp/$user/$hash.tmp")
     }
 
     fun dataPath(type: MediaType, hash: Hash) = "$type/$hash"
@@ -103,7 +102,7 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     fun insertFile(
-        owner: UserInfo,
+        owner: Uid,
         user: Uid,
         path: VirtualPath,
         hash: Hash,
@@ -122,7 +121,7 @@ class VirtualFileServiceImpl(
                 name = path.name,
                 parent = parent.id,
                 hash = hash,
-                owner = owner.uid,
+                owner = owner,
                 user = user,
                 mediaType = mediaType.toString(),
                 createTime = time,
@@ -154,7 +153,7 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class])
     override fun upload(
-        owner: UserInfo,
+        owner: Uid,
         path: VirtualPath,
         hash: Hash,
         fileSize: Long,
@@ -164,7 +163,7 @@ class VirtualFileServiceImpl(
         if (exists(path))
             throw ErrorCode.FILE_EXISTS.data(path.path)
 
-        val user = if (path.isPublic()) 0 else owner.uid
+        val user = if (path.isPublic()) 0 else owner
 
         if (range.start == 0L) {
             val type = FileDetector.detect(ins, path.name)
