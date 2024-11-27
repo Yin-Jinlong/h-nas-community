@@ -8,13 +8,14 @@ import com.yjl.hnas.entity.IUser
  * @property uid 用户ID
  * @property username 用户名
  * @property nick 昵称
+ * @property avatar 头像
  * @author YJL
  */
 data class UserInfo(
     val uid: Long,
     val username: String,
     val nick: String,
-    val avatarDir: String?
+    val avatar: String?
 ) {
     companion object {
         fun of(user: IUser): UserInfo {
