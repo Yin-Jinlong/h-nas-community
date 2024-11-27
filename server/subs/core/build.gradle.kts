@@ -17,6 +17,10 @@ dependencies {
     api(libs.spring.cloud.starter.netflix.eureka.client)
     api(libs.spring.boot.starter.actuator)
     api(libs.spring.boot.starter.data.jpa)
+    api(libs.spring.boot.starter.data.redis) {
+        exclude("io.lettuce", "lettuce-core")
+    }
+    api("redis.clients:jedis:5.2.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.9.0")
     implementation("org.jboss.logging:jboss-logging:3.6.1.Final")

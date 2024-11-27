@@ -12,10 +12,11 @@ import com.yjl.hnas.token.TokenType
 import com.yjl.hnas.token.UserTokenData
 import com.yjl.hnas.utils.UserToken
 import io.github.yinjinlong.md.sha256
-import org.jetbrains.annotations.Range
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -24,7 +25,8 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  */
 @Service
 class UserServiceImpl(
-    val mapper: UserMapper
+    val mapper: UserMapper,
+    val stringRedisTemplate: StringRedisTemplate
 ) : UserService {
 
     @OptIn(ExperimentalEncodingApi::class)
@@ -44,7 +46,19 @@ class UserServiceImpl(
     }
 
     fun genBaseToken(u: IUser): UserToken {
-        return genToken(UserInfo.of(u), TokenType.AUTH, Calendar.DAY_OF_MONTH, 7)
+        val k = "auth_token_${u.uid}"
+        val v = stringRedisTemplate.opsForValue().get(k)
+        if (v != null) {
+            return Token.from(v, UserTokenData::class)
+        }
+        return genToken(UserInfo.of(u), TokenType.AUTH, Calendar.DAY_OF_MONTH, 7).also {
+            stringRedisTemplate.opsForValue().set(
+                k,
+                it.token,
+                7,
+                TimeUnit.DAYS
+            )
+        }
     }
 
     override fun login(uid: Uid, password: String): UserToken {
