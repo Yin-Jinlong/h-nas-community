@@ -357,6 +357,8 @@ function updateFiles() {
 
         console.log('files', data)
         nowIndex.value = -1
+        files.length = 0
+        images.length = 0
         data.forEach(f => {
             let file: FileWrapper = {
                 index: files.length,
