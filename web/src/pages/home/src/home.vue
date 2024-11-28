@@ -1,97 +1,98 @@
 <template>
-    <el-scrollbar data-relative height="100%">
-        <div class="contents"
-             data-fill-size
-             data-flex-column>
-            <div class="tools" data-flex>
-                <div style="flex: 1">
-                    <h-tool-tip>
-                        <h-button v-disabled="!user" type="primary" @click="showNewFolderDialog = true">
-                            创建目录
-                        </h-button>
-                        <template #tip>
-                            {{ user ? '在当前目录下创建目录' : '请先登录' }}
-                        </template>
-                    </h-tool-tip>
-                </div>
+    <div class="contents"
+         data-fill-size
+         data-flex-column>
+        <div class="tools" data-flex>
+            <div style="flex: 1">
                 <h-tool-tip>
-                    <h-button @click="update">
-                        <el-icon>
-                            <Refresh/>
-                        </el-icon>
+                    <h-button v-disabled="!user" type="primary" @click="showNewFolderDialog = true">
+                        创建目录
                     </h-button>
                     <template #tip>
-                        刷新
+                        {{ user ? '在当前目录下创建目录' : '请先登录' }}
                     </template>
                 </h-tool-tip>
-                <el-popover width="400px">
-                    <template #reference>
-                        <h-badge :value="UploadTasks.length"
-                                 style="display: inline-block;font-size: 16px;margin-right: 1em">
-                            <h-button>
-                                <el-icon>
-                                    <Sort/>
-                                </el-icon>
-                            </h-button>
-                        </h-badge>
-                    </template>
-                    <template #default>
-                        <el-empty v-if="!UploadTasks.length">
-                            <template #description>
-                                空空如也
-                            </template>
-                        </el-empty>
-                        <div>
-                            <div v-for="(t,i) in UploadTasks" class="task" data-relative>
-                                <div :style="{
+            </div>
+            <h-tool-tip>
+                <h-button @click="update">
+                    <el-icon>
+                        <Refresh/>
+                    </el-icon>
+                </h-button>
+                <template #tip>
+                    刷新
+                </template>
+            </h-tool-tip>
+            <el-popover width="400px">
+                <template #reference>
+                    <h-badge :value="UploadTasks.length"
+                             style="display: inline-block;font-size: 16px;margin-right: 1em">
+                        <h-button>
+                            <el-icon>
+                                <Sort/>
+                            </el-icon>
+                        </h-button>
+                    </h-badge>
+                </template>
+                <template #default>
+                    <el-empty v-if="!UploadTasks.length">
+                        <template #description>
+                            空空如也
+                        </template>
+                    </el-empty>
+                    <div>
+                        <div v-for="(t,i) in UploadTasks" class="task" data-relative>
+                            <div :style="{
                                 '--p':t.progress(),
                                 background:calcBg(t.status())
                             }"
-                                     class="progress">
-                                </div>
-                                <div>
-                                    <h4>{{ t.file().name }}</h4>
-                                </div>
-                                {{ t.statusText() }} {{ (t.progress() * 100).toFixed(1) }}%
-                                <el-icon v-if="t.status()>UploadStatus.Uploading" class="remove-btn"
-                                         @click="removeTask(i)">
-                                    <Close/>
+                                 class="progress">
+                            </div>
+                            <div>
+                                <h4>{{ t.file().name }}</h4>
+                            </div>
+                            {{ t.statusText() }} {{ (t.progress() * 100).toFixed(1) }}%
+                            <el-icon v-if="t.status()>UploadStatus.Uploading" class="remove-btn"
+                                     @click="removeTask(i)">
+                                <Close/>
+                            </el-icon>
+                        </div>
+                    </div>
+                </template>
+            </el-popover>
+        </div>
+        <div class="breadcrumbs">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item>
+                    <el-dropdown @command="onChangeRoot">
+                        <template #default>
+                            <div class="breadcrumb" data-flex-center data-pointer>
+                                {{ isPublic ? '公开' : '个人' }}
+                                <el-icon>
+                                    <arrow-down/>
                                 </el-icon>
                             </div>
-                        </div>
-                    </template>
-                </el-popover>
-            </div>
-            <div class="breadcrumbs">
-                <el-breadcrumb separator="/">
-                    <el-breadcrumb-item>
-                        <el-dropdown @command="onChangeRoot">
-                            <template #default>
-                                <div class="breadcrumb" data-flex-center data-pointer>
-                                    {{ isPublic ? '公开' : '个人' }}
-                                    <el-icon>
-                                        <arrow-down/>
-                                    </el-icon>
-                                </div>
-                            </template>
-                            <template #dropdown>
-                                <el-dropdown-item :command="[true]">
-                                    公开
-                                </el-dropdown-item>
-                                <el-dropdown-item :command="[false]">
-                                    个人
-                                </el-dropdown-item>
-                            </template>
-                        </el-dropdown>
-                    </el-breadcrumb-item>
-                    <el-breadcrumb-item to="/">
-                        root
-                    </el-breadcrumb-item>
-                    <el-breadcrumb-item v-for="(p,i) in nowPaths" class="breadcrumb" @click="toPath(i)">
-                        {{ p }}
-                    </el-breadcrumb-item>
-                </el-breadcrumb>
-            </div>
+                        </template>
+                        <template #dropdown>
+                            <el-dropdown-item :command="[true]">
+                                公开
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="[false]">
+                                个人
+                            </el-dropdown-item>
+                        </template>
+                    </el-dropdown>
+                </el-breadcrumb-item>
+                <el-breadcrumb-item to="/">
+                    root
+                </el-breadcrumb-item>
+                <el-breadcrumb-item v-for="(p,i) in nowPaths" class="breadcrumb" @click="toPath(i)">
+                    {{ p }}
+                </el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
+
+        <el-scrollbar data-relative height="100%">
             <div data-relative
                  style="flex: 1"
                  @dragenter="onDragStart"
@@ -186,32 +187,31 @@
                         :on-next="getNext"
                         :on-prev="getPrev"/>
             </div>
-        </div>
-    </el-scrollbar>
-    <el-dialog v-model="showNewFolderDialog"
-               :close-on-click-modal="!newFolderPosting"
-               :close-on-press-escape="!newFolderPosting"
-               :show-close="!newFolderPosting">
-        <template #header>
-            <h3>创建目录</h3>
-        </template>
-        <el-form :model="newFolderData">
-            <el-form-item label="目录名">
-                <el-input v-model="newFolderData.name" placeholder="目录名"/>
-            </el-form-item>
-        </el-form>
-        <h-button v-disabled="!newFolderData.name.length||newFolderPosting"
-                  v-loading.inner="newFolderPosting"
-                  type="primary"
-                  @click="createFolder">
-            创建
-        </h-button>
-    </el-dialog>
+        </el-scrollbar>
+        <el-dialog v-model="showNewFolderDialog"
+                   :close-on-click-modal="!newFolderPosting"
+                   :close-on-press-escape="!newFolderPosting"
+                   :show-close="!newFolderPosting">
+            <template #header>
+                <h3>创建目录</h3>
+            </template>
+            <el-form :model="newFolderData">
+                <el-form-item label="目录名">
+                    <el-input v-model="newFolderData.name" placeholder="目录名"/>
+                </el-form-item>
+            </el-form>
+            <h-button v-disabled="!newFolderData.name.length||newFolderPosting"
+                      v-loading.inner="newFolderPosting"
+                      type="primary"
+                      @click="createFolder">
+                创建
+            </h-button>
+        </el-dialog>
+    </div>
 </template>
 
 <style lang="scss" scoped>
 @use '@yin-jinlong/h-ui/style/src/tools/fns' as *;
-@use '@/vars' as *;
 
 .tools {
   padding: 0.2em;
@@ -219,7 +219,6 @@
 }
 
 .contents {
-  padding-top: $top-bar-height;
   position: relative;
 }
 
@@ -290,10 +289,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
-}
-
-:deep(.el-scrollbar__view) {
-  height: calc(100% - #{$top-bar-height});
 }
 
 .dragger {

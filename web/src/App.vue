@@ -1,7 +1,18 @@
 <template>
     <top-bar/>
-    <router-view/>
+    <router-view v-slot="{ Component }">
+        <component :is="Component" class="padding"/>
+    </router-view>
 </template>
+
+<style lang="scss" scoped>
+@use '@/vars' as *;
+
+.padding {
+  padding-top: $top-bar-height;
+}
+
+</style>
 
 <script lang="ts" setup>
 
