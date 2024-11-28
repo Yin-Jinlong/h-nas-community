@@ -313,6 +313,12 @@
   transform: translateY(-50%);
 }
 
+:deep(.el-scrollbar__view) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 </style>
 <script lang="ts" setup>
 
