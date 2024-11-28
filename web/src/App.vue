@@ -17,8 +17,7 @@
 <script lang="ts" setup>
 
 import API from '@/utils/api'
-import {authToken, token, user} from '@/utils/globals'
-import {HMessage} from '@yin-jinlong/h-ui'
+import {user} from '@/utils/globals'
 
 onMounted(() => {
     let id = user.value?.uid
