@@ -94,20 +94,20 @@
         <el-scrollbar data-relative height="100%">
             <div data-relative
                  style="flex: 1"
-                 @dragenter="onDragStart"
-                 @dragleave="onDragCancel"
-                 @dragover="onDragOver"
-                 @drop="onDragEnd"
-                 @mouseenter="mouseIn=true"
-                 @mouseleave="mouseIn=false"
-                 @mouseout="onDragCancel">
+                 @dragenter="Dragger.onDragStart"
+                 @dragleave="Dragger.onDragCancel"
+                 @dragover="Dragger.onDragOver"
+                 @drop="Dragger.onDragEnd"
+                 @mouseenter="Dragger.mouseIn.value=true"
+                 @mouseleave="Dragger.mouseIn.value=false"
+                 @mouseout="Dragger.onDragCancel">
                 <div ref="draggerEle"
-                     :class="{'dragger':true,'drag':uploadIsDragging}"
+                     :class="{'dragger':true,'drag':Dragger.isDragging.value}"
                      data-absolute
                      data-fill-size
                      data-flex-center>
-                    <div v-if="uploadIsDragging">
-                        {{ uploadInfoText }}
+                    <div v-if="Dragger.isDragging.value">
+                        {{ Dragger.infoText }}
                     </div>
                 </div>
                 <el-empty v-if="nowIndex>-2&&!files.length"/>
@@ -332,6 +332,7 @@ import {uploadPublicFile, UploadStatus, UploadTasks} from '@/utils/upload-tasks'
 import {ArrowDown, Close, Refresh, Sort} from '@element-plus/icons-vue'
 import API from '@/utils/api'
 import {HMessage, HButton, HToolTip, HBadge, convertColor} from '@yin-jinlong/h-ui'
+import {Dragger} from './dragger'
 
 interface FileWrapper {
     index: number
@@ -356,11 +357,10 @@ const draggerEle = ref<HTMLDivElement>()
 const files = reactive<FileWrapper[]>([])
 const images = reactive<FileWrapper[]>([])
 const isPublic = ref(true)
-const mouseIn = ref(false)
 const nowIndex = ref(-2)
 const nowPaths = reactive<string[]>([])
-const uploadInfoText = ref('')
-const uploadIsDragging = ref(false)
+
+Dragger.upload = upload
 
 function onChangeRoot(cmdArr: boolean[]) {
     isPublic.value = cmdArr[0]
@@ -533,55 +533,6 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
     }
 }
 
-let lastCancelTimeout = 0
-
-function checkCancel() {
-    if (lastCancelTimeout) {
-        clearTimeout(lastCancelTimeout)
-        lastCancelTimeout = 0
-    }
-}
-
-function accept(e: DragEvent): boolean {
-    if (!e.dataTransfer!.types.includes('Files')) {
-        e.dataTransfer!.dropEffect = 'none'
-        uploadInfoText.value = '不支持的类型'
-        return false
-    }
-    e.dataTransfer!.dropEffect = 'copy'
-    return true
-}
-
-function onDragStart(e: DragEvent) {
-    if (mouseIn.value)
-        return
-    checkCancel()
-    if (!accept(e))
-        return
-    e.preventDefault()
-    uploadIsDragging.value = true
-    uploadInfoText.value = '松开开始上传'
-}
-
-function onDragOver(e: DragEvent) {
-    if (!accept(e) || !uploadIsDragging.value)
-        return
-    e.preventDefault()
-    checkCancel()
-}
-
-async function onDragEnd(e: DragEvent) {
-    if (!accept(e) || !uploadIsDragging.value)
-        return
-    e.preventDefault()
-    uploadIsDragging.value = false
-    await nextTick()
-    let files = e.dataTransfer!.files
-    console.log(files)
-    for (let i = 0; i < files.length; i++) {
-        upload(files[i])
-    }
-}
 
 function upload(file: File) {
     uploadPublicFile(nowPaths.join('/') + '/' + file.name, file, () => {
@@ -590,13 +541,6 @@ function upload(file: File) {
     HMessage.success('已添加任务')
 }
 
-function onDragCancel() {
-    checkCancel()
-    lastCancelTimeout = setTimeout(() => {
-        uploadIsDragging.value = false
-        lastCancelTimeout = 0
-    }, 100) as unknown as number
-}
 
 function onClick(e: MouseEvent, info: FileInfo) {
 
