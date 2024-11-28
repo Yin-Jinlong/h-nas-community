@@ -43,7 +43,7 @@ function renameFile() {
     if (renamePosting.value)
         return
     renamePosting.value = true
-    emits('renameFile', props.name, (close) => {
+    emits('renameFile', newName.value, (close) => {
         if (close)
             show.value = false
         renamePosting.value = false
