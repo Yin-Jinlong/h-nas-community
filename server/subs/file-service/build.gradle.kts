@@ -11,6 +11,8 @@ dependencies {
     implementation(fs())
     implementation(serviceCore())
     implementation(libs.webp.imageio)
+    implementation(libs.bytedeco.javacv)
+    implementation(libs.bytedeco.javacv.platform)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)

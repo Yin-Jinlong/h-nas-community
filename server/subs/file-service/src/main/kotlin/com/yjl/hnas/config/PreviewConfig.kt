@@ -1,10 +1,7 @@
 package com.yjl.hnas.config
 
 import com.yjl.hnas.option.PreviewOption
-import com.yjl.hnas.preview.FilePreviewGenerator
-import com.yjl.hnas.preview.ImagePreviewGenerator
-import com.yjl.hnas.preview.PreviewGeneratorFactory
-import com.yjl.hnas.preview.XMindPreviewGenerator
+import com.yjl.hnas.preview.*
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -38,6 +35,9 @@ class PreviewConfig {
 
     @Bean
     fun imagePreviewGenerator(): FilePreviewGenerator = ImagePreviewGenerator()
+
+    @Bean
+    fun videoPreviewGenerator(): FilePreviewGenerator = VideoPreviewGenerator()
 
     @Bean
     fun xMindPreviewGenerator(): FilePreviewGenerator = XMindPreviewGenerator()

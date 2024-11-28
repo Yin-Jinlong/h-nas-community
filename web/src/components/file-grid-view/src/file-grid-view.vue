@@ -7,7 +7,7 @@
             <el-icon v-if="(previewPath?.length??0)<1" size="100%">
                 <el-skeleton :loading="previewPath===undefined" animated data-fill-size>
                     <template #template>
-                        <el-skeleton-item :variant="info.mediaType?.startsWith('image')?'image':'rect'"
+                        <el-skeleton-item :variant="loadingVariant()"
                                           style="width: 8em;height: 8em"/>
                     </template>
                     <component :is="fileIcon"/>
@@ -81,6 +81,11 @@ const emits = defineEmits({
 })
 
 let clickTimeout = 0
+
+function loadingVariant() {
+    let mt = props.info.mediaType ?? ''
+    return /^(image)|(video)\/.*/.test(mt) ? 'image' : 'rect'
+}
 
 function onClick(e: MouseEvent) {
     if (clickTimeout) {

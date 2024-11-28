@@ -8,6 +8,7 @@ androidx-core-ktx = "1.13.1"
 androidx-lifecycle = "2.8.2"
 compose-plugin = "1.6.11"
 composeBom = "2024.10.00"
+javacv = "1.5.11"
 kotlin = "2.0.20"
 kotlinx-coroutines = "1.9.0"
 license = "0.9.8"
@@ -15,8 +16,8 @@ lifecycleRuntimeKtx = "2.8.6"
 mybatis-spring-boot = "3.0.3"
 spring = "3.3.4"
 spring-boot-apiStarter = "0.3.5"
-spring-core = "6.1.13"
 spring-cloud = "4.1.3"
+spring-core = "6.1.13"
 spring-dependency-management = "1.1.6"
 spring-starter-data-jpa = "3.3.5"
 tika = "3.0.0"
@@ -34,6 +35,8 @@ androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+bytedeco-javacv = { module = "org.bytedeco:javacv", version.ref = "javacv" }
+bytedeco-javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
