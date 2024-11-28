@@ -5,7 +5,7 @@
         <div class="tools" data-flex>
             <div style="flex: 1">
                 <h-tool-tip>
-                    <h-button v-disabled="!user" type="primary" @click="showNewFolderDialog = true">
+                    <h-button v-disabled="!user" type="primary" @click="shows.newFolderDialog = true">
                         创建目录
                     </h-button>
                     <template #tip>
@@ -140,10 +140,10 @@
                     </div>
                 </div>
                 <file-info-dialog v-if="activeFile"
-                                  v-model="showFileInfoDialog"
+                                  v-model="shows.fileInfoDialog"
                                   v-model:preview="activeFile.preview"
                                   :info="activeFile?.info"/>
-                <el-dialog v-model="showCountDialog" width="max-content">
+                <el-dialog v-model="shows.countDialog" width="max-content">
                     <template #header>
                         {{ subPath(nowPaths, activeFile?.info?.name ?? '') }}
                     </template>
@@ -162,7 +162,7 @@
                         </tr>
                     </table>
                 </el-dialog>
-                <el-dialog v-model="showRenameDialog"
+                <el-dialog v-model="shows.renameDialog"
                            :close-on-click-modal="!renamePosting"
                            :close-on-press-escape="!renamePosting"
                            :show-close="!renamePosting">
@@ -178,7 +178,7 @@
                     </template>
                 </el-dialog>
                 <image-viewer
-                        v-model="showImageViewer"
+                        v-model="shows.imageViewer"
                         :count="images.length"
                         :index="nowIndex"
                         :on-get="getNow"
@@ -188,7 +188,7 @@
                         :on-prev="getPrev"/>
             </div>
         </el-scrollbar>
-        <el-dialog v-model="showNewFolderDialog"
+        <el-dialog v-model="shows.newFolderDialog"
                    :close-on-click-modal="!newFolderPosting"
                    :close-on-press-escape="!newFolderPosting"
                    :show-close="!newFolderPosting">
@@ -385,16 +385,20 @@ interface FileWrapper {
 const route = useRoute()
 const router = useRouter()
 
+const shows = reactive({
+    countDialog: false,
+    imageViewer: false,
+    fileInfoDialog: false,
+    renameDialog: false,
+    newFolderDialog: false,
+})
+
 const nowIndex = ref(-2)
 const isPublic = ref(true)
-const showImageViewer = ref(false)
 const uploadIsDragging = ref(false)
 const uploadInfoText = ref('')
 const nowPaths = reactive<string[]>([])
 const files = reactive<FileWrapper[]>([])
-const showFileInfoDialog = ref(false)
-const showCountDialog = ref(false)
-const showRenameDialog = ref(false)
 const renamePosting = ref(false)
 const images = reactive<FileWrapper[]>([])
 const newName = ref('')
@@ -403,7 +407,6 @@ const draggerEle = ref<HTMLDivElement>()
 const mouseIn = ref(false)
 const dirChildrenCount = ref<FolderChildrenCount>()
 const loadingChildrenCount = ref<boolean>(false)
-const showNewFolderDialog = ref(false)
 const newFolderPosting = ref(false)
 const newFolderData = reactive({
     name: '',
@@ -428,7 +431,7 @@ function createFolder() {
     newFolderPosting.value = true
     newFolder(newFolderData.name, (close) => {
         if (close)
-            showNewFolderDialog.value = false
+            shows.newFolderDialog = false
         newFolderPosting.value = false
     })
 }
@@ -451,7 +454,7 @@ function enterFolder(name: string) {
 function showPreview(f: FileWrapper) {
     if (f.previewIndex !== undefined) {
         nowIndex.value = f.previewIndex
-        showImageViewer.value = true
+        shows.imageViewer = true
     }
 }
 
@@ -579,7 +582,7 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
     switch (cmd) {
         case 'rename':
             newName.value = ''
-            showRenameDialog.value = true
+            shows.renameDialog = true
             renamePosting.value = false
             break
         case 'del':
@@ -591,10 +594,10 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
             })
             break
         case 'info':
-            showFileInfoDialog.value = true
+            shows.fileInfoDialog = true
             break
         case 'count':
-            showCountDialog.value = true
+            shows.countDialog = true
             loadingChildrenCount.value = true
             dirChildrenCount.value = undefined
             API.getDirChildrenCount(subPath(nowPaths, f.info.name)).then(res => {
@@ -687,7 +690,7 @@ function renameFile() {
     renamePosting.value = true
     API.renamePublic(subPath(nowPaths, activeFile.value!.info.name), newName.value).then(res => {
         if (res) {
-            showRenameDialog.value = false
+            shows.renameDialog = false
             HMessage.success('重命名成功')
 
             activeFile.value!.info.name = newName.value
