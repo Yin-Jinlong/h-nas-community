@@ -17,11 +17,15 @@ open class ImagePreviewGenerator : FilePreviewGenerator(
         val INSTANCE = ImagePreviewGenerator()
     }
 
-    override fun generate(input: InputStream, maxSize: Int): BufferedImage {
-        val img = ImageIO.read(input)
+    fun gen(img: BufferedImage, maxSize: Int): BufferedImage {
         val size = getSize(img, maxSize)
         val res = BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB)
         res.graphics.drawImage(img, 0, 0, size.width, size.height, null)
         return res
     }
+
+    override fun generate(input: InputStream, maxSize: Int): BufferedImage {
+        return gen(ImageIO.read(input), maxSize)
+    }
+
 }
