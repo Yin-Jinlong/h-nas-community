@@ -23,6 +23,11 @@ html, body {
   width: 100%;
 }
 
+#app-root {
+  height: 100%;
+  width: 100%;
+}
+
 .bg-dot {
   backdrop-filter: saturate(50%) blur(3px);
   background-image: radial-gradient(transparent 1px, get-css(color-background, simple) 1px);
