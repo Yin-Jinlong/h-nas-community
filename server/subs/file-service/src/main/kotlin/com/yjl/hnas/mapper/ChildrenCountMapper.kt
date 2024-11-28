@@ -21,7 +21,7 @@ interface ChildrenCountMapper {
     @Select("select fid, sub_count, subs_count from children_count where fid = #{fid}")
     fun selectByFid(fid: FileId): ChildrenCount?
 
-    @Select("select * from children_count where fid = #{fid} for update")
+    @Select("select fid, sub_count, subs_count from children_count where fid = #{fid} for update")
     fun selectByFidLock(fid: FileId): ChildrenCount?
 
     //******//
@@ -34,6 +34,9 @@ interface ChildrenCountMapper {
     //******//
     //  改  //
     //******//
+
+    @Update("update children_count set fid = #{newId} where fid = #{fid}")
+    fun updateId(fid: FileId, newId: FileId): Int
 
     @Update("update children_count set sub_count = #{subCount}, subs_count = #{subsCount} where fid = #{fid}")
     fun updateCount(fid: FileId, subCount: Int, subsCount: Int): Int

@@ -9,7 +9,6 @@ import com.yjl.hnas.fs.attr.FileAttributes
 import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
-import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.del
@@ -38,7 +37,6 @@ class VirtualFileServiceImpl(
     val virtualFileMapper: VirtualFileMapper,
     val fileMappingMapper: FileMappingMapper,
     val childrenCountMapper: ChildrenCountMapper,
-    private val previewGeneratorFactory: PreviewGeneratorFactory,
 ) : VirtualFileService {
 
     private lateinit var fs: VirtualFilesystem
@@ -271,18 +269,23 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun rename(path: VirtualPath, name: String) {
-        val vf = virtualFileMapper.selectById(path.id)
+        val oldId = path.id
+        val vf = virtualFileMapper.selectById(oldId)
             ?: throw NoSuchFileException(path.fullPath)
         val new = path.parent.resolve(name)
+        val newId = new.id
         val time = System.currentTimeMillis().timestamp
         virtualFileMapper.insert(
             vf.copy(
-                fid = new.id,
+                fid = newId,
                 name = name,
                 updateTime = time,
             )
         )
         virtualFileMapper.deleteById(vf.fid)
+        val cc = childrenCountMapper.selectByFidLock(oldId)
+            ?: throw IllegalStateException("children_count 不存在目录：$oldId")
+        childrenCountMapper.updateId(cc.fid, newId)
     }
 
     override fun getFolderChildrenCount(path: VirtualPath): ChildrenCount {
