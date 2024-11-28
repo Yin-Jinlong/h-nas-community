@@ -277,7 +277,7 @@ function onChangeRoot(cmdArr: boolean[]) {
 
 function toPath(i: number) {
     router.push({
-        path: '/' + nowPaths.slice(0, i + 1).join('/')
+        path: '/files/' + nowPaths.slice(0, i + 1).join('/')
     })
 }
 

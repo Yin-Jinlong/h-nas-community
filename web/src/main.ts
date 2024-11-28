@@ -9,10 +9,18 @@ let router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
-            path: '/:path(.*)*',
-            alias: ['/'],
+            path: '/play',
+            component: () => import('@/pages/play')
+        },
+        {
+            path: '/',
+            redirect: '/files'
+        },
+        {
+            path: '/files/:path(.*)*',
             component: () => import('@/pages/home')
-        }
+        },
+
     ]
 })
 
