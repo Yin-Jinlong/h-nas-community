@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     compileOnly(commomData())
+    compileOnly(entity())
 
     testImplementation(entity())
     testImplementation(kotlin("test"))

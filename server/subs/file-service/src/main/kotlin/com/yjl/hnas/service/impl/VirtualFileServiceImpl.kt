@@ -2,9 +2,9 @@ package com.yjl.hnas.service.impl
 
 import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.FileRange
-import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.*
 import com.yjl.hnas.error.ErrorCode
+import com.yjl.hnas.fs.VirtualFileAttributes
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualFilesystem
 import com.yjl.hnas.fs.VirtualPath
@@ -367,12 +367,17 @@ class VirtualFileServiceImpl(
         return null
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <A : BasicFileAttributes> readAttributes(
         path: VirtualPath,
         type: Class<A>,
         options: Set<LinkOption>
     ): A {
-        TODO("Not yet implemented")
+        if (type != BasicFileAttributes::class.java && type != VirtualFileAttributes::class.java)
+            throw UnsupportedOperationException("unsupported type $type")
+        val vf = virtualFileMapper.selectById(path.id)
+            ?: throw NoSuchFileException(path.fullPath)
+        return VirtualFileAttributes(vf) as A
     }
 
     override fun readAttributes(
