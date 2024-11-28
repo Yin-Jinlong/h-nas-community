@@ -91,7 +91,6 @@
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-
         <el-scrollbar data-relative height="100%">
             <div data-relative
                  style="flex: 1"
@@ -139,74 +138,24 @@
                         </div>
                     </div>
                 </div>
-                <file-info-dialog v-if="activeFile"
-                                  v-model="shows.fileInfoDialog"
-                                  v-model:preview="activeFile.preview"
-                                  :info="activeFile?.info"/>
-                <el-dialog v-model="shows.countDialog" width="max-content">
-                    <template #header>
-                        {{ subPath(nowPaths, activeFile?.info?.name ?? '') }}
-                    </template>
-                    <table v-loading="loadingChildrenCount" data-relative>
-                        <tr>
-                            <td><b>当前目录下：</b></td>
-                            <td>
-                                {{ dirChildrenCount?.subCount ?? '?' }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>包含子目录：</b></td>
-                            <td>
-                                {{ dirChildrenCount?.subsCount ?? '?' }}
-                            </td>
-                        </tr>
-                    </table>
-                </el-dialog>
-                <el-dialog v-model="shows.renameDialog"
-                           :close-on-click-modal="!renamePosting"
-                           :close-on-press-escape="!renamePosting"
-                           :show-close="!renamePosting">
-                    <template #header>
-                        {{ activeFile?.info?.name }}
-                    </template>
-                    <template #default>
-                        <el-input v-model="newName" placeholder="重命名为"/>
-                        <div style="margin-top: 0.5em"/>
-                        <h-button v-disabled="!newName.length" data-fill-width type="primary" @click="renameFile">
-                            <span>提交</span>
-                        </h-button>
-                    </template>
-                </el-dialog>
-                <image-viewer
-                        v-model="shows.imageViewer"
-                        :count="images.length"
-                        :index="nowIndex"
-                        :on-get="getNow"
-                        :on-get-raw="getRaw"
-                        :on-get-raw-size="getRawSize"
-                        :on-next="getNext"
-                        :on-prev="getPrev"/>
             </div>
         </el-scrollbar>
-        <el-dialog v-model="shows.newFolderDialog"
-                   :close-on-click-modal="!newFolderPosting"
-                   :close-on-press-escape="!newFolderPosting"
-                   :show-close="!newFolderPosting">
-            <template #header>
-                <h3>创建目录</h3>
-            </template>
-            <el-form :model="newFolderData">
-                <el-form-item label="目录名">
-                    <el-input v-model="newFolderData.name" placeholder="目录名"/>
-                </el-form-item>
-            </el-form>
-            <h-button v-disabled="!newFolderData.name.length||newFolderPosting"
-                      v-loading.inner="newFolderPosting"
-                      type="primary"
-                      @click="createFolder">
-                创建
-            </h-button>
-        </el-dialog>
+        <image-viewer
+                v-model="shows.imageViewer"
+                :count="images.length"
+                :index="nowIndex"
+                :on-get="getNow"
+                :on-get-raw="getRaw"
+                :on-get-raw-size="getRawSize"
+                :on-next="getNext"
+                :on-prev="getPrev"/>
+        <file-info-dialog v-if="activeFile"
+                          v-model="shows.fileInfoDialog"
+                          v-model:preview="activeFile.preview"
+                          :info="activeFile?.info"/>
+        <count-dialog v-model="shows.countDialog" :path="subPath(nowPaths,activeFile?.info?.name??'')"/>
+        <rename-dialog v-model="shows.renameDialog" :name="activeFile?.info?.name ?? ''" @rename-file="renameFile"/>
+        <new-folder-dialog v-model="shows.newFolderDialog" @new-folder="newFolder"/>
     </div>
 </template>
 
@@ -368,6 +317,9 @@
 <script lang="ts" setup>
 
 import {FileGridCommand, FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
+import CountDialog from './count-dialog.vue'
+import NewFolderDialog from './new-folder-dialog.vue'
+import RenameDialog from './rename-dialog.vue'
 import {user} from '@/utils/globals'
 import {subPath} from '@/utils/path'
 import {uploadPublicFile, UploadStatus, UploadTasks} from '@/utils/upload-tasks'
@@ -393,25 +345,16 @@ const shows = reactive({
     newFolderDialog: false,
 })
 
-const nowIndex = ref(-2)
-const isPublic = ref(true)
-const uploadIsDragging = ref(false)
-const uploadInfoText = ref('')
-const nowPaths = reactive<string[]>([])
-const files = reactive<FileWrapper[]>([])
-const renamePosting = ref(false)
-const images = reactive<FileWrapper[]>([])
-const newName = ref('')
 const activeFile = ref<FileWrapper>()
 const draggerEle = ref<HTMLDivElement>()
+const files = reactive<FileWrapper[]>([])
+const images = reactive<FileWrapper[]>([])
+const isPublic = ref(true)
 const mouseIn = ref(false)
-const dirChildrenCount = ref<FolderChildrenCount>()
-const loadingChildrenCount = ref<boolean>(false)
-const newFolderPosting = ref(false)
-const newFolderData = reactive({
-    name: '',
-})
-
+const nowIndex = ref(-2)
+const nowPaths = reactive<string[]>([])
+const uploadInfoText = ref('')
+const uploadIsDragging = ref(false)
 
 function onChangeRoot(cmdArr: boolean[]) {
     isPublic.value = cmdArr[0]
@@ -422,18 +365,6 @@ function calcBg(status: UploadStatus) {
     return status == UploadStatus.Error ?
         convertColor('danger', '2') :
         convertColor('success', '2')
-}
-
-
-function createFolder() {
-    if (newFolderPosting.value)
-        return
-    newFolderPosting.value = true
-    newFolder(newFolderData.name, (close) => {
-        if (close)
-            shows.newFolderDialog = false
-        newFolderPosting.value = false
-    })
 }
 
 function removeTask(i: number) {
@@ -573,17 +504,11 @@ function newFolder(name: string, ok: (close: boolean) => void) {
     })
 }
 
-function onUploaded() {
-    update()
-}
-
 function onCommand(cmd: FileGridCommand, f: FileWrapper) {
     activeFile.value = f
     switch (cmd) {
         case 'rename':
-            newName.value = ''
             shows.renameDialog = true
-            renamePosting.value = false
             break
         case 'del':
             API.deletePublicFile(subPath(nowPaths, f.info.name)).then(res => {
@@ -598,14 +523,6 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
             break
         case 'count':
             shows.countDialog = true
-            loadingChildrenCount.value = true
-            dirChildrenCount.value = undefined
-            API.getDirChildrenCount(subPath(nowPaths, f.info.name)).then(res => {
-                if (!res)
-                    return
-                dirChildrenCount.value = res
-                loadingChildrenCount.value = false
-            })
             break
     }
 }
@@ -684,19 +601,17 @@ function onDblClick(e: MouseEvent, info: FileInfo) {
         enterFolder(info.name)
 }
 
-function renameFile() {
-    if (renamePosting.value)
-        return
-    renamePosting.value = true
-    API.renamePublic(subPath(nowPaths, activeFile.value!.info.name), newName.value).then(res => {
+function renameFile(name: string, ok: (close: boolean) => void) {
+    let success = false
+    API.renamePublic(subPath(nowPaths, activeFile.value!.info.name), name).then(res => {
         if (res) {
             shows.renameDialog = false
             HMessage.success('重命名成功')
-
-            activeFile.value!.info.name = newName.value
+            activeFile.value!.info.name = name
+            success = true
         }
     }).finally(() => {
-        renamePosting.value = false
+        ok(success)
     })
 }
 
