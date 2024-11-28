@@ -4,10 +4,7 @@ import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.entity.*
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.VirtualFileAttributes
-import com.yjl.hnas.fs.VirtualFileSystemProvider
-import com.yjl.hnas.fs.VirtualFilesystem
-import com.yjl.hnas.fs.VirtualPath
+import com.yjl.hnas.fs.*
 import com.yjl.hnas.fs.attr.FileAttributes
 import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.FileMappingMapper
@@ -71,6 +68,11 @@ class VirtualFileServiceImpl(
 
     override fun get(path: VirtualPath): IVirtualFile? {
         return virtualFileMapper.selectById(path.id)
+    }
+
+    fun getOrThrow(path: VirtualPath): IVirtualFile {
+        return virtualFileMapper.selectById(path.id)
+            ?: throw NoSuchFileException(path.fullPath)
     }
 
     override fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile> {
@@ -349,7 +351,7 @@ class VirtualFileServiceImpl(
     }
 
     override fun getFileStore(path: VirtualPath): FileStore {
-        TODO("Not yet implemented")
+        return VirtualFileStore(getOrThrow(path.root))
     }
 
     override fun checkAccess(path: VirtualPath, modes: Set<AccessMode>) {
@@ -375,9 +377,7 @@ class VirtualFileServiceImpl(
     ): A {
         if (type != BasicFileAttributes::class.java && type != VirtualFileAttributes::class.java)
             throw UnsupportedOperationException("unsupported type $type")
-        val vf = virtualFileMapper.selectById(path.id)
-            ?: throw NoSuchFileException(path.fullPath)
-        return VirtualFileAttributes(vf) as A
+        return VirtualFileAttributes(getOrThrow(path)) as A
     }
 
     override fun readAttributes(
