@@ -59,7 +59,12 @@ class VirtualFileServiceImpl(
         options: MutableSet<out OpenOption>,
         attrs: Map<String, FileAttribute<*>>
     ): SeekableByteChannel {
-        TODO("Not yet implemented")
+        val vf = getOrThrow(path)
+        if (vf.hash == null)
+            throw IllegalArgumentException("非文件: $path")
+        val fm = fileMappingMapper.selectByHash(vf.hash!!)
+            ?: throw IllegalStateException("文件映射不存在: $path")
+        return Files.newByteChannel(DataHelper.dataFile(fm.dataPath).toPath())
     }
 
     override fun genId(path: VirtualPath): Hash {
@@ -343,7 +348,11 @@ class VirtualFileServiceImpl(
     }
 
     override fun isSameFile(path: VirtualPath, path2: VirtualPath): Boolean {
-        TODO("Not yet implemented")
+        val f1 = get(path) ?: return false
+        val f2 = get(path2) ?: return false
+        return if (f1.isFolder() && f2.isFolder())
+            f1.fid == f2.fid
+        else f1.hash == f2.hash
     }
 
     override fun isHidden(path: VirtualPath): Boolean {
