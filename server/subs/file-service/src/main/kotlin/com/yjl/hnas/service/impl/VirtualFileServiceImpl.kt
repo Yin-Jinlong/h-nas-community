@@ -151,7 +151,7 @@ class VirtualFileServiceImpl(
                     dataPath = dataPath,
                     type = type.type,
                     subType = type.subtype,
-                    preview = previewGeneratorFactory.canPreview(type),
+                    preview = true,
                     size = size,
                 )
             )
