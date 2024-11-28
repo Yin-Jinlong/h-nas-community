@@ -8,10 +8,9 @@ import com.yjl.hnas.option.PreviewOption
 import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
+import com.yjl.hnas.task.BackgroundTasks
 import com.yjl.hnas.utils.del
 import io.github.yinjinlong.spring.boot.util.getLogger
-import jakarta.annotation.PreDestroy
-import kotlinx.coroutines.*
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import java.io.File
 import java.io.FileNotFoundException
-import java.util.*
 
 private typealias CacheFileFn = (String) -> File
 
@@ -36,10 +34,6 @@ class FileMappingServiceImpl(
 ) : FileMappingService {
 
     private val logger = getLogger()
-
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    val genPreviewTasks = Vector<Hash>()
 
     val transactionDefinition = DefaultTransactionDefinition().apply {
         propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
@@ -143,18 +137,11 @@ class FileMappingServiceImpl(
                     mkdirs()
             }
         }
-        return@with synchronized(genPreviewTasks) {
-            if (!genPreviewTasks.contains(hash)) {
-                genPreviewTasks += hash
-                scope.launch {
-                    genPreview(cache, hash, dataPath, mediaType, maxSize, quality)
-                    synchronized(genPreviewTasks) {
-                        genPreviewTasks -= hash
-                    }
-                }
-            }
-            ""
+
+        BackgroundTasks.run(hash) {
+            genPreview(cache, hash, dataPath, mediaType, maxSize, quality)
         }
+        return@with ""
     }
 
 
@@ -173,8 +160,4 @@ class FileMappingServiceImpl(
         previewOption.previewQuality
     )
 
-    @PreDestroy
-    fun destroy() {
-        scope.coroutineContext.cancelChildren()
-    }
 }
