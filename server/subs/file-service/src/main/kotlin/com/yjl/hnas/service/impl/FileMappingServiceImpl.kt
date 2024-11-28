@@ -35,6 +35,8 @@ class FileMappingServiceImpl(
 
     private val logger = getLogger()
 
+    private val previewTypeSet = setOf("image", "video")
+
     val transactionDefinition = DefaultTransactionDefinition().apply {
         propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
     }
@@ -153,10 +155,10 @@ class FileMappingServiceImpl(
     )
 
     @Transactional
-    override fun getPreview(mapping: IFileMapping): String? = if (mapping.type != "image") null else genPreview(
+    override fun getPreview(mapping: IFileMapping): String? = if (mapping.type in previewTypeSet) genPreview(
         mapping, DataHelper::previewFile,
         previewOption.previewSize,
         previewOption.previewQuality
-    )
+    ) else null
 
 }
