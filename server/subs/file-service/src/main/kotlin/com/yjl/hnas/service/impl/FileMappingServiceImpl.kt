@@ -82,9 +82,7 @@ class FileMappingServiceImpl(
         val file = DataHelper.dataFile(dataPath)
         try {
             val data =
-                previewGeneratorFactory.getPreview(file.inputStream(), mediaType, maxSize, quality) ?: return let {
-                    updatePreview(hash, true)
-                }
+                previewGeneratorFactory.getPreview(file.inputStream(), mediaType, maxSize, quality) ?: return
             cache.parentFile.apply {
                 if (!exists())
                     mkdirs()
@@ -95,6 +93,7 @@ class FileMappingServiceImpl(
                 updatePreview(hash, true)
             }.onFailure {
                 cache.del()
+                throw it
             }
         } catch (e: PreviewException) {
             updatePreview(hash, false)
