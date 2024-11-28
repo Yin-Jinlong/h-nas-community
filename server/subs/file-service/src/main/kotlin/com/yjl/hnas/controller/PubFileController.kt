@@ -174,6 +174,8 @@ class PubFileController(
     ) = withCatch {
         val src = getPubPath(path)
         val dts = src.parent.resolve(name)
+        if (src.name == dts.name)
+            return@withCatch
         virtualFileService.rename(src, dts.name)
     }
 
