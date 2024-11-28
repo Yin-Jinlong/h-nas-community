@@ -314,8 +314,7 @@ class VirtualFileServiceImpl(
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun delete(path: VirtualPath) {
         val parent = path.parent
-        val vf = virtualFileMapper.selectById(path.id)
-            ?: throw NoSuchFileException(path.fullPath)
+        val vf = getOrThrow(path)
         val hash = vf.hash
         if (hash == null) {
             if (virtualFileMapper.hasChildren(vf.fid))
@@ -343,8 +342,10 @@ class VirtualFileServiceImpl(
         TODO("Not yet implemented")
     }
 
+    @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun move(source: VirtualPath, target: VirtualPath, options: Set<CopyOption>) {
-        TODO("Not yet implemented")
+        copy(source, target, options)
+        delete(source)
     }
 
     override fun isSameFile(path: VirtualPath, path2: VirtualPath): Boolean {
