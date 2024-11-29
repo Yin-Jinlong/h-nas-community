@@ -7,6 +7,9 @@
         </template>
         <template #dropdown>
             <el-dropdown-menu>
+                <el-dropdown-item v-if="canPlay" :command="['play']" :icon="VideoPlay">
+                    播放
+                </el-dropdown-item>
                 <el-dropdown-item :command="['rename']" :icon="Edit">
                     重命名
                 </el-dropdown-item>
@@ -30,10 +33,10 @@
 
 <script lang="ts" setup>
 import {FileGridCommand, FileGridOptionsProps} from './props'
-import {Delete, Edit, InfoFilled, MoreFilled} from '@element-plus/icons-vue'
+import {Delete, Edit, InfoFilled, MoreFilled, VideoPlay} from '@element-plus/icons-vue'
 
 const props = defineProps<FileGridOptionsProps>()
-
+const canPlay = computed(() => /^(video)\/.*/.test(props.mediaType ?? ''))
 const emits = defineEmits({
     'command': (cmd: FileGridCommand) => void {}
 })

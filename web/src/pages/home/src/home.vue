@@ -134,6 +134,7 @@
                         <div class="file-op-menu">
                             <file-grid-options
                                     :dir="f.info.fileType==='FOLDER'"
+                                    :media-type="f.info.mediaType"
                                     @command="onCommand($event,f)"/>
                         </div>
                     </div>
@@ -513,6 +514,14 @@ function newFolder(name: string, ok: (close: boolean) => void) {
 function onCommand(cmd: FileGridCommand, f: FileWrapper) {
     activeFile.value = f
     switch (cmd) {
+        case 'play':
+            router.push({
+                path: '/play',
+                query: {
+                    path: subPath(f.info.dir, f.info.name)
+                }
+            })
+            break
         case 'rename':
             shows.renameDialog = true
             break
