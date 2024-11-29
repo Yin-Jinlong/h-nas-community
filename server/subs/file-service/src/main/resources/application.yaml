@@ -3,3 +3,5 @@ spring:
     name: file-service
 server:
   port: 8002
+  jetty:
+    connection-idle-timeout: 10s

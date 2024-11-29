@@ -13,7 +13,10 @@ dependencies {
     api(token())
     api(utils())
 
-    api(libs.spring.boot.api.starter)
+    api(libs.spring.boot.api.starter) {
+        exclude("org.springframework.boot", "spring-boot-starter-undertow")
+    }
+    api("org.springframework.boot:spring-boot-starter-jetty:3.3.4")
     api(libs.spring.cloud.starter.netflix.eureka.client)
     api(libs.spring.boot.starter.actuator)
     api(libs.spring.boot.starter.data.jpa)
