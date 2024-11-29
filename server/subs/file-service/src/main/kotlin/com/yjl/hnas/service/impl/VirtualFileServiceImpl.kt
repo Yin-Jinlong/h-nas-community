@@ -27,6 +27,7 @@ import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.FileAttributeView
+import java.sql.Timestamp
 import kotlin.io.path.name
 
 /**
@@ -95,14 +96,22 @@ class VirtualFileServiceImpl(
         return DataHelper.dataFile(dataPath(type, hash))
     }
 
-    private tailrec fun updateParentSize(path: VirtualPath, ds: Long) {
+    private tailrec fun updateParent(path: VirtualPath, op: VirtualFile.() -> Unit) {
         val vf = virtualFileMapper.selectByIdLock(path.id)
             ?: throw IllegalStateException("数据库文件不存在: $path")
-        virtualFileMapper.updateSize(vf.fid, vf.size + ds)
+        vf.op()
         val p = path.parent
         if (p same path)
             return
-        updateParentSize(p, ds)
+        updateParent(p, op)
+    }
+
+    private fun updateParentSize(path: VirtualPath, ds: Long) = updateParent(path) {
+        virtualFileMapper.updateSize(fid, size + ds)
+    }
+
+    private fun updateParentUpdateTime(path: VirtualPath, time: Timestamp) = updateParent(path) {
+        virtualFileMapper.updateUpdateTime(fid, time)
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
@@ -135,6 +144,7 @@ class VirtualFileServiceImpl(
             )
         )
         updateParentSize(parent, size)
+        updateParentUpdateTime(parent, time)
         updateCount(parent, 1)
 
         if (fileMappingMapper.selectByHash(hash) == null) {
@@ -264,6 +274,7 @@ class VirtualFileServiceImpl(
             )
         )
         childrenCountMapper.insert(fid)
+        updateParentUpdateTime(p, time)
         updateCount(p, 1)
     }
 
@@ -318,6 +329,7 @@ class VirtualFileServiceImpl(
     override fun delete(path: VirtualPath) {
         val parent = path.parent
         val vf = getOrThrow(path)
+        val time = System.currentTimeMillis().timestamp
         val hash = vf.hash
         if (hash == null) {
             if (virtualFileMapper.hasChildren(vf.fid))
@@ -325,11 +337,13 @@ class VirtualFileServiceImpl(
             virtualFileMapper.deleteById(vf.fid)
             childrenCountMapper.deleteById(vf.fid)
             updateCount(parent, -1)
+            updateParentUpdateTime(parent, time)
             return
         }
         val count = virtualFileMapper.countHash(hash)
         virtualFileMapper.deleteById(vf.fid)
         updateParentSize(parent, -vf.size)
+        updateParentUpdateTime(parent, time)
         updateCount(parent, -1)
         if (count == 1) {
             val fm = fileMappingMapper.selectByHash(hash)

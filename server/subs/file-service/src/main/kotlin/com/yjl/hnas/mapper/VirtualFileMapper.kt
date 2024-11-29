@@ -4,6 +4,7 @@ import com.yjl.hnas.entity.FileId
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.VirtualFile
 import org.apache.ibatis.annotations.*
+import java.sql.Timestamp
 
 /**
  * @author YJL
@@ -67,6 +68,9 @@ VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{mediaType}, #{c
 
     @Update("update virtual_file set size = #{size} where fid = #{fid}")
     fun updateSize(fid: FileId, size: Long): Int
+
+    @Update("update virtual_file set update_time = #{time} where fid = #{fid}")
+    fun updateUpdateTime(fid: FileId, time: Timestamp): Int
 
     //******//
     //  删  //
