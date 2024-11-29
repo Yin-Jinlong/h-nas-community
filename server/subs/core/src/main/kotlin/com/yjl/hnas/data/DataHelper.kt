@@ -1,40 +1,61 @@
 package com.yjl.hnas.data
 
 import com.yjl.hnas.entity.Uid
+import com.yjl.hnas.option.DataOption
 import java.io.File
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
+import java.nio.file.Path
 
 /**
  * @author YJL
  */
 object DataHelper {
-    private var DataRoot = "data"
-    private var DataDir = "data/data"
-    private var ThumbnailDir = "cache/缩略图"
-    private var PreviewDir = "cache/预览图"
-    private var AvatarDir = "data/avatar"
+
+    private val fs: FileSystem = FileSystems.getDefault()
+
+    private lateinit var DataRootPath: Path
+    private lateinit var CacheRootPath: Path
+    private lateinit var DataPath: Path
+    private lateinit var ThumbnailPath: Path
+    private lateinit var PreviewPath: Path
+    private lateinit var AvatarPath: Path
+
+    fun init(option: DataOption) {
+        DataRootPath = fs.getPath(option.dataRoot)
+        CacheRootPath = fs.getPath(option.cacheRoot)
+        DataPath = DataRootPath.resolve("data")
+        ThumbnailPath = CacheRootPath.resolve("缩略图")
+        PreviewPath = CacheRootPath.resolve("预览图")
+        AvatarPath = DataRootPath.resolve("avatar")
+    }
+
+    private fun Path.file(vararg paths: String) = resolve(
+        fs.getPath(paths.joinToString(""))
+    ).toFile()
 
     /**
      * 数据目录：data/..
      */
-    fun dataSub(path: String) = File(DataRoot, path)
+    fun dataSub(path: String): File = DataRootPath.file(path)
 
     /**
      * 数据文件：data/data
      */
-    fun dataFile(path: String) = File(DataDir, path)
+    fun dataFile(path: String): File = DataPath.file(path)
 
     /**
      * 缩略图：cache/缩略图/...
      */
-    fun thumbnailFile(dataPath: String): File = File(ThumbnailDir, "$dataPath.jpg")
+    fun thumbnailFile(dataPath: String): File = ThumbnailPath.file(dataPath, ".jpg")
 
     /**
      * 预览图：cache/预览图/...
      */
-    fun previewFile(dataPath: String): File = File(PreviewDir, "$dataPath.jpg")
+    fun previewFile(dataPath: String): File = PreviewPath.file(dataPath, ".jpg")
 
     /**
      * 头像：data/avatar/...
      */
-    fun avatarFile(uid: Uid): File = File(AvatarDir, "$uid.jpg")
+    fun avatarFile(uid: Uid): File = AvatarPath.file(uid.toString(), ".jpg")
 }
