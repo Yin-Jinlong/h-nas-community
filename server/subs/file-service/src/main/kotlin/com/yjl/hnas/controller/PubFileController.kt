@@ -11,12 +11,21 @@ import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.token.TokenType
 import com.yjl.hnas.utils.*
+import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
+import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.ServletInputStream
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpRange
+import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.io.File
+import java.io.IOException
+import java.io.RandomAccessFile
+import java.nio.ByteBuffer
 import java.nio.file.Files
 import kotlin.io.path.name
 
@@ -30,6 +39,8 @@ class PubFileController(
     val fileMappingService: FileMappingService,
     val virtualFileService: VirtualFileService
 ) : WithFS(virtualFileSystemProvider) {
+
+    val logger = getLogger()
 
     @GetMapping("preview/info")
     fun getFilePreview(path: String): FilePreview {
@@ -153,16 +164,57 @@ class PubFileController(
     }
 
     @GetMapping
-    fun getPublicFile(path: String): File {
+    @ResponseEmpty
+    fun getPublicFile(
+        path: String,
+        @RequestHeader(HttpHeaders.RANGE) rangeStr: String?,
+        resp: HttpServletResponse
+    ) {
         val pp = getPubPath(path)
         val vf = virtualFileService.get(pp) as VirtualFile?
             ?: throw ErrorCode.NO_SUCH_FILE.error
         val map = fileMappingService.getMapping(
             vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error
         ) ?: throw ErrorCode.NO_SUCH_FILE.error
-        return DataHelper.dataFile(map.dataPath).apply {
+
+        val file = DataHelper.dataFile(map.dataPath).apply {
             if (!exists())
                 throw ErrorCode.NO_SUCH_FILE.data(path)
+        }
+        val range = runCatching {
+            if (rangeStr.isNullOrEmpty()) null
+            else HttpRange.parseRanges(rangeStr).first()
+        }.onFailure {
+            throw ErrorCode.BAD_HEADER.data("range : $rangeStr")
+        }.getOrThrow()
+
+        val len = vf.size
+        val start = range?.getRangeStart(len) ?: 0
+        val end = kotlin.math.min(range?.getRangeEnd(len) ?: len, len)
+        val size = end - start + 1
+
+        resp.contentType = vf.mediaType
+        if (range != null)
+            resp.status = HttpStatus.PARTIAL_CONTENT.value()
+        resp.setContentLength(size.toInt())
+        resp.setHeader(HttpHeaders.CONTENT_RANGE, "bytes $start-$end/$len")
+
+        try {
+            RandomAccessFile(file, "r").use {
+                val out = resp.outputStream
+                val buf = ByteArray(8 * 1024)
+                it.seek(start)
+                var write = 0
+                while (write < size) {
+                    val lIn = it.read(buf)
+                    if (lIn <= 0)
+                        break
+                    out.write(buf, 0, lIn)
+                    write += lIn
+                }
+            }
+        } catch (ioe: IOException) {
+            logger.warning(ioe.message)
         }
     }
 
