@@ -9,6 +9,7 @@ androidx-lifecycle = "2.8.2"
 compose-plugin = "1.6.11"
 composeBom = "2024.10.00"
 javacv = "1.5.11"
+junitJupiter = "5.8.1"
 kotlin = "2.0.20"
 kotlinx-coroutines = "1.9.0"
 license = "0.9.8"
@@ -37,6 +38,7 @@ androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 bytedeco-javacv = { module = "org.bytedeco:javacv", version.ref = "javacv" }
 bytedeco-javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
