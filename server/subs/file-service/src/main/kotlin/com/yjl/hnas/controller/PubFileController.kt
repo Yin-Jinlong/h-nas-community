@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
-import java.nio.ByteBuffer
 import java.nio.file.Files
 import kotlin.io.path.name
 
@@ -163,6 +162,7 @@ class PubFileController(
         }
     }
 
+    @Async
     @GetMapping
     @ResponseEmpty
     fun getPublicFile(
