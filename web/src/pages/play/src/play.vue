@@ -53,6 +53,21 @@
                     <div class="width">
                         {{ videoInfo.duration }}
                     </div>
+                    <h-tool-tip place="top">
+                        <div class="width" style="color: white">
+                            {{ getBitrateName(nowStreamIndex) }}
+                        </div>
+                        <template #tip>
+                            <div class="menu">
+                                <div v-for="i in streams.length"
+                                     :data-now="(i-1)==nowStreamIndex?'':undefined"
+                                     class="menu-item"
+                                     @click="nowStreamIndex=i-1">
+                                    {{ getBitrateName(i - 1) }}({{ streams[i - 1].bitrate }}kbps)
+                                </div>
+                            </div>
+                        </template>
+                    </h-tool-tip>
                     <div class="width"
                          data-pointer
                          data-relative
@@ -309,6 +324,25 @@
 
 }
 
+.menu {
+
+}
+
+.menu-item {
+  color: white;
+  cursor: pointer;
+  padding: 0.4em 0;
+
+  &[data-now] {
+    color: get-css(color, primary-4);
+  }
+
+  &:hover {
+    color: get-css(color, primary);
+  }
+
+}
+
 </style>
 
 <script lang="ts" setup>
@@ -358,6 +392,8 @@ let fastSeekTimeout = 0
 let mouseInControlsTimeout = 0
 let rafId = 0
 const playerMsgs = reactive<Msg[]>([])
+const streams = reactive<HLSStreamInfo[]>([])
+const nowStreamIndex = ref(-1)
 
 function render() {
     let canvas = videoCanvasEle.value?.getContext('2d') as CanvasRenderingContext2D | undefined
@@ -386,6 +422,34 @@ function render() {
         cancelAnimationFrame(rafId)
         rafId = requestAnimationFrame(render)
     }
+}
+
+function getBitrateName(index: number) {
+    const NAMES = [{
+        name: '极速',
+        bitrate: 300,
+    }, {
+        name: '流畅',
+        bitrate: 500,
+    }, {
+        name: '高清',
+        bitrate: 1000,
+    }, {
+        name: '超清',
+        bitrate: 2000,
+    }, {
+        name: '蓝光',
+        bitrate: 5000,
+    }]
+    if (index < 0)
+        return '?'
+    let bitrate = streams[index].bitrate
+    if (index == 0)
+        return `原画`
+    let i = NAMES.findIndex(n => n.bitrate >= bitrate)
+    if (i < 0)
+        i = NAMES.length - 1
+    return `${NAMES[i].name}`
 }
 
 function to2(num: number) {
@@ -522,7 +586,9 @@ function onFullScreenChange() {
 }
 
 function resize() {
-    let ele = videoCanvasEle.value!!
+    let ele = videoCanvasEle.value
+    if (!ele)
+        return
     ele.width = ele.offsetWidth
     ele.height = ele.offsetHeight
     render()
@@ -678,9 +744,30 @@ watch(path, (nv) => {
     API.getPublicHLSInfo(nv).then(info => {
         if (!info)
             return
-        player?.src(API.publicHSLURL(info[0].path))
+        streams.length = 0
+        let max = 0
+        info.forEach((item, i) => {
+            streams.unshift(item)
+            if (item.bitrate > streams[max].bitrate)
+                max = i
+        })
+        nowStreamIndex.value = max
         console.log(info)
     })
+})
+
+watch(nowStreamIndex, nv => {
+    if (nv >= 0) {
+        let time = player?.currentTime()
+        player?.src(API.publicHSLURL(streams[nv].path))
+        if (time) {
+            player?.currentTime(time)
+            if (playing.value)
+                player?.play()
+        }
+    } else {
+        player?.src('')
+    }
 })
 
 watch(() => route.query.path, (nv) => {
