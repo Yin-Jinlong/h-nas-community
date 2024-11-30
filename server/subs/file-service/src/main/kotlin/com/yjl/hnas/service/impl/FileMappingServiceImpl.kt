@@ -1,8 +1,10 @@
 package com.yjl.hnas.service.impl
 
 import com.yjl.hnas.data.DataHelper
+import com.yjl.hnas.data.HLSStreamInfo
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
+import com.yjl.hnas.hls.HLSGenerator
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.option.PreviewOption
 import com.yjl.hnas.preview.PreviewException
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import java.io.File
 import java.io.FileNotFoundException
+import java.net.URLEncoder
 
 private typealias CacheFileFn = (String) -> File
 
@@ -161,4 +164,21 @@ class FileMappingServiceImpl(
         previewOption.previewQuality
     ) else null
 
+    override fun getVideoLiveStream(mapping: IFileMapping, hash: String): List<HLSStreamInfo> {
+        val index = DataHelper.hlsIndexFile(hash)
+        val prefix = URLEncoder.encode(hash, "UTF-8")
+        if (index.exists()) {
+            return index.useLines {
+                it.mapNotNull { line ->
+                    if (line.isBlank()) null
+                    else HLSStreamInfo(line.toInt(), "$prefix/$line/index.m3u8")
+                }.toList()
+            }
+        }
+        BackgroundTasks.run(mapping.hash) {
+            val videoFile = DataHelper.dataFile(mapping.dataPath)
+            HLSGenerator.generate(videoFile, 10.0, hash)
+        }
+        return listOf()
+    }
 }

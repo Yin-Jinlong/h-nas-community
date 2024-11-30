@@ -50,7 +50,14 @@ onMounted(() => {
 })
 
 watch(path, (nv) => {
-    player.src(API.publicFileURL(nv ?? ''))
+    if (!nv)
+        return
+    API.getPublicHLSInfo(nv).then(info => {
+        if (!info)
+            return
+        player.src(API.publicHSLURL(info[0].path))
+        console.log(info)
+    })
 })
 
 onUnmounted(() => {

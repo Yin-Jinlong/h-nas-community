@@ -14,6 +14,7 @@ import com.yjl.hnas.utils.*
 import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
 import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.ServletInputStream
+import jakarta.servlet.ServletOutputStream
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
 import org.springframework.http.HttpHeaders
@@ -160,6 +161,31 @@ class PubFileController(
             if (!exists())
                 throw ErrorCode.NO_SUCH_FILE.data(path)
         }
+    }
+
+    @GetMapping("video/stream/info")
+    fun getVideoStreamInfo(path: String): List<HLSStreamInfo>? {
+        val p = getPubPath(path)
+        val vf = virtualFileService.get(p) as VirtualFile?
+            ?: throw ErrorCode.NO_SUCH_FILE.error
+        if (vf.hash == null)
+            return null
+        val fm = fileMappingService.getMapping(vf.hash!!)
+            ?: throw IllegalStateException("no mapping: ${vf.hash}")
+        if (fm.type != "video")
+            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
+        return fileMappingService.getVideoLiveStream(fm, vf.hash!!.pathSafe)
+    }
+
+    @GetMapping("video/stream/{hash}/{rate}/{file}")
+    @ResponseEmpty
+    fun getVideoStream(
+        @PathVariable hash: String,
+        @PathVariable rate: String,
+        @PathVariable file: String,
+        out: ServletOutputStream,
+    ): File = withCatch {
+        DataHelper.tsFile(hash, rate, file)
     }
 
     @Async

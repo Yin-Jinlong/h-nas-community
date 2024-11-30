@@ -14,19 +14,23 @@ object DataHelper {
 
     private val fs: FileSystem = FileSystems.getDefault()
 
+    private lateinit var CachePath: String
     private lateinit var DataRootPath: Path
     private lateinit var CacheRootPath: Path
     private lateinit var DataPath: Path
     private lateinit var ThumbnailPath: Path
     private lateinit var PreviewPath: Path
+    private lateinit var HLSPath: Path
     private lateinit var AvatarPath: Path
 
     fun init(option: DataOption) {
+        CachePath = option.cacheRoot
         DataRootPath = fs.getPath(option.dataRoot)
         CacheRootPath = fs.getPath(option.cacheRoot)
         DataPath = DataRootPath.resolve("data")
         ThumbnailPath = CacheRootPath.resolve("缩略图")
         PreviewPath = CacheRootPath.resolve("预览图")
+        HLSPath = CacheRootPath.resolve("hls")
         AvatarPath = DataRootPath.resolve("avatar")
     }
 
@@ -53,6 +57,21 @@ object DataHelper {
      * 预览图：cache/预览图/...
      */
     fun previewFile(dataPath: String): File = PreviewPath.file(dataPath, ".jpg")
+
+    /**
+     * 流媒体：cache/hls/...
+     */
+    fun hlsPath(hash: String): String = "$CachePath/hls/$hash"
+
+    /**
+     * 流媒体：cache/hls/...
+     */
+    fun hlsIndexFile(hash: String): File = HLSPath.file(hash, "/index")
+
+    /**
+     * 流媒体：cache/hls/...
+     */
+    fun tsFile(hash: String, rate: String, i: String): File = HLSPath.file(hash, "/", rate, "/", i)
 
     /**
      * 头像：data/avatar/...

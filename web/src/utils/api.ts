@@ -117,6 +117,13 @@ async function getDirChildrenCount(dir: string) {
         .catch(catchError)
 }
 
+async function getPublicHLSInfo(path: string) {
+    return get<HLSStreamInfo[]>('api/file/public/video/stream/info', {
+        path: path
+    }).then(resp => resp.data)
+        .catch(catchError)
+}
+
 async function deletePublicFile(path: string) {
     return del<void>('api/file/public', {
         path: path
@@ -209,6 +216,10 @@ function publicPreviewURL(path: string) {
     return `api/file/public/preview?${qs.stringify({path})}`
 }
 
+function publicHSLURL(path: string) {
+    return `api/file/public/video/stream/${path}`
+}
+
 async function uploadPublic(path: string, hash: string, file: File, range: FileRange) {
     return new Promise<boolean>(async (resolve, reject) => {
         post<boolean>('api/file/public/upload', file.slice(range.start, range.end), {
@@ -251,6 +262,7 @@ const API = {
     login,
     tryLogin,
     logon,
+    getPublicHLSInfo,
     getPublicFiles,
     getDirChildrenCount,
     getPublicFilePreview,
@@ -260,6 +272,7 @@ const API = {
     publicFileURL,
     publicThumbnailURL,
     publicPreviewURL,
+    publicHSLURL,
     renamePublic
 }
 
