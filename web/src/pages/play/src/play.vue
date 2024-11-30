@@ -195,6 +195,16 @@
     flex: 0 0 auto;
   }
 
+  :deep(.el-icon) {
+    height: 1.2em;
+    width: 1.2em;
+
+    & > svg {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
 }
 
 .play-pause {
