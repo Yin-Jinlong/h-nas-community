@@ -1,9 +1,123 @@
 <template>
     <div class="player-box">
         <h3>{{ path }}</h3>
-        <div class="video-box" data-flex-center>
-            <video id="player" ref="videoEle" class="video-js">
-            </video>
+        <div ref="videoBoxEle"
+             :data-full-window="fullWindow?'':undefined"
+             class="video-box"
+             data-flex-center
+             data-relative
+             tabindex="0"
+             @keydown="onPlayerKeydown"
+             @keyup="onPlayerKeyup">
+            <canvas ref="videoCanvasEle"
+                    :style="`cursor: ${mouseInControls?'auto':'none'}`"
+                    data-fill-size
+                    @click="playPause"
+                    @dblclick="requestFullscreen(!fullscreen)"
+                    @mouseenter="showControls(true)"
+                    @mousemove="showControls(true)"
+                    @mouseout="delayControlsDismiss"
+                    @wheel="onPlayerWheel"/>
+            <div :style="`--p: ${videoInfo.progress*100}%;`"
+                 class="mini-progress"/>
+            <transition name="control-anim">
+                <div v-show="mouseInControls"
+                     class="bottom-controls"
+                     @mouseout="delayControlsDismiss"
+                     @mousemove.prevent="showControls(false)">
+                    <h-tool-tip>
+                        <el-icon class="play-pause" data-pointer @click="playPause">
+                            <VideoPause v-if="playing"/>
+                            <VideoPlay v-else/>
+                        </el-icon>
+                        <template #tip>
+                            {{ playing ? '暂停' : '播放' }}
+                        </template>
+                    </h-tool-tip>
+                    <div class="width">
+                        {{ videoInfo.time }}
+                    </div>
+                    <div :style="`--p: ${videoInfo.progress*100}%;--sp:${seekProgress*100}%`"
+                         class="time-bar"
+                         data-pointer
+                         @click="seekTo">
+                        <div class="progress"
+                             @mousemove="onMouseMoveTimeBar"/>
+                        <div class="float dot"/>
+                        <h-tool-tip class="float seek-dot">
+                            <template #tip>
+                                {{ toTimeStr((player?.duration() ?? 0) * seekProgress) }}
+                            </template>
+                        </h-tool-tip>
+                    </div>
+                    <div class="width">
+                        {{ videoInfo.duration }}
+                    </div>
+                    <div class="width"
+                         data-pointer
+                         data-relative
+                         @mouseenter="showVolumeBar"
+                         @mouseout="hideVolumeBar">
+                        <h-tool-tip place="bottom"
+                                    @click="player?.muted(!videoInfo.muted)"
+                                    @mousemove="showVolumeBar">
+                            <el-icon>
+                                <VolumeMuted v-if="videoInfo.muted"/>
+                                <VolumeZero v-else-if="videoInfo.volume==0"/>
+                                <VolumeLow v-else-if="videoInfo.volume<0.33"/>
+                                <VolumeMid v-else-if="videoInfo.volume<0.67"/>
+                                <VolumeHigth v-else/>
+                            </el-icon>
+                            <template #tip>
+                                <span>{{ videoVolume.toFixed(0) }}%</span>
+                            </template>
+                        </h-tool-tip>
+                        <div v-if="showVolume"
+                             class="volume-bar"
+                             @mousemove="showVolumeBar"
+                             @mouseout="hideVolumeBar">
+                            <el-slider
+                                    v-model="videoVolume"
+                                    :disabled="videoInfo.muted"
+                                    :format-tooltip="v=>v+'%'"
+                                    placement="left"
+                                    vertical/>
+                        </div>
+                    </div>
+                    <div v-if="!fullscreen" class="width" data-pointer>
+                        <h-tool-tip>
+                            <el-icon>
+                                <normal-screen v-if="fullWindow" @click="requestFullWindow(false)"/>
+                                <full-window v-else @click="requestFullWindow()"/>
+                            </el-icon>
+                            <template #tip>
+                                <span>{{ fullWindow ? '退出全屏' : '窗口全屏' }}</span>
+                            </template>
+                        </h-tool-tip>
+                    </div>
+                    <div v-if="!fullWindow" class="width" data-pointer>
+                        <h-tool-tip>
+                            <el-icon>
+                                <normal-screen v-if="fullscreen" @click="requestFullscreen(false)"/>
+                                <full-screen v-else @click="requestFullscreen()"/>
+                            </el-icon>
+                            <template #tip>
+                                <span>{{ fullscreen ? '退出全屏' : '全屏' }}</span>
+                            </template>
+                        </h-tool-tip>
+                    </div>
+                </div>
+            </transition>
+            <div class="msg-box">
+                <transition-group name="list">
+                    <div v-if="fastSeeking" key="seek">
+                        3X 快进中>>>
+                    </div>
+                    <div v-for="m in playerMsgs" :key="m.id">
+                        {{ m.msg }}{{ m.count > 1 ? ` x${m.count}` : '' }}
+                    </div>
+                </transition-group>
+            </div>
         </div>
     </div>
 </template>
@@ -14,39 +128,548 @@
 
 <style lang="scss" scoped>
 
-.player-box {
+@use '@yin-jinlong/h-ui/style/src/tools/fns' as *;
 
+.player-box {
+  position: relative;
+  user-select: none;
 }
 
 .video-box {
+  background: black;
   box-sizing: border-box;
   height: 600px;
-  padding: 1em;
   width: 100%;
 }
 
-#player {
+[data-full-window] {
+  background-color: #000;
   height: 100%;
+  left: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
   width: 100%;
+  z-index: 10;
+
+  & > .bottom-controls {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+
+}
+
+.bottom-controls {
+  align-items: center;
+  background-color: rgb(0, 0, 0, 0.5);
+  bottom: 0;
+  box-sizing: border-box;
+  color: white;
+  display: flex;
+  left: 1em;
+  padding: 0.5em 1em;
+  position: absolute;
+  width: calc(100% - 2em);
+
+  & > * {
+    margin: 0 0.25em;
+  }
+
+  .width {
+    flex: 0 0 auto;
+  }
+
+}
+
+.play-pause {
+  flex: 0 0 auto;
+  font-size: 1.5em;
+}
+
+.time-bar {
+  align-items: center;
+  border-radius: 1em;
+  display: flex;
+  flex: 1;
+  height: 0.5em;
+  padding: 0.2em 0;
+  position: relative;
+
+  &:hover {
+    --hover: 1;
+  }
+
+  .progress {
+    background: rgb(255, 255, 255, 0.3);
+    border-radius: 1em;
+    box-sizing: border-box;
+    height: 0.5em;
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+
+    &::before {
+      background-color: get-css(color, primary);
+      content: '';
+      display: block;
+      height: 100%;
+      transform-origin: left center;
+      width: var(--p, 0);
+    }
+
+  }
+
+  .float {
+    border-radius: 50%;
+    opacity: var(--hover, 0);
+    position: absolute;
+    transform: translate(-50%, 0) scale(var(--hover, 0));
+    transform-origin: center;
+  }
+
+  .dot {
+    background: get-css(color, primary-1);
+    height: 0.8em;
+    left: var(--p, 0);
+    transition: all 0.2s ease-out;
+    width: 0.8em;
+  }
+
+  .seek-dot {
+    background: get-css(color, white--2);
+    border-radius: 0;
+    height: 0.5em;
+    left: var(--sp, 0);
+    transition: all 0.1s ease-out;
+    width: 2px;
+  }
+
+}
+
+.mini-progress {
+  background-color: get-css(color, primary);
+  bottom: 0;
+  box-sizing: border-box;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  transform: scaleX(var(--p, 0));
+  transform-origin: left center;
+  width: 100%;
+}
+
+
+.volume-bar {
+  bottom: calc(100% + 1em);
+  height: 100px;
+  left: -50%;
+  position: absolute;
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+}
+
+.control-anim-enter-active,
+.control-anim-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.control-anim-enter-from,
+.control-anim-leave-to {
+  opacity: 0;
+}
+
+.msg-box {
+  left: 50%;
+  margin-top: 1em;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+
+  & > div {
+    align-items: center;
+    background: rgb(0, 0, 0, 0.6);
+    border-radius: 0.7em;
+    color: white;
+    display: flex;
+    justify-content: center;
+    margin: 0.5em auto;
+    padding: 0.5em;
+    width: max-content;
+  }
+
 }
 
 </style>
 
 <script lang="ts" setup>
+import FullWindow from '@/pages/play/src/full-window.vue'
+import NormalScreen from '@/pages/play/src/normal-screen.vue'
+import VolumeZero from './volume-zero.vue'
+import VolumeHigth from './volume-higth.vue'
+import VolumeLow from './volume-low.vue'
+import VolumeMid from './volume-mid.vue'
+import VolumeMuted from './volume-muted.vue'
 import API from '@/utils/api'
+import {HToolTip} from '@yin-jinlong/h-ui'
+import {FullScreen, VideoPause, VideoPlay} from '@element-plus/icons-vue'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-let player: Player
-const videoEle = ref<HTMLVideoElement>()
+interface Msg {
+    time: number
+    id: string
+    msg: string
+    count: number
+}
+
+let player: Player | undefined
+const videoEle = document.createElement('video')
+const videoCanvasEle = ref<HTMLCanvasElement>()
+const videoBoxEle = ref<HTMLCanvasElement>()
 const path = ref<string>()
 const route = useRoute()
+const playing = ref(false)
+const fastSeeking = ref(false)
+const seekProgress = ref(0)
+const videoInfo = reactive({
+    time: '??:??:??',
+    duration: '??:??:??',
+    progress: 0,
+    volume: 1,
+    muted: false
+})
+const videoVolume = ref(0)
+const showVolume = ref(false)
+const fullWindow = ref(false)
+const fullscreen = ref(false)
+const mouseInControls = ref(false)
+let lastHideVolumeId = 0
+let fastSeekTimeout = 0
+let mouseInControlsTimeout = 0
+let rafId = 0
+const playerMsgs = reactive<Msg[]>([])
+
+function render() {
+    let canvas = videoCanvasEle.value?.getContext('2d') as CanvasRenderingContext2D | undefined
+    if (!canvas)
+        return
+    let vw = videoEle.videoWidth
+    let vh = videoEle.videoHeight
+    let w = videoCanvasEle.value!!.width
+    let h = videoCanvasEle.value!!.height
+
+    let rate = vw / vh
+    let canvasRate = w / h
+
+    let dw: number, dh: number
+    if (rate < canvasRate) {
+        dh = h
+        dw = dh * rate
+    } else {
+        dw = w
+        dh = dw / rate
+    }
+
+    canvas.drawImage(videoEle, (w - dw) / 2, (h - dh) / 2, dw, dh)
+
+    if (!videoEle.paused) {
+        cancelAnimationFrame(rafId)
+        rafId = requestAnimationFrame(render)
+    }
+}
+
+function to2(num: number) {
+    let s = num.toString()
+    return s.length < 2 ? '0' + s : s
+}
+
+function setVolume(dv: number) {
+    let v = Math.fround(Math.abs(dv * 100))
+    let volume = videoInfo.volume + dv
+    if (volume > 1)
+        volume = 1
+    if (volume < 0)
+        volume = 0
+    addMessage('音量', `音量${dv > 0 ? '+' : '-'}${v} ${(100 * volume).toFixed(0)}%`)
+    player?.volume(volume)
+}
+
+function seek(dt: number) {
+    if (dt > 0)
+        addMessage('快进', `快进：${dt}s`)
+    else
+        addMessage('快退', `快退：${-dt}s`)
+    let t = (player?.currentTime() ?? 0) + dt
+    if (t < 0)
+        t = 0
+    else if (t > (player?.duration() ?? 0))
+        t = player?.duration() ?? 0
+    player?.currentTime(t)
+}
+
+function toTimeStr(secs: number) {
+    let s = Math.floor(secs) % 60
+    let t = secs / 60
+    let m = Math.floor(t % 60)
+    t /= 60
+    let h = Math.floor(t)
+    return `${to2(h)}:${to2(m)}:${to2(s)}`
+}
+
+function playPause() {
+    if (player?.paused()) {
+        player?.play()
+        addMessage('播放', '播放')
+    } else {
+        player?.pause()
+        addMessage('播放', '暂停')
+    }
+}
+
+function onVideoCanPlay() {
+    videoInfo.duration = toTimeStr(player!!.duration()!!)
+    videoInfo.time = toTimeStr(player!!.currentTime()!!)
+    videoInfo.volume = player!!.volume() ?? 0
+    videoInfo.muted = player!!.muted() ?? false
+    videoVolume.value = videoInfo.volume * 100
+    render()
+}
+
+function onVideoPlay() {
+    playing.value = true
+    render()
+}
+
+function onVideoPlaying() {
+    playing.value = true
+    render()
+}
+
+function onVideoTime() {
+    let t = player!!.currentTime()!!
+    let d = player!!.duration()!!
+    videoInfo.time = toTimeStr(t)
+    videoInfo.duration = toTimeStr(d)
+    videoInfo.progress = t / d
+}
+
+function onVideoPause() {
+    playing.value = false
+}
+
+function onVideoVolume() {
+    videoInfo.volume = player?.volume() ?? 0
+    videoInfo.muted = player?.muted() ?? false
+    videoVolume.value = videoInfo.volume * 100
+}
+
+function onPlayerWheel(e: WheelEvent) {
+    setVolume(e.deltaY < 0 ? 0.05 : -0.05)
+}
+
+function onMouseMoveTimeBar(e: MouseEvent) {
+    seekProgress.value = e.offsetX / (e.target as HTMLElement).offsetWidth
+}
+
+function seekTo() {
+    player?.currentTime(player.duration()!! * seekProgress.value)
+}
+
+function showVolumeBar() {
+    if (lastHideVolumeId) {
+        clearTimeout(lastHideVolumeId)
+        lastHideVolumeId = 0
+    }
+    showVolume.value = true
+}
+
+function hideVolumeBar() {
+    if (lastHideVolumeId)
+        return
+    lastHideVolumeId = setTimeout(() => {
+        lastHideVolumeId = 0
+        showVolume.value = false
+    }, 500) as unknown as number
+}
+
+function requestFullscreen(full: boolean = true) {
+    let ele = videoBoxEle.value
+    if (!ele)
+        return
+    if (full) {
+        ele.requestFullscreen()
+    } else {
+        document.exitFullscreen()
+    }
+}
+
+function requestFullWindow(full: boolean = true) {
+    fullWindow.value = full
+}
+
+function onFullScreenChange() {
+    fullscreen.value = document.fullscreenEnabled && document.fullscreenElement == videoBoxEle.value
+}
+
+function resize() {
+    let ele = videoCanvasEle.value!!
+    ele.width = ele.offsetWidth
+    ele.height = ele.offsetHeight
+    render()
+}
+
+function onPlayerKeydown(e: KeyboardEvent) {
+    switch (e.code) {
+        case 'Escape':
+            if (fullWindow.value) {
+                requestFullWindow(false)
+            }
+            break
+        case 'ArrowUp':
+            setVolume(0.05)
+            break
+        case 'ArrowDown':
+            setVolume(-0.05)
+            break
+        case 'ArrowRight':
+            if (!fastSeekTimeout) {
+                fastSeekTimeout = setTimeout(() => {
+                    fastSeeking.value = true
+                }, 500) as unknown as number
+            }
+            break
+    }
+}
+
+function onPlayerKeyup(e: KeyboardEvent) {
+    switch (e.code) {
+        case 'ArrowLeft':
+            seek(-5)
+            break
+        case 'ArrowRight':
+            if (fastSeekTimeout) {
+                clearTimeout(fastSeekTimeout)
+                fastSeekTimeout = 0
+            }
+            if (!fastSeeking.value) {
+                seek(5)
+            }
+            fastSeeking.value = false
+            break
+        case 'Space':
+            playPause()
+            break
+    }
+}
+
+function showControls(close: boolean = true) {
+    if (mouseInControlsTimeout) {
+        clearTimeout(mouseInControlsTimeout)
+        mouseInControlsTimeout = 0
+    }
+    mouseInControls.value = true
+    if (close)
+        delayControlsDismiss()
+}
+
+function delayControlsDismiss() {
+    if (mouseInControlsTimeout) {
+        clearTimeout(mouseInControlsTimeout)
+    }
+    mouseInControlsTimeout = setTimeout(() => {
+        mouseInControlsTimeout = 0
+        mouseInControls.value = false
+    }, 2000) as unknown as number
+}
+
+function addMessage(id: string, msg: string) {
+    let i = playerMsgs.findIndex(item => item.id == id)
+    if (i >= 0) {
+        let m = playerMsgs[i]
+        m.count++
+        m.msg = msg
+        m.time = Date.now()
+    } else {
+        playerMsgs.push({
+            msg,
+            id,
+            count: 1,
+            time: Date.now()
+        })
+    }
+    playerMsgs.sort((a, b) => a.time - b.time)
+    msgLoop()
+}
+
+function msgLoop() {
+    if (!playerMsgs.length)
+        return
+    let now = Date.now()
+    let msg = playerMsgs[0]
+    while (msg) {
+        if (now - msg.time > 600) {
+            playerMsgs.shift()
+            msg = playerMsgs[0]
+        } else {
+            break
+        }
+    }
+    if (playerMsgs.length)
+        requestAnimationFrame(msgLoop)
+}
 
 onMounted(() => {
-    player = videojs('player', {
-        controls: true
+    videoEle.id = 'player'
+    player = videojs(videoEle, {
+        controls: false
     })
+    videoEle.addEventListener('canplay', onVideoCanPlay)
+    videoEle.addEventListener('play', onVideoPlay)
+    videoEle.addEventListener('pause', onVideoPause)
+    videoEle.addEventListener('playing', onVideoPlaying)
+    videoEle.addEventListener('timeupdate', onVideoTime)
+    videoEle.addEventListener('volumechange', onVideoVolume)
+
+    document.addEventListener('fullscreenchange', onFullScreenChange)
+    addEventListener('resize', resize)
+
+    resize()
     path.value = route.query.path as string
+})
+
+onUnmounted(() => {
+    player?.dispose()
+    videoEle.removeEventListener('canplay', onVideoCanPlay)
+    videoEle.removeEventListener('play', onVideoPlay)
+    videoEle.removeEventListener('pause', onVideoPause)
+    videoEle.removeEventListener('playing', onVideoPlaying)
+    videoEle.removeEventListener('timeupdate', onVideoTime)
+    videoEle.removeEventListener('volumechange', onVideoVolume)
+
+    document.removeEventListener('fullscreenchange', onFullScreenChange)
+})
+
+watch(fullWindow, async (nv) => {
+    await nextTick()
+    resize()
+})
+
+watch(videoVolume, (nv) => {
+    player?.volume(nv / 100)
+})
+
+watch(fastSeeking, nv => {
+    player?.playbackRate(nv ? 3 : 1)
 })
 
 watch(path, (nv) => {
@@ -55,13 +678,9 @@ watch(path, (nv) => {
     API.getPublicHLSInfo(nv).then(info => {
         if (!info)
             return
-        player.src(API.publicHSLURL(info[0].path))
+        player?.src(API.publicHSLURL(info[0].path))
         console.log(info)
     })
-})
-
-onUnmounted(() => {
-    player.dispose()
 })
 
 watch(() => route.query.path, (nv) => {
