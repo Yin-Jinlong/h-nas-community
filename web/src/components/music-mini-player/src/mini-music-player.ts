@@ -5,11 +5,19 @@ export interface MusicPlayerStatus {
     muted: boolean
     current: number
     duration: number
+    playMode: PlayMode
 }
 
 export interface MusicItem {
     title: string
     src: string
+}
+
+export enum PlayMode {
+    Normal,
+    RepeatAll,
+    RepeatThis,
+    Random
 }
 
 class MiniMusicPlayer {
@@ -29,6 +37,7 @@ class MiniMusicPlayer {
             muted: false,
             current: 0,
             duration: 0,
+            playMode: PlayMode.Normal
         })
         this.#ele.addEventListener('canplay', () => {
             this.#status.duration = this.#ele.duration
@@ -51,8 +60,21 @@ class MiniMusicPlayer {
         })
         this.#ele.addEventListener('ended', () => {
             this.#status.playing = false
-            if (this.#nowIndex.value < this.#playList.length - 1)
-                this.playNext()
+            switch (this.#status.playMode) {
+                case PlayMode.Normal:
+                    if (this.#nowIndex.value < this.#playList.length - 1)
+                        this.playNext()
+                    break
+                case PlayMode.RepeatThis:
+                    this.play()
+                    break
+                case PlayMode.RepeatAll:
+                    this.playNext()
+                    break
+                case PlayMode.Random:
+                    this.play(Math.floor(Math.random() * this.#playList.length))
+                    break
+            }
         })
         this.#ele.volume = 0.5
     }
@@ -147,6 +169,12 @@ class MiniMusicPlayer {
         }
     }
 
+    nextMode() {
+        let i = this.#status.playMode + 1
+        if (i > PlayMode.Random)
+            i = PlayMode.Normal
+        this.#status.playMode = i
+    }
 }
 
 const Player = new MiniMusicPlayer()

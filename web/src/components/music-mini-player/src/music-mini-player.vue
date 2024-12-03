@@ -1,6 +1,14 @@
 <template>
     <div class="floating-bar" data-flex-center>
         <div class="width">
+            <el-icon data-pointer @click="MiniMusicPlayer.nextMode()">
+                <play-normal v-if="MiniMusicPlayer.status.playMode==PlayMode.Normal"/>
+                <play-repeat-all v-else-if="MiniMusicPlayer.status.playMode==PlayMode.RepeatAll"/>
+                <play-repeat-this v-else-if="MiniMusicPlayer.status.playMode==PlayMode.RepeatThis"/>
+                <play-random v-else-if="MiniMusicPlayer.status.playMode==PlayMode.Random"/>
+            </el-icon>
+        </div>
+        <div class="width">
             <el-icon data-pointer @click="MiniMusicPlayer.playPrev()">
                 <play-prev/>
             </el-icon>
@@ -163,7 +171,7 @@ import VolumeMuted from '@/pages/play/src/volume-muted.vue'
 import VolumeZero from '@/pages/play/src/volume-zero.vue'
 import {CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
 import {HButton, HToolTip} from '@yin-jinlong/h-ui'
-import {MiniMusicPlayer} from './mini-music-player'
+import {MiniMusicPlayer, PlayMode} from './mini-music-player'
 import PlayList from './play-list.vue'
 
 const showVolume = ref(false)
