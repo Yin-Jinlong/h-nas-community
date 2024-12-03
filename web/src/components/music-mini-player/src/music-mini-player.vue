@@ -1,9 +1,19 @@
 <template>
     <div class="floating-bar" data-flex-center>
         <div class="width">
+            <el-icon data-pointer @click="MiniMusicPlayer.playPrev()">
+                <play-prev/>
+            </el-icon>
+        </div>
+        <div class="width">
             <el-icon data-pointer size="20px" @click="playPause">
                 <VideoPause v-if="MiniMusicPlayer.status.playing"/>
                 <VideoPlay v-else/>
+            </el-icon>
+        </div>
+        <div class="width">
+            <el-icon data-pointer @click="MiniMusicPlayer.playNext()">
+                <play-next/>
             </el-icon>
         </div>
         <div class="width">
@@ -144,15 +154,17 @@
 </style>
 
 <script lang="ts" setup>
-import PlayList from './play-list.vue'
-import {MiniMusicPlayer} from './mini-music-player'
+import PlayNext from '@/components/music-mini-player/src/play-next.vue'
+import PlayPrev from '@/components/music-mini-player/src/play-prev.vue'
 import VolumeHigth from '@/pages/play/src/volume-higth.vue'
 import VolumeLow from '@/pages/play/src/volume-low.vue'
 import VolumeMid from '@/pages/play/src/volume-mid.vue'
 import VolumeMuted from '@/pages/play/src/volume-muted.vue'
 import VolumeZero from '@/pages/play/src/volume-zero.vue'
 import {CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
-import {HToolTip, HButton} from '@yin-jinlong/h-ui'
+import {HButton, HToolTip} from '@yin-jinlong/h-ui'
+import {MiniMusicPlayer} from './mini-music-player'
+import PlayList from './play-list.vue'
 
 const showVolume = ref(false)
 const audioVolume = ref(0)

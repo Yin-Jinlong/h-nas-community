@@ -51,6 +51,8 @@ class MiniMusicPlayer {
         })
         this.#ele.addEventListener('ended', () => {
             this.#status.playing = false
+            if (this.#nowIndex.value < this.#playList.length - 1)
+                this.playNext()
         })
         this.#ele.volume = 0.5
     }
@@ -93,6 +95,20 @@ class MiniMusicPlayer {
         }).catch(() => {
             this.#status.playing = false
         })
+    }
+
+    playPrev() {
+        let i = this.#nowIndex.value + 1
+        if (i < 0)
+            i = this.#playList.length - 1
+        this.play(i)
+    }
+
+    playNext() {
+        let i = this.#nowIndex.value + 1
+        if (i >= this.#playList.length)
+            i = 0
+        this.play(i)
     }
 
     pause() {
