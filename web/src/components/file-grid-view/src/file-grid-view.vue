@@ -136,6 +136,7 @@ onMounted(() => {
 
 watch(extra, (nv) => {
     if (nv.thumbnail === undefined) {
+        previewPath.value = ''
         return
     }
     if (nv.thumbnail != '') {
