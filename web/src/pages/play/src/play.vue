@@ -34,25 +34,10 @@
                             {{ playing ? '暂停' : '播放' }}
                         </template>
                     </h-tool-tip>
-                    <div class="width">
-                        {{ videoInfo.time }}
-                    </div>
-                    <div :style="`--p: ${videoInfo.progress*100}%;--sp:${seekProgress*100}%`"
-                         class="time-bar"
-                         data-pointer
-                         @click="seekTo">
-                        <div class="progress"
-                             @mousemove="onMouseMoveTimeBar"/>
-                        <div class="float dot"/>
-                        <h-tool-tip class="float seek-dot">
-                            <template #tip>
-                                {{ toTimeStr((player?.duration() ?? 0) * seekProgress) }}
-                            </template>
-                        </h-tool-tip>
-                    </div>
-                    <div class="width">
-                        {{ videoInfo.duration }}
-                    </div>
+                    <seekable-progress-bar
+                            :current="videoInfo.cur"
+                            :duration="videoInfo.dur"
+                            @seek="seekTo"/>
                     <h-tool-tip place="top">
                         <div class="width" style="color: white">
                             {{ getBitrateName(nowStreamIndex) }}
@@ -178,14 +163,15 @@
 .bottom-controls {
   align-items: center;
   background-color: rgb(0, 0, 0, 0.5);
+  --progress-bar-background-color: rgb(255, 255, 255, 0.3);
   bottom: 0;
   box-sizing: border-box;
   color: white;
   display: flex;
-  left: 1em;
+  left: 0;
   padding: 0.5em 1em;
   position: absolute;
-  width: calc(100% - 2em);
+  width: 100%;
 
   & > * {
     margin: 0 0.25em;
@@ -210,66 +196,6 @@
 .play-pause {
   flex: 0 0 auto;
   font-size: 1.5em;
-}
-
-.time-bar {
-  align-items: center;
-  border-radius: 1em;
-  display: flex;
-  flex: 1;
-  height: 0.5em;
-  padding: 0.2em 0;
-  position: relative;
-
-  &:hover {
-    --hover: 1;
-  }
-
-  .progress {
-    background: rgb(255, 255, 255, 0.3);
-    border-radius: 1em;
-    box-sizing: border-box;
-    height: 0.5em;
-    overflow: hidden;
-    position: absolute;
-    width: 100%;
-
-    &::before {
-      background-color: get-css(color, primary);
-      content: '';
-      display: block;
-      height: 100%;
-      transform-origin: left center;
-      width: var(--p, 0);
-    }
-
-  }
-
-  .float {
-    border-radius: 50%;
-    opacity: var(--hover, 0);
-    position: absolute;
-    transform: translate(-50%, 0) scale(var(--hover, 0));
-    transform-origin: center;
-  }
-
-  .dot {
-    background: get-css(color, primary-1);
-    height: 0.8em;
-    left: var(--p, 0);
-    transition: all 0.2s ease-out;
-    width: 0.8em;
-  }
-
-  .seek-dot {
-    background: get-css(color, white--2);
-    border-radius: 0;
-    height: 0.5em;
-    left: var(--sp, 0);
-    transition: all 0.1s ease-out;
-    width: 2px;
-  }
-
 }
 
 .mini-progress {
@@ -358,6 +284,7 @@
 <script lang="ts" setup>
 import FullWindow from '@/pages/play/src/full-window.vue'
 import NormalScreen from '@/pages/play/src/normal-screen.vue'
+import {sec2TimeStr} from '@/utils/time'
 import VolumeZero from './volume-zero.vue'
 import VolumeHigth from './volume-higth.vue'
 import VolumeLow from './volume-low.vue'
@@ -384,10 +311,9 @@ const path = ref<string>()
 const route = useRoute()
 const playing = ref(false)
 const fastSeeking = ref(false)
-const seekProgress = ref(0)
 const videoInfo = reactive({
-    time: '??:??:??',
-    duration: '??:??:??',
+    cur: 0,
+    dur: 0,
     progress: 0,
     volume: 1,
     muted: false
@@ -462,11 +388,6 @@ function getBitrateName(index: number) {
     return `${NAMES[i].name}`
 }
 
-function to2(num: number) {
-    let s = num.toString()
-    return s.length < 2 ? '0' + s : s
-}
-
 function setVolume(dv: number) {
     let v = Math.fround(Math.abs(dv * 100))
     let volume = videoInfo.volume + dv
@@ -491,15 +412,6 @@ function seek(dt: number) {
     player?.currentTime(t)
 }
 
-function toTimeStr(secs: number) {
-    let s = Math.floor(secs) % 60
-    let t = secs / 60
-    let m = Math.floor(t % 60)
-    t /= 60
-    let h = Math.floor(t)
-    return `${to2(h)}:${to2(m)}:${to2(s)}`
-}
-
 function playPause() {
     if (player?.paused()) {
         player?.play()
@@ -511,8 +423,8 @@ function playPause() {
 }
 
 function onVideoCanPlay() {
-    videoInfo.duration = toTimeStr(player!!.duration()!!)
-    videoInfo.time = toTimeStr(player!!.currentTime()!!)
+    videoInfo.cur = player!!.currentTime()!!
+    videoInfo.dur = player!!.duration()!!
     videoInfo.volume = player!!.volume() ?? 0
     videoInfo.muted = player!!.muted() ?? false
     videoVolume.value = videoInfo.volume * 100
@@ -532,8 +444,6 @@ function onVideoPlaying() {
 function onVideoTime() {
     let t = player!!.currentTime()!!
     let d = player!!.duration()!!
-    videoInfo.time = toTimeStr(t)
-    videoInfo.duration = toTimeStr(d)
     videoInfo.progress = t / d
 }
 
@@ -551,12 +461,8 @@ function onPlayerWheel(e: WheelEvent) {
     setVolume(e.deltaY < 0 ? 0.05 : -0.05)
 }
 
-function onMouseMoveTimeBar(e: MouseEvent) {
-    seekProgress.value = e.offsetX / (e.target as HTMLElement).offsetWidth
-}
-
-function seekTo() {
-    player?.currentTime(player.duration()!! * seekProgress.value)
+function seekTo(p: number) {
+    player?.currentTime(player.duration()!! * p)
 }
 
 function showVolumeBar() {
