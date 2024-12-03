@@ -29,7 +29,3 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   type-handlers-package: com.yjl.hnas.typehandler
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8000/eureka/

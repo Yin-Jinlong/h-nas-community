@@ -10,6 +10,8 @@ HELP.md
 .gradle/
 .build/
 .kotlin/
+/logs/
+/temp/
 
 /data/
 /cache/

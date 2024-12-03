@@ -14,7 +14,6 @@ import com.yjl.hnas.utils.*
 import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
 import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.ServletInputStream
-import jakarta.servlet.ServletOutputStream
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
 import org.springframework.http.HttpHeaders
@@ -183,7 +182,6 @@ class PubFileController(
         @PathVariable hash: String,
         @PathVariable rate: String,
         @PathVariable file: String,
-        out: ServletOutputStream,
     ): File = withCatch {
         DataHelper.tsFile(hash, rate, file)
     }
