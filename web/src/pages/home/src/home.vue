@@ -324,6 +324,7 @@
 <script lang="ts" setup>
 
 import {FileGridCommand, FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
+import {MiniMusicPlayer} from '@/components/music-mini-player/src/mini-music-player'
 import CountDialog from './count-dialog.vue'
 import NewFolderDialog from './new-folder-dialog.vue'
 import RenameDialog from './rename-dialog.vue'
@@ -515,12 +516,20 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
     activeFile.value = f
     switch (cmd) {
         case 'play':
-            router.push({
-                path: '/play',
-                query: {
-                    path: subPath(f.info.dir, f.info.name)
-                }
+            if (f.info.mediaType?.startsWith('video')) {
+                router.push({
+                    path: '/play',
+                    query: {
+                        path: subPath(f.info.dir, f.info.name)
+                    }
+                })
+                return
+            }
+            let i = MiniMusicPlayer.add({
+                title: f.info.name,
+                src: API.publicFileURL(subPath(f.info.dir, f.info.name))
             })
+            MiniMusicPlayer.play(i)
             break
         case 'rename':
             shows.renameDialog = true

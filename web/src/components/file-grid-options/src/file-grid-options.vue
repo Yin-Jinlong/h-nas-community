@@ -36,7 +36,7 @@ import {FileGridCommand, FileGridOptionsProps} from './props'
 import {Delete, Edit, InfoFilled, MoreFilled, VideoPlay} from '@element-plus/icons-vue'
 
 const props = defineProps<FileGridOptionsProps>()
-const canPlay = computed(() => /^(video)\/.*/.test(props.mediaType ?? ''))
+const canPlay = computed(() => /^(video|audio)\/.*/.test(props.mediaType ?? ''))
 const emits = defineEmits({
     'command': (cmd: FileGridCommand) => void {}
 })

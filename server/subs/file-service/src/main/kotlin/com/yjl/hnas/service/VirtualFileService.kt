@@ -1,7 +1,6 @@
 package com.yjl.hnas.service
 
 import com.yjl.hnas.data.FileRange
-import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.ChildrenCount
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IVirtualFile
