@@ -117,8 +117,12 @@ async function updateIcon() {
     let map = IconMapping[type]
     if (!map)
         return defaultIcon()
-    let icon = map[subType]
-    fileIcon.value = icon ? (await icon()).default : UnknownFile
+    if (typeof map == 'function') {
+        fileIcon.value = (await map()).default
+    } else {
+        let icon = map[subType]
+        fileIcon.value = icon ? (await icon()).default : UnknownFile
+    }
 }
 
 async function getExtra() {
