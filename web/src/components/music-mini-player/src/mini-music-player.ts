@@ -60,21 +60,7 @@ class MiniMusicPlayer {
         })
         this.#ele.addEventListener('ended', () => {
             this.#status.playing = false
-            switch (this.#status.playMode) {
-                case PlayMode.Normal:
-                    if (this.#nowIndex.value < this.#playList.length - 1)
-                        this.playNext()
-                    break
-                case PlayMode.RepeatThis:
-                    this.play()
-                    break
-                case PlayMode.RepeatAll:
-                    this.playNext()
-                    break
-                case PlayMode.Random:
-                    this.play(Math.floor(Math.random() * this.#playList.length))
-                    break
-            }
+            this.playNext()
         })
         this.#ele.volume = 0.5
     }
@@ -127,10 +113,24 @@ class MiniMusicPlayer {
     }
 
     playNext() {
-        let i = this.#nowIndex.value + 1
-        if (i >= this.#playList.length)
-            i = 0
-        this.play(i)
+        switch (this.#status.playMode) {
+            case PlayMode.RepeatThis:
+                this.play()
+                break
+            // @ts-ignore
+            case PlayMode.Normal:
+                if (this.#nowIndex.value == this.#playList.length - 1)
+                    break
+            case PlayMode.RepeatAll:
+                let i = this.#nowIndex.value + 1
+                if (i >= this.#playList.length)
+                    i = 0
+                this.play(i)
+                break
+            case PlayMode.Random:
+                this.play(Math.floor(Math.random() * this.#playList.length))
+                break
+        }
     }
 
     pause() {
