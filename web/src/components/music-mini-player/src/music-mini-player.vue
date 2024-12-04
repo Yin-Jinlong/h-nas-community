@@ -313,8 +313,10 @@ function closePlayer() {
     MiniMusicPlayer.close()
 }
 
-onMounted(() => {
+watch(() => MiniMusicPlayer.status.volume, () => {
     audioVolume.value = MiniMusicPlayer.status.volume * 100
+}, {
+    immediate: true
 })
 
 watch(audioVolume, nv => {
