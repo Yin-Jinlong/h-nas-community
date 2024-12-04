@@ -526,6 +526,20 @@ function newFolder(name: string, ok: (close: boolean) => void) {
     })
 }
 
+function isAudio(f: FileWrapper) {
+    return /^(audio)\/.*/.test(f.info.mediaType ?? '')
+}
+
+function addToPlayList(f: FileWrapper) {
+    return MiniMusicPlayer.add({
+        title: f.info.name,
+        src: API.publicFileURL(subPath(f.info.dir, f.info.name)),
+        async info() {
+            return await API.getPublicAudioInfo(subPath(f.info.dir, f.info.name))
+        }
+    })
+}
+
 function onCommand(cmd: FileGridCommand, f: FileWrapper) {
     activeFile.value = f
     switch (cmd) {
@@ -539,14 +553,17 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
                 })
                 return
             }
-            let i = MiniMusicPlayer.add({
-                title: f.info.name,
-                src: API.publicFileURL(subPath(f.info.dir, f.info.name)),
-                async info() {
-                    return await API.getPublicAudioInfo(subPath(f.info.dir, f.info.name))
-                }
+            MiniMusicPlayer.play(addToPlayList(f))
+            break
+        case 'add-to-play-list':
+            if (isAudio(f))
+                addToPlayList(f)
+            break
+        case 'add-all-to-play-list':
+            files.forEach(f => {
+                if (isAudio(f))
+                    addToPlayList(f)
             })
-            MiniMusicPlayer.play(i)
             break
         case 'rename':
             shows.renameDialog = true
