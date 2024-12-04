@@ -35,7 +35,7 @@ class PreviewGeneratorFactory {
                 }
                 out.toByteArray()
             }
-        }.getOrNull()
+        }.getOrThrow()
     }
 
     fun canPreview(mediaType: MediaType): Boolean {
