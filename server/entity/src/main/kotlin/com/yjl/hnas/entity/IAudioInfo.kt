@@ -6,6 +6,11 @@ package com.yjl.hnas.entity
 interface IAudioInfo : IMediaInfo {
 
     /**
+     * 时长，单位秒
+     */
+    var duration: Float
+
+    /**
      * 艺术家
      */
     var artists: String?
@@ -33,6 +38,6 @@ interface IAudioInfo : IMediaInfo {
     /**
      * 比特率，kbps
      */
-    var bitRate: Int
+    var bitrate: Int
 
 }

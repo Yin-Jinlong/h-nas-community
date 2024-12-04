@@ -2,18 +2,20 @@ package com.yjl.hnas.entity
 
 import com.yjl.hnas.converter.HashConverter
 import com.yjl.hnas.usertype.HashUserType
-import jakarta.persistence.Column
-import jakarta.persistence.Convert
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.Comment
 import org.hibernate.annotations.Type
 
 /**
  * @author YJL
  */
-@Table
+@Table(
+    indexes = [
+        Index(name = "title", columnList = "title"),
+        Index(name = "album", columnList = "album"),
+        Index(name = "year", columnList = "year"),
+    ]
+)
 @Entity
 @Comment("音乐信息")
 class AudioInfo(
@@ -45,6 +47,10 @@ class AudioInfo(
     @Comment("专辑")
     override var album: String? = null,
 
+    @Column(nullable = false)
+    @Comment("时长,秒")
+    override var duration: Float = 0f,
+
     @Column
     @Comment("年份")
     override var year: Short? = null,
@@ -57,9 +63,9 @@ class AudioInfo(
     @Comment("风格")
     override var style: String? = null,
 
-    @Column
+    @Column(nullable = false)
     @Comment("比特率,kbps")
-    override var bitRate: Int = -1,
+    override var bitrate: Int = -1,
 
     @Column(length = IMediaInfo.ITEM_LENGTH)
     @Comment("备注")
