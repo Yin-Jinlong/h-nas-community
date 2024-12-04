@@ -22,6 +22,7 @@ object DataHelper {
     private lateinit var PreviewPath: Path
     private lateinit var HLSPath: Path
     private lateinit var AvatarPath: Path
+    private lateinit var CoverPath: Path
 
     fun init(option: DataOption) {
         CachePath = option.cacheRoot
@@ -32,6 +33,7 @@ object DataHelper {
         PreviewPath = CacheRootPath.resolve("预览图")
         HLSPath = CacheRootPath.resolve("hls")
         AvatarPath = DataRootPath.resolve("avatar")
+        CoverPath = CacheRootPath.resolve("cover")
     }
 
     private fun Path.file(vararg paths: String) = resolve(
@@ -72,6 +74,8 @@ object DataHelper {
      * 流媒体：cache/hls/...
      */
     fun tsFile(hash: String, rate: String, i: String): File = HLSPath.file(hash, "/", rate, "/", i)
+
+    fun coverFile(hash: String): File = CoverPath.file(hash)
 
     /**
      * 头像：data/avatar/...

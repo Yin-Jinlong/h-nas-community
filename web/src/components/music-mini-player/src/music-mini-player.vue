@@ -1,5 +1,16 @@
 <template>
     <div class="floating-bar" data-flex-center>
+        <div class="width cover-box">
+            <div :class="{cover:1,playing:MiniMusicPlayer.status.playing}">
+                <el-image :src="getCover()">
+                    <template #error>
+                        <el-icon size="2em">
+                            <MusicFile/>
+                        </el-icon>
+                    </template>
+                </el-image>
+            </div>
+        </div>
         <div class="width">
             <el-icon data-pointer @click="MiniMusicPlayer.nextMode()">
                 <play-normal v-if="MiniMusicPlayer.status.playMode==PlayMode.Normal"/>
@@ -120,6 +131,41 @@
 
 }
 
+.cover-box {
+  height: 2em;
+  overflow: visible;
+  width: 3em;
+}
+
+.cover {
+  border-radius: 2em;
+  bottom: 0;
+  box-shadow: gray 0 0 4px;
+  cursor: pointer;
+  height: 4em;
+  overflow: hidden;
+  position: absolute;
+  transform-origin: bottom center;
+  transition: all 0.2s ease-out;
+  width: 4em;
+
+  & > div {
+    animation: cover 15s linear infinite;
+    animation-play-state: paused;
+  }
+
+  &:hover {
+    scale: 3;
+    z-index: 1;
+  }
+
+  &.playing > div {
+    animation-play-state: running;
+    box-shadow: gray 0 0 8px;
+  }
+
+}
+
 .title {
   max-width: 8em;
   position: relative;
@@ -150,6 +196,15 @@
 
 }
 
+@keyframes cover {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);
@@ -169,6 +224,8 @@ import VolumeLow from '@/pages/play/src/volume-low.vue'
 import VolumeMid from '@/pages/play/src/volume-mid.vue'
 import VolumeMuted from '@/pages/play/src/volume-muted.vue'
 import VolumeZero from '@/pages/play/src/volume-zero.vue'
+import API from '@/utils/api'
+import {subPath} from '@/utils/path'
 import {CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
 import {HButton, HToolTip} from '@yin-jinlong/h-ui'
 import {MiniMusicPlayer, PlayMode} from './mini-music-player'
@@ -177,6 +234,13 @@ import PlayList from './play-list.vue'
 const showVolume = ref(false)
 const audioVolume = ref(0)
 let lastHideVolumeId = 0
+
+function getCover() {
+    let info = MiniMusicPlayer.info
+    if (info.cover)
+        return API.publicAudioCoverURL(info.cover)
+    return ''
+}
 
 function getTitle() {
     let info = MiniMusicPlayer.info

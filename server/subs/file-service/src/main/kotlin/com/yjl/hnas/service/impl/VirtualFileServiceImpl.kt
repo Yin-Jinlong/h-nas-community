@@ -21,6 +21,9 @@ import org.apache.tika.mime.MediaType
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.mp3.MP3File
 import org.jaudiotagger.tag.FieldKey
+import org.jaudiotagger.tag.id3.AbstractID3v2Frame
+import org.jaudiotagger.tag.id3.AbstractID3v2Tag
+import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -316,12 +319,28 @@ class VirtualFileServiceImpl(
         })
     }
 
+    fun checkAudio(vf: IVirtualFile): AudioInfo? {
+        if (!vf.mediaType.startsWith("audio"))
+            throw ErrorCode.BAD_FILE_FORMAT.error
+        return audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
+    }
+
+    fun getCover(tag: AbstractID3v2Tag): String? {
+        val frame = tag.getFrame("APIC") as? AbstractID3v2Frame? ?: return null
+        val data = (frame.body as FrameBodyAPIC).imageData
+        val hash = Hash(data.sha256).pathSafe
+        val coverFile = DataHelper.coverFile(hash)
+        if (!coverFile.exists()) {
+            coverFile.mkParent()
+            coverFile.writeBytes(data)
+        }
+        return hash
+    }
+
     @Transactional(rollbackFor = [Exception::class])
     override fun getAudioInfo(path: VirtualPath): AudioFileInfo {
         val vf = getOrThrow(path)
-        if (!vf.mediaType.startsWith("audio"))
-            throw ErrorCode.BAD_FILE_FORMAT.error
-        val ai = audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
+        val ai = checkAudio(vf)
         if (ai != null)
             return AudioFileInfo.of(path.path, ai)
         val fm = fileMappingMapper.selectByHash(vf.hash!!)
@@ -337,7 +356,7 @@ class VirtualFileServiceImpl(
                 title = tag.getFirst(FieldKey.TITLE),
                 subTitle = tag.getFirst(FieldKey.SUBTITLE),
                 artists = tag.getFirst(FieldKey.ARTIST),
-                cover = null,
+                cover = getCover(tag),
                 album = tag.getFirst(FieldKey.ALBUM),
                 duration = af.mP3AudioHeader.preciseTrackLength.toFloat(),
                 year = tag.getFirst(FieldKey.YEAR).toShortOrNull(),
@@ -348,6 +367,16 @@ class VirtualFileServiceImpl(
             ).apply {
                 audioInfoMapper.insert(this)
             })
+    }
+
+    override fun getAudioCover(path: VirtualPath): File {
+        val vf = getOrThrow(path)
+        val ai = checkAudio(vf)
+            ?: throw ErrorCode.BAD_FILE_FORMAT.error
+        if (!ai.cover.isNullOrEmpty()) {
+            return DataHelper.coverFile(ai.cover!!)
+        }
+        throw ErrorCode.NO_SUCH_FILE.error
     }
 
     @Transactional(rollbackFor = [Exception::class])

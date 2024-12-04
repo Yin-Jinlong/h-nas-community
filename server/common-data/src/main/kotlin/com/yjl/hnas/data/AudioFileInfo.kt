@@ -62,7 +62,7 @@ data class AudioFileInfo(
                 info.title,
                 info.subTitle,
                 info.artists,
-                info.cover,
+                path,
                 info.duration,
                 info.album,
                 info.year,

@@ -227,6 +227,10 @@ function publicHSLURL(path: string) {
     return `api/file/public/video/stream/${path}`
 }
 
+function publicAudioCoverURL(path: string) {
+    return `api/file/public/audio/cover?${qs.stringify({path})}`
+}
+
 async function uploadPublic(path: string, hash: string, file: File, range: FileRange) {
     return new Promise<boolean>(async (resolve, reject) => {
         post<boolean>('api/file/public/upload', file.slice(range.start, range.end), {
@@ -281,6 +285,7 @@ const API = {
     publicThumbnailURL,
     publicPreviewURL,
     publicHSLURL,
+    publicAudioCoverURL,
     renamePublic
 }
 

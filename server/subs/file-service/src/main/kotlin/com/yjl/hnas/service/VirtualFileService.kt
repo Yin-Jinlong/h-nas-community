@@ -9,6 +9,7 @@ import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.fs.VirtualFileManager
 import com.yjl.hnas.fs.VirtualPath
 import java.io.BufferedInputStream
+import java.io.File
 import java.io.IOException
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.NoSuchFileException
@@ -55,4 +56,6 @@ interface VirtualFileService : VirtualFileManager {
     fun getFolderChildrenCount(path: VirtualPath): ChildrenCount
 
     fun getAudioInfo(path: VirtualPath): AudioFileInfo
+
+    fun getAudioCover(path: VirtualPath): File
 }
