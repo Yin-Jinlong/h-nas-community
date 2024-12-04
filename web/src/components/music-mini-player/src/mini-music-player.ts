@@ -93,8 +93,11 @@ class MiniMusicPlayer {
     }
 
     add(item: MusicItem) {
-        if (this.#playList[this.#playList.length - 1] == item)
-            return
+        let i = this.#playList.findIndex(o => o.title == item.title)
+        if (i >= 0) {
+            this.#playList[i] = item
+            return i
+        }
         this.#playList.push(item)
         return this.#playList.length - 1
     }
