@@ -235,10 +235,24 @@
 }
 
 .file-name {
+  height: max-content;
+  line-height: 1em;
+  max-height: 2em;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   width: 100%;
+  word-break: break-all;
+
+  &::before {
+    background: linear-gradient(to right, transparent 25%, #fff);
+    bottom: 1em;
+    content: '';
+    height: 1em;
+    position: absolute;
+    right: 0;
+    width: 100%;
+  }
+
 }
 
 .dragger {
