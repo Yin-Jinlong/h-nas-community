@@ -102,6 +102,16 @@ class MiniMusicPlayer {
         return this.#playList.length - 1
     }
 
+    remove(i: number) {
+        this.#playList.splice(i, 1)
+    }
+
+    removeItem(title: string) {
+        let i = this.#playList.findIndex(o => o.title == title)
+        if (i >= 0)
+            this.#playList.splice(i, 1)
+    }
+
     play(i?: number) {
         if (!this.#playList.length) {
             return

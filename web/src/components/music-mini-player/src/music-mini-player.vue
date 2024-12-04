@@ -87,7 +87,7 @@
                     </el-icon>
                 </template>
                 <div>
-                    <div v-for="i in MiniMusicPlayer.size" data-fill-width>
+                    <div v-for="i in MiniMusicPlayer.size" class="music-item" data-fill-width>
                         <h-button
                                 :color="(i-1)==MiniMusicPlayer.now()?'primary':'info'"
                                 style="padding: 0.5em 0"
@@ -95,7 +95,13 @@
                                 @click="MiniMusicPlayer.play(i-1)">
                             {{ i }}. {{ MiniMusicPlayer.get(i - 1).title }}
                         </h-button>
+                        <el-icon class="remove-item-btn" data-pointer @click="MiniMusicPlayer.remove(i-1)">
+                            <Close/>
+                        </el-icon>
                     </div>
+                    <h-button color="danger" data-fill-width type="link" @click="MiniMusicPlayer.close()">
+                        清空
+                    </h-button>
                 </div>
             </el-popover>
         </div>
@@ -200,6 +206,18 @@
 
 }
 
+.music-item {
+  padding-right: 1em;
+  position: relative;
+}
+
+.remove-item-btn {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 @keyframes cover {
   0% {
     transform: rotate(0deg);
@@ -230,7 +248,7 @@ import VolumeMuted from '@/pages/play/src/volume-muted.vue'
 import VolumeZero from '@/pages/play/src/volume-zero.vue'
 import API from '@/utils/api'
 import {subPath} from '@/utils/path'
-import {CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
+import {Close, CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
 import {HButton, HToolTip} from '@yin-jinlong/h-ui'
 import {MiniMusicPlayer, PlayMode} from './mini-music-player'
 import PlayList from './play-list.vue'
