@@ -67,7 +67,24 @@ class MiniMusicPlayer {
         })
         this.#ele.addEventListener('ended', () => {
             this.#status.playing = false
-            this.playNext()
+            switch (this.#status.playMode) {
+                case PlayMode.RepeatThis:
+                    this.play()
+                    break
+                // @ts-ignore
+                case PlayMode.Normal:
+                    if (this.#nowIndex.value == this.#playList.length - 1)
+                        break
+                case PlayMode.RepeatAll:
+                    let i = this.#nowIndex.value + 1
+                    if (i >= this.#playList.length)
+                        i = 0
+                    this.play(i)
+                    break
+                case PlayMode.Random:
+                    this.play(Math.floor(Math.random() * this.#playList.length))
+                    break
+            }
         })
         this.#ele.volume = 0.5
     }
@@ -113,54 +130,25 @@ class MiniMusicPlayer {
     }
 
     play(i?: number) {
-        if (!this.#playList.length) {
-            return
-        }
-        let index = i ?? this.#nowIndex.value
-        this.#nowIndex.value = index
-        let item = this.#playList[index]
-        item.info().then(info => {
-            if (!info)
-                return
-            this.#info = info
-        })
-        let src = item.src
-        if (!this.#ele.src.endsWith(src)) {
-            this.#ele.src = src
-        }
-        this.#ele.play().then(() => {
-            this.#status.item = this.#playList[index]
-        }).catch(() => {
-            this.#status.playing = false
-        })
+        this.#play(i ?? this.#nowIndex.value)
     }
 
     playPrev() {
-        let i = this.#nowIndex.value + 1
+        let i = this.#status.playMode == PlayMode.Random ?
+            Math.floor(Math.random() * this.#playList.length) :
+            this.#nowIndex.value - 1
         if (i < 0)
             i = this.#playList.length - 1
         this.play(i)
     }
 
     playNext() {
-        switch (this.#status.playMode) {
-            case PlayMode.RepeatThis:
-                this.play()
-                break
-            // @ts-ignore
-            case PlayMode.Normal:
-                if (this.#nowIndex.value == this.#playList.length - 1)
-                    break
-            case PlayMode.RepeatAll:
-                let i = this.#nowIndex.value + 1
-                if (i >= this.#playList.length)
-                    i = 0
-                this.play(i)
-                break
-            case PlayMode.Random:
-                this.play(Math.floor(Math.random() * this.#playList.length))
-                break
-        }
+        let i = this.#status.playMode == PlayMode.Random ?
+            Math.floor(Math.random() * this.#playList.length) :
+            this.#nowIndex.value + 1
+        if (i >= this.#playList.length)
+            i = 0
+        this.play(i)
     }
 
     pause() {
@@ -204,6 +192,32 @@ class MiniMusicPlayer {
         if (i > PlayMode.Random)
             i = PlayMode.Normal
         this.#status.playMode = i
+    }
+
+    #play(index: number) {
+        if (!this.#playList.length) {
+            return
+        }
+        if (index < 0)
+            index = 0
+        if (this.#nowIndex.value == index) {
+            this.#ele.play()
+            return
+        }
+        this.#nowIndex.value = index
+        let item = this.#playList[index]
+        this.#ele.src = item.src
+        this.#ele.play().then(() => {
+            this.#status.item = this.#playList[index]
+        }).catch(() => {
+            this.#status.playing = false
+        })
+        item.info().then(info => {
+            if (!info)
+                return
+            this.#info = info
+        })
+
     }
 }
 
