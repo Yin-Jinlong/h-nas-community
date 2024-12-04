@@ -4,12 +4,16 @@ import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.HLSStreamInfo
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
+import com.yjl.hnas.entity.VirtualFile
+import com.yjl.hnas.error.ErrorCode
+import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.hls.HLSGenerator
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.option.PreviewOption
 import com.yjl.hnas.preview.PreviewException
 import com.yjl.hnas.preview.PreviewGeneratorFactory
 import com.yjl.hnas.service.FileMappingService
+import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.task.BackgroundTasks
 import com.yjl.hnas.utils.del
 import io.github.yinjinlong.spring.boot.util.getLogger
@@ -33,7 +37,8 @@ class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper,
     val previewGeneratorFactory: PreviewGeneratorFactory,
     val previewOption: PreviewOption,
-    val transactionManager: PlatformTransactionManager
+    val transactionManager: PlatformTransactionManager,
+    val virtualFileService: VirtualFileService,
 ) : FileMappingService {
 
     private val logger = getLogger()
@@ -164,9 +169,18 @@ class FileMappingServiceImpl(
         previewOption.previewQuality
     ) else null
 
-    override fun getVideoLiveStream(mapping: IFileMapping, hash: String): List<HLSStreamInfo> {
+    override fun getVideoLiveStream(path: VirtualPath): List<HLSStreamInfo>? {
+        val vf = virtualFileService.get(path) as VirtualFile?
+            ?: throw ErrorCode.NO_SUCH_FILE.error
+        if (vf.hash == null)
+            return null
+        val fm = getMapping(vf.hash!!)
+            ?: throw IllegalStateException("no mapping: ${vf.hash}")
+        if (fm.type != "video")
+            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
+        val hash = fm.hash.pathSafe
         val index = DataHelper.hlsIndexFile(hash)
-        val prefix = URLEncoder.encode(hash, "UTF-8")
+        val prefix = URLEncoder.encode(path.path, "UTF-8")
         if (index.exists()) {
             return index.useLines {
                 it.mapNotNull { line ->
@@ -175,8 +189,8 @@ class FileMappingServiceImpl(
                 }.toList()
             }
         }
-        BackgroundTasks.run(mapping.hash) {
-            val videoFile = DataHelper.dataFile(mapping.dataPath)
+        BackgroundTasks.run(hash) {
+            val videoFile = DataHelper.dataFile(fm.dataPath)
             HLSGenerator.generate(videoFile, 10.0, hash)
         }
         return listOf()

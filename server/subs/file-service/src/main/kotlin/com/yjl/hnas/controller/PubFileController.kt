@@ -165,25 +165,20 @@ class PubFileController(
     @GetMapping("video/stream/info")
     fun getVideoStreamInfo(path: String): List<HLSStreamInfo>? {
         val p = getPubPath(path)
-        val vf = virtualFileService.get(p) as VirtualFile?
-            ?: throw ErrorCode.NO_SUCH_FILE.error
-        if (vf.hash == null)
-            return null
-        val fm = fileMappingService.getMapping(vf.hash!!)
-            ?: throw IllegalStateException("no mapping: ${vf.hash}")
-        if (fm.type != "video")
-            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
-        return fileMappingService.getVideoLiveStream(fm, vf.hash!!.pathSafe)
+        return fileMappingService.getVideoLiveStream(p)
     }
 
-    @GetMapping("video/stream/{hash}/{rate}/{file}")
+    @GetMapping("video/stream/{path}/{rate}/{file}")
     @ResponseEmpty
     fun getVideoStream(
-        @PathVariable hash: String,
+        @PathVariable path: String,
         @PathVariable rate: String,
         @PathVariable file: String,
     ): File = withCatch {
-        DataHelper.tsFile(hash, rate, file)
+        val pp = getPubPath(path)
+        val vf = virtualFileService.get(pp)
+            ?: throw ErrorCode.NO_SUCH_FILE.error
+        DataHelper.tsFile((vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error).pathSafe, rate, file)
     }
 
     @Async
