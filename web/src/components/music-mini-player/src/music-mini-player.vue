@@ -1,5 +1,6 @@
 <template>
     <div class="floating-bar" data-flex-center>
+        <canvas ref="fftCanvasEle"/>
         <div class="width cover-box">
             <div :class="{cover:1,playing:MiniMusicPlayer.status.playing}">
                 <el-image :src="getCover()">
@@ -114,15 +115,25 @@
 </template>
 
 <style lang="scss" scoped>
+
+canvas {
+  border-radius: 1em;
+  bottom: 0;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
 .floating-bar {
   background-color: #fafafa;
   border-radius: 1em;
-  bottom: 1em;
+  bottom: 1.5em;
   box-shadow: #989898 0 0 5px;
-  left: 5%;
+  left: 4em;
+  min-width: 800px;
   padding: 0.5em;
   position: fixed;
-  width: 90%;
+  width: calc(100% - 8em);
 
   & > div {
     margin: 0 0.5em;
@@ -169,9 +180,13 @@
     z-index: 1;
   }
 
-  &.playing > div {
-    animation-play-state: running;
+  &.playing {
     box-shadow: gray 0 0 8px;
+
+    & > div {
+      animation-play-state: running;
+    }
+
   }
 
 }
@@ -247,7 +262,6 @@ import VolumeMid from '@/pages/play/src/volume-mid.vue'
 import VolumeMuted from '@/pages/play/src/volume-muted.vue'
 import VolumeZero from '@/pages/play/src/volume-zero.vue'
 import API from '@/utils/api'
-import {subPath} from '@/utils/path'
 import {Close, CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
 import {HButton, HToolTip} from '@yin-jinlong/h-ui'
 import {MiniMusicPlayer, PlayMode} from './mini-music-player'
@@ -255,7 +269,39 @@ import PlayList from './play-list.vue'
 
 const showVolume = ref(false)
 const audioVolume = ref(0)
+const fftCanvasEle = ref<HTMLCanvasElement>()
 let lastHideVolumeId = 0
+let ctx: CanvasRenderingContext2D
+let canvasWidth = 0
+let canvasHeight = 0
+let skipFrame = false
+
+let observer = new ResizeObserver(() => {
+    canvasWidth = fftCanvasEle.value!!.offsetWidth
+    canvasHeight = fftCanvasEle.value!!.offsetHeight
+    fftCanvasEle.value!!.width = canvasWidth
+    fftCanvasEle.value!!.height = canvasHeight
+})
+
+function render() {
+    if (MiniMusicPlayer.status.playing || skipFrame)
+        requestAnimationFrame(render)
+    skipFrame = !skipFrame
+
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+    let v = audioVolume.value / 100
+    let data = MiniMusicPlayer.fft
+    let barWidth = canvasWidth / data.length
+    let x = 0
+
+    for (let i = 0; i < data.length; i++) {
+        let p = (Math.abs(data[i] - 128)) / 128 / v
+        ctx.fillStyle = `hsl(${360 * i / data.length}deg,80%,45%,0.2)`
+        ctx.fillRect(x, canvasHeight, Math.max(barWidth - 1, 1), -canvasHeight * p)
+        x += barWidth
+    }
+
+}
 
 function getCover() {
     let info = MiniMusicPlayer.info
@@ -312,6 +358,19 @@ function seekTo(p: number) {
 function closePlayer() {
     MiniMusicPlayer.close()
 }
+
+onMounted(() => {
+    ctx = fftCanvasEle.value?.getContext('2d') as CanvasRenderingContext2D
+    observer.observe(fftCanvasEle.value!!)
+})
+
+onUnmounted(() => {
+    observer.disconnect()
+})
+
+watch(() => MiniMusicPlayer.status.playing, () => {
+    render()
+})
 
 watch(() => MiniMusicPlayer.status.volume, () => {
     audioVolume.value = MiniMusicPlayer.status.volume * 100

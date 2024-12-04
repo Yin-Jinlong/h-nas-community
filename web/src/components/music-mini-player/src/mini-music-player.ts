@@ -28,6 +28,9 @@ class MiniMusicPlayer {
     #ele: HTMLAudioElement
     #status: MusicPlayerStatus
     #info: AudioFileInfo
+    #audioAnalyser: AnalyserNode
+    #fftBuf: Uint8Array
+    #audioContext: AudioContext
 
     constructor() {
         this.#playList = reactive([])
@@ -36,7 +39,7 @@ class MiniMusicPlayer {
             duration: 0,
             bitrate: 0
         })
-        this.#nowIndex = ref(0)
+        this.#nowIndex = ref(-1)
         this.#ele = document.createElement('audio')
         this.#status = reactive({
             volume: 0.5,
@@ -87,6 +90,14 @@ class MiniMusicPlayer {
             }
         })
         this.#ele.volume = 0.5
+        let audioContext = new AudioContext()
+        this.#audioAnalyser = audioContext.createAnalyser()
+        this.#audioAnalyser.fftSize = 512
+        this.#fftBuf = new Uint8Array(this.#audioAnalyser.frequencyBinCount)
+        let source = audioContext.createMediaElementSource(this.#ele)
+        source.connect(this.#audioAnalyser)
+        this.#audioAnalyser.connect(audioContext.destination)
+        this.#audioContext = audioContext
     }
 
     get info() {
@@ -99,6 +110,11 @@ class MiniMusicPlayer {
 
     get size() {
         return this.#playList.length
+    }
+
+    get fft() {
+        this.#audioAnalyser.getByteTimeDomainData(this.#fftBuf)
+        return this.#fftBuf
     }
 
     now() {
@@ -162,6 +178,7 @@ class MiniMusicPlayer {
         this.#status.item = undefined
         this.#status.current = 0
         this.#status.duration = 0
+        this.#nowIndex.value = -1
     }
 
     muted(m?: boolean) {
@@ -209,6 +226,8 @@ class MiniMusicPlayer {
         this.#ele.src = item.src
         this.#ele.play().then(() => {
             this.#status.item = this.#playList[index]
+            if (this.#audioContext.state === 'suspended')
+                this.#audioContext.resume()
         }).catch(() => {
             this.#status.playing = false
         })
