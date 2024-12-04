@@ -138,11 +138,15 @@
 }
 
 .cover {
+  align-items: center;
+  background: white;
   border-radius: 2em;
   bottom: 0;
   box-shadow: gray 0 0 4px;
   cursor: pointer;
+  display: flex;
   height: 4em;
+  justify-content: center;
   overflow: hidden;
   position: absolute;
   transform-origin: bottom center;
