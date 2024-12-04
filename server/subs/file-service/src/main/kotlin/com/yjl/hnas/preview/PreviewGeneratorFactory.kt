@@ -20,22 +20,20 @@ class PreviewGeneratorFactory {
 
     fun getPreview(ins: InputStream, mediaType: MediaType, maxSize: Int, quality: Float): ByteArray? {
         val generator = generators[mediaType] ?: return null
-        return kotlin.runCatching {
-            ins.use {
-                val img = generator.generate(ins, maxSize)
-                val out = ByteArrayOutputStream()
-                jpgWriter().apply {
-                    output = ImageIO.createImageOutputStream(out)
-                    write(
-                        null, IIOImage(img, null, null),
-                        JPEGImageWriteParam(Locale.getDefault()).apply {
-                            compressionMode = ImageWriteParam.MODE_EXPLICIT
-                            compressionQuality = quality
-                        })
-                }
-                out.toByteArray()
+        return ins.use {
+            val img = generator.generate(ins, maxSize)
+            val out = ByteArrayOutputStream()
+            jpgWriter().apply {
+                output = ImageIO.createImageOutputStream(out)
+                write(
+                    null, IIOImage(img, null, null),
+                    JPEGImageWriteParam(Locale.getDefault()).apply {
+                        compressionMode = ImageWriteParam.MODE_EXPLICIT
+                        compressionQuality = quality
+                    })
             }
-        }.getOrThrow()
+            out.toByteArray()
+        }
     }
 
     fun canPreview(mediaType: MediaType): Boolean {
