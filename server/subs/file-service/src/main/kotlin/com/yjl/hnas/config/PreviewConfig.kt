@@ -40,6 +40,9 @@ class PreviewConfig {
     fun videoPreviewGenerator(): FilePreviewGenerator = VideoPreviewGenerator()
 
     @Bean
+    fun audioPreviewGenerator(): FilePreviewGenerator = AudioPreviewGenerator()
+
+    @Bean
     fun xMindPreviewGenerator(): FilePreviewGenerator = XMindPreviewGenerator()
 
 }

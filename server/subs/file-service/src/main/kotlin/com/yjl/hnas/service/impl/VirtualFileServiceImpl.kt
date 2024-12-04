@@ -14,6 +14,7 @@ import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.del
+import com.yjl.hnas.utils.getCoverFrame
 import com.yjl.hnas.utils.mkParent
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
@@ -21,9 +22,7 @@ import org.apache.tika.mime.MediaType
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.mp3.MP3File
 import org.jaudiotagger.tag.FieldKey
-import org.jaudiotagger.tag.id3.AbstractID3v2Frame
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag
-import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -326,8 +325,8 @@ class VirtualFileServiceImpl(
     }
 
     fun getCover(tag: AbstractID3v2Tag): String? {
-        val frame = tag.getFrame("APIC") as? AbstractID3v2Frame? ?: return null
-        val data = (frame.body as FrameBodyAPIC).imageData
+        val frame = tag.getCoverFrame() ?: return null
+        val data = frame.imageData
         val hash = Hash(data.sha256).pathSafe
         val coverFile = DataHelper.coverFile(hash)
         if (!coverFile.exists()) {
