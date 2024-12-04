@@ -527,7 +527,10 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
             }
             let i = MiniMusicPlayer.add({
                 title: f.info.name,
-                src: API.publicFileURL(subPath(f.info.dir, f.info.name))
+                src: API.publicFileURL(subPath(f.info.dir, f.info.name)),
+                async info() {
+                    return await API.getPublicAudioInfo(subPath(f.info.dir, f.info.name))
+                }
             })
             MiniMusicPlayer.play(i)
             break

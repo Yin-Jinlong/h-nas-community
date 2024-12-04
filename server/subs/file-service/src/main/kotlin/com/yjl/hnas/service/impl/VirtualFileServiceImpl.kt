@@ -1,11 +1,13 @@
 package com.yjl.hnas.service.impl
 
+import com.yjl.hnas.data.AudioFileInfo
 import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.entity.*
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.*
 import com.yjl.hnas.fs.attr.FileAttributes
+import com.yjl.hnas.mapper.AudioInfoMapper
 import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
@@ -16,6 +18,9 @@ import com.yjl.hnas.utils.mkParent
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.audio.mp3.MP3File
+import org.jaudiotagger.tag.FieldKey
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -38,6 +43,7 @@ class VirtualFileServiceImpl(
     val virtualFileMapper: VirtualFileMapper,
     val fileMappingMapper: FileMappingMapper,
     val childrenCountMapper: ChildrenCountMapper,
+    val audioInfoMapper: AudioInfoMapper,
 ) : VirtualFileService {
 
     private lateinit var fs: VirtualFilesystem
@@ -304,6 +310,46 @@ class VirtualFileServiceImpl(
             ?: throw NotDirectoryException(path.fullPath)
     }
 
+    fun insertNullAudioInfo(path: VirtualPath, fid: Hash): AudioFileInfo {
+        return AudioFileInfo.of(path.path, AudioInfo(fid = fid).apply {
+            audioInfoMapper.insert(this)
+        })
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    override fun getAudioInfo(path: VirtualPath): AudioFileInfo {
+        val vf = getOrThrow(path)
+        if (!vf.mediaType.startsWith("audio"))
+            throw ErrorCode.BAD_FILE_FORMAT.error
+        val ai = audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
+        if (ai != null)
+            return AudioFileInfo.of(path.path, ai)
+        val fm = fileMappingMapper.selectByHash(vf.hash!!)
+            ?: throw IllegalStateException("file_mapping 不存在hash: ${vf.hash}")
+        val file = DataHelper.dataFile(fm.dataPath)
+        val af = AudioFileIO.readMagic(file)
+        if (af !is MP3File || !af.hasID3v2Tag())
+            return insertNullAudioInfo(path, vf.hash!!)
+        val tag = af.iD3v2Tag!!
+        return AudioFileInfo.of(
+            path.path, AudioInfo(
+                fid = vf.hash!!,
+                title = tag.getFirst(FieldKey.TITLE),
+                subTitle = tag.getFirst(FieldKey.SUBTITLE),
+                artists = tag.getFirst(FieldKey.ARTIST),
+                cover = null,
+                album = tag.getFirst(FieldKey.ALBUM),
+                duration = af.mP3AudioHeader.preciseTrackLength.toFloat(),
+                year = tag.getFirst(FieldKey.YEAR).toShortOrNull(),
+                num = tag.getFirst(FieldKey.TRACK).toIntOrNull(),
+                style = tag.getFirst(FieldKey.GENRE),
+                bitrate = af.mP3AudioHeader.bitRateAsNumber.toInt(),
+                comment = tag.getFirst(FieldKey.COMMENT),
+            ).apply {
+                audioInfoMapper.insert(this)
+            })
+    }
+
     @Transactional(rollbackFor = [Exception::class])
     fun mkdirs(owner: Uid, dir: VirtualPath) {
         if (exists(dir))
@@ -349,6 +395,9 @@ class VirtualFileServiceImpl(
             val fm = fileMappingMapper.selectByHash(hash)
                 ?: throw IllegalStateException("hash=$hash not found in mapping")
             fileMappingMapper.deleteById(hash)
+            if (fm.type == "audio") {
+                audioInfoMapper.deleteById(hash)
+            }
             DataHelper.dataFile(fm.dataPath).del()
             if (fm.preview)
                 DataHelper.previewFile(fm.dataPath).del()

@@ -27,8 +27,8 @@
         <div class="width">
             <div class="title marquee">
                 <div>
-                    <span>{{ MiniMusicPlayer.status.item?.title }}</span>
-                    <span>{{ MiniMusicPlayer.status.item?.title }}</span>
+                    <span>{{ getTitle() }}</span>
+                    <span>{{ getTitle() }}</span>
                 </div>
             </div>
         </div>
@@ -177,6 +177,21 @@ import PlayList from './play-list.vue'
 const showVolume = ref(false)
 const audioVolume = ref(0)
 let lastHideVolumeId = 0
+
+function getTitle() {
+    let info = MiniMusicPlayer.info
+    if (info.path) {
+        if (info.title) {
+            let r = info.title
+            if (info.album)
+                r += ` - ${info.album}`
+            if (info.artists)
+                r += ` - ${info.artists}`
+            return r
+        }
+    }
+    return MiniMusicPlayer.status.item?.title
+}
 
 function playPause() {
     if (MiniMusicPlayer.status.playing) {

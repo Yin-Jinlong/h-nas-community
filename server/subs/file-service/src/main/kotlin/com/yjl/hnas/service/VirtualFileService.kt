@@ -1,5 +1,6 @@
 package com.yjl.hnas.service
 
+import com.yjl.hnas.data.AudioFileInfo
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.entity.ChildrenCount
 import com.yjl.hnas.entity.Hash
@@ -52,4 +53,6 @@ interface VirtualFileService : VirtualFileManager {
         NotDirectoryException::class
     )
     fun getFolderChildrenCount(path: VirtualPath): ChildrenCount
+
+    fun getAudioInfo(path: VirtualPath): AudioFileInfo
 }

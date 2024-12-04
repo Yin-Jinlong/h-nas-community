@@ -162,6 +162,12 @@ class PubFileController(
         }
     }
 
+    @GetMapping("audio/info")
+    fun getAudioInfo(path: String): AudioFileInfo {
+        val p = getPubPath(path)
+        return virtualFileService.getAudioInfo(p)
+    }
+
     @GetMapping("video/stream/info")
     fun getVideoStreamInfo(path: String): List<HLSStreamInfo>? {
         val p = getPubPath(path)

@@ -124,6 +124,13 @@ async function getPublicHLSInfo(path: string) {
         .catch(catchError)
 }
 
+async function getPublicAudioInfo(path: string) {
+    return get<AudioFileInfo>('api/file/public/audio/info', {
+        path
+    }).then(resp => resp.data)
+        .catch(catchError)
+}
+
 async function deletePublicFile(path: string) {
     return del<void>('api/file/public', {
         path: path
@@ -263,6 +270,7 @@ const API = {
     tryLogin,
     logon,
     getPublicHLSInfo,
+    getPublicAudioInfo,
     getPublicFiles,
     getDirChildrenCount,
     getPublicFilePreview,

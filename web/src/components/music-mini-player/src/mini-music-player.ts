@@ -11,6 +11,7 @@ export interface MusicPlayerStatus {
 export interface MusicItem {
     title: string
     src: string
+    info: () => Promise<AudioFileInfo | undefined>
 }
 
 export enum PlayMode {
@@ -26,9 +27,15 @@ class MiniMusicPlayer {
     #nowIndex: Ref<number>
     #ele: HTMLAudioElement
     #status: MusicPlayerStatus
+    #info: AudioFileInfo
 
     constructor() {
         this.#playList = reactive([])
+        this.#info = reactive({
+            path: '',
+            duration: 0,
+            bitrate: 0
+        })
         this.#nowIndex = ref(0)
         this.#ele = document.createElement('audio')
         this.#status = reactive({
@@ -65,6 +72,10 @@ class MiniMusicPlayer {
         this.#ele.volume = 0.5
     }
 
+    get info() {
+        return this.#info
+    }
+
     get status() {
         return this.#status
     }
@@ -94,7 +105,13 @@ class MiniMusicPlayer {
         }
         let index = i ?? this.#nowIndex.value
         this.#nowIndex.value = index
-        let src = this.#playList[index].src
+        let item = this.#playList[index]
+        item.info().then(info => {
+            if (!info)
+                return
+            this.#info = info
+        })
+        let src = item.src
         if (!this.#ele.src.endsWith(src)) {
             this.#ele.src = src
         }

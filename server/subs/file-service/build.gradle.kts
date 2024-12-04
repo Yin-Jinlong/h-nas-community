@@ -6,6 +6,13 @@ plugins {
     alias(libs.plugins.spring.dependency.management)
 }
 
+repositories {
+    maven("https://maven.aliyun.com/repository/public")
+    maven("https://maven.aliyun.com/repository/central")
+    mavenCentral()
+    maven("https://jitpack.io")
+}
+
 dependencies {
 
     implementation(fs())
@@ -13,6 +20,7 @@ dependencies {
     implementation(libs.webp.imageio)
     implementation(libs.bytedeco.javacv)
     implementation(libs.bytedeco.javacv.platform)
+    implementation("com.github.Adonai:jaudiotagger:2.3.14")
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
