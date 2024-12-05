@@ -254,8 +254,9 @@ canvas {
 </style>
 
 <script lang="ts" setup>
-import PlayNext from '@/components/music-mini-player/src/play-next.vue'
-import PlayPrev from '@/components/music-mini-player/src/play-prev.vue'
+import {FFT} from './fft'
+import PlayNext from './play-next.vue'
+import PlayPrev from './play-prev.vue'
 import VolumeHigth from '@/pages/play/src/volume-higth.vue'
 import VolumeLow from '@/pages/play/src/volume-low.vue'
 import VolumeMid from '@/pages/play/src/volume-mid.vue'
@@ -274,7 +275,6 @@ let lastHideVolumeId = 0
 let ctx: CanvasRenderingContext2D
 let canvasWidth = 0
 let canvasHeight = 0
-let skipFrame = false
 
 let observer = new ResizeObserver(() => {
     canvasWidth = fftCanvasEle.value!!.offsetWidth
@@ -283,20 +283,21 @@ let observer = new ResizeObserver(() => {
     fftCanvasEle.value!!.height = canvasHeight
 })
 
+let fft: FFT
+
+
 function render() {
-    if (MiniMusicPlayer.status.playing || skipFrame)
+    if (MiniMusicPlayer.status.playing)
         requestAnimationFrame(render)
-    skipFrame = !skipFrame
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight)
     let v = audioVolume.value / 100
-    let data = MiniMusicPlayer.fft
-    let barWidth = canvasWidth / data.length
+    let barWidth = canvasWidth / fft.size
     let x = 0
 
-    for (let i = 0; i < data.length; i++) {
-        let p = (Math.abs(data[i] - 128)) / 128 / v
-        ctx.fillStyle = `hsl(${360 * i / data.length}deg,80%,45%,0.2)`
+    for (let i = 0; i < fft.size; i++) {
+        let p = (Math.abs(fft.get(i) - 128)) / 128 / v
+        ctx.fillStyle = `hsl(${360 * i / fft.size}deg,80%,45%,0.2)`
         ctx.fillRect(x, canvasHeight, Math.max(barWidth - 1, 1), -canvasHeight * p)
         x += barWidth
     }
@@ -362,6 +363,9 @@ function closePlayer() {
 onMounted(() => {
     ctx = fftCanvasEle.value?.getContext('2d') as CanvasRenderingContext2D
     observer.observe(fftCanvasEle.value!!)
+    fft = new FFT(MiniMusicPlayer.fftSize, 16.67 * 5, () => {
+        return MiniMusicPlayer.fft
+    })
 })
 
 onUnmounted(() => {

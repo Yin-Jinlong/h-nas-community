@@ -117,6 +117,10 @@ class MiniMusicPlayer {
         return this.#fftBuf
     }
 
+    get fftSize() {
+        return this.#audioAnalyser.frequencyBinCount
+    }
+
     now() {
         return this.#nowIndex.value
     }
