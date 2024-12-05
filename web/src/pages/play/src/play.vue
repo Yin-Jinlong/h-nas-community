@@ -444,6 +444,8 @@ function onVideoPlaying() {
 function onVideoTime() {
     let t = player!!.currentTime()!!
     let d = player!!.duration()!!
+    videoInfo.cur = t
+    videoInfo.dur = d
     videoInfo.progress = t / d
 }
 
