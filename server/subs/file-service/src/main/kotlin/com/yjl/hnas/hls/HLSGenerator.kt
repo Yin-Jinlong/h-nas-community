@@ -10,13 +10,14 @@ import java.io.File
  */
 object HLSGenerator {
 
-    val bitrates = intArrayOf(300, 500, 1000, 2000, 5000)
+    val bitrates = intArrayOf(1000, 2000, 5000, 10_000)
 
     fun generate(file: File, time: Double, hash: String) {
         FFmpegFrameGrabber(file).use { grabber ->
+            grabber.setOption("hwaccel", "auto")
             grabber.start()
             val cachePath = DataHelper.hlsPath(hash)
-            val recorders = HLSRecorderList(grabber, cachePath, time, *bitrates)
+            val recorders = HLSRecorderList(file, grabber, cachePath, time, *bitrates)
             recorders.start()
 
             var frame: Frame? = grabber.grabFrame()

@@ -362,20 +362,17 @@ function render() {
 
 function getBitrateName(index: number) {
     const NAMES = [{
-        name: '极速',
-        bitrate: 300,
-    }, {
         name: '流畅',
-        bitrate: 500,
-    }, {
-        name: '高清',
         bitrate: 1000,
     }, {
-        name: '超清',
+        name: '高清',
         bitrate: 2000,
     }, {
-        name: '蓝光',
+        name: '超清',
         bitrate: 5000,
+    }, {
+        name: '蓝光',
+        bitrate: 10000,
     }]
     if (!streams[index]?.bitrate)
         return '?'

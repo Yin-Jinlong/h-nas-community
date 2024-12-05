@@ -191,7 +191,7 @@ class FileMappingServiceImpl(
         }
         BackgroundTasks.run(hash) {
             val videoFile = DataHelper.dataFile(fm.dataPath)
-            HLSGenerator.generate(videoFile, 10.0, hash)
+            HLSGenerator.generate(videoFile, 5.0, hash)
         }
         return listOf()
     }

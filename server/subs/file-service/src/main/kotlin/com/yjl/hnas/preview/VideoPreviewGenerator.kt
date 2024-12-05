@@ -11,6 +11,7 @@ import java.io.InputStream
  */
 open class VideoPreviewGenerator : FilePreviewGenerator(
     MediaType.video("mp4"),
+    MediaType.video("x-matroska"),
 ) {
     private val imagePreviewGenerator = ImagePreviewGenerator.INSTANCE
 

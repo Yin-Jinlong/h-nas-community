@@ -5,6 +5,7 @@ import org.bytedeco.ffmpeg.global.avcodec
 import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
+import org.bytedeco.javacv.FFmpegLogCallback
 import org.bytedeco.javacv.Frame
 import java.io.File
 import java.nio.file.Files
@@ -31,23 +32,32 @@ class HLSRecorder(
         grabber.imageHeight,
         grabber.audioChannels
     ).apply {
+        avutil.av_log_set_level(avutil.AV_LOG_INFO)
+        FFmpegLogCallback.set()
         format = "hls"
         setOption("hls_time", "$time")
         setOption("hls_list_size", "0")
-        setOption("hls_flags", "split_by_time")
         setOption("hls_flags", "delete_segments")
         setOption("hls_delete_threshold", "1")
         setOption("hls_segment_type", "mpegts")
         setOption("hls_segment_filename", "$cachePath/%d.ts")
 
         frameRate = grabber.frameRate
-        videoBitrate = bitrate * 1000
-        videoCodec = grabber.videoCodec
+        if (grabber.hasVideo()) {
+            videoBitrate = bitrate * 1000
+            val encoder = getNVEncoder().value
+            if (encoder == null)
+                videoCodec = avcodec.AV_CODEC_ID_H264
+            else
+                videoCodecName = encoder.name().string
+        }
 
-        sampleFormat = avutil.AV_SAMPLE_FMT_FLTP
-        sampleRate = grabber.sampleRate
-        audioCodec = avcodec.AV_CODEC_ID_AAC
-        audioBitrate = getAudioBitrate(grabber.audioBitrate)
+        if (grabber.hasAudio()) {
+            sampleFormat = avutil.AV_SAMPLE_FMT_FLTP
+            sampleRate = grabber.sampleRate
+            audioCodec = avcodec.AV_CODEC_ID_AAC
+            audioBitrate = getAudioBitrate(grabber.audioBitrate)
+        }
     }
 
     override fun start() {
@@ -80,8 +90,16 @@ class HLSRecorder(
         )
 
         private fun getAudioBitrate(rate: Int): Int {
+            if (rate == 0)
+                return AudioBitrate[3]
             return AudioBitrate.first { it >= rate }
         }
 
+        fun getNVEncoder() = lazy {
+            kotlin.runCatching {
+                // avcodec.avcodec_find_encoder_by_name("hevc_nvenc") ?:
+                avcodec.avcodec_find_encoder_by_name("h264_nvenc")
+            }.getOrNull()
+        }
     }
 }
