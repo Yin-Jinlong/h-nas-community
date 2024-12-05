@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
+import java.net.URLDecoder
 import java.nio.file.Files
 import kotlin.io.path.name
 
@@ -187,7 +188,7 @@ class PubFileController(
         @PathVariable rate: String,
         @PathVariable file: String,
     ): File = withCatch {
-        val pp = getPubPath(path)
+        val pp = getPubPath(URLDecoder.decode(path, Charsets.UTF_8))
         val vf = virtualFileService.get(pp)
             ?: throw ErrorCode.NO_SUCH_FILE.error
         DataHelper.tsFile((vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error).pathSafe, rate, file)
