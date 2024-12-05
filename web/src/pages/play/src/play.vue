@@ -669,6 +669,11 @@ watch(path, (nv) => {
         nowStreamIndex.value = max
         console.log(info)
     })
+    API.getPublicVideoChapter(nv).then(res => {
+        if (!res)
+            return
+        console.log(res)
+    })
 })
 
 watch(nowStreamIndex, nv => {

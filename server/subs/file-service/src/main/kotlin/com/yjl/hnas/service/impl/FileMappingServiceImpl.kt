@@ -1,5 +1,8 @@
 package com.yjl.hnas.service.impl
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.yjl.hnas.data.ChapterInfo
 import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.HLSStreamInfo
 import com.yjl.hnas.entity.Hash
@@ -8,6 +11,7 @@ import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.hls.HLSGenerator
+import com.yjl.hnas.hls.VideoChapterHelper
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.option.PreviewOption
 import com.yjl.hnas.preview.PreviewException
@@ -42,6 +46,8 @@ class FileMappingServiceImpl(
 ) : FileMappingService {
 
     private val logger = getLogger()
+
+    private val gson = Gson()
 
     private val previewTypeSet = setOf("image", "video")
 
@@ -194,5 +200,25 @@ class FileMappingServiceImpl(
             HLSGenerator.generate(videoFile, 5.0, hash)
         }
         return listOf()
+    }
+
+    override fun getVideoChapters(path: VirtualPath): List<ChapterInfo> {
+        val vf = virtualFileService.get(path) ?: throw ErrorCode.NO_SUCH_FILE.error
+        if (!vf.mediaType.startsWith("video"))
+            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
+        val chapterFile = DataHelper.hlsSubFile(vf.hash!!.pathSafe, "chapter")
+        return if (!chapterFile.exists()) {
+            val fm = getMapping(vf.hash!!)
+                ?: throw IllegalStateException("no mapping: ${vf.hash}")
+            val chapters = VideoChapterHelper.getChapter(DataHelper.dataFile(fm.dataPath))
+            chapters.map {
+                ChapterInfo(it.start_time, it.tags?.title ?: "")
+            }.also {
+                chapterFile.writeText(gson.toJson(it))
+            }
+        } else {
+            gson.fromJson(chapterFile.readText(), TypeToken.getArray(ChapterInfo::class.java))
+                    as List<ChapterInfo>
+        }
     }
 }

@@ -124,6 +124,13 @@ async function getPublicHLSInfo(path: string) {
         .catch(catchError)
 }
 
+async function getPublicVideoChapter(path: string) {
+    return get<ChapterInfo[]>('api/file/public/video/chapter', {
+        path: path
+    }).then(resp => resp.data)
+        .catch(catchError)
+}
+
 async function getPublicAudioInfo(path: string) {
     return get<AudioFileInfo>('api/file/public/audio/info', {
         path
@@ -275,6 +282,7 @@ const API = {
     logon,
     getPublicHLSInfo,
     getPublicAudioInfo,
+    getPublicVideoChapter,
     getPublicFiles,
     getDirChildrenCount,
     getPublicFilePreview,

@@ -70,6 +70,8 @@ object DataHelper {
      */
     fun hlsIndexFile(hash: String): File = HLSPath.file(hash, "/index")
 
+    fun hlsSubFile(hash: String, path: String): File = HLSPath.file(hash, "/", path)
+
     /**
      * 流媒体：cache/hls/...
      */

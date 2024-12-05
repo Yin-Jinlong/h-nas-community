@@ -175,6 +175,12 @@ class PubFileController(
         return virtualFileService.getAudioCover(p)
     }
 
+    @GetMapping("video/chapter")
+    fun getVideoChapter(path: String): List<ChapterInfo> {
+        val p = getPubPath(path)
+        return fileMappingService.getVideoChapters(p)
+    }
+
     @GetMapping("video/stream/info")
     fun getVideoStreamInfo(path: String): List<HLSStreamInfo>? {
         val p = getPubPath(path)
