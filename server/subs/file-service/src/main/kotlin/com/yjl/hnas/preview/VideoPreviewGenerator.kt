@@ -1,9 +1,12 @@
 package com.yjl.hnas.preview
 
 import org.apache.tika.mime.MediaType
+import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameGrabber
+import org.bytedeco.javacv.FFmpegLogCallback
 import org.bytedeco.javacv.Java2DFrameConverter
 import java.awt.image.BufferedImage
+import java.io.File
 import java.io.InputStream
 
 /**
@@ -15,8 +18,13 @@ open class VideoPreviewGenerator : FilePreviewGenerator(
 ) {
     private val imagePreviewGenerator = ImagePreviewGenerator.INSTANCE
 
-    override fun generate(input: InputStream, maxSize: Int): BufferedImage = kotlin.runCatching {
-        imagePreviewGenerator.gen(FFmpegFrameGrabber(input).use { grabber ->
+    override fun generate(input: InputStream, maxSize: Int): BufferedImage =
+        throw UnsupportedOperationException()
+
+    override fun generate(file: File, maxSize: Int): BufferedImage = kotlin.runCatching {
+        avutil.av_log_set_level(avutil.AV_LOG_INFO)
+        FFmpegLogCallback.set()
+        imagePreviewGenerator.gen(FFmpegFrameGrabber(file).use { grabber ->
             grabber.start()
             val frame = grabber.grabImage() ?: throw IllegalStateException("视频预览失败: 无法获取第一帧")
             val converter = Java2DFrameConverter()

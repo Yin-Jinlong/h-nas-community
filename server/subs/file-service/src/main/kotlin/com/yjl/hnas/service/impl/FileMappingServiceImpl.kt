@@ -98,7 +98,7 @@ class FileMappingServiceImpl(
         val file = DataHelper.dataFile(dataPath)
         try {
             val data =
-                previewGeneratorFactory.getPreview(file.inputStream(), mediaType, maxSize, quality) ?: return
+                previewGeneratorFactory.getPreview(file, mediaType, maxSize, quality) ?: return
             cache.parentFile.apply {
                 if (!exists())
                     mkdirs()

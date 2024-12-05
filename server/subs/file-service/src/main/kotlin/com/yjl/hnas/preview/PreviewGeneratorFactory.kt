@@ -2,7 +2,7 @@ package com.yjl.hnas.preview
 
 import org.apache.tika.mime.MediaType
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import java.io.File
 import java.util.*
 import javax.imageio.IIOImage
 import javax.imageio.ImageIO
@@ -18,10 +18,10 @@ class PreviewGeneratorFactory {
 
     private fun jpgWriter() = ImageIO.getImageWritersByFormatName("jpg").next()!!
 
-    fun getPreview(ins: InputStream, mediaType: MediaType, maxSize: Int, quality: Float): ByteArray? {
+    fun getPreview(file: File, mediaType: MediaType, maxSize: Int, quality: Float): ByteArray? {
         val generator = generators[mediaType] ?: return null
-        return ins.use {
-            val img = generator.generate(ins, maxSize)
+        return run {
+            val img = generator.generate(file, maxSize)
             val out = ByteArrayOutputStream()
             jpgWriter().apply {
                 output = ImageIO.createImageOutputStream(out)
