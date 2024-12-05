@@ -377,7 +377,7 @@ function getBitrateName(index: number) {
         name: '蓝光',
         bitrate: 5000,
     }]
-    if (index < 0)
+    if (!streams[index]?.bitrate)
         return '?'
     let bitrate = streams[index].bitrate
     if (index == 0)
@@ -677,6 +677,10 @@ watch(path, (nv) => {
 watch(nowStreamIndex, nv => {
     if (nv >= 0) {
         let time = player?.currentTime()
+        if (!streams[nv]) {
+            player?.src('')
+            return
+        }
         player?.src(API.publicHSLURL(streams[nv].path))
         if (time) {
             player?.currentTime(time)
