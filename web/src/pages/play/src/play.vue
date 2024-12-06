@@ -438,7 +438,7 @@ function onVideoCanPlay() {
 
 function onVideoError() {
     HMessage.error('播放出错！')
-    playing.value = true
+    playing.value = false
     loadingVideo.value = false
 }
 
