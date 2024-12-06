@@ -26,5 +26,5 @@ interface FileMappingService {
 
     fun getVideoChapters(path: VirtualPath): List<ChapterInfo>
 
-    fun getVideoLiveStream(path: VirtualPath): List<HLSStreamInfo>?
+    fun getVideoLiveStream(path: VirtualPath): HLSStreamInfo?
 }

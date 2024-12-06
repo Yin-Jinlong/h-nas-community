@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.yjl.hnas.data.ChapterInfo
 import com.yjl.hnas.data.DataHelper
+import com.yjl.hnas.data.HLSStream
 import com.yjl.hnas.data.HLSStreamInfo
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.IFileMapping
@@ -175,7 +176,7 @@ class FileMappingServiceImpl(
         previewOption.previewQuality
     ) else null
 
-    override fun getVideoLiveStream(path: VirtualPath): List<HLSStreamInfo>? {
+    override fun getVideoLiveStream(path: VirtualPath): HLSStreamInfo? {
         val vf = virtualFileService.get(path) as VirtualFile?
             ?: throw ErrorCode.NO_SUCH_FILE.error
         if (vf.hash == null)
@@ -188,18 +189,20 @@ class FileMappingServiceImpl(
         val index = DataHelper.hlsIndexFile(hash)
         val prefix = URLEncoder.encode(path.path, "UTF-8")
         if (index.exists()) {
-            return index.useLines {
+            return HLSStreamInfo("", index.useLines {
                 it.mapNotNull { line ->
                     if (line.isBlank()) null
-                    else HLSStreamInfo(line.toInt(), "$prefix/$line/index.m3u8")
+                    else HLSStream(line.toInt(), "$prefix/$line/index.m3u8")
                 }.toList()
+            })
+        }
+        val t = BackgroundTasks.run(hash, extra = 0) { task ->
+            val videoFile = DataHelper.dataFile(fm.dataPath)
+            HLSGenerator.generate(videoFile, 5.0, hash) {
+                task.extra = it
             }
         }
-        BackgroundTasks.run(hash) {
-            val videoFile = DataHelper.dataFile(fm.dataPath)
-            HLSGenerator.generate(videoFile, 5.0, hash)
-        }
-        return listOf()
+        return HLSStreamInfo("~${t.extra}", listOf())
     }
 
     override fun getVideoChapters(path: VirtualPath): List<ChapterInfo> {

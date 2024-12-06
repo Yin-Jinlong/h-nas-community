@@ -4,10 +4,10 @@
         <div ref="videoBoxEle"
              v-loading="nowStreamIndex < -1"
              :data-full-window="fullWindow?'':undefined"
+             :h-loading-text="`转码中...${streamExtra}`"
              class="video-box"
              data-flex-center
              data-relative
-             h-loading-text="转码中..."
              tabindex="0"
              @keydown="onPlayerKeydown"
              @keyup="onPlayerKeyup">
@@ -334,7 +334,8 @@ let fastSeekTimeout = 0
 let mouseInControlsTimeout = 0
 let rafId = 0
 const playerMsgs = reactive<Msg[]>([])
-const streams = reactive<HLSStreamInfo[]>([])
+const streams = reactive<HLSStream[]>([])
+const streamExtra = ref('')
 const nowStreamIndex = ref(-1)
 const chapters = reactive<ChapterInfo[]>([])
 
@@ -635,15 +636,22 @@ function getVideoInfo() {
         if (!info)
             return
         streams.length = 0
+        if (info.extra) {
+            nowStreamIndex.value = -2
+            if (info.extra.startsWith('~')) { // 3位整数进度
+                let p = +info.extra.substring(1)
+                streamExtra.value = ` ${(p / 10).toFixed(1)}%`
+            }
+        }
         let max = -2
-        info.forEach((item, i) => {
+        info.streams.forEach((item, i) => {
             streams.unshift(item)
             if (item.bitrate > (streams[max]?.bitrate ?? -1))
                 max = i
         })
-        if (!info.length) {
+        if (!info.streams.length) {
             loadingVideo.value = false
-            setTimeout(getVideoInfo, 5000)
+            setTimeout(getVideoInfo, 2000)
         }
         nowStreamIndex.value = max
     })

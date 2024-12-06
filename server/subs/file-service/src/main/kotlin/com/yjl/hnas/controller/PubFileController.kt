@@ -182,7 +182,7 @@ class PubFileController(
     }
 
     @GetMapping("video/stream/info")
-    fun getVideoStreamInfo(path: String): List<HLSStreamInfo>? {
+    fun getVideoStreamInfo(path: String): HLSStreamInfo? {
         val p = getPubPath(path)
         return fileMappingService.getVideoLiveStream(p)
     }

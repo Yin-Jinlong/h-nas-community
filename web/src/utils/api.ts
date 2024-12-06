@@ -118,7 +118,7 @@ async function getDirChildrenCount(dir: string) {
 }
 
 async function getPublicHLSInfo(path: string) {
-    return get<HLSStreamInfo[]>('api/file/public/video/stream/info', {
+    return get<HLSStreamInfo>('api/file/public/video/stream/info', {
         path: path
     }).then(resp => resp.data)
         .catch(catchError)
