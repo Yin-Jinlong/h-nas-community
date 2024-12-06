@@ -2,7 +2,7 @@
     <div class="player-box">
         <h3>{{ path }}</h3>
         <div ref="videoBoxEle"
-             v-loading="!streams.length"
+             v-loading="path==''"
              :data-full-window="fullWindow?'':undefined"
              class="video-box"
              data-flex-center
@@ -37,6 +37,7 @@
                         </template>
                     </h-tool-tip>
                     <seekable-progress-bar
+                            :chapters="chapters"
                             :current="videoInfo.cur"
                             :duration="videoInfo.dur"
                             @seek="seekTo"/>
@@ -112,6 +113,9 @@
             </transition>
             <div class="msg-box">
                 <transition-group name="list">
+                    <div v-if="loadingVideo" key="loading">
+                        加载中...
+                    </div>
                     <div v-if="fastSeeking" key="seek">
                         3X 快进中>>>
                     </div>
@@ -286,14 +290,13 @@
 <script lang="ts" setup>
 import FullWindow from '@/pages/play/src/full-window.vue'
 import NormalScreen from '@/pages/play/src/normal-screen.vue'
-import {sec2TimeStr} from '@/utils/time'
 import VolumeZero from './volume-zero.vue'
 import VolumeHigth from './volume-higth.vue'
 import VolumeLow from './volume-low.vue'
 import VolumeMid from './volume-mid.vue'
 import VolumeMuted from './volume-muted.vue'
 import API from '@/utils/api'
-import {HToolTip} from '@yin-jinlong/h-ui'
+import {HMessage, HToolTip} from '@yin-jinlong/h-ui'
 import {FullScreen, VideoPause, VideoPlay} from '@element-plus/icons-vue'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -325,6 +328,7 @@ const showVolume = ref(false)
 const fullWindow = ref(false)
 const fullscreen = ref(false)
 const mouseInControls = ref(false)
+const loadingVideo = ref(false)
 let lastHideVolumeId = 0
 let fastSeekTimeout = 0
 let mouseInControlsTimeout = 0
@@ -332,6 +336,7 @@ let rafId = 0
 const playerMsgs = reactive<Msg[]>([])
 const streams = reactive<HLSStreamInfo[]>([])
 const nowStreamIndex = ref(-1)
+const chapters = reactive<ChapterInfo[]>([])
 
 function render() {
     let canvas = videoCanvasEle.value?.getContext('2d') as CanvasRenderingContext2D | undefined
@@ -422,12 +427,19 @@ function playPause() {
 }
 
 function onVideoCanPlay() {
+    loadingVideo.value = false
     videoInfo.cur = player!!.currentTime()!!
     videoInfo.dur = player!!.duration()!!
     videoInfo.volume = player!!.volume() ?? 0
     videoInfo.muted = player!!.muted() ?? false
     videoVolume.value = videoInfo.volume * 100
     render()
+}
+
+function onVideoError() {
+    HMessage.error('播放出错！')
+    playing.value = true
+    loadingVideo.value = false
 }
 
 function onVideoPlay() {
@@ -456,6 +468,10 @@ function onVideoVolume() {
     videoInfo.volume = player?.volume() ?? 0
     videoInfo.muted = player?.muted() ?? false
     videoVolume.value = videoInfo.volume * 100
+}
+
+function onVideoLoading() {
+    loadingVideo.value = true
 }
 
 function onPlayerWheel(e: WheelEvent) {
@@ -625,8 +641,10 @@ function getVideoInfo() {
             if (item.bitrate > streams[max].bitrate)
                 max = i
         })
-        if (!info.length)
+        if (!info.length) {
+            loadingVideo.value = false
             setTimeout(getVideoInfo, 5000)
+        }
         nowStreamIndex.value = max
     })
 }
@@ -636,7 +654,9 @@ onMounted(() => {
     player = videojs(videoEle, {
         controls: false
     })
-    videoEle.addEventListener('canplay', onVideoCanPlay)
+    player.on('waiting', onVideoLoading)
+    player.on('canplaythrough', onVideoCanPlay)
+    player.on('error', onVideoError)
     videoEle.addEventListener('play', onVideoPlay)
     videoEle.addEventListener('pause', onVideoPause)
     videoEle.addEventListener('playing', onVideoPlaying)
@@ -652,8 +672,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     player?.dispose()
-    videoEle.removeEventListener('canplay', onVideoCanPlay)
-    videoEle.removeEventListener('play', onVideoPlay)
     videoEle.removeEventListener('pause', onVideoPause)
     videoEle.removeEventListener('playing', onVideoPlaying)
     videoEle.removeEventListener('timeupdate', onVideoTime)
@@ -683,8 +701,11 @@ watch(path, (nv) => {
     API.getPublicVideoChapter(nv).then(res => {
         if (!res)
             return
-        console.log(res)
+        chapters.length = 0
+        for (let c of res)
+            chapters.push(c)
     })
+    loadingVideo.value = true
 })
 
 watch(nowStreamIndex, nv => {

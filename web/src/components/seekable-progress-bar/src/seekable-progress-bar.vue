@@ -10,9 +10,16 @@
             <div class="progress"
                  @mousemove="onMouseMoveTimeBar"/>
             <div class="float dot"/>
+            <div v-for="c in chapters"
+                 :key="c.start"
+                 :style="`--p:${c.start/duration*100}%`"
+                 class="chapter-dot"/>
             <h-tool-tip class="float seek-dot">
                 <template #tip>
-                    {{ sec2TimeStr(duration * seekProgress) }}
+                    <div data-flex-column-center>
+                        <div v-if="chapters?.length">{{ chapterTitle() }}</div>
+                        <span>{{ sec2TimeStr(duration * seekProgress) }}</span>
+                    </div>
                 </template>
             </h-tool-tip>
         </div>
@@ -95,6 +102,16 @@
     width: 2px;
   }
 
+  .chapter-dot {
+    background: white;
+    border-radius: 1em;
+    height: 0.3em;
+    left: var(--p);
+    pointer-events: none;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 0.3em;
+  }
 }
 
 </style>
@@ -119,5 +136,13 @@ function seekTo() {
     emits('seek', seekProgress.value)
 }
 
+function chapterTitle() {
+    if (!props.chapters)
+        return
+    let i = props.chapters.findIndex(c => c.start / props.duration >= seekProgress.value)
+    if (i < 0)
+        i = props.chapters.length
+    return props.chapters[i - 1]?.title
+}
 
 </script>
