@@ -666,6 +666,8 @@ onMounted(() => {
     document.addEventListener('fullscreenchange', onFullScreenChange)
     addEventListener('resize', resize)
 
+    player.volume((+(localStorage.getItem('videoVolume') ?? '50')) / 100)
+
     resize()
     path.value = route.query.path as string
 })
@@ -687,6 +689,7 @@ watch(fullWindow, async (nv) => {
 
 watch(videoVolume, (nv) => {
     player?.volume(nv / 100)
+    localStorage.setItem('videoVolume', nv.toString())
 })
 
 watch(fastSeeking, nv => {
