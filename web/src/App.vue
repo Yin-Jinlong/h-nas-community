@@ -33,6 +33,9 @@
 import {MiniMusicPlayer} from '@/components'
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
+import {setTitle, updateTitle} from './title'
+
+const router = useRouter()
 
 onMounted(() => {
     let id = user.value?.uid
@@ -42,5 +45,9 @@ onMounted(() => {
                 user.value = res
             }
         })
+    setTitle()
+    router.afterEach(() => {
+        updateTitle()
+    })
 })
 </script>

@@ -121,6 +121,21 @@ class MiniMusicPlayer {
         return this.#audioAnalyser.frequencyBinCount
     }
 
+    shortTitle(withAlbum: boolean = true) {
+        let info = this.#info
+        if (info.path) {
+            if (info.title) {
+                let r = info.title
+                if (info.album && withAlbum)
+                    r += ` - ${info.album}`
+                if (info.artists)
+                    r += ` - ${info.artists}`
+                return r
+            }
+        }
+        return this.#status.item?.title
+    }
+
     now() {
         return this.#nowIndex.value
     }

@@ -39,8 +39,8 @@
         <div class="width">
             <div class="title marquee">
                 <div>
-                    <span>{{ getTitle() }}</span>
-                    <span>{{ getTitle() }}</span>
+                    <span>{{ MiniMusicPlayer.shortTitle() }}</span>
+                    <span>{{ MiniMusicPlayer.shortTitle() }}</span>
                 </div>
             </div>
         </div>
@@ -309,21 +309,6 @@ function getCover() {
     if (info.cover)
         return API.publicAudioCoverURL(info.cover)
     return ''
-}
-
-function getTitle() {
-    let info = MiniMusicPlayer.info
-    if (info.path) {
-        if (info.title) {
-            let r = info.title
-            if (info.album)
-                r += ` - ${info.album}`
-            if (info.artists)
-                r += ` - ${info.artists}`
-            return r
-        }
-    }
-    return MiniMusicPlayer.status.item?.title
 }
 
 function playPause() {
