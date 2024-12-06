@@ -47,7 +47,8 @@ abstract class Kotlin2DTS : AbstractKotlin2DTSTask() {
         writer.writeln(
             "// generated at ",
             dateFormat.format(Date()),
-            "\nglobal {"
+            "\nglobal {",
+            "\n    type List<T> = T[]"
         )
 
         mutableListOf<ClassNode>().apply {
