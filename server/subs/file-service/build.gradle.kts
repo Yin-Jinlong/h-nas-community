@@ -23,7 +23,6 @@ dependencies {
     implementation(libs.bytedeco.opencv.platform.gpu)
     implementation(libs.bytedeco.ffmpeg.platform.gpl)
     implementation("com.github.Adonai:jaudiotagger:2.3.14")
-    implementation("net.bramp.ffmpeg:ffmpeg:0.8.0")
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)

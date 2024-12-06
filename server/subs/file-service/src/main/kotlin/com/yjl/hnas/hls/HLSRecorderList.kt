@@ -1,7 +1,7 @@
 package com.yjl.hnas.hls
 
+import com.yjl.hnas.ffmpeg.FFProbeRunner
 import com.yjl.hnas.utils.mkParent
-import net.bramp.ffmpeg.FFprobe
 import org.bytedeco.ffmpeg.avcodec.AVPacket
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Frame
@@ -68,7 +68,7 @@ class HLSRecorderList(
     companion object {
 
         private fun getTotalBitrate(file: File): Long {
-            val r = FFprobe().probe(file.path)
+            val r = FFProbeRunner.probe(file.path)
             return r.format.bit_rate / 1000
         }
 
