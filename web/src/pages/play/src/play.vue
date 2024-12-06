@@ -2,10 +2,12 @@
     <div class="player-box">
         <h3>{{ path }}</h3>
         <div ref="videoBoxEle"
+             v-loading="!streams.length"
              :data-full-window="fullWindow?'':undefined"
              class="video-box"
              data-flex-center
              data-relative
+             h-loading-text="转码中..."
              tabindex="0"
              @keydown="onPlayerKeydown"
              @keyup="onPlayerKeyup">
@@ -609,6 +611,26 @@ function msgLoop() {
         requestAnimationFrame(msgLoop)
 }
 
+function getVideoInfo() {
+    let p = path.value
+    if (p === undefined)
+        return
+    API.getPublicHLSInfo(p).then(info => {
+        if (!info)
+            return
+        streams.length = 0
+        let max = 0
+        info.forEach((item, i) => {
+            streams.unshift(item)
+            if (item.bitrate > streams[max].bitrate)
+                max = i
+        })
+        if (!info.length)
+            setTimeout(getVideoInfo, 5000)
+        nowStreamIndex.value = max
+    })
+}
+
 onMounted(() => {
     videoEle.id = 'player'
     player = videojs(videoEle, {
@@ -656,19 +678,8 @@ watch(fastSeeking, nv => {
 watch(path, (nv) => {
     if (!nv)
         return
-    API.getPublicHLSInfo(nv).then(info => {
-        if (!info)
-            return
-        streams.length = 0
-        let max = 0
-        info.forEach((item, i) => {
-            streams.unshift(item)
-            if (item.bitrate > streams[max].bitrate)
-                max = i
-        })
-        nowStreamIndex.value = max
-        console.log(info)
-    })
+    nextTick(getVideoInfo)
+    chapters.length = 0
     API.getPublicVideoChapter(nv).then(res => {
         if (!res)
             return
