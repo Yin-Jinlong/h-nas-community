@@ -2,7 +2,7 @@
     <div class="player-box">
         <h3>{{ path }}</h3>
         <div ref="videoBoxEle"
-             v-loading="path==''"
+             v-loading="nowStreamIndex < -1"
              :data-full-window="fullWindow?'':undefined"
              class="video-box"
              data-flex-center
@@ -635,10 +635,10 @@ function getVideoInfo() {
         if (!info)
             return
         streams.length = 0
-        let max = 0
+        let max = -2
         info.forEach((item, i) => {
             streams.unshift(item)
-            if (item.bitrate > streams[max].bitrate)
+            if (item.bitrate > (streams[max]?.bitrate ?? -1))
                 max = i
         })
         if (!info.length) {
