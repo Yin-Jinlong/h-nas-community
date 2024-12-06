@@ -21,6 +21,7 @@ import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.task.BackgroundTasks
 import com.yjl.hnas.utils.del
+import com.yjl.hnas.utils.mkParent
 import io.github.yinjinlong.spring.boot.util.getLogger
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
@@ -217,6 +218,7 @@ class FileMappingServiceImpl(
             chapters.map {
                 ChapterInfo(it.start_time, it.tags?.title ?: "")
             }.also {
+                chapterFile.mkParent()
                 chapterFile.writeText(gson.toJson(it))
             }
         } else {
