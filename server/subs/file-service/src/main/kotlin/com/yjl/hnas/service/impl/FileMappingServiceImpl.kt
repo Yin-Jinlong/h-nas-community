@@ -217,8 +217,10 @@ class FileMappingServiceImpl(
                 chapterFile.writeText(gson.toJson(it))
             }
         } else {
-            gson.fromJson(chapterFile.readText(), TypeToken.getArray(ChapterInfo::class.java))
-                    as List<ChapterInfo>
+            gson.fromJson(
+                chapterFile.readText(),
+                TypeToken.getParameterized(List::class.java, ChapterInfo::class.java)
+            ) as List<ChapterInfo>
         }
     }
 }
