@@ -429,6 +429,16 @@ class VirtualFileServiceImpl(
             DataHelper.dataFile(fm.dataPath).del()
             if (fm.preview)
                 DataHelper.previewFile(fm.dataPath).del()
+            if (fm.type == "video") {
+                DataHelper.hlsIndexFile(hash.pathSafe).apply {
+                    while (exists())
+                        delete()
+                }
+                File(DataHelper.hlsPath(fm.hash.pathSafe)).apply {
+                    while (exists())
+                        deleteRecursively()
+                }
+            }
         }
     }
 
