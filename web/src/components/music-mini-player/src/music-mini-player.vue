@@ -364,7 +364,7 @@ function closePlayer() {
 onMounted(() => {
     ctx = fftCanvasEle.value?.getContext('2d') as CanvasRenderingContext2D
     observer.observe(fftCanvasEle.value!!)
-    fft = new FFT(MiniMusicPlayer.fftSize, 16.67 * 5, () => {
+    fft = new FFT(MiniMusicPlayer.fftSize, 16.67 * 8, () => {
         return MiniMusicPlayer.fft
     })
 })
