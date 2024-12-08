@@ -51,9 +51,9 @@ class AudioInfo(
     @Comment("时长,秒")
     override var duration: Float = 0f,
 
-    @Column
+    @Column(length = 12)
     @Comment("年份")
-    override var year: Short? = null,
+    override var year: String? = null,
 
     @Column
     @Comment("序号")

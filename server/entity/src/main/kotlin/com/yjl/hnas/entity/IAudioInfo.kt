@@ -23,7 +23,7 @@ interface IAudioInfo : IMediaInfo {
     /**
      * 年份
      */
-    var year: Short?
+    var year: String?
 
     /**
      * 序号
