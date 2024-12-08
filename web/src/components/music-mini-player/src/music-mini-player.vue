@@ -111,10 +111,14 @@
                 <CloseBold/>
             </el-icon>
         </div>
+        <div class="lrc-box" data-flex-column-center>
+            <p v-for="lrc in MiniMusicPlayer.status.nowLrsc">{{ lrc }}</p>
+        </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
+@use '@yin-jinlong/h-ui/style/src/tools/fns' as *;
 
 canvas {
   border-radius: 1em;
@@ -231,6 +235,18 @@ canvas {
   right: 5px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.lrc-box {
+  color: get-css(color, primary);
+  position: absolute;
+  top: -5px;
+  transform: translateY(-100%);
+
+  & > p {
+    text-shadow: rgb(0, 0, 0, 0.2) 0 0 2px;
+  }
+
 }
 
 @keyframes cover {

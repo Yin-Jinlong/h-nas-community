@@ -6,12 +6,19 @@ export interface MusicPlayerStatus {
     current: number
     duration: number
     playMode: PlayMode
+    nowLrsc: string[]
 }
 
 export interface MusicItem {
     title: string
     src: string
+    lrc: () => Promise<string | undefined>
     info: () => Promise<AudioFileInfo | undefined>
+}
+
+interface LrcLine {
+    time: number
+    text: string
 }
 
 export enum PlayMode {
@@ -31,6 +38,7 @@ class MiniMusicPlayer {
     #audioAnalyser: AnalyserNode
     #fftBuf: Uint8Array
     #audioContext: AudioContext
+    #lrcs: LrcLine[] = []
 
     constructor() {
         this.#playList = reactive([])
@@ -47,7 +55,8 @@ class MiniMusicPlayer {
             muted: false,
             current: 0,
             duration: 0,
-            playMode: PlayMode.Normal
+            playMode: PlayMode.Normal,
+            nowLrsc: []
         })
         this.#ele.addEventListener('canplay', () => {
             this.#status.duration = this.#ele.duration
@@ -63,7 +72,11 @@ class MiniMusicPlayer {
             this.#status.muted = this.#ele.muted
         })
         this.#ele.addEventListener('timeupdate', () => {
-            this.#status.current = this.#ele.currentTime
+            let ct = this.#ele.currentTime
+            this.#status.current = ct
+            if (!this.#lrcs.length)
+                return
+            this.#updateLrc(ct)
         })
         this.#ele.addEventListener('error', () => {
             this.#status.playing = false
@@ -230,6 +243,19 @@ class MiniMusicPlayer {
         this.#status.playMode = i
     }
 
+    #updateLrc(ct: number) {
+        let i = this.#lrcs.findIndex(v => v.time > ct)
+        if (i < 0)
+            i = this.#lrcs.length
+        i--
+        this.#status.nowLrsc.length = 0
+        let t = this.#lrcs[i].time
+        while (i >= 0 && this.#lrcs[i].time == t) {
+            this.#status.nowLrsc.unshift(this.#lrcs[i].text)
+            i--
+        }
+    }
+
     #play(index: number) {
         if (!this.#playList.length) {
             return
@@ -240,6 +266,8 @@ class MiniMusicPlayer {
             this.#ele.play()
             return
         }
+        this.#lrcs.length = 0
+        this.#status.nowLrsc.length = 0
         this.#nowIndex.value = index
         let item = this.#playList[index]
         this.#ele.src = item.src
@@ -250,6 +278,10 @@ class MiniMusicPlayer {
         }).catch(() => {
             this.#status.playing = false
         })
+        item.lrc().then(lrc => {
+            if (lrc)
+                this.#parseLrc(lrc)
+        })
         item.info().then(info => {
             if (!info)
                 return
@@ -257,6 +289,28 @@ class MiniMusicPlayer {
         })
 
     }
+
+    #parseLrc(text: string) {
+        let lines = text.split(/\r?\n/)
+        for (let line of lines) {
+            if (!line.length)
+                continue
+            let mr = /\[(\d+):(\d+).(\d+)](.*)/.exec(line)
+            if (!mr)
+                continue
+            let min = parseInt(mr[1])
+            let sec = parseInt(mr[2])
+            let ms = parseInt(mr[3])
+            let str = mr[4]
+            let t = min * 60 + sec + ms / 1000
+            this.#lrcs.push({
+                time: t,
+                text: str
+            })
+        }
+        this.#lrcs.sort((a, b) => a.time - b.time)
+    }
+
 }
 
 const Player = new MiniMusicPlayer()

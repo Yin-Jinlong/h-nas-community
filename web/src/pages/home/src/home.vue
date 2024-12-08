@@ -337,18 +337,18 @@
 </style>
 <script lang="ts" setup>
 
-import {FileGridCommand, FileGridOptions, FileGridView, FileInfoDialog, ImageViewer, TopBar} from '@/components'
+import {FileGridCommand, FileGridOptions, FileGridView, FileInfoDialog, ImageViewer} from '@/components'
 import {MiniMusicPlayer} from '@/components/music-mini-player/src/mini-music-player'
-import CountDialog from './count-dialog.vue'
-import NewFolderDialog from './new-folder-dialog.vue'
-import RenameDialog from './rename-dialog.vue'
+import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {subPath} from '@/utils/path'
 import {uploadPublicFile, UploadStatus, UploadTasks} from '@/utils/upload-tasks'
 import {ArrowDown, Close, Refresh, Sort} from '@element-plus/icons-vue'
-import API from '@/utils/api'
-import {HMessage, HButton, HToolTip, HBadge, convertColor} from '@yin-jinlong/h-ui'
+import {convertColor, HBadge, HButton, HMessage, HToolTip} from '@yin-jinlong/h-ui'
+import CountDialog from './count-dialog.vue'
 import {Dragger} from './dragger'
+import NewFolderDialog from './new-folder-dialog.vue'
+import RenameDialog from './rename-dialog.vue'
 
 interface FileWrapper {
     index: number
@@ -533,6 +533,14 @@ function isAudio(f: FileWrapper) {
 function addToPlayList(f: FileWrapper) {
     return MiniMusicPlayer.add({
         title: f.info.name,
+        async lrc() {
+            let lrcName = f.info.name.replace(/\.[^.]+$/, '.lrc')
+            let file = files.find(f => f.info.name == lrcName)
+            if (!file)
+                return
+            let r = await fetch(API.publicFileURL(subPath(file.info.dir, file.info.name)))
+            return await r.text()
+        },
         src: API.publicFileURL(subPath(f.info.dir, f.info.name)),
         async info() {
             return await API.getPublicAudioInfo(subPath(f.info.dir, f.info.name))
