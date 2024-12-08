@@ -1,5 +1,6 @@
 package com.yjl.hnas.service.impl
 
+import com.yjl.hnas.audio.AudioInfoHelper
 import com.yjl.hnas.data.AudioFileInfo
 import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.FileRange
@@ -14,15 +15,10 @@ import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.del
-import com.yjl.hnas.utils.getCoverFrame
 import com.yjl.hnas.utils.mkParent
 import com.yjl.hnas.utils.timestamp
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.audio.mp3.MP3File
-import org.jaudiotagger.tag.FieldKey
-import org.jaudiotagger.tag.id3.AbstractID3v2Tag
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -312,28 +308,10 @@ class VirtualFileServiceImpl(
             ?: throw NotDirectoryException(path.fullPath)
     }
 
-    fun insertNullAudioInfo(path: VirtualPath, fid: Hash): AudioFileInfo {
-        return AudioFileInfo.of(path.path, AudioInfo(fid = fid).apply {
-            audioInfoMapper.insert(this)
-        })
-    }
-
     fun checkAudio(vf: IVirtualFile): AudioInfo? {
         if (!vf.mediaType.startsWith("audio"))
             throw ErrorCode.BAD_FILE_FORMAT.error
         return audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
-    }
-
-    fun getCover(tag: AbstractID3v2Tag): String? {
-        val frame = tag.getCoverFrame() ?: return null
-        val data = frame.imageData
-        val hash = Hash(data.sha256).pathSafe
-        val coverFile = DataHelper.coverFile(hash)
-        if (!coverFile.exists()) {
-            coverFile.mkParent()
-            coverFile.writeBytes(data)
-        }
-        return hash
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -344,28 +322,11 @@ class VirtualFileServiceImpl(
             return AudioFileInfo.of(path.path, ai)
         val fm = fileMappingMapper.selectByHash(vf.hash!!)
             ?: throw IllegalStateException("file_mapping 不存在hash: ${vf.hash}")
-        val file = DataHelper.dataFile(fm.dataPath)
-        val af = AudioFileIO.readMagic(file)
-        if (af !is MP3File || !af.hasID3v2Tag())
-            return insertNullAudioInfo(path, vf.hash!!)
-        val tag = af.iD3v2Tag!!
         return AudioFileInfo.of(
-            path.path, AudioInfo(
-                fid = vf.hash!!,
-                title = tag.getFirst(FieldKey.TITLE),
-                subTitle = tag.getFirst(FieldKey.SUBTITLE),
-                artists = tag.getFirst(FieldKey.ARTIST),
-                cover = getCover(tag),
-                album = tag.getFirst(FieldKey.ALBUM),
-                duration = af.mP3AudioHeader.preciseTrackLength.toFloat(),
-                year = tag.getFirst(FieldKey.YEAR).toShortOrNull(),
-                num = tag.getFirst(FieldKey.TRACK).toIntOrNull(),
-                style = tag.getFirst(FieldKey.GENRE),
-                bitrate = af.mP3AudioHeader.bitRateAsNumber.toInt(),
-                comment = tag.getFirst(FieldKey.COMMENT),
-            ).apply {
-                audioInfoMapper.insert(this)
-            })
+            path.path,
+            (AudioInfoHelper.getInfo(vf.hash!!, fm) ?: AudioInfo(fid = path.id))
+                .apply(audioInfoMapper::insert)
+        )
     }
 
     override fun getAudioCover(path: VirtualPath): File {
@@ -373,7 +334,13 @@ class VirtualFileServiceImpl(
         val ai = checkAudio(vf)
             ?: throw ErrorCode.BAD_FILE_FORMAT.error
         if (!ai.cover.isNullOrEmpty()) {
-            return DataHelper.coverFile(ai.cover!!)
+            return DataHelper.coverFile(ai.cover!!).apply {
+                if (!exists()) {
+                    val fm = fileMappingMapper.selectByHash(ai.fid)
+                        ?: throw IllegalStateException("file_mapping 不存在hash: ${ai.fid}")
+                    AudioInfoHelper.saveCover(DataHelper.dataFile(fm.dataPath))
+                }
+            }
         }
         throw ErrorCode.NO_SUCH_FILE.error
     }

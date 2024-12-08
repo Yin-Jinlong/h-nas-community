@@ -1,10 +1,8 @@
 package com.yjl.hnas.preview
 
+import com.yjl.hnas.audio.AudioInfoHelper
 import com.yjl.hnas.utils.del
-import com.yjl.hnas.utils.getCoverFrame
 import org.apache.tika.mime.MediaType
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.audio.mp3.MP3File
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -15,6 +13,7 @@ import java.io.InputStream
  */
 open class AudioPreviewGenerator : FilePreviewGenerator(
     MediaType.audio("mpeg"),
+    MediaType.audio("x-flac"),
 ) {
     private val imagePreviewGenerator = ImagePreviewGenerator.INSTANCE
 
@@ -24,13 +23,9 @@ open class AudioPreviewGenerator : FilePreviewGenerator(
             tmpFile.outputStream().use {
                 input.copyTo(it)
             }
-            val af = AudioFileIO.readMagic(tmpFile)
-            if (af !is MP3File || !af.hasID3v2Tag())
-                throw PreviewException("没有id3v2标签")
-            val tag = af.iD3v2Tag!!
-            val coverFrame = tag.getCoverFrame()
+            val coverData = AudioInfoHelper.getCoverData(tmpFile)
                 ?: throw PreviewException("没有封面")
-            val ins = ByteArrayInputStream(coverFrame.imageData)
+            val ins = ByteArrayInputStream(coverData)
             imagePreviewGenerator.generate(ins, maxSize)
         } finally {
             tmpFile.del()

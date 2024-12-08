@@ -37,7 +37,7 @@ data class AudioFileInfo(
     /**
      * 年份
      */
-    val year: Short?,
+    val year: String?,
     /**
      * 序号
      */
