@@ -531,19 +531,21 @@ function isAudio(f: FileWrapper) {
 }
 
 function addToPlayList(f: FileWrapper) {
+    let info = f.info
+    let lrcName = info.name.replace(/\.[^.]+$/, '.lrc')
+    let lrcFile = files.find(i => i.info.name == lrcName)
+
     return MiniMusicPlayer.add({
-        title: f.info.name,
+        title: info.name,
         async lrc() {
-            let lrcName = f.info.name.replace(/\.[^.]+$/, '.lrc')
-            let file = files.find(f => f.info.name == lrcName)
-            if (!file)
+            if (!lrcFile)
                 return
-            let r = await fetch(API.publicFileURL(subPath(file.info.dir, file.info.name)))
+            let r = await fetch(API.publicFileURL(subPath(lrcFile.info.dir, lrcFile.info.name)))
             return await r.text()
         },
-        src: API.publicFileURL(subPath(f.info.dir, f.info.name)),
+        src: API.publicFileURL(subPath(info.dir, info.name)),
         async info() {
-            return await API.getPublicAudioInfo(subPath(f.info.dir, f.info.name))
+            return await API.getPublicAudioInfo(subPath(info.dir, info.name))
         }
     })
 }
