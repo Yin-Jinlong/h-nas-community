@@ -24,7 +24,7 @@ object FlacAudioInfoHelper {
         return tag.images.firstOrNull()?.imageData
     }
 
-    fun getInfo(file: File, hash: Hash): AudioInfo? {
+    fun getInfo(file: File, hash: Hash): AudioInfo {
         val af = FlacFileReader().read(file)
         val tag = af.tag as FlacTag
         return tag.toInfo(af.audioHeader, hash) {
