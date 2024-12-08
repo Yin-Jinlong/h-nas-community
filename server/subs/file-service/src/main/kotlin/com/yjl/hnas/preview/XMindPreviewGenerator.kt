@@ -1,5 +1,6 @@
 package com.yjl.hnas.preview
 
+import com.yjl.hnas.utils.MediaSubtypeType
 import org.apache.tika.mime.MediaType
 import java.awt.image.BufferedImage
 import java.io.InputStream
@@ -10,7 +11,7 @@ import java.util.zip.ZipInputStream
  * @author YJL
  */
 open class XMindPreviewGenerator : FilePreviewGenerator(
-    MediaType.application("x-xmind"),
+    MediaType.application(MediaSubtypeType.APPLICATION_X_MIND),
 ) {
     private fun ZipInputStream.thumbnailEntry(): ZipEntry {
         var entry = nextEntry

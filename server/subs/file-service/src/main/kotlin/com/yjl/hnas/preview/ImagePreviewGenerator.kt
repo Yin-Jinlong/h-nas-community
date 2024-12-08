@@ -1,5 +1,6 @@
 package com.yjl.hnas.preview
 
+import com.yjl.hnas.utils.MediaSubtypeType
 import org.apache.tika.mime.MediaType
 import java.awt.image.BufferedImage
 import java.io.InputStream
@@ -9,9 +10,9 @@ import javax.imageio.ImageIO
  * @author YJL
  */
 open class ImagePreviewGenerator : FilePreviewGenerator(
-    MediaType.image("png"),
-    MediaType.image("jpeg"),
-    MediaType.image("webp"),
+    MediaType.image(MediaSubtypeType.IMAGE_PNG),
+    MediaType.image(MediaSubtypeType.IMAGE_JPEG),
+    MediaType.image(MediaSubtypeType.IMAGE_WEBP),
 ) {
     companion object {
         val INSTANCE = ImagePreviewGenerator()

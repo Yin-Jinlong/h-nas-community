@@ -5,6 +5,7 @@ import com.yjl.hnas.entity.AudioInfo
 import com.yjl.hnas.entity.FileMapping
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.tika.FileDetector
+import com.yjl.hnas.utils.MediaSubtypeType
 import com.yjl.hnas.utils.mkParent
 import io.github.yinjinlong.md.sha256
 import org.jaudiotagger.audio.AudioHeader
@@ -48,8 +49,8 @@ object AudioInfoHelper {
     fun getCoverData(file: File): ByteArray? {
         val type = file.inputStream().buffered().use { FileDetector.detect(it, file.name) }
         return when (type.subtype) {
-            "mpeg" -> Mp3AudioInfoHelper.getCoverData(file)
-            "x-flac" -> FlacAudioInfoHelper.getCoverData(file)
+            MediaSubtypeType.AUDIO_MP3 -> Mp3AudioInfoHelper.getCoverData(file)
+            MediaSubtypeType.AUDIO_FLAC -> FlacAudioInfoHelper.getCoverData(file)
             else -> null
         }
     }
@@ -60,8 +61,8 @@ object AudioInfoHelper {
     fun saveCover(file: File): String? {
         val type = file.inputStream().buffered().use { FileDetector.detect(it, file.name) }
         return when (type.subtype) {
-            "mpeg" -> Mp3AudioInfoHelper.getCoverData(file)
-            "x-flac" -> FlacAudioInfoHelper.getCoverData(file)
+            MediaSubtypeType.AUDIO_MP3 -> Mp3AudioInfoHelper.getCoverData(file)
+            MediaSubtypeType.AUDIO_FLAC -> FlacAudioInfoHelper.getCoverData(file)
             else -> null
         }?.let { saveImage(it) }
     }
@@ -69,8 +70,8 @@ object AudioInfoHelper {
     fun getInfo(hash: Hash, fm: FileMapping): AudioInfo? {
         val file = DataHelper.dataFile(fm.dataPath)
         return when (fm.subType) {
-            "mpeg" -> Mp3AudioInfoHelper.getInfo(file, hash)
-            "x-flac" -> FlacAudioInfoHelper.getInfo(file, hash)
+            MediaSubtypeType.AUDIO_MP3 -> Mp3AudioInfoHelper.getInfo(file, hash)
+            MediaSubtypeType.AUDIO_FLAC -> FlacAudioInfoHelper.getInfo(file, hash)
             else -> null
         }
     }

@@ -1,5 +1,6 @@
 package com.yjl.hnas.preview
 
+import com.yjl.hnas.utils.MediaSubtypeType
 import org.apache.tika.mime.MediaType
 import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameGrabber
@@ -13,8 +14,8 @@ import java.io.InputStream
  * @author YJL
  */
 open class VideoPreviewGenerator : FilePreviewGenerator(
-    MediaType.video("mp4"),
-    MediaType.video("x-matroska"),
+    MediaType.video(MediaSubtypeType.VIDEO_MP4),
+    MediaType.video(MediaSubtypeType.VIDEO_MKV_MATROSKA),
 ) {
     private val imagePreviewGenerator = ImagePreviewGenerator.INSTANCE
 

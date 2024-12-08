@@ -1,6 +1,7 @@
 package com.yjl.hnas.preview
 
 import com.yjl.hnas.audio.AudioInfoHelper
+import com.yjl.hnas.utils.MediaSubtypeType
 import com.yjl.hnas.utils.del
 import org.apache.tika.mime.MediaType
 import java.awt.image.BufferedImage
@@ -12,8 +13,8 @@ import java.io.InputStream
  * @author YJL
  */
 open class AudioPreviewGenerator : FilePreviewGenerator(
-    MediaType.audio("mpeg"),
-    MediaType.audio("x-flac"),
+    MediaType.audio(MediaSubtypeType.AUDIO_MP3),
+    MediaType.audio(MediaSubtypeType.AUDIO_FLAC),
 ) {
     private val imagePreviewGenerator = ImagePreviewGenerator.INSTANCE
 
