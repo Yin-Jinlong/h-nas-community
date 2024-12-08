@@ -226,16 +226,16 @@ class PubFileController(
             throw ErrorCode.BAD_HEADER.data("range : $rangeStr")
         }.getOrThrow()
 
-        val endIndex = vf.size - 1
-        val start = range?.getRangeStart(endIndex) ?: 0
-        val end = kotlin.math.min(range?.getRangeEnd(endIndex) ?: endIndex, endIndex)
+        val len = vf.size
+        val start = range?.getRangeStart(len) ?: 0
+        val end = kotlin.math.min(range?.getRangeEnd(len) ?: (len - 1), len - 1)
         val size = end - start + 1
 
         resp.contentType = vf.mediaType
         if (range != null)
             resp.status = HttpStatus.PARTIAL_CONTENT.value()
         resp.setContentLength(size.toInt())
-        resp.setHeader(HttpHeaders.CONTENT_RANGE, "bytes $start-$end/$endIndex")
+        resp.setHeader(HttpHeaders.CONTENT_RANGE, "bytes $start-$end/$len")
 
         try {
             RandomAccessFile(file, "r").use {
