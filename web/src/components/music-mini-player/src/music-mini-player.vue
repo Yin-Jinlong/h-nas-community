@@ -37,6 +37,14 @@
             </el-icon>
         </div>
         <div class="width">
+            <h-button
+                    :color="showLrc?'primary':'info'"
+                    type="link"
+                    @click="showLrc=!showLrc">
+                词
+            </h-button>
+        </div>
+        <div class="width">
             <div class="title marquee">
                 <div>
                     <span>{{ MiniMusicPlayer.shortTitle() }}</span>
@@ -112,7 +120,7 @@
                 <CloseBold/>
             </el-icon>
         </div>
-        <div class="lrc-box" data-flex-column-center>
+        <div v-if="showLrc" class="lrc-box" data-flex-column-center>
             <p v-for="lrc in MiniMusicPlayer.status.nowLrsc">{{ lrc }}</p>
         </div>
     </div>
@@ -285,6 +293,7 @@ import {HButton, HToolTip} from '@yin-jinlong/h-ui'
 import {MiniMusicPlayer, PlayMode} from './mini-music-player'
 import PlayList from './play-list.vue'
 
+const showLrc = ref(true)
 const showVolume = ref(false)
 const audioVolume = ref(0)
 const fftCanvasEle = ref<HTMLCanvasElement>()
