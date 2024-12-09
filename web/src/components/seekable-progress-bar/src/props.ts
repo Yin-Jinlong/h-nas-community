@@ -3,4 +3,5 @@ export interface SeekableProgressBarProps {
     duration: number
     timeTogether?: boolean
     chapters?: ChapterInfo[]
+    progressExtra?: (p: number) => string[]
 }

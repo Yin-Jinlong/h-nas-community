@@ -17,6 +17,7 @@
             <h-tool-tip class="float seek-dot">
                 <template #tip>
                     <div data-flex-column-center>
+                        <p v-for="e in extras">{{ e }}</p>
                         <div v-if="chapters?.length">{{ chapterTitle() }}</div>
                         <span>{{ sec2TimeStr(duration * seekProgress) }}</span>
                     </div>
@@ -24,7 +25,7 @@
             </h-tool-tip>
         </div>
         <div v-if="!timeTogether" class="width margin">
-            {{ sec2TimeStr(duration) }}
+            <p>{{ sec2TimeStr(duration) }}</p>
         </div>
     </div>
 </template>
@@ -83,6 +84,7 @@
     position: absolute;
     transform: translate(-50%, 0) scale(var(--hover, 0));
     transform-origin: center;
+    z-index: 10;
   }
 
   .dot {
@@ -123,13 +125,18 @@ import {sec2TimeStr} from '@/utils/time'
 import {HToolTip} from '@yin-jinlong/h-ui'
 
 const seekProgress = ref(0)
+const extras = reactive<string[]>([])
 const props = defineProps<SeekableProgressBarProps>()
 const emits = defineEmits({
     seek: (p: number) => void 0
 })
 
 function onMouseMoveTimeBar(e: MouseEvent) {
-    seekProgress.value = e.offsetX / (e.target as HTMLElement).offsetWidth
+    let p = e.offsetX / (e.target as HTMLElement).offsetWidth
+    seekProgress.value = p
+    let es = props.progressExtra?.(p) ?? []
+    extras.length = 0
+    extras.push(...es)
 }
 
 function seekTo() {

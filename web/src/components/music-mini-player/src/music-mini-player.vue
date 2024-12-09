@@ -47,6 +47,7 @@
         <seekable-progress-bar
                 :current="MiniMusicPlayer.status.current"
                 :duration="MiniMusicPlayer.status.duration"
+                :progress-extra="onProgressExtra"
                 time-together
                 @seek="seekTo"/>
         <div class="width"
@@ -359,6 +360,10 @@ function seekTo(p: number) {
 
 function closePlayer() {
     MiniMusicPlayer.close()
+}
+
+function onProgressExtra(p: number) {
+    return MiniMusicPlayer.lrcAtP(p)
 }
 
 onMounted(() => {

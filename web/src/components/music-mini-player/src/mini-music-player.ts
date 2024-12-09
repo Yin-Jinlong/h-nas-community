@@ -243,17 +243,31 @@ class MiniMusicPlayer {
         this.#status.playMode = i
     }
 
-    #updateLrc(ct: number) {
-        let i = this.#lrcs.findIndex(v => v.time > ct)
+    lrcAtP(p: number): string[] {
+        return this.lrcAt(this.#ele.duration * p)
+    }
+
+    lrcAt(time: number): string[] {
+        if (!this.#lrcs.length)
+            return []
+        let i = this.#lrcs.findIndex(v => v.time > time)
         if (i < 0)
             i = this.#lrcs.length
         i--
-        this.#status.nowLrsc.length = 0
+        let r: string[] = []
         let t = this.#lrcs[i].time
         while (i >= 0 && this.#lrcs[i].time == t) {
-            this.#status.nowLrsc.unshift(this.#lrcs[i].text)
+            r.unshift(this.#lrcs[i].text)
             i--
         }
+        return r
+    }
+
+    #updateLrc(ct: number) {
+        this.#status.nowLrsc.length = 0
+        this.lrcAt(ct).forEach(v => {
+            this.#status.nowLrsc.push(v)
+        })
     }
 
     #play(index: number) {
