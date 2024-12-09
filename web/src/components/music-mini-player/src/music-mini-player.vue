@@ -56,6 +56,7 @@
                 :current="MiniMusicPlayer.status.current"
                 :duration="MiniMusicPlayer.status.duration"
                 :progress-extra="onProgressExtra"
+                minutes
                 time-together
                 @seek="seekTo"/>
         <div class="width"

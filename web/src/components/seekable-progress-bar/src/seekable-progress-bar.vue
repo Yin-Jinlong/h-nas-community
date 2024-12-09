@@ -1,7 +1,7 @@
 <template>
     <div class="box" data-flex-center>
         <div class="width">
-            {{ sec2TimeStr(current) }}{{ timeTogether ? '/' + sec2TimeStr(duration) : '' }}
+            {{ timeFn(current) }}{{ timeTogether ? '/' + timeFn(duration) : '' }}
         </div>
         <div :style="`--p: ${!duration?0:current/duration*100}%;--sp:${seekProgress*100}%`"
              class="time-bar margin"
@@ -19,13 +19,13 @@
                     <div data-flex-column-center>
                         <p v-for="e in extras">{{ e }}</p>
                         <div v-if="chapters?.length">{{ chapterTitle() }}</div>
-                        <span>{{ sec2TimeStr(duration * seekProgress) }}</span>
+                        <span>{{ timeFn(duration * seekProgress) }}</span>
                     </div>
                 </template>
             </h-tool-tip>
         </div>
         <div v-if="!timeTogether" class="width margin">
-            <p>{{ sec2TimeStr(duration) }}</p>
+            <p>{{ timeFn(duration) }}</p>
         </div>
     </div>
 </template>
@@ -121,12 +121,13 @@
 <script lang="ts" setup>
 
 import {SeekableProgressBarProps} from './props'
-import {sec2TimeStr} from '@/utils/time'
+import {sec2MinuteStr, sec2TimeStr} from '@/utils/time'
 import {HToolTip} from '@yin-jinlong/h-ui'
 
 const seekProgress = ref(0)
 const extras = reactive<string[]>([])
 const props = defineProps<SeekableProgressBarProps>()
+const timeFn = ref(sec2TimeStr)
 const emits = defineEmits({
     seek: (p: number) => void 0
 })
@@ -151,5 +152,11 @@ function chapterTitle() {
         i = props.chapters.length
     return props.chapters[i - 1]?.title
 }
+
+watch(() => props.minutes, (nv) => {
+    timeFn.value = nv ? sec2MinuteStr : sec2TimeStr
+}, {
+    immediate: true
+})
 
 </script>

@@ -11,3 +11,10 @@ export function sec2TimeStr(secs: number) {
     let h = Math.floor(t)
     return `${to2(h)}:${to2(m)}:${to2(s)}`
 }
+
+export function sec2MinuteStr(secs: number) {
+    let s = Math.floor(secs) % 60
+    let t = secs / 60
+    let m = Math.floor(t)
+    return `${to2(m)}:${to2(s)}`
+}
