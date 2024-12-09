@@ -91,7 +91,7 @@
                 <div>
                     <div v-for="i in MiniMusicPlayer.size" class="music-item" data-fill-width>
                         <h-button
-                                :color="(i-1)==MiniMusicPlayer.now()?'primary':'info'"
+                                :color="(i-1)==MiniMusicPlayer.nowIndex?'primary':'info'"
                                 style="padding: 0.5em 0"
                                 type="link"
                                 @click="MiniMusicPlayer.play(i-1)">

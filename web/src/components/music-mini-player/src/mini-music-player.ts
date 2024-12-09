@@ -31,7 +31,6 @@ export enum PlayMode {
 class MiniMusicPlayer {
 
     #playList: MusicItem[]
-    #nowIndex: Ref<number>
     #ele: HTMLAudioElement
     #status: MusicPlayerStatus
     #info: AudioFileInfo
@@ -47,7 +46,6 @@ class MiniMusicPlayer {
             duration: 0,
             bitrate: 0
         })
-        this.#nowIndex = ref(-1)
         this.#ele = document.createElement('audio')
         this.#status = reactive({
             volume: 0.5,
@@ -83,16 +81,17 @@ class MiniMusicPlayer {
         })
         this.#ele.addEventListener('ended', () => {
             this.#status.playing = false
+            let now = this.nowIndex
             switch (this.#status.playMode) {
                 case PlayMode.RepeatThis:
                     this.play()
                     break
                 // @ts-ignore
                 case PlayMode.Normal:
-                    if (this.#nowIndex.value == this.#playList.length - 1)
+                    if (now == this.#playList.length - 1)
                         break
                 case PlayMode.RepeatAll:
-                    let i = this.#nowIndex.value + 1
+                    let i = now + 1
                     if (i >= this.#playList.length)
                         i = 0
                     this.play(i)
@@ -111,6 +110,13 @@ class MiniMusicPlayer {
         source.connect(this.#audioAnalyser)
         this.#audioAnalyser.connect(audioContext.destination)
         this.#audioContext = audioContext
+    }
+
+    get nowIndex() {
+        let now = this.#status.item
+        if (!now)
+            return -1
+        return this.#playList.findIndex(o => o == now)
     }
 
     get info() {
@@ -149,10 +155,6 @@ class MiniMusicPlayer {
         return this.#status.item?.title
     }
 
-    now() {
-        return this.#nowIndex.value
-    }
-
     get(i: number) {
         return this.#playList[i]
     }
@@ -178,22 +180,24 @@ class MiniMusicPlayer {
     }
 
     play(i?: number) {
-        this.#play(i ?? this.#nowIndex.value)
+        this.#play(i ?? this.nowIndex)
     }
 
     playPrev() {
+        let now = this.nowIndex
         let i = this.#status.playMode == PlayMode.Random ?
             Math.floor(Math.random() * this.#playList.length) :
-            this.#nowIndex.value - 1
+            now - 1
         if (i < 0)
             i = this.#playList.length - 1
         this.play(i)
     }
 
     playNext() {
+        let now = this.nowIndex
         let i = this.#status.playMode == PlayMode.Random ?
             Math.floor(Math.random() * this.#playList.length) :
-            this.#nowIndex.value + 1
+            now + 1
         if (i >= this.#playList.length)
             i = 0
         this.play(i)
@@ -210,7 +214,6 @@ class MiniMusicPlayer {
         this.#status.item = undefined
         this.#status.current = 0
         this.#status.duration = 0
-        this.#nowIndex.value = -1
     }
 
     muted(m?: boolean) {
@@ -276,13 +279,13 @@ class MiniMusicPlayer {
         }
         if (index < 0)
             index = 0
-        if (this.#nowIndex.value == index) {
+        let nowIndex = this.nowIndex
+        if (nowIndex == index) {
             this.#ele.play()
             return
         }
         this.#lrcs.length = 0
         this.#status.nowLrsc.length = 0
-        this.#nowIndex.value = index
         let item = this.#playList[index]
         this.#ele.src = item.src
         this.#ele.play().then(() => {
