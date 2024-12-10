@@ -59,7 +59,7 @@ data class VirtualFile(
     @Comment("文件所在用户")
     override var user: Uid = 0,
 
-    @Column(length = 64, nullable = false)
+    @Column(length = IVirtualFile.TYPE_LENGTH + IVirtualFile.SUB_TYPE_LENGTH, nullable = false)
     @Comment("文件类型")
     override var mediaType: String = "",
 

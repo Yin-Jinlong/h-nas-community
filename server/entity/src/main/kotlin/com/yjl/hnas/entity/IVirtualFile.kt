@@ -34,6 +34,8 @@ interface IVirtualFile {
         const val PATH_LENGTH = 1024
         const val ID_LENGTH = 32
         const val HASH_LENGTH = 32
+        const val TYPE_LENGTH = 32
+        const val SUB_TYPE_LENGTH = 96
     }
 
     enum class Type {

@@ -29,11 +29,11 @@ data class FileMapping(
     @Comment("文件路径")
     override var dataPath: String = "",
 
-    @Column(length = 32, nullable = false)
+    @Column(length = IVirtualFile.TYPE_LENGTH, nullable = false)
     @Comment("类型")
     override var type: String = "",
 
-    @Column(length = 32, nullable = false)
+    @Column(length = IVirtualFile.SUB_TYPE_LENGTH, nullable = false)
     @Comment("子类型")
     override var subType: String = "",
 
