@@ -302,6 +302,7 @@ let lastHideVolumeId = 0
 let ctx: CanvasRenderingContext2D
 let canvasWidth = 0
 let canvasHeight = 0
+let lastAnimationFrameId = 0
 
 let observer = new ResizeObserver(() => {
     canvasWidth = fftCanvasEle.value!!.offsetWidth
@@ -314,8 +315,9 @@ let fft: FFT
 
 
 function render() {
+    cancelAnimationFrame(lastAnimationFrameId)
     if (MiniMusicPlayer.status.playing)
-        requestAnimationFrame(render)
+        lastAnimationFrameId = requestAnimationFrame(render)
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight)
     let v = audioVolume.value / 100
