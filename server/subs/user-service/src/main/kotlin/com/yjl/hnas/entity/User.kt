@@ -9,7 +9,12 @@ import org.hibernate.annotations.Comment
  * @author YJL
  */
 @Entity
-@Table
+@Table(
+    indexes = [
+        Index(name = "username", columnList = "username", unique = true),
+        Index(name = "role", columnList = "role"),
+    ]
+)
 @Comment("用户")
 data class User(
 
@@ -38,5 +43,9 @@ data class User(
     @Column(length = 24, nullable = false)
     @Comment("密码类型")
     @field:JsonIgnored
-    override var passwordType: PasswordType = PasswordType.SHA256
+    override var passwordType: PasswordType = PasswordType.SHA256,
+
+    @Column(columnDefinition = "varchar(32) default(\"user\") not null ")
+    @Comment("角色")
+    override var role: String = IUser.ROLE_USER
 ) : IUser

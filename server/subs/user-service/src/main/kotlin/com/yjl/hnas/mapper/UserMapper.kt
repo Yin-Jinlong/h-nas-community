@@ -26,6 +26,9 @@ interface UserMapper {
     @Select("select uid, username, nick, password, password_type from user where username = #{username} && password = #{password}")
     fun selectByUsernamePassword(username: String, password: String): User?
 
+    @Select("select count(*) from user limit 1")
+    fun hasUser(): Boolean
+
     //******//
     //  增  //
     //******//

@@ -109,7 +109,8 @@ class UserServiceImpl(
         return User(
             username = username,
             nick = username,
-            password = genPassword(password)
+            password = genPassword(password),
+            role = if (mapper.hasUser()) IUser.ROLE_USER else IUser.ROLE_ADMIN
         ).apply {
             mapper.insert(this)
         }

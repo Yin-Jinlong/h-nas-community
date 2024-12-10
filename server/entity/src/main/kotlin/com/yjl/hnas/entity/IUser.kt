@@ -19,9 +19,16 @@ interface IUser {
 
     var passwordType: PasswordType
 
+    var role: String
+
     enum class PasswordType {
         MD5,
         SHA256,
         SHA512
+    }
+
+    companion object {
+        const val ROLE_USER = "user"
+        const val ROLE_ADMIN = "admin"
     }
 }
