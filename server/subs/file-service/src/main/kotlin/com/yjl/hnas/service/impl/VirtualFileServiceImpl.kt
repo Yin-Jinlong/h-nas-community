@@ -14,9 +14,7 @@ import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.tika.FileDetector
-import com.yjl.hnas.utils.del
-import com.yjl.hnas.utils.mkParent
-import com.yjl.hnas.utils.timestamp
+import com.yjl.hnas.utils.*
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
@@ -311,7 +309,7 @@ class VirtualFileServiceImpl(
     }
 
     fun checkAudio(vf: IVirtualFile): AudioInfo? {
-        if (!vf.mediaType.startsWith("audio"))
+        if (!vf.mediaType.isAudioMediaType)
             throw ErrorCode.BAD_FILE_FORMAT.error
         return audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
     }
@@ -392,13 +390,13 @@ class VirtualFileServiceImpl(
             val fm = fileMappingMapper.selectByHash(hash)
                 ?: throw IllegalStateException("hash=$hash not found in mapping")
             fileMappingMapper.deleteById(hash)
-            if (fm.type == "audio") {
+            if (fm.type.isAudioMediaType) {
                 audioInfoMapper.deleteById(hash)
             }
             DataHelper.dataFile(fm.dataPath).del()
             if (fm.preview)
                 DataHelper.previewFile(fm.dataPath).del()
-            if (fm.type == "video") {
+            if (fm.type.isVideoMediaType) {
                 DataHelper.hlsIndexFile(hash.pathSafe).apply {
                     while (exists())
                         delete()
