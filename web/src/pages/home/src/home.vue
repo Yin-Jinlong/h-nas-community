@@ -153,6 +153,7 @@
         <file-info-dialog v-if="activeFile"
                           v-model="shows.fileInfoDialog"
                           v-model:preview="activeFile.preview"
+                          :extra-info="activeFile.extraInfo"
                           :info="activeFile?.info"/>
         <count-dialog v-model="shows.countDialog" :path="subPath(nowPaths,activeFile?.info?.name??'')"/>
         <rename-dialog v-model="shows.renameDialog" :name="activeFile?.info?.name ?? ''" @rename-file="renameFile"/>
@@ -342,6 +343,7 @@ import {MiniMusicPlayer} from '@/components/music-mini-player/src/mini-music-pla
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {subPath} from '@/utils/path'
+import {sec2MinuteStr} from '@/utils/time'
 import {uploadPublicFile, UploadStatus, UploadTasks} from '@/utils/upload-tasks'
 import {ArrowDown, Close, Refresh, Sort} from '@element-plus/icons-vue'
 import {convertColor, HBadge, HButton, HMessage, HToolTip} from '@yin-jinlong/h-ui'
@@ -353,6 +355,7 @@ import RenameDialog from './rename-dialog.vue'
 interface FileWrapper {
     index: number
     info: FileInfo
+    extraInfo?: Record<string, string | undefined>
     preview: FilePreview
     previewIndex?: number
 }
@@ -587,6 +590,24 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
             })
             break
         case 'info':
+            if (f.info.mediaType?.startsWith('audio/')) {
+                API.getPublicAudioInfo(subPath(f.info.dir, f.info.name)).then((res?: AudioFileInfo) => {
+                    if (!res)
+                        return
+                    f.extraInfo = {
+                        '标题': res.title,
+                        '子标题': res.subTitle,
+                        '艺术家': res.artists,
+                        '时长': sec2MinuteStr(res.duration),
+                        '专辑': res.album,
+                        '年份': res.year,
+                        '序号': res.num?.toString(),
+                        '风格': res.style,
+                        '比特率': `${res.bitrate} kbps`,
+                        '备注': res.comment,
+                    }
+                })
+            }
             shows.fileInfoDialog = true
             break
         case 'count':

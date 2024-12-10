@@ -23,6 +23,16 @@
                             {{ r.value }}
                         </td>
                     </tr>
+                    <tr v-for="k in Object.keys(extraInfo)" v-if="extraInfo">
+                        <td class="label"
+                            data-fill-size
+                            data-flex-center>
+                            <label>{{ k }}：</label>
+                        </td>
+                        <td style="word-wrap: anywhere">
+                            {{ extraInfo[k] }}
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
