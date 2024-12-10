@@ -326,8 +326,8 @@ function render() {
 
     for (let i = 0; i < fft.size; i++) {
         let p = (Math.abs(fft.get(i) - 128)) / 128 / v
-        ctx.fillStyle = `hsl(${360 * i / fft.size}deg,80%,45%,0.2)`
-        ctx.fillRect(x, canvasHeight, Math.max(barWidth - 1, 1), -canvasHeight * p)
+        ctx.fillStyle = `hsl(${360 * i / fft.size}deg,60%,70%,0.6)`
+        ctx.fillRect(x, canvasHeight, barWidth / 2, -canvasHeight * p)
         x += barWidth
     }
 
