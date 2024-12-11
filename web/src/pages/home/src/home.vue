@@ -25,14 +25,13 @@
             </h-tool-tip>
             <el-popover width="400px">
                 <template #reference>
-                    <h-badge :value="UploadTasks.length"
-                             style="display: inline-block;font-size: 16px;margin-right: 1em">
-                        <h-button>
-                            <el-icon>
-                                <Sort/>
-                            </el-icon>
-                        </h-button>
-                    </h-badge>
+                    <h-button>
+                        <el-icon>
+                            <Sort/>
+                        </el-icon>
+                        <h-badge :value="UploadTasks.length"
+                                 style="display: inline-block;font-size: 16px;margin-right: 1em"/>
+                    </h-button>
                 </template>
                 <template #default>
                     <el-empty v-if="!UploadTasks.length">
