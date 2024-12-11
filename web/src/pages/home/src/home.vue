@@ -617,11 +617,16 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
 }
 
 
-function upload(file: File) {
-    uploadPublicFile(nowPaths.join('/') + '/' + file.name, file, () => {
-        update()
-    })
-    HMessage.success('已添加任务')
+function upload(file: File, isFile: boolean) {
+    if (isFile) {
+        uploadPublicFile(nowPaths.join('/') + '/' + file.name, file, () => {
+            update()
+        })
+        HMessage.success('已添加任务')
+    } else {
+        newFolder(file.name, () => {
+        })
+    }
 }
 
 

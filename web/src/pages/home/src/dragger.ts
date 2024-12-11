@@ -1,3 +1,5 @@
+import {HMessage} from '@yin-jinlong/h-ui'
+
 let lastCancelTimeout = 0
 
 function checkCancel() {
@@ -22,7 +24,7 @@ export const Dragger = {
     mouseIn: ref(false),
     infoText: ref(''),
     isDragging: ref(false),
-    upload: (file: File) => {
+    upload: (file: File, isFile: boolean) => {
     },
     onDragStart(e: DragEvent) {
         if (Dragger.mouseIn.value)
@@ -53,10 +55,18 @@ export const Dragger = {
         e.preventDefault()
         Dragger.isDragging.value = false
         await nextTick()
-        let files = e.dataTransfer!.files
-        console.log(files)
-        for (let i = 0; i < files.length; i++) {
-            Dragger.upload(files[i])
+        let items = e.dataTransfer!.items
+        for (let i = 0; i < items.length; i++) {
+            let file = items[i]
+            if (file.kind != 'file')
+                continue
+            let entry = file.webkitGetAsEntry()
+            if (!entry)
+                continue
+            if (!entry.isFile) {
+                HMessage.warning('不支持文件夹上传')
+            }
+            Dragger.upload(file.getAsFile()!!, entry.isFile)
         }
     }
 }
