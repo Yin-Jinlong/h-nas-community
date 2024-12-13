@@ -174,7 +174,15 @@ async function reAuth() {
         let auth = resp.headers['authorization']
         if (auth)
             token.value = auth
-    }).catch(catchError)
+    }).catch(e => {
+        if (e?.response?.data?.code == 100) {
+            token.value = null
+            authToken.value = null
+            user.value = null
+            HMessage.info('登录已过期，请重新登录')
+        }
+        catchError(e)
+    })
 }
 
 async function login(logId: string, password?: string) {
