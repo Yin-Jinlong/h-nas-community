@@ -14,8 +14,8 @@ type Mapping = MappingAll | MappingMap
 
 export const IconMapping: Record<string, Mapping | undefined> = {
     'application': {
-        'x-font-ttf': async () => import('@/icon/file/font-file.vue')
+        'x-font-ttf': async () => import('./font-file.vue')
     },
-    'audio': async () => import('@/icon/file/music-file.vue'),
-    'text': async () => import('@/icon/file/text-file.vue')
+    'audio': async () => import('./music-file.vue'),
+    'text': async () => import('./text-file.vue')
 }

@@ -63,7 +63,7 @@
 import API from '@/utils/api'
 import {subPath} from '@/utils/path'
 import {FolderFile, UnknownFile} from '@/icon'
-import {IconMapping} from './icon-mapping'
+import {IconMapping} from '@/icon/file'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
 
 const extra = defineModel<FilePreview>({
