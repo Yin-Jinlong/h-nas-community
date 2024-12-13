@@ -294,6 +294,7 @@ import {
     VolumeLow,
     VolumeMuted,
     VolumeZero,
+    MusicFile,
 } from '@/icon'
 import API from '@/utils/api'
 import {Close, CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
