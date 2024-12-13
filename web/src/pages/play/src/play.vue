@@ -290,11 +290,13 @@
 <script lang="ts" setup>
 import FullWindow from '@/pages/play/src/full-window.vue'
 import NormalScreen from '@/pages/play/src/normal-screen.vue'
-import VolumeZero from './volume-zero.vue'
-import VolumeHigth from './volume-higth.vue'
-import VolumeLow from './volume-low.vue'
-import VolumeMid from './volume-mid.vue'
-import VolumeMuted from './volume-muted.vue'
+import {
+    VolumeZero,
+    VolumeMid,
+    VolumeLow,
+    VolumeHigth,
+    VolumeMuted,
+} from '@/icon'
 import API from '@/utils/api'
 import {HMessage, HToolTip} from '@yin-jinlong/h-ui'
 import {FullScreen, VideoPause, VideoPlay} from '@element-plus/icons-vue'

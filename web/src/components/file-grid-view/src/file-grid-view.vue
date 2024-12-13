@@ -33,7 +33,7 @@
             </el-image>
         </div>
         <el-icon v-else size="100%">
-            <folder/>
+            <folder-file/>
         </el-icon>
     </div>
 
@@ -62,10 +62,9 @@
 <script lang="ts" setup>
 import API from '@/utils/api'
 import {subPath} from '@/utils/path'
-import Folder from './folder.vue'
+import {FolderFile, UnknownFile} from '@/icon'
 import {IconMapping} from './icon-mapping'
 import FileGridViewPropsDefault, {FileGridViewProps} from './props'
-import UnknownFile from './unknown-file.vue'
 
 const extra = defineModel<FilePreview>({
     required: true

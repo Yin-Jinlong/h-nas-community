@@ -281,18 +281,24 @@ canvas {
 
 <script lang="ts" setup>
 import {FFT} from './fft'
-import PlayNext from './play-next.vue'
-import PlayPrev from './play-prev.vue'
-import VolumeHigth from '@/pages/play/src/volume-higth.vue'
-import VolumeLow from '@/pages/play/src/volume-low.vue'
-import VolumeMid from '@/pages/play/src/volume-mid.vue'
-import VolumeMuted from '@/pages/play/src/volume-muted.vue'
-import VolumeZero from '@/pages/play/src/volume-zero.vue'
+import {
+    PlayNext,
+    PlayPrev,
+    PlayNormal,
+    PlayList,
+    PlayRandom,
+    PlayRepeatAll,
+    PlayRepeatThis,
+    VolumeHigth,
+    VolumeMid,
+    VolumeLow,
+    VolumeMuted,
+    VolumeZero,
+} from '@/icon'
 import API from '@/utils/api'
 import {Close, CloseBold, VideoPause, VideoPlay} from '@element-plus/icons-vue'
 import {HButton, HToolTip} from '@yin-jinlong/h-ui'
 import {MiniMusicPlayer, PlayMode} from './mini-music-player'
-import PlayList from './play-list.vue'
 
 const showLrc = ref(true)
 const showVolume = ref(false)
