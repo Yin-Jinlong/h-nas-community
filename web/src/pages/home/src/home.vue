@@ -2,64 +2,7 @@
     <div class="contents"
          data-fill-size
          data-flex-column>
-        <div class="tools" data-flex>
-            <div style="flex: 1">
-                <h-tool-tip>
-                    <h-button v-disabled="!user" type="primary" @click="shows.newFolderDialog = true">
-                        创建目录
-                    </h-button>
-                    <template #tip>
-                        {{ user ? '在当前目录下创建目录' : '请先登录' }}
-                    </template>
-                </h-tool-tip>
-            </div>
-            <h-tool-tip>
-                <h-button @click="update">
-                    <el-icon>
-                        <Refresh/>
-                    </el-icon>
-                </h-button>
-                <template #tip>
-                    刷新
-                </template>
-            </h-tool-tip>
-            <el-popover width="400px">
-                <template #reference>
-                    <h-button>
-                        <el-icon>
-                            <Sort/>
-                        </el-icon>
-                        <h-badge :value="UploadTasks.length"
-                                 style="display: inline-block;font-size: 16px;margin-right: 1em"/>
-                    </h-button>
-                </template>
-                <template #default>
-                    <el-empty v-if="!UploadTasks.length">
-                        <template #description>
-                            空空如也
-                        </template>
-                    </el-empty>
-                    <div>
-                        <div v-for="(t,i) in UploadTasks" class="task" data-relative>
-                            <div :style="{
-                                '--p':t.progress(),
-                                background:calcBg(t.status())
-                            }"
-                                 class="progress">
-                            </div>
-                            <div>
-                                <h4>{{ t.file().name }}</h4>
-                            </div>
-                            {{ t.statusText() }} {{ (t.progress() * 100).toFixed(1) }}%
-                            <el-icon v-if="t.status()>UploadStatus.Uploading" class="remove-btn"
-                                     @click="removeTask(i)">
-                                <Close/>
-                            </el-icon>
-                        </div>
-                    </div>
-                </template>
-            </el-popover>
-        </div>
+        <tools :update="update" @show-new-folder-dialog="shows.newFolderDialog = true"/>
         <div class="breadcrumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
@@ -162,11 +105,6 @@
 
 <style lang="scss" scoped>
 @use '@yin-jinlong/h-ui/style/src/tools/fns' as *;
-
-.tools {
-  padding: 0.2em;
-  width: 100%;
-}
 
 .contents {
   position: relative;
@@ -338,14 +276,14 @@
 <script lang="ts" setup>
 
 import {FileGridCommand, FileGridOptions, FileGridView, FileInfoDialog, ImageViewer} from '@/components'
-import {MiniMusicPlayer} from '@/components/music-mini-player/src/mini-music-player'
+import {MiniMusicPlayer} from '@/components/music-mini-player'
 import {FileWrapper} from './type'
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
 import {subPath} from '@/utils/path'
-import {uploadPublicFile, UploadStatus, UploadTasks} from '@/utils/upload-tasks'
-import {ArrowDown, Close, Refresh, Sort} from '@element-plus/icons-vue'
-import {convertColor, HBadge, HButton, HMessage, HToolTip} from '@yin-jinlong/h-ui'
+import {uploadPublicFile} from '@/utils/upload-tasks'
+import {ArrowDown} from '@element-plus/icons-vue'
+import {HMessage} from '@yin-jinlong/h-ui'
 import CountDialog from './count-dialog.vue'
 import {Dragger} from './dragger'
 import NewFolderDialog from './new-folder-dialog.vue'
@@ -353,6 +291,7 @@ import RenameDialog from './rename-dialog.vue'
 import {onInfoCommand} from './file-info'
 import {nowIndex, getNow, getNext, getPrev, getRaw, getRawSize} from './image-viewer-helper'
 import {images, files, updateFiles} from './files'
+import Tools from './tools.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -375,16 +314,6 @@ Dragger.upload = upload
 function onChangeRoot(cmdArr: boolean[]) {
     isPublic.value = cmdArr[0]
     update()
-}
-
-function calcBg(status: UploadStatus) {
-    return status == UploadStatus.Error ?
-        convertColor('danger', '2') :
-        convertColor('success', '2')
-}
-
-function removeTask(i: number) {
-    UploadTasks.splice(i, 1)
 }
 
 function toPath(i: number) {
