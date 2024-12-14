@@ -18,6 +18,8 @@ class FFProbeStreamAdapter : JsonDeserializer<FFProbeStream> {
         return context.deserialize(
             json, when (type.asString.lowercase()) {
                 "video" -> FFProbeVideoStream::class.java
+                "audio" -> FFProbeAudioStream::class.java
+                "subtitle" -> FFProbeSubtitleStream::class.java
                 else -> typeOfT
             }
         )
