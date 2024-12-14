@@ -6,13 +6,15 @@ import com.yjl.hnas.data.DataHelper
 import com.yjl.hnas.data.FileRange
 import com.yjl.hnas.entity.*
 import com.yjl.hnas.error.ErrorCode
-import com.yjl.hnas.fs.*
+import com.yjl.hnas.fs.VirtualFileAttributes
+import com.yjl.hnas.fs.VirtualFileStore
+import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.fs.attr.FileAttributes
 import com.yjl.hnas.mapper.AudioInfoMapper
 import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
-import com.yjl.hnas.service.VirtualFileService
+import com.yjl.hnas.service.AbstractVirtualFileService
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.*
 import io.github.yinjinlong.md.sha256
@@ -36,24 +38,11 @@ import kotlin.io.path.name
  */
 @Service
 class VirtualFileServiceImpl(
-    val virtualFileMapper: VirtualFileMapper,
+    virtualFileMapper: VirtualFileMapper,
     val fileMappingMapper: FileMappingMapper,
-    val childrenCountMapper: ChildrenCountMapper,
-    val audioInfoMapper: AudioInfoMapper,
-) : VirtualFileService {
-
-    private lateinit var fs: VirtualFilesystem
-
-    private val VirtualPath.id: Hash
-        get() = genId(this.toAbsolutePath())
-
-    override fun exists(path: VirtualPath): Boolean {
-        return virtualFileMapper.selectById(path.id) != null
-    }
-
-    override fun onBind(fsp: VirtualFileSystemProvider) {
-        fs = fsp.virtualFilesystem
-    }
+    childrenCountMapper: ChildrenCountMapper,
+    audioInfoMapper: AudioInfoMapper,
+) : AbstractVirtualFileService(virtualFileMapper, childrenCountMapper, audioInfoMapper) {
 
     override fun newByteChannel(
         path: VirtualPath,
@@ -66,26 +55,6 @@ class VirtualFileServiceImpl(
         val fm = fileMappingMapper.selectByHash(vf.hash!!)
             ?: throw IllegalStateException("文件映射不存在: $path")
         return Files.newByteChannel(DataHelper.dataFile(fm.dataPath).toPath())
-    }
-
-    override fun genId(path: VirtualPath): Hash {
-        return Hash(path.toAbsolutePath().fullPath.sha256)
-    }
-
-    override fun get(path: VirtualPath): IVirtualFile? {
-        return virtualFileMapper.selectById(path.id)
-    }
-
-    fun getOrThrow(path: VirtualPath): IVirtualFile {
-        return virtualFileMapper.selectById(path.id)
-            ?: throw NoSuchFileException(path.fullPath)
-    }
-
-    override fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile> {
-        val p = parent.toAbsolutePath()
-        if (!exists(p) && !p.isRoot)
-            throw NoSuchFileException(p.fullPath)
-        return virtualFileMapper.selectsByParent(p.id)
     }
 
     fun tmpFile(user: Uid, hash: Hash): File {
@@ -301,17 +270,6 @@ class VirtualFileServiceImpl(
         val cc = childrenCountMapper.selectByFidLock(oldId)
             ?: throw IllegalStateException("children_count 不存在目录：$oldId")
         childrenCountMapper.updateId(cc.fid, newId)
-    }
-
-    override fun getFolderChildrenCount(path: VirtualPath): ChildrenCount {
-        return childrenCountMapper.selectByFid(path.id)
-            ?: throw NotDirectoryException(path.fullPath)
-    }
-
-    fun checkAudio(vf: IVirtualFile): AudioInfo? {
-        if (!vf.mediaType.isAudioMediaType)
-            throw ErrorCode.BAD_FILE_FORMAT.error
-        return audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
     }
 
     @Transactional(rollbackFor = [Exception::class])
