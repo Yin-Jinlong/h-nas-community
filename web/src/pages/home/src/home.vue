@@ -351,6 +351,8 @@ import {Dragger} from './dragger'
 import NewFolderDialog from './new-folder-dialog.vue'
 import RenameDialog from './rename-dialog.vue'
 import {onInfoCommand} from './file-info'
+import {nowIndex, getNow, getNext, getPrev, getRaw, getRawSize} from './image-viewer-helper'
+import {images, files} from './files'
 
 const route = useRoute()
 const router = useRouter()
@@ -365,10 +367,7 @@ const shows = reactive({
 
 const activeFile = ref<FileWrapper>()
 const draggerEle = ref<HTMLDivElement>()
-const files = reactive<FileWrapper[]>([])
-const images = reactive<FileWrapper[]>([])
 const isPublic = ref(true)
-const nowIndex = ref(-2)
 const nowPaths = reactive<string[]>([])
 
 Dragger.upload = upload
@@ -404,63 +403,6 @@ function showPreview(f: FileWrapper) {
         nowIndex.value = f.previewIndex
         shows.imageViewer = true
     }
-}
-
-function getUrl(f: FileWrapper) {
-    if (f.preview.preview == '')
-        return ''
-    return API.publicPreviewURL(f.preview.preview!!)
-}
-
-function getNow(): string | undefined {
-    let i = nowIndex.value
-    if (i < 0)
-        i = 0
-    else if (i >= files.length)
-        i = files.length - 1
-    let f = images[i]
-    nowIndex.value = i
-    if (!f)
-        return
-    return getUrl(f)
-}
-
-function getRaw(): string | undefined {
-    let i = nowIndex.value
-    if (i < 0)
-        return
-    let f = images[i]
-    return API.publicFileURL(subPath(f.info.dir, f.info.name))
-}
-
-function getRawSize(): number | undefined {
-    let i = nowIndex.value
-    if (i < 0)
-        return
-    let f = images[i]
-    return f.info.size
-}
-
-function getPrev(): string | undefined {
-    let i = nowIndex.value - 1
-    if (i < 0)
-        i = images.length - 1
-    let f = images[i]
-    nowIndex.value = i
-    if (!f)
-        return
-    return getUrl(f)
-}
-
-function getNext(): string | undefined {
-    let i = nowIndex.value + 1
-    if (i >= images.length)
-        i = 0
-    nowIndex.value = i
-    let f = images[i]
-    if (!f)
-        return
-    return getUrl(f)
 }
 
 function updateFiles() {
@@ -627,10 +569,6 @@ function renameFile(name: string, ok: (close: boolean) => void) {
         ok(success)
     })
 }
-
-onMounted(() => {
-
-})
 
 watch(() => route.params.path as string[] | undefined, async (nv?: string[]) => {
     files.length = 0
