@@ -21,6 +21,9 @@ object FFProbeRunner : CommandLineRunner("ffprobe") {
         .registerTypeAdapter(FFProbeDisposition::class.java, FFProbeDisposition.TypeAdapter)
         .create()
 
+    /**
+     * 获取文媒体信息
+     */
     fun probe(file: String): FFProbeResult {
         return gson.fromJson(
             run(*args.toTypedArray(), file).decodeToString(),

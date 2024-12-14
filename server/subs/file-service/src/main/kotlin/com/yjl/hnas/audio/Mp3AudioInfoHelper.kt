@@ -16,17 +16,26 @@ import java.io.File
  */
 object Mp3AudioInfoHelper {
 
+    /**
+     * 获取图片帧
+     */
     private fun AbstractID3v2Tag.getCoverFrame(): FrameBodyAPIC? {
         val frame = getFrame("APIC") as? AbstractID3v2Frame? ?: return null
         return (frame.body as FrameBodyAPIC)
     }
 
+    /**
+     * 获取封面图片
+     */
     private fun getMp3Cover(tag: AbstractID3v2Tag): String? {
         val frame = tag.getCoverFrame() ?: return null
         val data = frame.imageData
         return saveImage(data)
     }
 
+    /**
+     * 获取封面图片数据
+     */
     fun getCoverData(file: File): ByteArray? {
         val af = MP3FileReader().read(file) as MP3File
         if (!af.hasID3v2Tag())
@@ -36,6 +45,9 @@ object Mp3AudioInfoHelper {
         return frame?.imageData
     }
 
+    /**
+     * 获取音频信息
+     */
     fun getInfo(file: File, hash: Hash): AudioInfo? {
         val af = MP3FileReader().read(file) as MP3File
         if (!af.hasID3v2Tag())

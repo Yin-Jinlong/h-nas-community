@@ -10,9 +10,12 @@ import java.io.File
  */
 object VideoChapterHelper {
 
+    /**
+     * 获取视频的章节信息
+     */
     fun getChapter(file: File): List<FFProbeChapter> {
         val r = FFProbeRunner.probe(file.path)
-        return r?.chapters ?: emptyList()
+        return r.chapters
     }
 
 }

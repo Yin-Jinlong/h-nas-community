@@ -18,6 +18,11 @@ import java.io.File
  */
 object AudioInfoHelper {
 
+    /**
+     * 保存图片（到文件），如果不存在
+     * @param data 图片数据
+     * @return hash
+     */
     fun saveImage(data: ByteArray): String {
         val hash = Hash(data.sha256).pathSafe
         val coverFile = DataHelper.coverFile(hash)
@@ -28,6 +33,12 @@ object AudioInfoHelper {
         return hash
     }
 
+    /**
+     * 转换音频信息
+     * @param header 音频头
+     * @param hash hash
+     * @param coverFn 封面文件生成
+     */
     fun Tag.toInfo(header: AudioHeader, hash: Hash, coverFn: () -> String?) = AudioInfo(
         fid = hash,
         title = getFirst(FieldKey.TITLE),
@@ -57,6 +68,7 @@ object AudioInfoHelper {
 
     /**
      * 获取封面数据，并保存
+     * @param file 音频文件，必须存在，否则报错
      */
     fun saveCover(file: File): String? {
         val type = file.inputStream().buffered().use { FileDetector.detect(it, file.name) }
@@ -67,6 +79,11 @@ object AudioInfoHelper {
         }?.let { saveImage(it) }
     }
 
+    /**
+     * 获取音频信息
+     * @param hash hash
+     * @param fm 文件映射
+     */
     fun getInfo(hash: Hash, fm: FileMapping): AudioInfo? {
         val file = DataHelper.dataFile(fm.dataPath)
         return when (fm.subType) {
