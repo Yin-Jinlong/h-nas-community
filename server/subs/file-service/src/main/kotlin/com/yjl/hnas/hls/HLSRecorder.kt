@@ -45,7 +45,7 @@ class HLSRecorder(
         frameRate = grabber.frameRate
         if (grabber.hasVideo()) {
             videoBitrate = bitrate * 1000
-            val encoder = getNVEncoder().value
+            val encoder = NVEncoder
             if (encoder == null)
                 videoCodec = avcodec.AV_CODEC_ID_H264
             else
@@ -89,17 +89,18 @@ class HLSRecorder(
             Int.MAX_VALUE,
         )
 
+        private val NVEncoder by lazy {
+            kotlin.runCatching {
+                // avcodec.avcodec_find_encoder_by_name("hevc_nvenc") ?:
+                avcodec.avcodec_find_encoder_by_name("h264_nvenc")
+            }.getOrNull()
+        }
+
         private fun getAudioBitrate(rate: Int): Int {
             if (rate == 0)
                 return AudioBitrate[3]
             return AudioBitrate.first { it >= rate }
         }
 
-        fun getNVEncoder() = lazy {
-            kotlin.runCatching {
-                // avcodec.avcodec_find_encoder_by_name("hevc_nvenc") ?:
-                avcodec.avcodec_find_encoder_by_name("h264_nvenc")
-            }.getOrNull()
-        }
     }
 }
