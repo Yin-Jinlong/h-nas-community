@@ -352,7 +352,7 @@ import NewFolderDialog from './new-folder-dialog.vue'
 import RenameDialog from './rename-dialog.vue'
 import {onInfoCommand} from './file-info'
 import {nowIndex, getNow, getNext, getPrev, getRaw, getRawSize} from './image-viewer-helper'
-import {images, files} from './files'
+import {images, files, updateFiles} from './files'
 
 const route = useRoute()
 const router = useRouter()
@@ -405,44 +405,12 @@ function showPreview(f: FileWrapper) {
     }
 }
 
-function updateFiles() {
-    API.getPublicFiles(nowPaths.length ? nowPaths.join('/') : '/').then(data => {
-        if (!data)
-            return
-
-        console.log('files', data)
-        nowIndex.value = -1
-        files.length = 0
-        images.length = 0
-        data.forEach(f => {
-            let file: FileWrapper = {
-                index: files.length,
-                info: f,
-                preview: {
-                    thumbnail: '',
-                    preview: '',
-                }
-            }
-            files.push(file)
-            if (f.mediaType?.startsWith('image/'))
-                images.push(file)
-        })
-        images.sort((a, b) => {
-            return a.index - b.index
-        })
-        for (let i = 0; i < images.length; i++) {
-            let f = images[i]
-            f.previewIndex = i
-        }
-    })
-}
-
 function update() {
     nowIndex.value = -2
     files.length = 0
     images.length = 0
     setTimeout(() => {
-        updateFiles()
+        updateFiles(nowPaths.length ? nowPaths.join('/') : '/')
     }, 400)
 }
 
