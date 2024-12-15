@@ -23,6 +23,7 @@ enum class ErrorCode(
     BAD_FILE_FORMAT(1003, "文件格式错误"),
     FOLDER_NOT_EMPTY(1004, "目录不为空"),
     NOT_FOLDER(1005, "非目录"),
+    TOO_MANY_CHILDREN(1006, "子文件太多"),
 
     USER_LOGIN_ERROR(2000, "用户名/id/密码错误"),
     NO_SUCH_USER(2001, "用户不存在"),

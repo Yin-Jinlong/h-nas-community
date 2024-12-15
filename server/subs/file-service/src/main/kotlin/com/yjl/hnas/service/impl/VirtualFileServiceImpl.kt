@@ -15,6 +15,7 @@ import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.service.AbstractVirtualFileService
+import com.yjl.hnas.service.TooManyChildrenException
 import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.*
 import io.github.yinjinlong.md.sha256
@@ -346,8 +347,16 @@ class VirtualFileServiceImpl(
         val time = System.currentTimeMillis().timestamp
         val hash = vf.hash
         if (hash == null) {
-            if (virtualFileMapper.hasChildren(vf.fid))
-                throw DirectoryNotEmptyException(path.fullPath)
+            val counts = childrenCountMapper.selectByFid(vf.fid)
+                ?: throw IllegalStateException("children_count 不存在目录：${path.fullPath}")
+            if (counts.subsCount > 100)
+                throw TooManyChildrenException(path.fullPath)
+            else if (counts.subsCount > 0) {
+                val children = getByParent(path, null)
+                for (child in children) {
+                    delete(path.resolve(child.name))
+                }
+            }
             virtualFileMapper.deleteById(vf.fid)
             childrenCountMapper.deleteById(vf.fid)
             updateCount(parent, -1)

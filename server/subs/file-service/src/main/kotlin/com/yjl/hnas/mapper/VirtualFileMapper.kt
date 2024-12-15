@@ -47,9 +47,6 @@ order by hash is not null,name
     @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
     fun countHash(hash: Hash): Int
 
-    @Select("select count(*) from virtual_file where parent = #{fid} limit 1")
-    fun hasChildren(fid: FileId): Boolean
-
     //******//
     //  增  //
     //******//
