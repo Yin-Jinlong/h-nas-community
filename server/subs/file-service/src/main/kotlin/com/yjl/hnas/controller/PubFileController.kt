@@ -247,7 +247,7 @@ class PubFileController(
         try {
             RandomAccessFile(file, "r").use {
                 val out = resp.outputStream
-                val buf = ByteArray(8 * 1024)
+                val buf = ByteArray(Buffers.DOWNLOAD_BUFFER_SIZE)
                 it.seek(start)
                 var remain = size
                 while (remain > 0) {
