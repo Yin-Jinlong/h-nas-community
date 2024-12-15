@@ -6,5 +6,6 @@ package com.yjl.hnas.utils
 object Buffers {
 
     const val DOWNLOAD_BUFFER_SIZE = 16 * 1024 * 1024
+    const val DOWNLOAD_GZIP_BUFFER_SIZE = 1024
 
 }

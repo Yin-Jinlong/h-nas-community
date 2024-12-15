@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
+import org.apache.commons.compress.compressors.gzip.GzipParameters
 import org.springframework.boot.context.properties.bind.DefaultValue
 import org.springframework.http.*
 import org.springframework.scheduling.annotation.Async
@@ -30,7 +32,6 @@ import java.io.RandomAccessFile
 import java.net.URLDecoder
 import java.nio.file.Files
 import java.nio.file.attribute.FileTime
-import java.util.zip.GZIPOutputStream
 import kotlin.io.path.name
 
 /**
@@ -162,7 +163,7 @@ class PubFileController(
         DataHelper.tsFile((vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error).pathSafe, rate, file)
     }
 
-    fun downloadDir(path: VirtualPath, rootVF: VirtualFile, resp: HttpServletResponse) {
+    fun downloadDir(path: VirtualPath, rootVF: VirtualFile, resp: HttpServletResponse) = try {
         resp.status = HttpStatus.OK.value()
         resp.contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE
         resp.setHeader(
@@ -173,7 +174,7 @@ class PubFileController(
                 .toString()
         )
         val root = path.parent
-        TarArchiveOutputStream(GZIPOutputStream(resp.outputStream)).use { out ->
+        TarArchiveOutputStream(GzipCompressorOutputStream(resp.outputStream, DownloadGZIPParam)).use { out ->
             out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
             Files.walk(path).forEach {
                 val vf = virtualFileService.get(it as VirtualPath) ?: return@forEach
@@ -193,6 +194,8 @@ class PubFileController(
             }
             out.finish()
         }
+    } catch (e: IOException) {
+        logger.warning(e.message)
     }
 
     @Async
@@ -282,5 +285,10 @@ class PubFileController(
 
     companion object {
         val RangeRegex = Regex("^(\\d+)-(\\d+)/(\\d+)$")
+
+        val DownloadGZIPParam = GzipParameters().apply {
+            compressionLevel = 5
+            bufferSize = Buffers.DOWNLOAD_GZIP_BUFFER_SIZE
+        }
     }
 }
