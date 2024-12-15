@@ -33,7 +33,7 @@ import kotlin.io.path.name
  * @author YJL
  */
 @Controller
-@RequestMapping("/api/file/public")
+@RequestMapping(API.PUBLIC_FILE)
 class PubFileController(
     virtualFileSystemProvider: VirtualFileSystemProvider,
     val fileMappingService: FileMappingService,
@@ -143,48 +143,6 @@ class PubFileController(
         val pp = getPubPath(path)
         if (!Files.deleteIfExists(pp))
             throw ErrorCode.NO_SUCH_FILE.data(path)
-    }
-
-    @GetMapping("thumbnail")
-    fun getThumbnail(path: String): File {
-        val pp = getPubPath(path).toAbsolutePath()
-        return DataHelper.thumbnailFile(pp.path.substring(1)).apply {
-            if (!exists())
-                throw ErrorCode.NO_SUCH_FILE.data(path)
-        }
-    }
-
-    @GetMapping("preview")
-    fun getPreview(path: String): File {
-        val pp = getPubPath(path).toAbsolutePath()
-        return DataHelper.previewFile(pp.path.substring(1)).apply {
-            if (!exists())
-                throw ErrorCode.NO_SUCH_FILE.data(path)
-        }
-    }
-
-    @GetMapping("audio/info")
-    fun getAudioInfo(path: String): AudioFileInfo {
-        val p = getPubPath(path)
-        return virtualFileService.getAudioInfo(p)
-    }
-
-    @GetMapping("audio/cover")
-    fun getAudioCover(path: String): File {
-        val p = getPubPath(path)
-        return virtualFileService.getAudioCover(p)
-    }
-
-    @GetMapping("video/chapter")
-    fun getVideoChapter(path: String): List<ChapterInfo> {
-        val p = getPubPath(path)
-        return fileMappingService.getVideoChapters(p)
-    }
-
-    @GetMapping("video/stream/info")
-    fun getVideoStreamInfo(path: String): HLSStreamInfo? {
-        val p = getPubPath(path)
-        return fileMappingService.getVideoLiveStream(p)
     }
 
     @GetMapping("video/stream/{path}/{rate}/{file}")
