@@ -19,8 +19,8 @@
                 <el-dropdown-item :command="['rename']" :icon="Edit">
                     重命名
                 </el-dropdown-item>
-                <el-dropdown-item v-if="!dir" :command="['download']" :icon="Download">
-                    下载
+                <el-dropdown-item :command="['download']" :icon="Download">
+                    下载{{ dir ? ' tar.gz' : '' }}
                 </el-dropdown-item>
                 <el-dropdown-item :command="['del']" :icon="Delete" divided>
                     删除

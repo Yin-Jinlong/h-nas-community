@@ -421,7 +421,9 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
             })
             break
         case 'download':
-            location.href = API.publicFileURL(subPath(f.info.dir, f.info.name), true)
+            let link = API.publicFileURL(subPath(f.info.dir, f.info.name), true)
+            console.log(link)
+            location.href = link
             break
         case 'info':
             onInfoCommand(f)

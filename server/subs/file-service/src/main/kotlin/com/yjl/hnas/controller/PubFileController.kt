@@ -7,6 +7,7 @@ import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.VirtualFile
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.VirtualFileSystemProvider
+import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.token.TokenType
@@ -16,11 +17,10 @@ import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.springframework.boot.context.properties.bind.DefaultValue
-import org.springframework.http.ContentDisposition
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpRange
-import org.springframework.http.HttpStatus
+import org.springframework.http.*
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
@@ -29,6 +29,8 @@ import java.io.IOException
 import java.io.RandomAccessFile
 import java.net.URLDecoder
 import java.nio.file.Files
+import java.nio.file.attribute.FileTime
+import java.util.zip.GZIPOutputStream
 import kotlin.io.path.name
 
 /**
@@ -160,6 +162,39 @@ class PubFileController(
         DataHelper.tsFile((vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error).pathSafe, rate, file)
     }
 
+    fun downloadDir(path: VirtualPath, rootVF: VirtualFile, resp: HttpServletResponse) {
+        resp.status = HttpStatus.OK.value()
+        resp.contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE
+        resp.setHeader(
+            HttpHeaders.CONTENT_DISPOSITION,
+            ContentDisposition.builder("attachment")
+                .filename("${rootVF.name}.tar.gz", Charsets.UTF_8)
+                .build()
+                .toString()
+        )
+        val root = path.parent
+        TarArchiveOutputStream(GZIPOutputStream(resp.outputStream)).use { out ->
+            out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
+            Files.walk(path).forEach {
+                val vf = virtualFileService.get(it as VirtualPath) ?: return@forEach
+                val entry = TarArchiveEntry(root.relativize(it).path.let { rp ->
+                    if (vf.isFolder())
+                        "$rp/"
+                    else rp
+                }).apply {
+                    size = vf.size
+                    creationTime = FileTime.fromMillis(vf.createTime.time)
+                    lastModifiedTime = FileTime.fromMillis(vf.updateTime.time)
+                }
+                out.putArchiveEntry(entry)
+                if (vf.isFile())
+                    Files.copy(it, out)
+                out.closeArchiveEntry()
+            }
+            out.finish()
+        }
+    }
+
     @Async
     @GetMapping
     @ResponseEmpty
@@ -173,7 +208,8 @@ class PubFileController(
         val vf = virtualFileService.get(pp) as VirtualFile?
             ?: throw ErrorCode.NO_SUCH_FILE.error
         val map = fileMappingService.getMapping(
-            vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error
+            vf.hash ?: if (download) return downloadDir(pp, vf, resp)
+            else throw ErrorCode.NO_SUCH_FILE.error
         ) ?: throw ErrorCode.NO_SUCH_FILE.error
 
         val file = DataHelper.dataFile(map.dataPath).apply {

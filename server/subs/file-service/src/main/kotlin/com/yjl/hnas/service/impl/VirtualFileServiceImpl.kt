@@ -314,7 +314,22 @@ class VirtualFileServiceImpl(
         dir: VirtualPath,
         filter: DirectoryStream.Filter<in VirtualPath>
     ): DirectoryStream<VirtualPath> {
-        TODO("Not yet implemented")
+        val vf = getOrThrow(dir)
+        if (!vf.isFolder())
+            throw NotDirectoryException(dir.fullPath)
+        return object : DirectoryStream<VirtualPath> {
+            override fun close() {
+
+            }
+
+            override fun iterator(): MutableIterator<VirtualPath> {
+                val files = getByParent(dir, null).map {
+                    dir.resolve(it.name)
+                }
+                return files.toMutableList().listIterator()
+            }
+
+        }
     }
 
     @Transactional(rollbackFor = [Exception::class])
