@@ -226,8 +226,8 @@ async function logon(userName: string, password: string) {
         .catch(catchError)
 }
 
-function publicFileURL(path: string) {
-    return `api/file/public?${qs.stringify({path})}`
+function publicFileURL(path: string, download?: boolean) {
+    return `api/file/public?${qs.stringify({path, download})}`
 }
 
 function publicThumbnailURL(path: string) {

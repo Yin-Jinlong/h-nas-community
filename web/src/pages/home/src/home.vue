@@ -420,6 +420,9 @@ function onCommand(cmd: FileGridCommand, f: FileWrapper) {
                 }
             })
             break
+        case 'download':
+            location.href = API.publicFileURL(subPath(f.info.dir, f.info.name), true)
+            break
         case 'info':
             onInfoCommand(f)
             shows.fileInfoDialog = true

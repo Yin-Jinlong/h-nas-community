@@ -16,6 +16,8 @@ import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
+import org.springframework.boot.context.properties.bind.DefaultValue
+import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpRange
 import org.springframework.http.HttpStatus
@@ -164,6 +166,7 @@ class PubFileController(
     fun getPublicFile(
         path: String,
         @RequestHeader(HttpHeaders.RANGE) rangeStr: String?,
+        @DefaultValue("false") download: Boolean,
         resp: HttpServletResponse
     ) {
         val pp = getPubPath(path)
@@ -194,6 +197,16 @@ class PubFileController(
             resp.status = HttpStatus.PARTIAL_CONTENT.value()
         resp.setContentLength(size.toInt())
         resp.setHeader(HttpHeaders.CONTENT_RANGE, "bytes $start-$end/$len")
+
+        if (download) {
+            resp.setHeader(
+                HttpHeaders.CONTENT_DISPOSITION,
+                ContentDisposition.builder("attachment")
+                    .filename(vf.name, Charsets.UTF_8)
+                    .build()
+                    .toString()
+            )
+        }
 
         try {
             RandomAccessFile(file, "r").use {

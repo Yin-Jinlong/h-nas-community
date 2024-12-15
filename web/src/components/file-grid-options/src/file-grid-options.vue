@@ -19,7 +19,10 @@
                 <el-dropdown-item :command="['rename']" :icon="Edit">
                     重命名
                 </el-dropdown-item>
-                <el-dropdown-item :command="['del']" :icon="Delete">
+                <el-dropdown-item v-if="!dir" :command="['download']" :icon="Download">
+                    下载
+                </el-dropdown-item>
+                <el-dropdown-item :command="['del']" :icon="Delete" divided>
                     删除
                 </el-dropdown-item>
                 <el-dropdown-item :command="['info']" :icon="InfoFilled" divided>
@@ -39,7 +42,7 @@
 
 <script lang="ts" setup>
 import {FileGridCommand, FileGridOptionsProps} from './props'
-import {Delete, Edit, InfoFilled, MoreFilled, Plus, VideoPlay} from '@element-plus/icons-vue'
+import {Delete, Download, Edit, InfoFilled, MoreFilled, Plus, VideoPlay} from '@element-plus/icons-vue'
 
 const props = defineProps<FileGridOptionsProps>()
 const canPlay = computed(() => /^(video|audio)\/.*/.test(props.mediaType ?? ''))
