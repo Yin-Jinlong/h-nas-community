@@ -176,7 +176,7 @@ class VirtualPath private constructor(
     override fun relativize(other: Path): VirtualPath = relativize(check(other))
 
     fun relativize(o: VirtualPath): VirtualPath {
-        if (access != o.access || paths.isEmpty() || o.paths.isEmpty())
+        if (access != o.access)
             return o.clone(access, true, emptyArray())
         // /a/b
         // /a/b     => .
@@ -200,7 +200,7 @@ class VirtualPath private constructor(
         return o.clone(
             null, false, when (sameLen) {
                 0 -> o.paths.cloneInsertParent(s)
-                s -> o.paths.sliceArray(sameLen..os)
+                s -> o.paths.sliceArray(sameLen..<os)
                 else -> o.paths.cloneSetParent(sameLen)
             }
         )
