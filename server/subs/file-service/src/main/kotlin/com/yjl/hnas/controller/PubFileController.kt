@@ -231,7 +231,7 @@ class PubFileController(
         resp.contentType = vf.mediaType
         if (range != null)
             resp.status = HttpStatus.PARTIAL_CONTENT.value()
-        resp.setContentLength(size.toInt())
+        resp.setContentLengthLong(size)
         resp.setHeader(HttpHeaders.CONTENT_RANGE, "bytes $start-$end/$len")
 
         if (download) {
@@ -249,13 +249,17 @@ class PubFileController(
                 val out = resp.outputStream
                 val buf = ByteArray(8 * 1024)
                 it.seek(start)
-                var write = 0
-                while (write < size) {
-                    val lIn = it.read(buf)
+                var remain = size
+                while (remain > 0) {
+                    val lIn = it.read(
+                        buf,
+                        0,
+                        if (remain < buf.size) remain.toInt() else buf.size
+                    )
                     if (lIn <= 0)
                         break
                     out.write(buf, 0, lIn)
-                    write += lIn
+                    remain -= lIn
                 }
             }
         } catch (ioe: IOException) {
