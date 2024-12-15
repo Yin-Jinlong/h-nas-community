@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
  * @author YJL
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping(API.USER)
 class UserController(
     val userService: UserService
 ) {
