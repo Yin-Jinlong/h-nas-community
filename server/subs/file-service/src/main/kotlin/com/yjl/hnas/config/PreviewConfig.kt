@@ -45,4 +45,7 @@ class PreviewConfig {
     @Bean
     fun xMindPreviewGenerator(): FilePreviewGenerator = XMindPreviewGenerator()
 
+    @Bean
+    fun pdfPreviewGenerator(): FilePreviewGenerator = PDFPreviewGenerator()
+
 }

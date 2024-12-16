@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.bytedeco.ffmpeg.platform.gpl)
     implementation("com.github.Adonai:jaudiotagger:2.3.14")
     implementation("org.apache.commons:commons-compress:1.27.1")
+    implementation("org.apache.pdfbox:pdfbox:3.0.3")
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)

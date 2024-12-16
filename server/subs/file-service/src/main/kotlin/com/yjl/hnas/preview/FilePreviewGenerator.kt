@@ -14,8 +14,10 @@ abstract class FilePreviewGenerator(
         addAll(types)
     }
 
-    fun getSize(img: BufferedImage, maxSize: Int): Size {
-        val aspectRatio = img.width.toFloat() / img.height
+    fun getSize(img: BufferedImage, maxSize: Int) = getSize(img.width, img.height, maxSize)
+
+    fun getSize(w: Int, h: Int, maxSize: Int): Size {
+        val aspectRatio = w.toFloat() / h
         return if (aspectRatio >= 1) {
             Size(maxSize, (maxSize / aspectRatio).toInt())
         } else {

@@ -9,6 +9,7 @@ object MediaSubtypeType {
     const val AUDIO_FLAC = "x-flac"
 
     const val APPLICATION_X_MIND = "x-xmind"
+    const val APPLICATION_PDF = "pdf"
 
     const val IMAGE_PNG = "png"
     const val IMAGE_JPEG = "jpeg"
