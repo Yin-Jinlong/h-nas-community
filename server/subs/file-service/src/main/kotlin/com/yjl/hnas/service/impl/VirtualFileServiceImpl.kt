@@ -257,6 +257,8 @@ class VirtualFileServiceImpl(
         val oldId = path.id
         val vf = virtualFileMapper.selectById(oldId)
             ?: throw NoSuchFileException(path.fullPath)
+        if (vf.isFolder())
+            throw NoSuchFileException("不支持重命名文件夹")
         val new = path.parent.resolve(name)
         val newId = new.id
         val time = System.currentTimeMillis().timestamp
