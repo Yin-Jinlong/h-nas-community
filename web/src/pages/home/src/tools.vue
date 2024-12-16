@@ -27,7 +27,7 @@
                         <Sort/>
                     </el-icon>
                     <h-badge :value="UploadTasks.length"
-                             style="display: inline-block;font-size: 16px;margin-right: 1em"/>
+                             style="display: inline-block;font-size: 10px;margin-right: 1em"/>
                 </h-button>
             </template>
             <template #default>
@@ -61,6 +61,33 @@
   padding: 0.2em;
   width: 100%;
 }
+
+.task {
+  border: gray solid 1px;
+  position: relative;
+}
+
+.progress {
+  --p: 0;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  scale: var(--p, 0) 1;
+  top: 0;
+  transform-origin: left center;
+  transition: all 0.1s ease-out;
+  width: 100%;
+  z-index: -1;
+}
+
+.remove-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 
 </style>
 
