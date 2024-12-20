@@ -38,7 +38,7 @@ interface UserMapper {
         keyColumn = "user_id",
         keyProperty = "userId"
     )
-    @Insert("insert into user(uid,username, nick, password, password_type) VALUES (default,#{username}, #{nick}, #{password}, #{passwordType})")
+    @Insert("insert into user(uid,username, nick, password, password_type,role) VALUES (default,#{username}, #{nick}, #{password}, #{passwordType},#{role})")
     fun insert(user: User): Int
 
     //******//
