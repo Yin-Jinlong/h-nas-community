@@ -78,8 +78,8 @@
                          class="file-box"
                          data-fill-size
                          data-flex-column-center
-                         @click="showPreview(f)"
-                         @dblclick="onDblClick($event,f.info)">
+                         @click="onClickItem(f)"
+                         @dblclick="onDblClickItem($event,f.info)">
                         <file-icon
                                 v-model="files[i].preview"
                                 :info="f.info"
@@ -360,10 +360,18 @@ function enterFolder(name: string) {
     toPath(nowPaths.length - 1)
 }
 
-function showPreview(f: FileWrapper) {
-    if (f.previewIndex !== undefined) {
-        nowIndex.value = f.previewIndex
-        shows.imageViewer = true
+function onClickItem(f: FileWrapper) {
+    let mt = f.info.mediaType?.split('/')?.[0]
+    switch (mt) {
+        case 'video':
+        case 'audio':
+            onCommand('play', f)
+            break
+        default:
+            if (f.previewIndex !== undefined) {
+                nowIndex.value = f.previewIndex
+                shows.imageViewer = true
+            }
     }
 }
 
@@ -481,7 +489,7 @@ function upload(file: File, isFile: boolean) {
     }
 }
 
-function onDblClick(e: MouseEvent, info: FileInfo) {
+function onDblClickItem(e: MouseEvent, info: FileInfo) {
     if (info.fileType == 'FOLDER')
         enterFolder(info.name)
 }
