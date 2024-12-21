@@ -57,18 +57,21 @@
                 <el-empty v-if="nowIndex>-2&&!files.length"/>
                 <el-skeleton v-if="nowIndex==-2" animated>
                     <template #template>
-                        <div v-for="i in 8" v-if="shows.listMode"
+                        <div v-if="shows.listMode"
                              class="file-container"
+                             data-fill-width
                              data-list>
-                            <el-skeleton-item style="width: 4em;height: 4em" variant="rect"/>
-                            <div data-fill-width style="display: inline-block">
-                                <el-skeleton-item style="width: 25%;height: 45%" variant="text"/>
-                                <br>
-                                <el-skeleton-item style="width: 75%;height: 35%" variant="text"/>
+                            <div v-for="i in 8" data-fill-width data-flex-center>
+                                <el-skeleton-item style="width: 4em;height: 4em" variant="rect"/>
+                                <div data-fill-width style="display: inline-block;height: 100%;padding-left: 0.3em">
+                                    <el-skeleton-item style="width: 25%;height: 2em" variant="text"/>
+                                    <br>
+                                    <el-skeleton-item style="width: 90%;height: 1em" variant="text"/>
+                                </div>
                             </div>
                         </div>
-                        <div v-for="i in 8" v-else class="file-container">
-                            <el-skeleton-item style="width: 8em;height: 8em" variant="rect"/>
+                        <div v-else class="file-container">
+                            <el-skeleton-item v-for="i in 8" style="width: 8em;height: 8em" variant="rect"/>
                         </div>
                     </template>
                 </el-skeleton>
