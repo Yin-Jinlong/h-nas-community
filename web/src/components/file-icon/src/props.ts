@@ -1,10 +1,10 @@
 export interface FileIconProps {
     info: FileInfo
-    dbClickInterval?: number
+    size?: string
 }
 
 const FileIconPropsDefault = {
-    dbClickInterval: 500
+    size: '8em'
 }
 
 export default FileIconPropsDefault

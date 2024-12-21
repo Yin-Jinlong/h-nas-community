@@ -1,8 +1,8 @@
 <template>
-    <div :title="info.name"
+    <div :style="{'--size':size}"
+         :title="info.name"
          class="box"
-         data-flex-center
-         @click="onClick">
+         data-flex-center>
         <div v-if="info.fileType==='FILE'" class="img" data-flex-center>
             <el-icon v-if="(previewPath?.length??0)<1" size="100%">
                 <el-skeleton :loading="previewPath===undefined" animated data-fill-size>
@@ -47,8 +47,8 @@
   user-select: none;
 
   &, & > svg {
-    height: 8em;
-    width: 8em;
+    height: var(--size);
+    width: var(--size);
   }
 
 }
@@ -72,31 +72,10 @@ const extra = defineModel<FilePreview>({
 const props = withDefaults(defineProps<FileIconProps>(), FileGridViewPropsDefault)
 const previewPath = ref<string | undefined>()
 const fileIcon = shallowRef<Component>()
-const emits = defineEmits({
-    'click': (e: MouseEvent, info: FileInfo) => {
-    },
-    'dblclick': (last: MouseEvent, info: FileInfo) => {
-    }
-})
-
-let clickTimeout = 0
 
 function loadingVariant() {
     let mt = props.info.mediaType ?? ''
     return /^(image)|(video)\/.*/.test(mt) ? 'image' : 'rect'
-}
-
-function onClick(e: MouseEvent) {
-    if (clickTimeout) {
-        clearTimeout(clickTimeout)
-        clickTimeout = 0
-        emits('dblclick', e, props.info)
-    } else {
-        clickTimeout = setTimeout(() => {
-            clickTimeout = 0
-            emits('click', e, props.info)
-        }, props.dbClickInterval) as unknown as number
-    }
 }
 
 function defaultIcon() {
