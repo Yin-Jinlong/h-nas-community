@@ -67,7 +67,7 @@
                          data-fill-size
                          data-flex-column-center
                          @click="showPreview(f)">
-                        <file-grid-view
+                        <file-icon
                                 v-model="files[i].preview"
                                 :info="f.info"
                                 @click="onClick"
@@ -240,7 +240,7 @@
 </style>
 <script lang="ts" setup>
 
-import {FileGridCommand, FileGridOptions, FileGridView, FileInfoDialog, ImageViewer} from '@/components'
+import {FileGridCommand, FileGridOptions, FileIcon, FileInfoDialog, ImageViewer} from '@/components'
 import {MiniMusicPlayer} from '@/components/music-mini-player'
 import {FileWrapper} from './type'
 import API from '@/utils/api'

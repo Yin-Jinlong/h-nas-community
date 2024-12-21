@@ -64,12 +64,12 @@ import API from '@/utils/api'
 import {subPath} from '@/utils/path'
 import {FolderFile, UnknownFile} from '@/icon'
 import {IconMapping} from '@/icon/file'
-import FileGridViewPropsDefault, {FileGridViewProps} from './props'
+import FileGridViewPropsDefault, {FileIconProps} from './props'
 
 const extra = defineModel<FilePreview>({
     required: true
 })
-const props = withDefaults(defineProps<FileGridViewProps>(), FileGridViewPropsDefault)
+const props = withDefaults(defineProps<FileIconProps>(), FileGridViewPropsDefault)
 const previewPath = ref<string | undefined>()
 const fileIcon = shallowRef<Component>()
 const emits = defineEmits({

@@ -6,7 +6,7 @@
         </template>
         <template #default>
             <div data-flex>
-                <file-grid-view
+                <file-icon
                         v-if="modelValue"
                         v-model="extra"
                         :info="info"
@@ -55,7 +55,7 @@
 </style>
 
 <script lang="ts" setup>
-import {FileGridView} from '@/components'
+import {FileIcon} from '@/components'
 import {subPath} from '@/utils/path'
 import {toHumanSize} from '@/utils/size-utils'
 import {FileInfoDialogProps} from './props'
