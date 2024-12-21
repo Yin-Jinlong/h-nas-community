@@ -4,4 +4,5 @@ export interface FileWrapper {
     extraInfo?: Record<string, string | undefined>
     preview: FilePreview
     previewIndex?: number
+    lastTime: string
 }

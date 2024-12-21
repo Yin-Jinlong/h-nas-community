@@ -2,7 +2,9 @@
     <div class="contents"
          data-fill-size
          data-flex-column>
-        <tools :update="update" @show-new-folder-dialog="shows.newFolderDialog = true"/>
+        <tools v-model:list-mode="shows.listMode"
+               :update="update"
+               @show-new-folder-dialog="shows.newFolderDialog = true"/>
         <div class="breadcrumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
@@ -33,7 +35,7 @@
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-        <el-scrollbar data-relative height="100%">
+        <el-scrollbar class="aaa">
             <div data-relative
                  style="flex: 1"
                  @dragenter="Dragger.onDragStart"
@@ -55,24 +57,41 @@
                 <el-empty v-if="nowIndex>-2&&!files.length"/>
                 <el-skeleton v-if="nowIndex==-2" animated>
                     <template #template>
-                        <div class="file-container">
-                            <el-skeleton-item v-for="i in 8" style="width: 8em;height: 8em" variant="rect"/>
+                        <div v-for="i in 8" v-if="shows.listMode"
+                             class="file-container"
+                             data-list>
+                            <el-skeleton-item style="width: 4em;height: 4em" variant="rect"/>
+                            <div data-fill-width style="display: inline-block">
+                                <el-skeleton-item style="width: 25%;height: 45%" variant="text"/>
+                                <br>
+                                <el-skeleton-item style="width: 75%;height: 35%" variant="text"/>
+                            </div>
+                        </div>
+                        <div v-for="i in 8" v-else class="file-container">
+                            <el-skeleton-item style="width: 8em;height: 8em" variant="rect"/>
                         </div>
                     </template>
                 </el-skeleton>
-                <div class="file-container">
+                <div :data-list="shows.listMode?'':undefined" class="file-container">
                     <div v-for="(f,i) in files"
                          :key="f.info.name"
                          class="file-box"
                          data-fill-size
                          data-flex-column-center
-                         @click="showPreview(f)">
+                         @click="showPreview(f)"
+                         @dblclick="onDblClick($event,f.info)">
                         <file-icon
                                 v-model="files[i].preview"
                                 :info="f.info"
-                                @click="onClick"
-                                @dblclick="onDblClick"/>
-                        <div class="file-name">{{ f.info.name }}</div>
+                                :size="shows.listMode?'4em':'8em'"
+                                style="flex: 0 0 auto"/>
+                        <div data-fill-width style="padding-left: 0.2em">
+                            <div class="file-name">{{ f.info.name }}</div>
+                            <div v-if="shows.listMode" class="info-text">
+                                <span>{{ f.lastTime }}</span>
+                                <span>{{ toHumanSize(f.info.size) }}</span>
+                            </div>
+                        </div>
                         <div class="file-op-menu">
                             <file-grid-options
                                     :dir="f.info.fileType==='FOLDER'"
@@ -105,8 +124,10 @@
 
 <style lang="scss" scoped>
 @use '@yin-jinlong/h-ui/style/src/tools/fns' as *;
+@use '@/vars' as *;
 
 .contents {
+  height: calc(100% - $top-bar-height);
   position: relative;
 }
 
@@ -137,6 +158,51 @@
   grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
   justify-content: center;
   padding: 1em;
+
+  &[data-list] {
+    display: flex;
+    flex-direction: column;
+    padding: 0.25em 0.5em;
+
+    & > .file-box {
+      display: flex;
+      flex-direction: row;
+      padding: 0;
+      width: 100%;
+
+    }
+
+    .file-name {
+      line-height: unset;
+      word-break: keep-all;
+
+      &:before {
+        display: none;
+      }
+
+    }
+
+    .info-text {
+      color: gray;
+      display: flex;
+      opacity: 0.8;
+
+      :nth-child(1) {
+        width: 100%;
+      }
+
+      :nth-child(2) {
+        width: max-content;
+      }
+
+    }
+
+    .file-op-menu {
+      position: relative;
+    }
+
+  }
+
 }
 
 .file-box {
@@ -242,6 +308,7 @@
 
 import {FileGridCommand, FileGridOptions, FileIcon, FileInfoDialog, ImageViewer} from '@/components'
 import {MiniMusicPlayer} from '@/components/music-mini-player'
+import {toHumanSize} from '@/utils/size-utils'
 import {FileWrapper} from './type'
 import API from '@/utils/api'
 import {user} from '@/utils/globals'
@@ -267,6 +334,7 @@ const shows = reactive({
     fileInfoDialog: false,
     renameDialog: false,
     newFolderDialog: false,
+    listMode: false,
 })
 
 const activeFile = ref<FileWrapper>()
@@ -411,11 +479,6 @@ function upload(file: File, isFile: boolean) {
         newFolder(file.name, () => {
         })
     }
-}
-
-
-function onClick(e: MouseEvent, info: FileInfo) {
-
 }
 
 function onDblClick(e: MouseEvent, info: FileInfo) {

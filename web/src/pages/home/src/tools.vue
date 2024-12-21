@@ -53,12 +53,18 @@
                 </div>
             </template>
         </el-popover>
+        <el-icon data-pointer size="1em" style="padding: 0 0.5em;flex: 0 0 auto" @click="listMode=!listMode">
+            <ListMode v-if="listMode"/>
+            <GridMode v-else/>
+        </el-icon>
     </div>
 </template>
 
 <style lang="scss" scoped>
 .tools {
+  align-items: center;
   padding: 0.2em;
+  user-select: none;
   width: 100%;
 }
 
@@ -92,10 +98,13 @@
 </style>
 
 <script lang="ts" setup>
+import {ListMode, GridMode} from '@/icon'
 import {user} from '@/utils/globals'
 import {UploadStatus, UploadTasks} from '@/utils/upload-tasks'
 import {Close, Refresh, Sort} from '@element-plus/icons-vue'
 import {convertColor, HBadge, HButton, HToolTip} from '@yin-jinlong/h-ui'
+
+const listMode = defineModel<boolean>('listMode')
 
 defineProps<{
     update: () => void

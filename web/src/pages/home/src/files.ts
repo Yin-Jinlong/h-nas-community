@@ -21,7 +21,8 @@ export function updateFiles(path: string) {
                 preview: {
                     thumbnail: '',
                     preview: '',
-                }
+                },
+                lastTime: new Date(f.updateTime).toLocaleString()
             }
             files.push(file)
             if (f.mediaType?.startsWith('image/'))
