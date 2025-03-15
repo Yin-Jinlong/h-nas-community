@@ -8,7 +8,7 @@
                 <el-skeleton :loading="previewPath===undefined" animated data-fill-size>
                     <template #template>
                         <el-skeleton-item :variant="loadingVariant()"
-                                          style="width: 8em;height: 8em"/>
+                                          style="width: 100%;height: 100%"/>
                     </template>
                     <component :is="fileIcon"/>
                 </el-skeleton>
@@ -24,7 +24,7 @@
                     <el-icon size="100%">
                         <el-skeleton animated data-fill-size>
                             <template #template>
-                                <el-skeleton-item style="width: 8em;height: 8em"
+                                <el-skeleton-item style="width: 100%;height: 100%"
                                                   variant="image"/>
                             </template>
                         </el-skeleton>
