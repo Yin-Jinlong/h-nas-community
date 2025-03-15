@@ -485,7 +485,9 @@ function upload(file: File, isFile: boolean) {
         uploadPublicFile(nowPaths.join('/') + '/' + file.name, file, () => {
             update()
         })
-        HMessage.success('已添加任务')
+        HMessage.success('已添加任务', {
+            mergeId: 'addTask'
+        })
     } else {
         newFolder(file.name, () => {
         })
