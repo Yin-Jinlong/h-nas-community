@@ -181,7 +181,9 @@ export function uploadPublicFile(path: string, file: File, ok: () => void) {
     let task = new UploadTaskImpl(path, file)
     UploadTasks.push(task)
     task.start(() => {
-        HMessage.success('上传成功')
+        HMessage.success('上传成功',{
+            mergeId:'upload ok'
+        })
         ok()
     })
 }
