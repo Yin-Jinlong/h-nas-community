@@ -5,7 +5,6 @@
 ### 1.配置环境
 
 - `java` `17+`
-- `node` `20+`
 - `mysql` `8+`
 
 `mysql`
@@ -27,21 +26,7 @@
 生成前端类型文件
 
 ```shell
-./gradlew :web:genDts
-```
-
-加载`node`前端项目
-
-```shell
-cd web && pnpm i
-```
-
-### 3.开发
-
-前端
-
-```shell
-cd web && pnpm run dev
+./gradlew :server:common-data:genTypes
 ```
 
 ## License

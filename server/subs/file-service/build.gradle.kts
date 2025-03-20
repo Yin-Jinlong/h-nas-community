@@ -7,8 +7,8 @@ plugins {
 }
 
 repositories {
-    maven("https://maven.aliyun.com/repository/public")
-    maven("https://maven.aliyun.com/repository/central")
+//    maven("https://maven.aliyun.com/repository/public")
+//    maven("https://maven.aliyun.com/repository/central")
     mavenCentral()
     maven("https://jitpack.io")
 }

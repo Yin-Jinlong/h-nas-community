@@ -1,21 +1,12 @@
 [versions]
-agp = "8.2.2"
-android-compileSdk = "34"
-android-minSdk = "30"
-android-targetSdk = "34"
-androidx-activityCompose = "1.9.3"
-androidx-core-ktx = "1.13.1"
-androidx-lifecycle = "2.8.2"
+agp = "8.7.0"
 compose-plugin = "1.6.11"
-composeBom = "2024.10.00"
 ffmpeg-gpl = "7.1-1.5.11"
 javacv = "1.5.11"
 javacv-gpu = "4.9.0-1.5.10"
 junitJupiter = "5.8.1"
-kotlin = "2.0.20"
-kotlinx-coroutines = "1.9.0"
+kotlin = "2.1.10"
 license = "0.9.8"
-lifecycleRuntimeKtx = "2.8.6"
 mybatis-spring-boot = "3.0.3"
 spring = "3.3.4"
 spring-boot-apiStarter = "0.3.5"
@@ -27,16 +18,6 @@ tikaCore = "3.0.0"
 webpImageio = "0.1.6"
 
 [libraries]
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core-ktx" }
-androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-material3 = { module = "androidx.compose.material3:material3" }
-androidx-ui = { module = "androidx.compose.ui:ui" }
-androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
-androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 bytedeco-javacv = { module = "org.bytedeco:javacv", version.ref = "javacv" }
 bytedeco-javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
 bytedeco-opencv-platform-gpu = { module = "org.bytedeco:opencv-platform-gpu", version.ref = "javacv-gpu" }
@@ -44,7 +25,6 @@ bytedeco-ffmpeg-platform-gpl = { module = "org.bytedeco:ffmpeg-platform-gpl", ve
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
-kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 mybatis-spring-boot-starter-test = { module = "org.mybatis.spring.boot:mybatis-spring-boot-starter-test", version.ref = "mybatis-spring-boot" }
 spring-boot-api-starter = { module = "io.github.yin-jinlong:spring-boot-api-starter", version.ref = "spring-boot-apiStarter" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
@@ -58,11 +38,8 @@ webp-imageio = { module = "org.sejda.imageio:webp-imageio", version.ref = "webpI
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
-kotlin = { id = "org.jetbrains.kotlin.jvm" }
-kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring" }

@@ -14,12 +14,10 @@ tasks.withType<Test> {
 }
 
 afterEvaluate {
-    tasks.create("genDts", Kotlin2DTS::class) {
+    tasks.create("genTypes", Kotlin2Dart::class) {
         group = "build"
-        outputFile = File(
-            project(":web").layout.projectDirectory.asFile.path,
-            "global-types.d.ts"
-        )
+        outputFile = rootProject.layout.projectDirectory.asFile.resolve("client/lib/utils/type.g.dart")
+
         links.addAll(
             listOf(
                 project(":server:entity").layout.projectDirectory.asFile,
@@ -30,7 +28,7 @@ afterEvaluate {
 
     // 每次编译时都生成dts
     tasks.getByName("classes") {
-        dependsOn("genDts")
+        dependsOn("genTypes")
     }
 
 }

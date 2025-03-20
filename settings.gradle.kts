@@ -1,32 +1,12 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
 
-dependencyResolutionManagement {
-    repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
-        maven("https://maven.aliyun.com/repository/public")
-        maven("https://maven.aliyun.com/repository/central")
-        mavenCentral()
-    }
-}
 
 rootProject.name = "h-nas"
 
@@ -58,7 +38,7 @@ private fun Settings.includeSubs(paths: Array<String>, filter: Filter) {
     }
 }
 
-val ignoreRoots = Regex("(\\.|compose|web/).*|buildSrc|gradle|data|cache")
+val ignoreRoots = Regex("(\\.|compose|web/).*|buildSrc|gradle|data|cache|client")
 val ignoreContains = setOf(
     "src",
     "build"

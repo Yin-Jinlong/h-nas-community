@@ -16,4 +16,5 @@ HELP.md
 /data/
 /cache/
 
-/composeApp/
+
+/local.properties
