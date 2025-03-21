@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:h_nas/components/file_preview_view.dart';
@@ -22,6 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<FileInfo> files = [];
   List<String> dirs = [];
+  late ModalRoute route;
 
   @override
   void initState() {
@@ -54,6 +56,7 @@ class _HomePageState extends State<HomePage> {
       builder: (context) {
         return _ImageViewerOverlayWidget(
           file: file,
+          route: route,
           onClose: () {
             entry?.remove();
           },
@@ -68,6 +71,7 @@ class _HomePageState extends State<HomePage> {
     final textTheme = Theme.of(context).textTheme;
 
     final thumbnailCache = ThumbnailModel();
+    route = ModalRoute.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -187,8 +191,13 @@ class _HomePageState extends State<HomePage> {
 class _ImageViewerOverlayWidget extends StatefulWidget {
   final FilePreview file;
   final Function() onClose;
+  final ModalRoute route;
 
-  const _ImageViewerOverlayWidget({required this.file, required this.onClose});
+  const _ImageViewerOverlayWidget({
+    required this.file,
+    required this.route,
+    required this.onClose,
+  });
 
   @override
   State createState() {
@@ -221,10 +230,21 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
               layerProgress = layerController.value;
             });
           });
+    widget.route.registerPopEntry(
+      _ImageViewerOverlayPopEntry((e) {
+        _close();
+        widget.route.unregisterPopEntry(e);
+      }),
+    );
     Future.delayed(Duration(milliseconds: 16)).then((_) {
       close = false;
       layerController.forward();
     });
+  }
+
+  _close() {
+    close = true;
+    layerController.animateTo(0);
   }
 
   @override
@@ -233,48 +253,67 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
       opacity: layerProgress,
       child: Scaffold(
         backgroundColor: Colors.black.withAlpha(180),
-        body: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Stack(
-            children: [
-              Transform.scale(
-                scale: 0.95 + 0.05 * layerProgress,
-                child: ImageViewer(
-                  url: API.publicFilePreviewURL(widget.file.preview!),
+        body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            _close();
+          },
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Transform.scale(
+                  scale: 0.95 + 0.05 * layerProgress,
+                  child: ImageViewer(
+                    url: API.publicFilePreviewURL(widget.file.preview!),
+                  ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Tooltip(
-                  message: '关闭',
-                  child: InkWell(
-                    onTap: () {},
-                    onHover: (isHover) {
-                      setState(() {
-                        hover = isHover;
-                      });
-                    },
-                    child: SafeArea(
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Tooltip(
+                    message: '关闭',
+                    child: InkWell(
+                      onTap: () {},
+                      onHover: (isHover) {
+                        setState(() {
+                          hover = isHover;
+                        });
+                      },
                       child: AnimatedOpacity(
                         duration: Duration(milliseconds: 200),
                         opacity: hover ? 0.9 : 0.1,
                         child: IconButton(
                           icon: Icon(Icons.close, color: Colors.white),
                           onPressed: () {
-                            close = true;
-                            layerController.animateTo(0);
+                            _close();
                           },
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+class _ImageViewerOverlayPopEntry extends PopEntry {
+  final ValueNotifier<bool> value = ValueNotifier(false);
+
+  Function(_ImageViewerOverlayPopEntry) _onPopInvoked;
+
+  _ImageViewerOverlayPopEntry(this._onPopInvoked);
+
+  @override
+  void onPopInvoked(bool didPop) {
+    _onPopInvoked(this);
+  }
+
+  @override
+  ValueListenable<bool> get canPopNotifier {
+    return value;
   }
 }
