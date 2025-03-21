@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:h_nas/components/file_preview_view.dart';
+import 'package:h_nas/components/image_viewer.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
+import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +44,25 @@ class _HomePageState extends State<HomePage> {
     updateFiles();
   }
 
+  var hover = false;
+
+  showImage(FilePreview file) {
+    final overlay = navigatorKey.currentState?.overlay;
+    if (overlay == null) return;
+    OverlayEntry? entry;
+    entry = OverlayEntry(
+      builder: (context) {
+        return _ImageViewerOverlayWidget(
+          file: file,
+          onClose: () {
+            entry?.remove();
+          },
+        );
+      },
+    );
+    overlay.insert(entry);
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -49,7 +71,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text('h-nas'),
         actions: [
           Tooltip(
@@ -134,6 +156,16 @@ class _HomePageState extends State<HomePage> {
                               onTap: () {
                                 if (file.isFolder) {
                                   enterFolder(file.name);
+                                } else {
+                                  switch (MediaType.parse(
+                                    file.mediaType ?? '',
+                                  ).type) {
+                                    case MediaType.typeImage:
+                                      thumbnailCache.get(file, (f) {
+                                        showImage(f);
+                                      }, (_) {});
+                                      break;
+                                  }
                                 }
                               },
                             ),
@@ -147,6 +179,101 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {},
+      ),
+    );
+  }
+}
+
+class _ImageViewerOverlayWidget extends StatefulWidget {
+  final FilePreview file;
+  final Function() onClose;
+
+  const _ImageViewerOverlayWidget({required this.file, required this.onClose});
+
+  @override
+  State createState() {
+    return _ImageViewerOverlayWidgetState();
+  }
+}
+
+class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
+    with SingleTickerProviderStateMixin {
+  bool hover = false;
+
+  late AnimationController layerController;
+
+  double layerProgress = 0;
+
+  bool close = false;
+
+  @override
+  void initState() {
+    super.initState();
+    layerController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 200))
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed && close) {
+              widget.onClose();
+            }
+          })
+          ..addListener(() {
+            setState(() {
+              layerProgress = layerController.value;
+            });
+          });
+    Future.delayed(Duration(milliseconds: 16)).then((_) {
+      close = false;
+      layerController.forward();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: layerProgress,
+      child: Scaffold(
+        backgroundColor: Colors.black.withAlpha(180),
+        body: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              Transform.scale(
+                scale: 0.95 + 0.05 * layerProgress,
+                child: ImageViewer(
+                  url: API.publicFilePreviewURL(widget.file.preview!),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: Tooltip(
+                  message: '关闭',
+                  child: InkWell(
+                    onTap: () {},
+                    onHover: (isHover) {
+                      setState(() {
+                        hover = isHover;
+                      });
+                    },
+                    child: SafeArea(
+                      child: AnimatedOpacity(
+                        duration: Duration(milliseconds: 200),
+                        opacity: hover ? 0.9 : 0.1,
+                        child: IconButton(
+                          icon: Icon(Icons.close, color: Colors.white),
+                          onPressed: () {
+                            close = true;
+                            layerController.animateTo(0);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

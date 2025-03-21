@@ -58,4 +58,6 @@ class API {
 
   static String publicFileThumbnailURL(String thumbnail) =>
       "$API_ROOT/file/public/thumbnail?path=${Uri.encodeQueryComponent(thumbnail)}";
+  static String publicFilePreviewURL(String thumbnail) =>
+      "$API_ROOT/file/public/preview?path=${Uri.encodeQueryComponent(thumbnail)}";
 }

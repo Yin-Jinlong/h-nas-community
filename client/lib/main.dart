@@ -6,6 +6,8 @@ void main() {
   runApp(const MyApp());
 }
 
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -29,10 +31,9 @@ class MyApp extends StatelessWidget {
           onSurface: Colors.black,
         ),
       ),
+      navigatorKey: navigatorKey,
       navigatorObservers: [BotToastNavigatorObserver()],
-      routes: {
-        '/': (context) => const HomePage(),
-      },
+      routes: {'/': (context) => const HomePage()},
     );
   }
 }
