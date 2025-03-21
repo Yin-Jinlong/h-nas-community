@@ -17,7 +17,17 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       builder: BotToastInit(),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+        colorScheme: ColorScheme(
+          brightness: Brightness.light,
+          primary: Colors.orange.shade300,
+          onPrimary: Colors.white,
+          secondary: Colors.orange.shade200,
+          onSecondary: Colors.black87,
+          error: Colors.red,
+          onError: Colors.black54,
+          surface: Colors.grey.shade200,
+          onSurface: Colors.black,
+        ),
       ),
       navigatorObservers: [BotToastNavigatorObserver()],
       routes: {
