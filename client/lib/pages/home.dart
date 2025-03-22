@@ -155,7 +155,10 @@ class _HomePageState extends State<HomePage> {
                                   file.createTime,
                                 ).toString(),
                               ),
-                              leading: FilePreviewView(fileInfo: file),
+                              leading: IconTheme(
+                                data: IconTheme.of(context),
+                                child: FilePreviewView(fileInfo: file),
+                              ),
                               trailing: Text(file.size.storageSizeStr),
                               onTap: () {
                                 if (file.isFolder) {

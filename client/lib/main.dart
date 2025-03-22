@@ -28,8 +28,11 @@ class MyApp extends StatelessWidget {
           error: Colors.red,
           onError: Colors.black54,
           surface: Colors.grey.shade200,
-          onSurface: Colors.black,
+          onSurface: Colors.black87,
         ),
+        iconTheme: IconThemeData(color: HSLColor.fromColor(Colors.orange.shade300)
+            .withLightness(0.15)
+            .toColor()),
       ),
       navigatorKey: navigatorKey,
       navigatorObservers: [BotToastNavigatorObserver()],
