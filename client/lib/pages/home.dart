@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
@@ -22,6 +24,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<FileInfo> files = [];
+  List<FileInfo> images = [];
   List<String> dirs = [];
   late ModalRoute route;
 
@@ -35,6 +38,13 @@ class _HomePageState extends State<HomePage> {
     API.getPublicFiles('/${dirs.join('/')}').then((v) {
       setState(() {
         files = v;
+        images = [];
+        for (var file in v) {
+          if (MediaType.parse(file.mediaType ?? '').type ==
+              MediaType.typeImage) {
+            images.add(file);
+          }
+        }
       });
     });
   }
@@ -47,16 +57,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   var hover = false;
+  var index = 0;
 
-  showImage(FilePreview file) {
+  showImage(ThumbnailModel thumbnailCache, FileInfo file) {
     final overlay = navigatorKey.currentState?.overlay;
     if (overlay == null) return;
     OverlayEntry? entry;
+    index = images.indexOf(file);
     entry = OverlayEntry(
       builder: (context) {
         return _ImageViewerOverlayWidget(
-          file: file,
+          index: index,
+          files: images,
           route: route,
+          thumbnailCache: thumbnailCache,
           onClose: () {
             entry?.remove();
           },
@@ -168,9 +182,7 @@ class _HomePageState extends State<HomePage> {
                                     file.mediaType ?? '',
                                   ).type) {
                                     case MediaType.typeImage:
-                                      thumbnailCache.get(file, (f) {
-                                        showImage(f);
-                                      }, (_) {});
+                                      showImage(thumbnailCache, file);
                                       break;
                                   }
                                 }
@@ -192,13 +204,17 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _ImageViewerOverlayWidget extends StatefulWidget {
-  final FilePreview file;
+  final int index;
   final Function() onClose;
   final ModalRoute route;
+  final List<FileInfo> files;
+  final ThumbnailModel thumbnailCache;
 
   const _ImageViewerOverlayWidget({
-    required this.file,
+    required this.index,
+    required this.files,
     required this.route,
+    required this.thumbnailCache,
     required this.onClose,
   });
 
@@ -218,9 +234,32 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
 
   bool close = false;
 
+  late int index;
+
+  _onLastImage() {
+    setState(() {
+      if (index == 0) {
+        index = widget.files.length - 1;
+      } else {
+        index--;
+      }
+    });
+  }
+
+  _onNextImage() {
+    setState(() {
+      if (index == widget.files.length - 1) {
+        index = 0;
+      } else {
+        index++;
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    index = widget.index;
     layerController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 200))
           ..addStatusListener((status) {
@@ -267,7 +306,19 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                 Transform.scale(
                   scale: 0.95 + 0.05 * layerProgress,
                   child: ImageViewer(
-                    url: API.publicFilePreviewURL(widget.file.preview!),
+                    index: index,
+                    urls: [
+                      for (var file in widget.files)
+                        () async {
+                          final c = Completer<String>();
+                          widget.thumbnailCache.get(file, (f) {
+                            c.complete(API.publicFilePreviewURL(f.preview!));
+                          }, (_) {});
+                          return c.future;
+                        },
+                    ],
+                    onLastImage: _onLastImage,
+                    onNextImage: _onNextImage,
                   ),
                 ),
                 Align(
