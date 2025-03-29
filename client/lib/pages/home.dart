@@ -89,6 +89,66 @@ class _HomePageState extends State<HomePage> {
     overlay.insert(entry);
   }
 
+  TableRow _infoRow(String label, Widget value) {
+    return TableRow(
+      children: [
+        TableCell(
+          child: Padding(
+            padding: EdgeInsets.only(right: 4),
+            child: Text(
+              label,
+              style: TextStyle().copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        TableCell(child: value),
+      ],
+    );
+  }
+
+  _showFileInfo(FileInfo file) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text(file.name),
+          contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+          children: [
+            Table(
+              columnWidths: {0: IntrinsicColumnWidth(), 1: FlexColumnWidth(1)},
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                _infoRow(
+                  '文件路径',
+                  Text('${file.dir}${file.dir == '/' ? '' : '/'}${file.name}'),
+                ),
+                _infoRow('文件类型', Text(file.fileType)),
+                _infoRow('媒体类型', Text(file.mediaType ?? '?')),
+                _infoRow(
+                  '创建时间',
+                  Text(
+                    DateTime.fromMillisecondsSinceEpoch(
+                      file.createTime,
+                    ).toString(),
+                  ),
+                ),
+                _infoRow(
+                  '修改时间',
+                  Text(
+                    DateTime.fromMillisecondsSinceEpoch(
+                      file.updateTime,
+                    ).toString(),
+                  ),
+                ),
+                _infoRow('文件大小', Text(file.size.storageSizeStr)),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -164,7 +224,9 @@ class _HomePageState extends State<HomePage> {
                                   buttonConfigs: _fileContextMenuButtons(
                                     file,
                                     onDownload: () {},
-                                    onInfo: () {},
+                                    onInfo: () {
+                                      _showFileInfo(file);
+                                    },
                                     onDelete: () {},
                                   ),
                                 ),
