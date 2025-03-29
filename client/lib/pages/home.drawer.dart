@@ -3,6 +3,7 @@ part of 'home.dart';
 Drawer _drawer(BuildContext context) {
   return Drawer(
     child: ListView(
+      padding: EdgeInsets.zero,
       children: [
         DrawerHeader(
           decoration: BoxDecoration(
