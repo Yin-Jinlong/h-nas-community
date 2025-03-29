@@ -8,7 +8,7 @@ import 'api_response.dart';
 part 'type.g.dart';
 
 class API {
-  static const String API_ROOT = 'http://127.0.0.1:8888/api';
+  static String API_ROOT = 'http://127.0.0.1:8888/api';
   static Dio dio = Dio();
 
   static Future<T?> _get<T>(
@@ -58,6 +58,7 @@ class API {
 
   static String publicFileThumbnailURL(String thumbnail) =>
       "$API_ROOT/file/public/thumbnail?path=${Uri.encodeQueryComponent(thumbnail)}";
+
   static String publicFilePreviewURL(String thumbnail) =>
       "$API_ROOT/file/public/preview?path=${Uri.encodeQueryComponent(thumbnail)}";
 }

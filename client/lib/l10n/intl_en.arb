@@ -1,8 +1,10 @@
 {
   "@@locale": "en",
   "app_name": "H NAS",
+  "bad_host_addr": "Please enter the correct server address",
   "delete": "Delete",
   "download": "Download",
+  "empty_content": "Empty content",
   "file_info_create_time": "Create Time",
   "file_info_file_size": "File Size",
   "file_info_file_type": "File Type",
@@ -13,6 +15,9 @@
   "login": "Login",
   "no_data": "No Data",
   "now_path": "Now: ",
+  "ok": "OK: ",
   "refresh": "Refresh",
+  "server_addr": "Server address",
+  "set_host_addr": "Set Server Address",
   "settings": "Settings"
 }

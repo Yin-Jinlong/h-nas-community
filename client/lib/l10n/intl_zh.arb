@@ -1,8 +1,10 @@
 {
   "@@locale": "zh",
   "app_name": "H NAS",
+  "bad_host_addr": "请输入正确的服务器地址",
   "delete": "删除",
   "download": "下载",
+  "empty_content": "内容为空",
   "file_info_create_time": "创建时间",
   "file_info_file_size": "文件大小",
   "file_info_file_type": "文件类型",
@@ -13,6 +15,9 @@
   "login": "登录",
   "no_data": "空空如也",
   "now_path": "当前：",
+  "ok": "确定",
   "refresh": "刷新",
+  "server_addr": "服务器地址",
+  "set_host_addr": "配置服务器地址",
   "settings": "设置"
 }

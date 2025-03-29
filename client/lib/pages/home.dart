@@ -15,6 +15,9 @@ import 'package:h_nas/utils/storage_size.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
+import '../prefs.dart';
+
+part 'home.api_host.dart';
 
 part 'home.app_bar.dart';
 
@@ -44,7 +47,25 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      var host = Prefs.getString(Prefs.keyApiHost);
+      if (host == null) {
+        _showHostDialog(context);
+      }
+    });
+
     updateFiles();
+  }
+
+  _showHostDialog(BuildContext context) {
+    var host = '';
+    showGeneralDialog(
+      context: context,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return _ApiHostDialog(host: host);
+      },
+    );
   }
 
   updateFiles() {
