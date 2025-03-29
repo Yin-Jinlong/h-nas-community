@@ -10,6 +10,7 @@ class ImageViewer extends StatefulWidget {
   final List<Future<String> Function()> urls;
   final int index;
   final Function() onLastImage, onNextImage;
+  final Widget? loadingWidget;
 
   const ImageViewer({
     super.key,
@@ -17,6 +18,7 @@ class ImageViewer extends StatefulWidget {
     required this.index,
     required this.onLastImage,
     required this.onNextImage,
+    this.loadingWidget,
   });
 
   @override
@@ -201,10 +203,16 @@ class _ImageViewerState extends State<ImageViewer>
                 });
               }
             },
-            child: CustomPaint(
-              size: ui.Size.infinite,
-              painter: _ImageViewerPainter(state: this),
-            ),
+            child:
+                img != null
+                    ? CustomPaint(
+                      size: ui.Size.infinite,
+                      painter: _ImageViewerPainter(state: this),
+                    )
+                    : Center(
+                      child:
+                          widget.loadingWidget ?? CircularProgressIndicator(),
+                    ),
           ),
         ),
         Align(
