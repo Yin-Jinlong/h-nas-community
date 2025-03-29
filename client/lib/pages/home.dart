@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:context_menus/context_menus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
@@ -159,36 +160,59 @@ class _HomePageState extends State<HomePage> {
             child: Expanded(
               child:
                   files.isNotEmpty
-                      ? ListView(
-                        children: [
-                          for (var file in files)
-                            ListTile(
-                              title: Text(file.name),
-                              subtitle: Text(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                  file.createTime,
-                                ).toString(),
+                      ? ContextMenuOverlay(
+                        child: ListView(
+                          children: [
+                            for (var file in files)
+                              ContextMenuRegion(
+                                contextMenu: GenericContextMenu(
+                                  buttonConfigs: [
+                                    ContextMenuButtonConfig(
+                                      '下载',
+                                      icon: Icon(Icons.download, size: 20),
+                                      onPressed: () {},
+                                    ),
+                                    ContextMenuButtonConfig(
+                                      '信息',
+                                      icon: Icon(Icons.info, size: 20),
+                                      onPressed: () {},
+                                    ),
+                                    ContextMenuButtonConfig(
+                                      '删除',
+                                      icon: Icon(Icons.delete, size: 20),
+                                      onPressed: () {},
+                                    ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  title: Text(file.name),
+                                  subtitle: Text(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                      file.createTime,
+                                    ).toString(),
+                                  ),
+                                  leading: IconTheme(
+                                    data: IconTheme.of(context),
+                                    child: FilePreviewView(fileInfo: file),
+                                  ),
+                                  trailing: Text(file.size.storageSizeStr),
+                                  onTap: () {
+                                    if (file.isFolder) {
+                                      enterFolder(file.name);
+                                    } else {
+                                      switch (MediaType.parse(
+                                        file.mediaType ?? '',
+                                      ).type) {
+                                        case MediaType.typeImage:
+                                          showImage(thumbnailCache, file);
+                                          break;
+                                      }
+                                    }
+                                  },
+                                ),
                               ),
-                              leading: IconTheme(
-                                data: IconTheme.of(context),
-                                child: FilePreviewView(fileInfo: file),
-                              ),
-                              trailing: Text(file.size.storageSizeStr),
-                              onTap: () {
-                                if (file.isFolder) {
-                                  enterFolder(file.name);
-                                } else {
-                                  switch (MediaType.parse(
-                                    file.mediaType ?? '',
-                                  ).type) {
-                                    case MediaType.typeImage:
-                                      showImage(thumbnailCache, file);
-                                      break;
-                                  }
-                                }
-                              },
-                            ),
-                        ],
+                          ],
+                        ),
                       )
                       : const Center(child: Text('No Data')),
             ),
