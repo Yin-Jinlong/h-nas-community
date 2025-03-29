@@ -16,6 +16,8 @@ import 'package:provider/provider.dart';
 
 part 'home.app_bar.dart';
 
+part 'home.drawer.dart';
+
 part 'home.context_menu.dart';
 
 part 'home.file_list.dart';
@@ -256,6 +258,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      drawer: _drawer(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {},
