@@ -8,17 +8,17 @@ List<ContextMenuButtonConfig> _fileContextMenuButtons(
 }) {
   return [
     ContextMenuButtonConfig(
-      '下载${file.isFolder?'tar.gz' :''}',
+      '${S.current.download} ${file.isFolder ? 'tar.gz' : ''}',
       icon: Icon(Icons.download, size: 20),
       onPressed: onDownload,
     ),
     ContextMenuButtonConfig(
-      '信息',
+      S.current.info,
       icon: Icon(Icons.info, size: 20),
       onPressed: onInfo,
     ),
     ContextMenuButtonConfig(
-      '删除',
+      S.current.delete,
       icon: Icon(Icons.delete, size: 20),
       onPressed: onDelete,
     ),

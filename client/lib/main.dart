@@ -1,6 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:h_nas/pages/home.dart';
+
+import 'generated/l10n.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,8 +19,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'H NAS',
       builder: BotToastInit(),
+      localizationsDelegates: [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
       theme: ThemeData(
         colorScheme: ColorScheme(
           brightness: Brightness.light,
@@ -30,9 +40,12 @@ class MyApp extends StatelessWidget {
           surface: Colors.grey.shade200,
           onSurface: Colors.black87,
         ),
-        iconTheme: IconThemeData(color: HSLColor.fromColor(Colors.orange.shade300)
-            .withLightness(0.15)
-            .toColor()),
+        iconTheme: IconThemeData(
+          color:
+              HSLColor.fromColor(
+                Colors.orange.shade300,
+              ).withLightness(0.15).toColor(),
+        ),
       ),
       navigatorKey: navigatorKey,
       navigatorObservers: [BotToastNavigatorObserver()],

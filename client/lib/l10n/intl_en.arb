@@ -1,1 +1,18 @@
-{}
+{
+  "@@locale": "en",
+  "app_name": "H NAS",
+  "delete": "Delete",
+  "download": "Download",
+  "file_info_create_time": "Create Time",
+  "file_info_file_size": "File Size",
+  "file_info_file_type": "File Type",
+  "file_info_media_type": "Media Type",
+  "file_info_path": "File Path",
+  "file_info_update_time": "Update Time",
+  "info": "Info",
+  "login": "Login",
+  "no_data": "No Data",
+  "now_path": "Now: ",
+  "refresh": "Refresh",
+  "settings": "Settings"
+}

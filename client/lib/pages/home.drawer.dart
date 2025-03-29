@@ -15,18 +15,21 @@ Drawer _drawer(BuildContext context) {
               child: CircleAvatar(
                 child: Container(
                   padding: const EdgeInsets.all(8),
-                  child: Text('h nas'),
+                  child: Text(S.current.app_name),
                 ),
               ),
             ),
           ),
         ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('设置'),
-          onTap: () {
-            Navigator.of(navigatorKey.currentContext!).pushNamed('/settings');
-          },
+        Tooltip(
+          message: S.current.settings,
+          child: ListTile(
+            leading: Icon(Icons.settings),
+            title: Text(S.current.settings),
+            onTap: () {
+              Navigator.of(navigatorKey.currentContext!).pushNamed('/settings');
+            },
+          ),
         ),
       ],
     ),

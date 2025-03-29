@@ -14,6 +14,8 @@ import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:provider/provider.dart';
 
+import '../generated/l10n.dart';
+
 part 'home.app_bar.dart';
 
 part 'home.drawer.dart';
@@ -121,13 +123,16 @@ class _HomePageState extends State<HomePage> {
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 _infoRow(
-                  '文件路径',
+                  S.current.file_info_path,
                   Text('${file.dir}${file.dir == '/' ? '' : '/'}${file.name}'),
                 ),
-                _infoRow('文件类型', Text(file.fileType)),
-                _infoRow('媒体类型', Text(file.mediaType ?? '?')),
+                _infoRow(S.current.file_info_file_type, Text(file.fileType)),
                 _infoRow(
-                  '创建时间',
+                  S.current.file_info_media_type,
+                  Text(file.mediaType ?? '?'),
+                ),
+                _infoRow(
+                  S.current.file_info_create_time,
                   Text(
                     DateTime.fromMillisecondsSinceEpoch(
                       file.createTime,
@@ -135,14 +140,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 _infoRow(
-                  '修改时间',
+                  S.current.file_info_update_time,
                   Text(
                     DateTime.fromMillisecondsSinceEpoch(
                       file.updateTime,
                     ).toString(),
                   ),
                 ),
-                _infoRow('文件大小', Text(file.size.storageSizeStr)),
+                _infoRow(
+                  S.current.file_info_file_size,
+                  Text(file.size.storageSizeStr),
+                ),
               ],
             ),
           ],
@@ -175,7 +183,7 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               Text(
-                '当前：',
+                S.current.now_path,
                 style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
@@ -253,7 +261,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       )
-                      : const Center(child: Text('No Data')),
+                      : Center(child: Text(S.current.no_data)),
             ),
           ),
         ],
