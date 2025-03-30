@@ -28,7 +28,9 @@ Drawer _drawer(BuildContext context) {
             leading: Icon(Icons.settings),
             title: Text(S.current.settings),
             onTap: () {
-              Navigator.of(navigatorKey.currentContext!).pushNamed('/settings');
+              Navigator.of(
+                navigatorKey.currentContext!,
+              ).pushNamed(Routes.settings);
             },
           ),
         ),

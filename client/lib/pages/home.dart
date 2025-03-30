@@ -4,6 +4,7 @@ import 'package:context_menus/context_menus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
+import 'package:h_nas/Routes.dart';
 import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/main.dart';
@@ -12,18 +13,16 @@ import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
+import 'package:h_nas/utils/toast.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
-import '../prefs.dart';
-
-part 'home.api_host.dart';
 
 part 'home.app_bar.dart';
 
-part 'home.drawer.dart';
-
 part 'home.context_menu.dart';
+
+part 'home.drawer.dart';
 
 part 'home.file_list.dart';
 
@@ -48,27 +47,14 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100), () {
-      var host = Prefs.getString(Prefs.keyApiHost);
-      if (host == null) {
-        _showHostDialog(context);
-      }
-    });
-
     updateFiles();
   }
 
-  _showHostDialog(BuildContext context) {
-    var host = '';
-    showGeneralDialog(
-      context: context,
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return _ApiHostDialog(host: host);
-      },
-    );
-  }
-
   updateFiles() {
+    if (API.API_ROOT.isEmpty) {
+      Toast.showError(S.current.error_set_server_addr);
+      return;
+    }
     API.getPublicFiles('/${dirs.join('/')}').then((v) {
       setState(() {
         files = v;
@@ -204,7 +190,7 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               Text(
-                S.current.now_path,
+                S.current.now,
                 style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),

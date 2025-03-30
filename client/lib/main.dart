@@ -1,14 +1,18 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:h_nas/pages/home.dart';
+import 'package:h_nas/pages/settings.dart';
 import 'package:h_nas/prefs.dart';
 
+import 'Routes.dart';
 import 'generated/l10n.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Prefs.init();
+  await Settings.init();
 
   runApp(const MyApp());
 }
@@ -53,7 +57,10 @@ class MyApp extends StatelessWidget {
       ),
       navigatorKey: navigatorKey,
       navigatorObservers: [BotToastNavigatorObserver()],
-      routes: {'/': (context) => const HomePage()},
+      routes: {
+        Routes.home: (context) => const HomePage(),
+        Routes.settings: (context) => const SettingsPage(),
+      },
     );
   }
 }

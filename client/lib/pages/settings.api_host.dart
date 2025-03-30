@@ -1,9 +1,9 @@
-part of 'home.dart';
+part of 'settings.dart';
 
 class _ApiHostDialog extends StatefulWidget {
   final String host;
 
-  const _ApiHostDialog({super.key, required this.host});
+  const _ApiHostDialog({required this.host});
 
   @override
   State createState() {
@@ -12,15 +12,19 @@ class _ApiHostDialog extends StatefulWidget {
 }
 
 class _ApiHostDialogState extends State<_ApiHostDialog> {
-  late String host;
+  late String _url, _oldURL;
   String? _apiHostErrorText;
-  String _prefix = 'https://';
-  final RegExp _hostRegExp = RegExp(r'^(\w+)(\.\w+)+(:\d{1,5})?$');
+  late TextEditingController controller;
+  final RegExp _urlRegExp = RegExp(
+    r'^http(s)?://(\w+)(\.\w+)+(:\d{1,5})?(/.+)?$',
+  );
 
   @override
   void initState() {
     super.initState();
-    host = widget.host;
+    _url = widget.host;
+    _oldURL = widget.host;
+    controller = TextEditingController(text: _url);
   }
 
   bool _check() {
@@ -28,9 +32,9 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
       _apiHostErrorText = null;
     });
     setState(() {
-      if (host.isEmpty) {
+      if (_url.isEmpty) {
         _apiHostErrorText = S.current.empty_content;
-      } else if (!_hostRegExp.hasMatch(host)) {
+      } else if (!_urlRegExp.hasMatch(_url)) {
         _apiHostErrorText = S.current.bad_host_addr;
       }
     });
@@ -38,9 +42,8 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
   }
 
   _setAPIHost() {
-    final url = '$_prefix$host/api';
-    Prefs.setString(Prefs.keyApiHost, url);
-    API.API_ROOT = url;
+    Prefs.setString(Prefs.keyApiHost, _url);
+    API.API_ROOT = _url;
     Navigator.of(context).pop();
   }
 
@@ -50,36 +53,23 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
       title: Text(S.current.set_host_addr),
       content: Row(
         children: [
-          DropdownButton(
-            value: _prefix,
-            items: [
-              DropdownMenuItem(value: 'http://', child: const Text('http://')),
-              DropdownMenuItem(
-                value: 'https://',
-                child: const Text('https://'),
-              ),
-            ],
-            onChanged: (value) {
-              setState(() {
-                _prefix = value!;
-              });
-            },
-          ),
           Expanded(
             child: ConstrainedBox(
               constraints: BoxConstraints(minWidth: 200),
               child: TextField(
+                controller: controller,
                 autofocus: true,
                 keyboardType: TextInputType.url,
                 decoration: InputDecoration(
+                  helperText: 'http://127.0.0.1:8888/api',
                   border: OutlineInputBorder(),
                   labelText: S.current.server_addr,
-                  hintText: host.isEmpty ? 'null' : host,
+                  hintText: _oldURL.isEmpty ? '' : _oldURL,
                   hintStyle: TextStyle(color: Colors.grey),
                   errorText: _apiHostErrorText,
                 ),
                 onChanged: (value) {
-                  host = value;
+                  _url = value;
                   _check();
                 },
                 onTapOutside: (event) {
@@ -97,8 +87,14 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
       ),
       actions: [
         TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(S.current.cancel),
+        ),
+        TextButton(
           onPressed:
-              host.isEmpty
+              _url.isEmpty
                   ? null
                   : () {
                     if (_check()) {

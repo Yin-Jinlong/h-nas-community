@@ -8,7 +8,7 @@ import 'api_response.dart';
 part 'type.g.dart';
 
 class API {
-  static String API_ROOT = 'http://127.0.0.1:8888/api';
+  static String API_ROOT = '';
   static Dio dio = Dio();
 
   static Future<T?> _get<T>(
