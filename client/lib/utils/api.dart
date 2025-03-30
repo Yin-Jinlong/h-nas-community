@@ -7,7 +7,7 @@ import 'api_response.dart';
 
 part 'type.g.dart';
 
-class API {
+abstract class API {
   static String API_ROOT = '';
   static Dio dio = Dio();
 
