@@ -14,8 +14,8 @@ import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:h_nas/utils/toast.dart';
 import 'package:provider/provider.dart';
+import 'package:universal_html/html.dart' as web;
 import 'package:universal_platform/universal_platform.dart';
-import 'package:web/web.dart' as web;
 
 import '../generated/l10n.dart';
 import '../routes.dart';
@@ -308,6 +308,6 @@ class _ImageViewerOverlayWidget extends StatefulWidget {
 
 _download(FileInfo file) {
   if (UniversalPlatform.isWeb) {
-    web.window.open(API.publicFileURL(file.fullPath, download: true));
+    web.window.open(API.publicFileURL(file.fullPath, download: true), '_blank');
   }
 }
