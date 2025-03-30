@@ -56,6 +56,9 @@ class API {
     });
   }
 
+  static String publicFileURL(String path,{bool download = false})=>
+      "$API_ROOT/file/public?path=${Uri.encodeQueryComponent(path)}&download=$download";
+
   static String publicFileThumbnailURL(String thumbnail) =>
       "$API_ROOT/file/public/thumbnail?path=${Uri.encodeQueryComponent(thumbnail)}";
 
