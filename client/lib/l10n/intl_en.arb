@@ -18,8 +18,10 @@
   "no_data": "No Data",
   "now": "Now: ",
   "ok": "OK: ",
+  "password": "password",
   "refresh": "Refresh",
   "server_addr": "Server address",
   "set_host_addr": "Set Server Address",
-  "settings": "Settings"
+  "settings": "Settings",
+  "username": "username"
 }

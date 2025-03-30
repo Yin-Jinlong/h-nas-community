@@ -18,8 +18,10 @@
   "no_data": "空空如也",
   "now": "当前：",
   "ok": "确定",
+  "password": "密码",
   "refresh": "刷新",
   "server_addr": "服务器地址",
   "set_host_addr": "配置服务器地址",
-  "settings": "设置"
+  "settings": "设置",
+  "username": "用户名"
 }

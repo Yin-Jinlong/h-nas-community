@@ -4,7 +4,6 @@ import 'package:context_menus/context_menus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
-import 'package:h_nas/Routes.dart';
 import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/main.dart';
@@ -17,15 +16,12 @@ import 'package:h_nas/utils/toast.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
+import '../routes.dart';
 
 part 'home.app_bar.dart';
-
 part 'home.context_menu.dart';
-
 part 'home.drawer.dart';
-
 part 'home.file_list.dart';
-
 part 'home.image_viewer.dart';
 
 class HomePage extends StatefulWidget {
@@ -182,6 +178,9 @@ class _HomePageState extends State<HomePage> {
             files = [];
           });
           updateFiles();
+        },
+        onLogin: () {
+          Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
         },
       ),
       body: Column(

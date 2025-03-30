@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:h_nas/pages/home.dart';
+import 'package:h_nas/pages/login_logon.dart';
 import 'package:h_nas/pages/settings.dart';
 import 'package:h_nas/prefs.dart';
+import 'package:h_nas/routes.dart';
 
-import 'Routes.dart';
 import 'generated/l10n.dart';
 
 void main() async {
@@ -57,9 +58,34 @@ class MyApp extends StatelessWidget {
       ),
       navigatorKey: navigatorKey,
       navigatorObservers: [BotToastNavigatorObserver()],
-      routes: {
-        Routes.home: (context) => const HomePage(),
-        Routes.settings: (context) => const SettingsPage(),
+      onGenerateRoute: (settings) {
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return switch (settings.name) {
+              Routes.home => const HomePage(),
+              Routes.loginOn => const LogInOnPage(),
+              Routes.settings => const SettingsPage(),
+              _ => const HomePage(),
+            };
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeInOut,
+              ),
+              child: MatrixTransition(
+                animation: animation,
+                child: child,
+                onTransform:
+                    (animationValue) =>
+                        Matrix4.identity()..scale(
+                          0.9 + 0.1 * Curves.easeOut.transform(animationValue),
+                        ),
+              ),
+            );
+          },
+        );
       },
     );
   }
