@@ -41,7 +41,12 @@ Widget _loginColumn(BuildContext context) {
     children: [
       Row(
         children: [
-          BackButton(),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Hero(tag: 'menu_back', child: Icon(Icons.arrow_back)),
+          ),
           Text(S.current.login, style: TextTheme.of(context).headlineSmall),
         ],
       ),
