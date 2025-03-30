@@ -20,6 +20,7 @@
   "ok": "OK: ",
   "password": "password",
   "refresh": "Refresh",
+  "scan_login": "Scan code to log in",
   "server_addr": "Server address",
   "set_host_addr": "Set Server Address",
   "settings": "Settings",
