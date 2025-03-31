@@ -1,11 +1,15 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:h_nas/prefs.dart';
+import 'package:h_nas/utils/headers.dart';
 import 'package:h_nas/utils/toast.dart';
 
 import 'api_response.dart';
 
 part 'type.g.dart';
+
+typedef OnResp = Function(Response);
 
 abstract class API {
   static String API_ROOT = '';
@@ -13,18 +17,24 @@ abstract class API {
 
   static Future<T?> _get<T>(
     String path,
-    Map<String, dynamic>? queryParameters,
-  ) {
+    Map<String, dynamic>? queryParameters, {
+    OnResp? onResp,
+  }) {
     return dio
         .get<String>('$API_ROOT$path', queryParameters: queryParameters)
-        .then(_then<T>)
+        .then((res) => _then<T>(res, onResp))
         .catchError(_catchError<T>);
   }
 
-  static Future<T?> _post<T>(String path, Object? data, {Options? options}) {
+  static Future<T?> _post<T>(
+    String path,
+    Object? data, {
+    Options? options,
+    OnResp? onResp,
+  }) {
     return dio
         .post<String>('$API_ROOT$path', data: data, options: options)
-        .then(_then<T>)
+        .then((res) => _then<T>(res, onResp))
         .catchError(_catchError<T>);
   }
 
@@ -59,6 +69,12 @@ abstract class API {
         contentType: Headers.formUrlEncodedContentType,
         responseType: ResponseType.json,
       ),
+      onResp: (res) {
+        final token = res.headers.value(ExtraHeaders.authorization);
+        if (token != null) {
+          Prefs.setString(Prefs.keyAuthToken, token);
+        }
+      },
     ).then((data) {
       return data == null ? null : UserInfo.fromJson(data);
     });
@@ -74,7 +90,7 @@ abstract class API {
       "$API_ROOT/file/public/preview?path=${Uri.encodeQueryComponent(thumbnail)}";
 }
 
-Future<T?> _then<T>(res) async {
+Future<T?> _then<T>(Response res, OnResp? onResp) async {
   final data = APIResponse.fromJson(jsonDecode(res.data ?? '{}'));
 
   if (data.code != 0) {
@@ -82,6 +98,7 @@ Future<T?> _then<T>(res) async {
     return null;
   }
 
+  onResp?.call(res);
   return data.data as T;
 }
 

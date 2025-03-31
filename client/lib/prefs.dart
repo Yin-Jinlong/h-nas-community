@@ -1,11 +1,14 @@
 import 'package:h_nas/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Prefs {
+abstract class Prefs {
   static const String keyApiHost = 'api.host';
   static const String keyUser = 'user';
+  static const String keyAuthToken = 'auth-token';
 
   static late SharedPreferences _prefs;
+
+  static String? get token => _prefs.getString(keyAuthToken);
 
   static init() async {
     _prefs = await SharedPreferences.getInstance();

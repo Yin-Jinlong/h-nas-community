@@ -186,8 +186,11 @@ class _HomePageState extends State<HomePage> {
           Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
         },
         onLogout: () {
+          Provider.of<UserModel>(context, listen: false).set(null);
+          setState(() {
 
-        }
+          });
+        },
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
