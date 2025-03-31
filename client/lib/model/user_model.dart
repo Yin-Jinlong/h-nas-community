@@ -18,7 +18,11 @@ class UserModel with ChangeNotifier {
 
   set(UserInfo? user) {
     _user = user;
-    Prefs.setString(Prefs.keyUser, jsonEncode(user?.toJson()));
+    if (user != null) {
+      Prefs.setString(Prefs.keyUser, jsonEncode(user.toJson()));
+    } else {
+      Prefs.remove(Prefs.keyUser);
+    }
     notifyListeners();
   }
 }
