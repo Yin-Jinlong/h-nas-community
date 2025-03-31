@@ -5,7 +5,7 @@ import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.token.TokenType
-import com.yjl.hnas.utils.UserToken
+import com.yjl.hnas.token.Token
 import com.yjl.hnas.validator.Password
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
@@ -38,12 +38,11 @@ class UserController(
 
     @PostMapping("login")
     fun login(
-        token: UserToken?,
         logId: String?,
         @Password password: String?,
         resp: HttpServletResponse
     ): UserInfo {
-        return (if (token != null) userService.login(token) else login(logId, password)).let {
+        return login(logId, password).let {
             resp.addHeader(HttpHeaders.AUTHORIZATION, it.token.token)
             it.user
         }
@@ -51,7 +50,7 @@ class UserController(
 
     @PostMapping("auth")
     fun auth(
-        @ShouldLogin token: UserToken,
+        @ShouldLogin token: Token,
         resp: HttpServletResponse
     ) {
         val nt = userService.genToken(token, TokenType.FULL_ACCESS)

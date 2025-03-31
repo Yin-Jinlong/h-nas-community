@@ -4,7 +4,7 @@ import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.IUser
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.token.TokenType
-import com.yjl.hnas.utils.UserToken
+import com.yjl.hnas.token.Token
 
 /**
  * @author YJL
@@ -16,8 +16,6 @@ interface UserService {
      * @param password 原始密码
      */
     fun genPassword(password: String): String
-
-    fun login(token: UserToken): LogResult
 
     /**
      *
@@ -34,9 +32,9 @@ interface UserService {
     /**
      * 生成其他类型token
      */
-    fun genToken(token: UserToken, type: TokenType): UserToken
+    fun genToken(token: Token, type: TokenType): Token
 
-    fun logout(token: UserToken)
+    fun logout(token: Token)
 
     /**
      *
@@ -46,6 +44,6 @@ interface UserService {
 
     data class LogResult(
         val user: UserInfo,
-        val token: UserToken
+        val token: Token
     )
 }

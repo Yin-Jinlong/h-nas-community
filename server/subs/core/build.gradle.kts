@@ -10,7 +10,6 @@ dependencies {
     api(annotation())
     api(commomData())
     api(entity())
-    api(token())
     api(utils())
 
     api(libs.spring.boot.api.starter)

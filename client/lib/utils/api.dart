@@ -17,20 +17,15 @@ abstract class API {
   ) {
     return dio
         .get<String>('$API_ROOT$path', queryParameters: queryParameters)
-        .then((res) {
-          final data = APIResponse.fromJson(jsonDecode(res.data ?? '{}'));
+        .then(_then<T>)
+        .catchError(_catchError<T>);
+  }
 
-          if (data.code != 0) {
-            Toast.showError(data.msg);
-            return null;
-          }
-
-          return data.data as T;
-        })
-        .catchError((error) async {
-          Toast.showError(error.toString());
-          return null;
-        });
+  static Future<T?> _post<T>(String path, Object? data, {Options? options}) {
+    return dio
+        .post<String>('$API_ROOT$path', data: data, options: options)
+        .then(_then<T>)
+        .catchError(_catchError<T>);
   }
 
   static Future<List<FileInfo>> getPublicFiles(String path) {
@@ -56,7 +51,20 @@ abstract class API {
     });
   }
 
-  static String publicFileURL(String path,{bool download = false})=>
+  static Future<UserInfo?> login(String logid, String password) {
+    return _post<Map<String, dynamic>>(
+      '/user/login',
+      {'logId': logid, 'password': password},
+      options: Options(
+        contentType: Headers.formUrlEncodedContentType,
+        responseType: ResponseType.json,
+      ),
+    ).then((data) {
+      return data == null ? null : UserInfo.fromJson(data);
+    });
+  }
+
+  static String publicFileURL(String path, {bool download = false}) =>
       "$API_ROOT/file/public?path=${Uri.encodeQueryComponent(path)}&download=$download";
 
   static String publicFileThumbnailURL(String thumbnail) =>
@@ -64,4 +72,30 @@ abstract class API {
 
   static String publicFilePreviewURL(String thumbnail) =>
       "$API_ROOT/file/public/preview?path=${Uri.encodeQueryComponent(thumbnail)}";
+}
+
+Future<T?> _then<T>(res) async {
+  final data = APIResponse.fromJson(jsonDecode(res.data ?? '{}'));
+
+  if (data.code != 0) {
+    Toast.showError(data.msg);
+    return null;
+  }
+
+  return data.data as T;
+}
+
+Future<T?> _catchError<T>(error) async {
+  switch (error) {
+    case DioException e when e.type == DioExceptionType.badResponse:
+      final data = e.response?.data;
+      if (data != null) {
+        final resp = APIResponse.fromJson(jsonDecode(data!));
+        Toast.showError(resp.msg);
+        break;
+      }
+    default:
+      Toast.showError(error.toString());
+  }
+  return null;
 }

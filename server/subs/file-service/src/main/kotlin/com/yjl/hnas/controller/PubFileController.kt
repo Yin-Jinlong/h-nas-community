@@ -10,6 +10,7 @@ import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
+import com.yjl.hnas.token.Token
 import com.yjl.hnas.token.TokenType
 import com.yjl.hnas.utils.*
 import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
@@ -100,17 +101,17 @@ class PubFileController(
     @TokenLevel(TokenType.FULL_ACCESS)
     fun createFolder(
         @RequestParam("path") path: String,
-        @ShouldLogin user: UserToken,
+        @ShouldLogin user: Token,
     ): Unit = withCatch {
         val p = getPubPath(path)
-        Files.createDirectory(p, FileOwnerAttribute(user.data.uid))
+        Files.createDirectory(p, FileOwnerAttribute(user.user))
     }
 
     @Async
     @PostMapping("upload")
     @TokenLevel(TokenType.FULL_ACCESS)
     fun uploadFile(
-        @ShouldLogin token: UserToken,
+        @ShouldLogin token: Token,
         @RequestHeader("Content-ID") pathBase64: String,
         @RequestHeader("Hash") sha256Base64: String,
         @RequestHeader("Content-Range") range: String,
@@ -130,7 +131,7 @@ class PubFileController(
             throw ErrorCode.BAD_ARGUMENTS.data(range)
 
         virtualFileService.upload(
-            token.data.uid,
+            token.user,
             path.toAbsolutePath(),
             Hash(hash),
             size,
@@ -142,7 +143,7 @@ class PubFileController(
     @DeleteMapping
     @TokenLevel(TokenType.FULL_ACCESS)
     fun deleteFile(
-        @ShouldLogin token: UserToken,
+        @ShouldLogin token: Token,
         path: String,
     ) = withCatch {
         val pp = getPubPath(path)
@@ -272,7 +273,7 @@ class PubFileController(
 
     @PostMapping("rename")
     fun rename(
-        @ShouldLogin token: UserToken,
+        @ShouldLogin token: Token,
         path: String,
         name: String
     ) = withCatch {

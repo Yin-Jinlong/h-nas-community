@@ -13,8 +13,6 @@ fun DependencyHandler.commomData() = server("common-data")
 fun DependencyHandler.entity() = server("entity")
 fun DependencyHandler.fs() = server("fs")
 
-fun DependencyHandler.token() = server("token")
-
 fun DependencyHandler.utils() = server("utils")
 
 fun DependencyHandler.serviceCore() = server("subs:core")
