@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Prefs {
   static const String keyApiHost = 'api.host';
+  static const String keyUser = 'user';
 
   static late SharedPreferences _prefs;
 

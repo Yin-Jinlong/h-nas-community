@@ -1,6 +1,12 @@
 part of 'home.dart';
 
-AppBar _appBar(BuildContext context, {required onRefresh, required onLogin}) {
+AppBar _appBar(
+  BuildContext context, {
+  required Function() onRefresh,
+  required Function() onLogin,
+  required Function() onLogout,
+}) {
+  final user = Provider.of<UserModel>(context, listen: false);
   return AppBar(
     leading: Builder(
       builder: (context) {
@@ -22,10 +28,13 @@ AppBar _appBar(BuildContext context, {required onRefresh, required onLogin}) {
         child: IconButton(onPressed: onRefresh, icon: Icon(Icons.refresh)),
       ),
       Tooltip(
-        message: S.current.login,
+        message: user.user == null ? S.current.login : user.user!.nick,
         child: IconButton(
-          onPressed: onLogin,
-          icon: Hero(tag: 'login', child: const Icon(Icons.person)),
+          onPressed: user.user == null ? onLogin : onLogout,
+          icon: Hero(
+            tag: 'login',
+            child: Icon(user.user == null ? Icons.person : Icons.logout),
+          ),
         ),
       ),
     ],

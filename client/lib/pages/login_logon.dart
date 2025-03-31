@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/toast.dart';
+import 'package:provider/provider.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../generated/l10n.dart';
@@ -50,7 +52,11 @@ class _LoginState extends State<_LoginWidget> {
 
   _login() {
     API.login(logid.text, password.text).then((v) {
-      if (v != null) Toast.showSuccess('登录成功：${v.nick}');
+      if (v != null) {
+        Toast.showSuccess('Hi ${v.nick}!');
+        Provider.of<UserModel>(context, listen: false).set(v);
+        Navigator.of(context).pop();
+      }
     });
   }
 

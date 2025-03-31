@@ -8,6 +8,7 @@ import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
+import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
@@ -184,6 +185,9 @@ class _HomePageState extends State<HomePage> {
         onLogin: () {
           Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
         },
+        onLogout: () {
+
+        }
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
