@@ -180,6 +180,37 @@ abstract class Kotlin2Dart : AbstractKotlin2TypeTask() {
         newLine()
     }
 
+    private fun IndentWriter.writeToJson(name: String, props: List<PropertyNode>) {
+        write("Map<String, dynamic> ")
+        write("toJson() => ")
+        newLine()
+        write("<String, dynamic>{")
+        newLine()
+        props.forEach { prop ->
+            indent {
+                if (prop.type.nullable) {
+                    write("if(")
+                    write(prop.name)
+                    write("!=null) ")
+                }
+                write("'")
+                write(prop.name)
+                write("': ")
+                if (prop.type.subTypes.isNotEmpty() && !typeMap.containsKey(prop.type.subTypes[0])) {
+                    write("[for (final e in ")
+                    write(prop.name)
+                    write(") e.toJson()]")
+                } else {
+                    write(prop.name)
+                }
+                write(",")
+                newLine()
+            }
+        }
+        write("};")
+        newLine()
+    }
+
     private fun IndentWriter.writeClass(c: ClassNode) {
         writeDoc(c.docs)
         writeln("class ", c.name, " {")
@@ -193,6 +224,8 @@ abstract class Kotlin2Dart : AbstractKotlin2TypeTask() {
             writeConstructor(c.name, c.properties)
             newLine()
             writeFromJson(c.name, c.properties)
+            newLine()
+            writeToJson(c.name, c.properties)
         }
         writeln("}")
         newLine()
