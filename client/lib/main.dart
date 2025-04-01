@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/pages/pages.dart';
 import 'package:h_nas/prefs.dart';
@@ -28,13 +29,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Locale locale = Prefs.locale;
-
   _setLocale(Locale l) {
     setState(() {
       S.delegate.load(l);
-      locale = l;
       Prefs.setLocale(l);
+      Global.locale = l;
     });
   }
 
@@ -46,7 +45,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         title: 'H NAS',
         builder: BotToastInit(),
-        locale: locale,
+        locale: Global.locale,
         localizationsDelegates: [
           S.delegate,
           GlobalMaterialLocalizations.delegate,
