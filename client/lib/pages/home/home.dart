@@ -7,6 +7,7 @@ import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/model/user_model.dart';
@@ -185,7 +186,7 @@ class _HomePageState extends State<HomePage> {
           });
           updateFiles();
         },
-        onTransmission: (){},
+        onTransmission: () {},
         onLogin: () {
           Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
         },

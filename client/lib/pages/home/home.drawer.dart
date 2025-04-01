@@ -1,5 +1,20 @@
 part of 'home.dart';
 
+_showAboutDialog(BuildContext context) {
+  showAdaptiveDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AboutDialog.adaptive(
+        applicationName: Global.packageInfo.appName,
+        applicationVersion: Global.packageInfo.version,
+        applicationLegalese: Global.copyright,
+      );
+    },
+  ).then((v) {
+    S.load(Global.locale);
+  });
+}
+
 Drawer _drawer(BuildContext context) {
   return Drawer(
     child: ListView(
@@ -43,6 +58,16 @@ Drawer _drawer(BuildContext context) {
               Navigator.of(
                 navigatorKey.currentContext!,
               ).pushNamed(Routes.languages);
+            },
+          ),
+        ),
+        Tooltip(
+          message: S.current.about,
+          child: ListTile(
+            leading: Icon(Icons.info),
+            title: Text(S.current.about),
+            onTap: () {
+              _showAboutDialog(context);
             },
           ),
         ),

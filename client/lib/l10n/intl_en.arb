@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "about": "About",
   "app_name": "H NAS",
   "bad_host_addr": "Please enter the correct server address",
   "button": "Button",

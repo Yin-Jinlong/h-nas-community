@@ -7,14 +7,18 @@ import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/pages/pages.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
+import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
 
 void main() async {
+  Intl.defaultLocale = 'zh';
   WidgetsFlutterBinding.ensureInitialized();
   await Prefs.init();
   await Settings.init();
+  Global.packageInfo = await PackageInfo.fromPlatform();
 
   runApp(const MyApp());
 }
