@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:h_nas/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -5,10 +7,31 @@ abstract class Prefs {
   static const String keyApiHost = 'api.host';
   static const String keyUser = 'user';
   static const String keyAuthToken = 'auth-token';
+  static const String keyLocale = 'locale';
 
   static late SharedPreferences _prefs;
 
   static String? get token => _prefs.getString(keyAuthToken);
+
+  static Locale get locale {
+    final value = _prefs.getString(keyLocale);
+    if (value == null) {
+      return Locale('zh');
+    }
+    final v = value.split('-');
+    return Locale.fromSubtags(
+      languageCode: v[0],
+      scriptCode: v[1].isEmpty ? null : v[1],
+      countryCode: v[2].isEmpty ? null : v[2],
+    );
+  }
+
+  static setLocale(Locale l) {
+    _prefs.setString(
+      keyLocale,
+      '${l.languageCode}-${l.scriptCode ?? ''}-${l.countryCode ?? ''}',
+    );
+  }
 
   static init() async {
     _prefs = await SharedPreferences.getInstance();

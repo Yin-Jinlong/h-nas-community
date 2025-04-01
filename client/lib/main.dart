@@ -20,10 +20,24 @@ void main() async {
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale locale = Prefs.locale;
+
+  _setLocale(Locale l) {
+    setState(() {
+      S.delegate.load(l);
+      locale = l;
+      Prefs.setLocale(l);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
@@ -32,6 +46,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'H NAS',
         builder: BotToastInit(),
+        locale: locale,
         localizationsDelegates: [
           S.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -65,6 +80,7 @@ class MyApp extends StatelessWidget {
             pageBuilder: (context, animation, secondaryAnimation) {
               return switch (settings.name) {
                 Routes.home => const HomePage(),
+                Routes.languages => LanguagesPage(onLocaleChanged: _setLocale),
                 Routes.loginOn => const LogInOnPage(),
                 Routes.settings => const SettingsPage(),
                 _ => const HomePage(),

@@ -3,11 +3,11 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 import '../../generated/l10n.dart';
 import '../../prefs.dart';
+import '../../routes.dart';
 import '../../utils/api.dart';
 
-part 'settings.app_bar.dart';
-
 part 'settings.api_host.dart';
+part 'settings.app_bar.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -26,6 +26,14 @@ class _SettingsPageState extends State<SettingsPage> {
       body: SettingsScreen(
         hasAppBar: false,
         children: [
+          ListTile(
+            leading: const Icon(Icons.language),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            title: Text(S.current.language),
+            onTap: () {
+              Navigator.of(context).pushNamed(Routes.languages);
+            },
+          ),
           ListTile(
             title: Text(S.current.server_addr),
             subtitle: Text('${S.current.now}${API.API_ROOT}'),
