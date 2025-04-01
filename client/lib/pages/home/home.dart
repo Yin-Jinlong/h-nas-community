@@ -304,7 +304,7 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: ColorScheme.of(context).secondary,
             label: S.current.upload,
             child: Icon(Icons.upload),
-            onTap: () {},
+            onTap: _onUploadMenu,
           ),
         ],
       ),
@@ -330,6 +330,12 @@ class _ImageViewerOverlayWidget extends StatefulWidget {
   @override
   State createState() {
     return _ImageViewerOverlayWidgetState();
+  }
+}
+
+_onUploadMenu() {
+  if (UniversalPlatform.isWeb) {
+    Toast.showError(S.current.web_not_support_upload);
   }
 }
 

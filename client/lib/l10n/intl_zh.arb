@@ -36,5 +36,6 @@
   "theme": "主题",
   "transmission": "传输",
   "upload": "上传",
-  "username": "用户名"
+  "username": "用户名",
+  "web_not_support_upload": "Web端暂不支持上传文件"
 }

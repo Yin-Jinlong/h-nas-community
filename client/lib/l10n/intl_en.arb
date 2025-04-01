@@ -36,5 +36,6 @@
   "theme": "Theme",
   "transmission": "Transmission",
   "upload": "Upload",
-  "username": "username"
+  "username": "username",
+  "web_not_support_upload": "Web platform does not support upload"
 }
