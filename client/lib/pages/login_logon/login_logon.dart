@@ -5,7 +5,7 @@ import 'package:h_nas/utils/toast.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_platform/universal_platform.dart';
 
-import '../generated/l10n.dart';
+import '../../generated/l10n.dart';
 
 class LogInOnPage extends StatefulWidget {
   const LogInOnPage({super.key});

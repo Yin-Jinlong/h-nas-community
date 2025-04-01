@@ -19,8 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:universal_html/html.dart' as web;
 import 'package:universal_platform/universal_platform.dart';
 
-import '../generated/l10n.dart';
-import '../routes.dart';
+import '../../generated/l10n.dart';
+import '../../routes.dart';
 
 part 'home.app_bar.dart';
 part 'home.context_menu.dart';

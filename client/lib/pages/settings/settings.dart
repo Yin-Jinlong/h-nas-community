@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
-import '../generated/l10n.dart';
-import '../prefs.dart';
-import '../utils/api.dart';
+import '../../generated/l10n.dart';
+import '../../prefs.dart';
+import '../../utils/api.dart';
 
 part 'settings.app_bar.dart';
 
