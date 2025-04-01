@@ -1,5 +1,26 @@
 part of 'home.dart';
 
+class _ImageViewerOverlayWidget extends StatefulWidget {
+  final int index;
+  final Function() onClose;
+  final ModalRoute route;
+  final List<FileInfo> files;
+  final ThumbnailModel thumbnailCache;
+
+  const _ImageViewerOverlayWidget({
+    required this.index,
+    required this.files,
+    required this.route,
+    required this.thumbnailCache,
+    required this.onClose,
+  });
+
+  @override
+  State createState() {
+    return _ImageViewerOverlayWidgetState();
+  }
+}
+
 class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
     with SingleTickerProviderStateMixin {
   bool hover = false;
@@ -37,17 +58,17 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
     super.initState();
     index = widget.index;
     layerController =
-    AnimationController(vsync: this, duration: Duration(milliseconds: 200))
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed && close) {
-          widget.onClose();
-        }
-      })
-      ..addListener(() {
-        setState(() {
-          layerProgress = layerController.value;
-        });
-      });
+        AnimationController(vsync: this, duration: Duration(milliseconds: 200))
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed && close) {
+              widget.onClose();
+            }
+          })
+          ..addListener(() {
+            setState(() {
+              layerProgress = layerController.value;
+            });
+          });
     widget.route.registerPopEntry(
       _ImageViewerOverlayPopEntry((e) {
         _close();
@@ -85,7 +106,7 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                     index: index,
                     urls: [
                       for (var file in widget.files)
-                            () async {
+                        () async {
                           final c = Completer<String>();
                           widget.thumbnailCache.get(file, (f) {
                             c.complete(API.publicFilePreviewURL(f.preview!));
@@ -133,7 +154,7 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
 class _ImageViewerOverlayPopEntry extends PopEntry {
   final ValueNotifier<bool> value = ValueNotifier(false);
 
-  Function(_ImageViewerOverlayPopEntry) _onPopInvoked;
+  final Function(_ImageViewerOverlayPopEntry) _onPopInvoked;
 
   _ImageViewerOverlayPopEntry(this._onPopInvoked);
 

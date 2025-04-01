@@ -1,10 +1,9 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 class ImageViewer extends StatefulWidget {
   final List<Future<String> Function()> urls;

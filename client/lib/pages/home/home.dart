@@ -312,27 +312,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _ImageViewerOverlayWidget extends StatefulWidget {
-  final int index;
-  final Function() onClose;
-  final ModalRoute route;
-  final List<FileInfo> files;
-  final ThumbnailModel thumbnailCache;
-
-  const _ImageViewerOverlayWidget({
-    required this.index,
-    required this.files,
-    required this.route,
-    required this.thumbnailCache,
-    required this.onClose,
-  });
-
-  @override
-  State createState() {
-    return _ImageViewerOverlayWidgetState();
-  }
-}
-
 _onUploadMenu() {
   if (UniversalPlatform.isWeb) {
     Toast.showError(S.current.web_not_support_upload);
