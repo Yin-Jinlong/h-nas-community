@@ -23,6 +23,18 @@ Drawer _drawer(BuildContext context) {
           ),
         ),
         Tooltip(
+          message: S.current.theme,
+          child: ListTile(
+            leading: Icon(Nerd.theme),
+            title: Text(S.current.theme),
+            onTap: () {
+              Navigator.of(
+                navigatorKey.currentContext!,
+              ).pushNamed(Routes.theme);
+            },
+          ),
+        ),
+        Tooltip(
           message: S.current.language,
           child: ListTile(
             leading: Icon(Icons.language),

@@ -1,6 +1,8 @@
-import 'dart:ui';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class Prefs {
@@ -8,6 +10,7 @@ abstract class Prefs {
   static const String keyUser = 'user';
   static const String keyAuthToken = 'auth-token';
   static const String keyLocale = 'locale';
+  static const String keyTheme = 'theme';
 
   static late SharedPreferences _prefs;
 
@@ -26,11 +29,22 @@ abstract class Prefs {
     );
   }
 
+  static ThemeData get theme {
+    final value = _prefs.getString(keyTheme);
+    return value == null
+        ? ThemeUtils.defaultTheme
+        : ThemeUtils.fromJson(jsonDecode(value));
+  }
+
   static setLocale(Locale l) {
     _prefs.setString(
       keyLocale,
       '${l.languageCode}-${l.scriptCode ?? ''}-${l.countryCode ?? ''}',
     );
+  }
+
+  static setTheme(ThemeData l) {
+    _prefs.setString(keyTheme, jsonEncode(l.toJson()));
   }
 
   static init() async {

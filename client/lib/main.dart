@@ -38,6 +38,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Global.theme.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: UserModel(),
@@ -53,25 +61,7 @@ class _MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: S.delegate.supportedLocales,
-        theme: ThemeData(
-          colorScheme: ColorScheme(
-            brightness: Brightness.light,
-            primary: Colors.orange.shade300,
-            onPrimary: Colors.white,
-            secondary: Colors.orange.shade200,
-            onSecondary: Colors.black87,
-            error: Colors.red,
-            onError: Colors.black54,
-            surface: Colors.grey.shade200,
-            onSurface: Colors.black87,
-          ),
-          iconTheme: IconThemeData(
-            color:
-                HSLColor.fromColor(
-                  Colors.orange.shade300,
-                ).withLightness(0.15).toColor(),
-          ),
-        ),
+        theme: Global.theme.value,
         navigatorKey: navigatorKey,
         navigatorObservers: [BotToastNavigatorObserver()],
         onGenerateRoute: (settings) {
@@ -82,6 +72,7 @@ class _MyAppState extends State<MyApp> {
                 Routes.languages => LanguagesPage(onLocaleChanged: _setLocale),
                 Routes.loginOn => const LogInOnPage(),
                 Routes.settings => const SettingsPage(),
+                Routes.theme => const ThemePage(),
                 _ => const HomePage(),
               };
             },

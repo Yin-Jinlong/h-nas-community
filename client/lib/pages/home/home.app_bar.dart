@@ -21,7 +21,6 @@ AppBar _appBar(
         );
       },
     ),
-    backgroundColor: Theme.of(context).colorScheme.primary,
     title: Text(S.current.app_name),
     actions: [
       Tooltip(
