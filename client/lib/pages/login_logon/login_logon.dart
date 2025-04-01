@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/tab_page.dart';
 import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/toast.dart';
@@ -6,6 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../../generated/l10n.dart';
+
+part 'login_logon.login.dart';
+part 'login_logon.logon.dart';
 
 class LogInOnPage extends StatefulWidget {
   const LogInOnPage({super.key});
@@ -17,6 +21,8 @@ class LogInOnPage extends StatefulWidget {
 }
 
 class _LogInOnPageState extends State<LogInOnPage> {
+  var pageIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,97 +31,67 @@ class _LogInOnPageState extends State<LogInOnPage> {
         child: IntrinsicWidth(
           child: IntrinsicHeight(
             child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: 240),
+              constraints: BoxConstraints(minWidth: 300),
               child: Card(
                 child: Padding(
                   padding: EdgeInsets.all(12),
-                  child: Stack(children: [_LoginWidget(), _qrLayout()]),
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: Hero(
+                                  tag: 'menu_back',
+                                  child: Icon(Icons.arrow_back),
+                                ),
+                              ),
+                              Text(
+                                pageIndex == 0
+                                    ? S.current.login
+                                    : S.current.logon,
+                                style: TextTheme.of(context).headlineSmall,
+                              ),
+                            ],
+                          ),
+                          Hero(
+                            tag: 'login',
+                            child: const Icon(Icons.person, size: 50),
+                          ),
+                          TabPage(
+                            index: pageIndex,
+                            children: [
+                              _LoginWidget(
+                                onGotoLogon: () {
+                                  setState(() {
+                                    pageIndex = 1;
+                                  });
+                                },
+                              ),
+                              _LogonWidget(
+                                onGotoLogin: () {
+                                  setState(() {
+                                    pageIndex = 0;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      pageIndex == 0 ? _qrLayout() : Container(),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _LoginWidget extends StatefulWidget {
-  @override
-  State createState() {
-    return _LoginState();
-  }
-}
-
-class _LoginState extends State<_LoginWidget> {
-  final logid = TextEditingController(), password = TextEditingController();
-
-  _login() {
-    API.login(logid.text, password.text).then((v) {
-      if (v != null) {
-        Toast.showSuccess('Hi ${v.nick}!');
-        Provider.of<UserModel>(context, listen: false).set(v);
-        Navigator.of(context).pop();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Hero(tag: 'menu_back', child: Icon(Icons.arrow_back)),
-            ),
-            Text(S.current.login, style: TextTheme.of(context).headlineSmall),
-          ],
-        ),
-        Hero(tag: 'login', child: const Icon(Icons.person, size: 50)),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(8),
-            child: TextField(
-              controller: logid,
-              decoration: InputDecoration(
-                labelText: S.current.username,
-                hintText: '${S.current.username}/id',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(8),
-            child: TextField(
-              maxLength: 18,
-              obscureText: true,
-              controller: password,
-              decoration: InputDecoration(
-                labelText: S.current.password,
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
-              ),
-            ),
-          ),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: ColorScheme.of(context).primary,
-            foregroundColor: ColorScheme.of(context).onPrimary,
-            minimumSize: Size(double.infinity, 50),
-          ),
-          onPressed: _login,
-          child: Text(S.current.login),
-        ),
-      ],
     );
   }
 }
