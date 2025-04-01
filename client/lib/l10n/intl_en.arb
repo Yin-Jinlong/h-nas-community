@@ -3,6 +3,7 @@
   "app_name": "H NAS",
   "bad_host_addr": "Please enter the correct server address",
   "cancel": "Cancel",
+  "create_new_folder": "Create New Folder",
   "delete": "Delete",
   "download": "Download",
   "empty_content": "Empty content",
@@ -24,5 +25,6 @@
   "server_addr": "Server address",
   "set_host_addr": "Set Server Address",
   "settings": "Settings",
+  "upload": "Upload",
   "username": "username"
 }
