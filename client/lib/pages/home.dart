@@ -184,6 +184,7 @@ class _HomePageState extends State<HomePage> {
           });
           updateFiles();
         },
+        onTransmission: (){},
         onLogin: () {
           Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
         },

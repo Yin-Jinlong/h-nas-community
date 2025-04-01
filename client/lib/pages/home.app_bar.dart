@@ -3,6 +3,7 @@ part of 'home.dart';
 AppBar _appBar(
   BuildContext context, {
   required Function() onRefresh,
+  required Function() onTransmission,
   required Function() onLogin,
   required Function() onLogout,
 }) {
@@ -26,6 +27,13 @@ AppBar _appBar(
       Tooltip(
         message: S.current.refresh,
         child: IconButton(onPressed: onRefresh, icon: Icon(Icons.refresh)),
+      ),
+      Tooltip(
+        message: S.current.transmission,
+        child: IconButton(
+          onPressed: onTransmission,
+          icon: Icon(Icons.swap_vert),
+        ),
       ),
       Tooltip(
         message: user.user == null ? S.current.login : user.user!.nick,

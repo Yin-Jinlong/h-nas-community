@@ -25,6 +25,7 @@
   "server_addr": "Server address",
   "set_host_addr": "Set Server Address",
   "settings": "Settings",
+  "transmission": "Transmission",
   "upload": "Upload",
   "username": "username"
 }

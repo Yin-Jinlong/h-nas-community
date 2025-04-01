@@ -25,6 +25,7 @@
   "server_addr": "服务器地址",
   "set_host_addr": "配置服务器地址",
   "settings": "设置",
+  "transmission": "传输",
   "upload": "上传",
   "username": "用户名"
 }
