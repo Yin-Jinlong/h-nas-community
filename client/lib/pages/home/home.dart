@@ -12,6 +12,7 @@ import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
+import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
@@ -199,7 +200,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
+    final user = Provider.of<UserModel>(context);
     final thumbnailCache = ThumbnailModel();
     route = ModalRoute.of(context)!;
 
@@ -218,7 +219,9 @@ class _HomePageState extends State<HomePage> {
           Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
         },
         onLogout: () {
-          Provider.of<UserModel>(context, listen: false).set(null);
+          user.set(null);
+          Prefs.remove(Prefs.keyToken);
+          Prefs.remove(Prefs.keyAuthToken);
           setState(() {});
         },
       ),
