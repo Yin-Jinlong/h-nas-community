@@ -108,7 +108,7 @@ Future<T?> _catchError<T>(error) async {
       final data = e.response?.data;
       if (data != null) {
         final resp = APIResponse.fromJson(jsonDecode(data!));
-        Toast.showError(resp.data ?? resp.msg);
+        Toast.showError(resp.msg + (resp.data != null ? ': ${resp.data}' : ''));
         break;
       }
     default:
