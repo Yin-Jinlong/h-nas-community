@@ -7,6 +7,9 @@ import 'package:h_nas/utils/toast.dart';
 
 import 'api_response.dart';
 
+part 'api.file.dart';
+part 'api.file.url.dart';
+part 'api.user.dart';
 part 'type.g.dart';
 
 typedef OnResp = Function(Response);
@@ -37,57 +40,6 @@ abstract class API {
         .then((res) => _then<T>(res, onResp))
         .catchError(_catchError<T>);
   }
-
-  static Future<List<FileInfo>> getPublicFiles(String path) {
-    return _get<List<dynamic>>('/file/public/files', {'path': path}).then((
-      data,
-    ) {
-      if (data == null) return [];
-      List<FileInfo> list = [];
-
-      for (var item in data) {
-        list.add(FileInfo.fromJson(item as Map<String, dynamic>));
-      }
-
-      return list;
-    });
-  }
-
-  static Future<FilePreview?> getPublicFilePreviewInfo(String path) {
-    return _get<Map<String, dynamic>>('/file/public/preview/info', {
-      'path': path,
-    }).then((data) {
-      return data == null ? null : FilePreview.fromJson(data);
-    });
-  }
-
-  static Future<UserInfo?> login(String logid, String password) {
-    return _post<Map<String, dynamic>>(
-      '/user/login',
-      {'logId': logid, 'password': password},
-      options: Options(
-        contentType: Headers.formUrlEncodedContentType,
-        responseType: ResponseType.json,
-      ),
-      onResp: (res) {
-        final token = res.headers.value(ExtraHeaders.authorization);
-        if (token != null) {
-          Prefs.setString(Prefs.keyAuthToken, token);
-        }
-      },
-    ).then((data) {
-      return data == null ? null : UserInfo.fromJson(data);
-    });
-  }
-
-  static String publicFileURL(String path, {bool download = false}) =>
-      "$API_ROOT/file/public?path=${Uri.encodeQueryComponent(path)}&download=$download";
-
-  static String publicFileThumbnailURL(String thumbnail) =>
-      "$API_ROOT/file/public/thumbnail?path=${Uri.encodeQueryComponent(thumbnail)}";
-
-  static String publicFilePreviewURL(String thumbnail) =>
-      "$API_ROOT/file/public/preview?path=${Uri.encodeQueryComponent(thumbnail)}";
 }
 
 Future<T?> _then<T>(Response res, OnResp? onResp) async {
@@ -99,7 +51,7 @@ Future<T?> _then<T>(Response res, OnResp? onResp) async {
   }
 
   onResp?.call(res);
-  return data.data as T;
+  return (data.data ?? true) as T;
 }
 
 Future<T?> _catchError<T>(error) async {

@@ -15,7 +15,7 @@ class _LoginState extends _BaseState<_LoginWidget> {
   final logid = TextEditingController(), password = TextEditingController();
 
   _login() {
-    API.login(logid.text, password.text).then((v) {
+    UserAPI.login(logid.text, password.text).then((v) {
       if (v != null) {
         Toast.showSuccess('Hi ${v.nick}!');
         Provider.of<UserModel>(context, listen: false).set(v);

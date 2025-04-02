@@ -109,7 +109,9 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                         () async {
                           final c = Completer<String>();
                           widget.thumbnailCache.get(file, (f) {
-                            c.complete(API.publicFilePreviewURL(f.preview!));
+                            c.complete(
+                              FileAPIURL.publicFilePreview(f.preview!),
+                            );
                           }, (_) {});
                           return c.future;
                         },

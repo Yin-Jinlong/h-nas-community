@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       Toast.showError(S.current.error_set_server_addr);
       return;
     }
-    API.getPublicFiles('/${dirs.join('/')}').then((v) {
+    FileAPI.getPublicFiles('/${dirs.join('/')}').then((v) {
       setState(() {
         files = v;
         images = [];
@@ -162,6 +162,53 @@ class _HomePageState extends State<HomePage> {
                   Text(file.size.storageSizeStr),
                 ),
               ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _newFolderMenu(BuildContext context) {
+    var path = '';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(S.current.create_new_folder),
+          content: IntrinsicHeight(
+            child: Column(
+              children: [
+                TextField(
+                  onChanged: (value) {
+                    path = value;
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: S.current.folder_name,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(S.current.cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(S.current.ok),
+              onPressed: () {
+                FileAPI.newFolder('${dirs.join('/')}/$path').then((v) {
+                  if (v == true) {
+                    Navigator.of(context).pop();
+                    updateFiles();
+                  }
+                });
+              },
             ),
           ],
         );
@@ -297,7 +344,9 @@ class _HomePageState extends State<HomePage> {
           SpeedDialChild(
             label: S.current.create_new_folder,
             child: Icon(Icons.create_new_folder),
-            onTap: () {},
+            onTap: () {
+              _newFolderMenu(context);
+            },
           ),
           SpeedDialChild(
             foregroundColor: ColorScheme.of(context).onSecondary,
@@ -320,6 +369,9 @@ _onUploadMenu() {
 
 _download(FileInfo file) {
   if (UniversalPlatform.isWeb) {
-    web.window.open(API.publicFileURL(file.fullPath, download: true), '_blank');
+    web.window.open(
+      FileAPIURL.publicFile(file.fullPath, download: true),
+      '_blank',
+    );
   }
 }

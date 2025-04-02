@@ -65,7 +65,7 @@ class _FilePreviewViewState extends State<FilePreviewView> {
       );
     }
     return Image.network(
-      API.publicFileThumbnailURL(filePreview!.preview!),
+      FileAPIURL.publicFileThumbnail(filePreview!.preview!),
       width: 50,
       height: 50,
       fit: BoxFit.cover,

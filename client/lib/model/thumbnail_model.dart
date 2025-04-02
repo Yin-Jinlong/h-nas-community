@@ -21,7 +21,7 @@ class ThumbnailModel with ChangeNotifier {
     await Future.delayed(Duration(milliseconds: Random().nextInt(500) + 500));
     FilePreview? fp;
     do {
-      fp = await API.getPublicFilePreviewInfo(info.fullPath);
+      fp = await FileAPI.getPublicFilePreviewInfo(info.fullPath);
       if (fp?.thumbnail == '') {
         await Future.delayed(Duration(milliseconds: 500));
       } else {
