@@ -5,6 +5,7 @@ import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/headers.dart';
 import 'package:h_nas/utils/toast.dart';
 
+import '../generated/l10n.dart';
 import 'api_response.dart';
 
 part 'api.file.dart';
@@ -60,6 +61,10 @@ Future<T?> _catchError<T>(error) async {
       final data = e.response?.data;
       if (data != null) {
         final resp = APIResponse.fromJson(jsonDecode(data!));
+        if (resp.code == 100) {
+          UserAPI.auth();
+          Toast.show(S.current.please_retry);
+        }
         Toast.showError(resp.msg + (resp.data != null ? ': ${resp.data}' : ''));
         break;
       }

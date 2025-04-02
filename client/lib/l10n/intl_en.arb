@@ -31,6 +31,7 @@
   "password2": "confirm password",
   "password_not_match": "Password not match",
   "pick_color": "Pick a color",
+  "please_retry": "Please retry",
   "refresh": "Refresh",
   "scan_login": "Scan code to log in",
   "server_addr": "Server address",

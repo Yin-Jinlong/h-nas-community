@@ -31,6 +31,7 @@
   "password2": "确认密码",
   "password_not_match": "密码不一致",
   "pick_color": "选择颜色",
+  "please_retry": "请重试",
   "refresh": "刷新",
   "scan_login": "扫码登录",
   "server_addr": "服务器地址",
