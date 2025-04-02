@@ -6,6 +6,9 @@
 
 - `java` `17+`
 - `mysql` `8+`
+- `flutter` `^3.7.2`
+- `cmake` `3.1.4+`
+- `nignx` `1.27.4+`
 
 `mysql`
 
@@ -13,7 +16,7 @@
 - `user` 用户
 - `123456`密码
 
-可在[application.yaml](server/app/src/main/resources/application.yaml)修改
+可在[application.yaml](server/subs/core/src/main/resources/application.yml)修改
 
 ### 2.加载项目
 
