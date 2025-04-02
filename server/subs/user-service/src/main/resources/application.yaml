@@ -2,4 +2,4 @@ spring:
   application:
     name: user-service
 server:
-  port: 8001
+  port: 12001
