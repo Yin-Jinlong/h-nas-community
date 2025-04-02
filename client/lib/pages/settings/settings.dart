@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:h_nas/global.dart';
+import 'package:h_nas/pages/languages/languages.dart';
 
 import '../../generated/l10n.dart';
 import '../../prefs.dart';
@@ -30,6 +32,12 @@ class _SettingsPageState extends State<SettingsPage> {
             leading: const Icon(Icons.language),
             trailing: const Icon(Icons.arrow_forward_ios),
             title: Text(S.current.language),
+            subtitle: Text(
+              LanguageTagName.fromLanguageTag(
+                    Global.locale.toLanguageTag(),
+                  )?.name ??
+                  '???',
+            ),
             onTap: () {
               Navigator.of(context).pushNamed(Routes.languages);
             },

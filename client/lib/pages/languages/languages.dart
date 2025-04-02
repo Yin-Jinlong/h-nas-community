@@ -3,15 +3,15 @@ import 'package:h_nas/prefs.dart';
 
 import '../../generated/l10n.dart';
 
-enum _LanguageTagName {
+enum LanguageTagName {
   en('en', 'English'),
   zh('zh', '中文');
 
   final String tag, name;
 
-  const _LanguageTagName(this.tag, this.name);
+  const LanguageTagName(this.tag, this.name);
 
-  static _LanguageTagName? fromLanguageTag(String tag) {
+  static LanguageTagName? fromLanguageTag(String tag) {
     for (final l in values) {
       if (l.tag == tag) {
         return l;
@@ -47,7 +47,7 @@ class _LanguagesPageState extends State<LanguagesPage> {
           for (final l in S.delegate.supportedLocales)
             ListTile(
               title: Text(
-                _LanguageTagName.fromLanguageTag(l.toLanguageTag())?.name ??
+                LanguageTagName.fromLanguageTag(l.toLanguageTag())?.name ??
                     '???',
               ),
               leading: Radio(
