@@ -39,7 +39,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   '???',
             ),
             onTap: () {
-              Navigator.of(context).pushNamed(Routes.languages);
+              Navigator.of(context).pushNamed(Routes.languages).then((v) {
+                setState(() {});
+              });
             },
           ),
           ListTile(
