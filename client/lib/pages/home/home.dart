@@ -330,7 +330,11 @@ class _HomePageState extends State<HomePage> {
             label: S.current.create_new_folder,
             child: Icon(Icons.create_new_folder),
             onTap: () {
-              _newFolderMenu(context);
+              if (user.user == null) {
+                Toast.showError(S.current.please_login);
+              } else {
+                _newFolderMenu(context);
+              }
             },
           ),
           SpeedDialChild(
@@ -338,7 +342,13 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: ColorScheme.of(context).secondary,
             label: S.current.upload,
             child: Icon(Icons.upload),
-            onTap: _onUploadMenu,
+            onTap: () {
+              if (user.user == null) {
+                Toast.showError(S.current.please_login);
+              } else {
+                _onUploadMenu();
+              }
+            },
           ),
         ],
       ),
