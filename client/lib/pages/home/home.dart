@@ -188,6 +188,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  _delete(FileInfo file) {
+    FileAPI.deletePublic(file.fullPath).then((v) {
+      if (v == true) {
+        updateFiles();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -276,7 +284,9 @@ class _HomePageState extends State<HomePage> {
                                     onInfo: () {
                                       _showFileInfo(file);
                                     },
-                                    onDelete: () {},
+                                    onDelete: () {
+                                      _delete(file);
+                                    },
                                   ),
                                 ),
                                 child: _fileListItem(

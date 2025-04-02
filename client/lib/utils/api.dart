@@ -41,6 +41,18 @@ abstract class API {
         .then((res) => _then<T>(res, onResp))
         .catchError(_catchError<T>);
   }
+
+  static Future<T?> _delete<T>(
+    String path,
+    Object? data, {
+    Options? options,
+    OnResp? onResp,
+  }) {
+    return dio
+        .delete<String>('$API_ROOT$path', data: data, options: options)
+        .then((res) => _then<T>(res, onResp))
+        .catchError(_catchError<T>);
+  }
 }
 
 Future<T?> _then<T>(Response res, OnResp? onResp) async {

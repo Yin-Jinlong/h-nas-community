@@ -34,4 +34,15 @@ extension FileAPI on API {
       ),
     );
   }
+
+  static Future<bool?> deletePublic(String path) {
+    return API._delete<bool>(
+      '/file/public',
+      {'path': path},
+      options: Options(
+        contentType: Headers.formUrlEncodedContentType,
+        headers: {ExtraHeaders.authorization: Prefs.token},
+      ),
+    );
+  }
 }
