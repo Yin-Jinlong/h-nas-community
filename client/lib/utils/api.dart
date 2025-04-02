@@ -63,7 +63,9 @@ Future<T?> _catchError<T>(error) async {
         final resp = APIResponse.fromJson(jsonDecode(data!));
         if (resp.code == 100) {
           UserAPI.auth();
-          Toast.show(S.current.please_retry);
+          Future.delayed(Duration(seconds: 1), () {
+            Toast.show(S.current.please_retry);
+          });
         }
         Toast.showError(resp.msg + (resp.data != null ? ': ${resp.data}' : ''));
         break;
