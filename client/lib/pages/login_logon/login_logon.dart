@@ -8,6 +8,7 @@ import 'package:universal_platform/universal_platform.dart';
 
 import '../../generated/l10n.dart';
 
+part 'login_logon.base.dart';
 part 'login_logon.login.dart';
 part 'login_logon.logon.dart';
 

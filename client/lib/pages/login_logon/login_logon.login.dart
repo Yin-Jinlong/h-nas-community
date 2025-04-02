@@ -11,7 +11,7 @@ class _LoginWidget extends StatefulWidget {
   }
 }
 
-class _LoginState extends State<_LoginWidget> {
+class _LoginState extends _BaseState<_LoginWidget> {
   final logid = TextEditingController(), password = TextEditingController();
 
   _login() {
@@ -25,38 +25,55 @@ class _LoginState extends State<_LoginWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget child(BuildContext context) {
     return Column(
+      spacing: 12,
       children: [
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(8),
-            child: TextField(
-              controller: logid,
-              decoration: InputDecoration(
-                labelText: S.current.username,
-                hintText: '${S.current.username}/id',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
-              ),
-            ),
+        TextFormField(
+          controller: logid,
+          decoration: InputDecoration(
+            labelText: S.current.username,
+            hintText: '${S.current.username}/id',
+            hintStyle: TextStyle(color: Colors.grey),
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.person),
           ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return S.current.error_empty('${S.current.username}/id');
+            }
+            return null;
+          },
+          onTapOutside: (event) {
+            validate();
+          },
+          onChanged: (value) {
+            validate();
+          },
         ),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(8),
-            child: TextField(
-              maxLength: 18,
-              obscureText: true,
-              controller: password,
-              decoration: InputDecoration(
-                labelText: S.current.password,
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
-              ),
-            ),
+        TextFormField(
+          controller: password,
+          obscureText: true,
+          maxLength: 18,
+          decoration: InputDecoration(
+            labelText: S.current.password,
+            hintText: S.current.password,
+            hintStyle: TextStyle(color: Colors.grey),
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.lock),
           ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return S.current.error_empty(S.current.password);
+            }
+            return null;
+          },
+          onTapOutside: (event) {
+            validate();
+          },
+          onChanged: (value) {
+            validate();
+          },
         ),
         Stack(
           children: [
@@ -75,7 +92,7 @@ class _LoginState extends State<_LoginWidget> {
             foregroundColor: ColorScheme.of(context).onPrimary,
             minimumSize: Size(double.infinity, 50),
           ),
-          onPressed: _login,
+          onPressed: isValid ? _login : null,
           child: Text(S.current.login),
         ),
       ],
