@@ -11,6 +11,7 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/model/user_model.dart';
+import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
@@ -170,47 +171,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   _newFolderMenu(BuildContext context) {
-    var path = '';
-
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(S.current.create_new_folder),
-          content: IntrinsicHeight(
-            child: Column(
-              children: [
-                TextField(
-                  onChanged: (value) {
-                    path = value;
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: S.current.folder_name,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text(S.current.cancel),
-              onPressed: () {
+        return NewFolderDialog(
+          onCreate: (name) {
+            FileAPI.newFolder('${dirs.join('/')}/$name').then((v) {
+              if (v == true) {
                 Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(S.current.ok),
-              onPressed: () {
-                FileAPI.newFolder('${dirs.join('/')}/$path').then((v) {
-                  if (v == true) {
-                    Navigator.of(context).pop();
-                    updateFiles();
-                  }
-                });
-              },
-            ),
-          ],
+                updateFiles();
+              }
+            });
+          },
         );
       },
     );

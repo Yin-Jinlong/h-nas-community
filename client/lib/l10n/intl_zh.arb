@@ -9,6 +9,7 @@
   "delete": "删除",
   "download": "下载",
   "empty_content": "内容为空",
+  "error_contains": "{item}不能包含{value}",
   "error_empty": "{item}不能为空",
   "error_set_server_addr": "请先设置服务器",
   "file_info_create_time": "创建时间",

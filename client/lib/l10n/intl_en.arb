@@ -9,6 +9,7 @@
   "delete": "Delete",
   "download": "Download",
   "empty_content": "Empty content",
+  "error_contains": "{item} cannot contain {value}",
   "error_empty": "{item} cannot be empty",
   "error_set_server_addr": "Please set the server address",
   "file_info_create_time": "Create Time",
