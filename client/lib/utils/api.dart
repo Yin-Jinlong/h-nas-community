@@ -73,7 +73,7 @@ Future<T?> _catchError<T>(error) async {
       final data = e.response?.data;
       if (data != null) {
         final resp = APIResponse.fromJson(jsonDecode(data!));
-        if (resp.code == 100) {
+        if (Prefs.authToken != null && resp.code == 100) {
           UserAPI.auth();
           Future.delayed(Duration(seconds: 1), () {
             Toast.show(S.current.please_retry);
