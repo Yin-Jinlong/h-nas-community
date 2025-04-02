@@ -12,11 +12,14 @@ AppBar _appBar(
     leading: Builder(
       builder: (context) {
         return Center(
-          child: IconButton(
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: Hero(tag: 'menu_back', child: const Icon(Icons.menu)),
+          child: Tooltip(
+            message: S.current.open_menu,
+            child: IconButton(
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: Hero(tag: 'menu_back', child: const Icon(Icons.menu)),
+            ),
           ),
         );
       },
