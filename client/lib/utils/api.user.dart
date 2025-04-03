@@ -18,7 +18,7 @@ extension UserAPI on API {
           },
         )
         .then((data) {
-          auth();
+          if (Prefs.authToken != null) auth();
           return data == null ? null : UserInfo.fromJson(data);
         });
   }
