@@ -16,6 +16,14 @@ class _TransmissionPageState extends State<TransmissionPage>
   );
 
   @override
+  void initState() {
+    super.initState();
+    _tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -70,6 +78,29 @@ class _TransmissionPageState extends State<TransmissionPage>
         children: [
           for (int i = 0; i < 3; i++) Center(child: Text(S.current.no_data)),
         ],
+      ),
+      floatingActionButton: AnimatedSwitcher(
+        duration: Duration(milliseconds: 200),
+        transitionBuilder: (child, animation) {
+          return ScaleTransition(
+            scale: CurveTween(
+              curve:
+                  animation.isForwardOrCompleted
+                      ? Curves.easeIn
+                      : Curves.easeOutBack,
+            ).animate(animation),
+            child: child,
+          );
+        },
+        child:
+            _tabController.index == 0
+                ? FloatingActionButton(
+                  tooltip: S.current.upload,
+                  shape: const CircleBorder(),
+                  onPressed: () {},
+                  child: Icon(Icons.upload_file),
+                )
+                : null,
       ),
     );
   }
