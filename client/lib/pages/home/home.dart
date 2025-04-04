@@ -214,7 +214,15 @@ class _HomePageState extends State<HomePage> {
           });
           updateFiles();
         },
-        onTransmission: () {},
+        onTransmission: () {
+          if (UniversalPlatform.isWeb) {
+            Toast.showError(
+              S.current.web_not_support(S.current.value_transmission),
+            );
+            return;
+          }
+          Navigator.of(context).pushNamed(Routes.transmission);
+        },
         onLogin: () {
           Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
         },
@@ -358,7 +366,7 @@ class _HomePageState extends State<HomePage> {
 
 _onUploadMenu() {
   if (UniversalPlatform.isWeb) {
-    Toast.showError(S.current.web_not_support_upload);
+    Toast.showError(S.current.web_not_support(S.current.value_upload_file));
   }
 }
 

@@ -8,6 +8,8 @@
   "cancel": "Cancel",
   "create_new_folder": "Create New Folder",
   "delete": "Delete",
+  "delete_all": "Delete All",
+  "done": "Done",
   "download": "Download",
   "empty_content": "Empty content",
   "error_contains": "{item} cannot contain {value}",
@@ -33,6 +35,7 @@
   "password": "password",
   "password2": "confirm password",
   "password_not_match": "Password not match",
+  "pause_all": "Pause All",
   "pick_color": "Pick a color",
   "please_login": "Please login",
   "please_retry": "Please retry",
@@ -41,9 +44,12 @@
   "server_addr": "Server address",
   "set_host_addr": "Set Server Address",
   "settings": "Settings",
+  "start_all": "Start All",
   "theme": "Theme",
   "transmission": "Transmission",
   "upload": "Upload",
   "username": "username",
-  "web_not_support_upload": "Web platform does not support upload"
+  "value_transmission": "transmission",
+  "value_upload_file": "upload file",
+  "web_not_support": "Web platform does not support {action}"
 }

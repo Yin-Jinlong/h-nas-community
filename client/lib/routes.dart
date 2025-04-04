@@ -8,6 +8,7 @@ class Routes {
   static const String loginOn = '/login_on';
   static const String settings = '/settings';
   static const String theme = '/theme';
+  static const String transmission = '/transmission';
 
   static pageBuilder(
     RouteSettings settings,
@@ -20,6 +21,7 @@ class Routes {
       Routes.loginOn => const LogInOnPage(),
       Routes.settings => const SettingsPage(),
       Routes.theme => const ThemePage(),
+      Routes.transmission => const TransmissionPage(),
       _ => const HomePage(),
     };
   }
