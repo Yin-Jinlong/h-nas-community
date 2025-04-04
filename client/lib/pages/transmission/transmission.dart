@@ -24,6 +24,9 @@ class _TransmissionPageState extends State<TransmissionPage>
     _tabController.addListener(() {
       setState(() {});
     });
+    Global.downloadTasks.addListener(() {
+      setState(() {});
+    });
   }
 
   List<DataColumn> _tableColumns({List<DataColumn> extras = const []}) {
@@ -55,19 +58,13 @@ class _TransmissionPageState extends State<TransmissionPage>
           children: [
             IconButton(
               tooltip: S.current.start,
-              onPressed: () {
-                if (task.canStart) {
-                  task.controller!.reverse();
-                  onStart();
-                } else if (task.canPause) {
-                  task.controller!.forward();
-                  onPause();
-                }
-              },
-              icon: AnimatedIcon(
-                icon: AnimatedIcons.play_pause,
-                progress: task.controller!,
-              ),
+              onPressed: () {},
+              icon: Icon(Icons.play_arrow),
+            ),
+            IconButton(
+              tooltip: S.current.pause,
+              onPressed: onPause,
+              icon: Icon(Icons.pause),
             ),
             IconButton(
               tooltip: S.current.cancel,
@@ -113,7 +110,31 @@ class _TransmissionPageState extends State<TransmissionPage>
             },
             cells: _tableDataCells(
               task,
-              extras: [DataCell(Text('${task.progressStr}%'))],
+              extras: [
+                DataCell(
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: CircularProgressIndicator(
+                            value: task.progress,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            task.progressStr,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               onSelectedChanged: (value) {
                 task.selected = value ?? false;
                 setState(() {});

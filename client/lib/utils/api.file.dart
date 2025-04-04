@@ -35,6 +35,14 @@ extension FileAPI on API {
     );
   }
 
+  static Future downloadPublic(
+    String path,
+    String dst,
+    ProgressCallback onProgress,
+  ) {
+    return API._download('/file/public?path=${Uri.encodeQueryComponent(path)}', dst, onProgress);
+  }
+
   static Future<bool?> deletePublic(String path) {
     return API._delete<bool>(
       '/file/public',

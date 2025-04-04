@@ -1,5 +1,6 @@
-import 'package:flutter/animation.dart';
 import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/file_utils.dart';
 
 enum FileTaskStatus {
   /// 等待中
@@ -44,8 +45,6 @@ class FileTask {
 
   Object? error;
 
-  AnimationController? controller;
-
   bool selected = false;
 
   FileTask({required this.name, required this.size, required this.createTime});
@@ -73,10 +72,17 @@ class UploadFileTask extends FileTask {
 
 /// 下载文件任务
 class DownloadFileTask extends FileTask {
+  final FileInfo file;
+  final String dst;
+
   /// 已下载大小
   int downloaded = 0;
 
+  bool _started = false;
+
   DownloadFileTask({
+    required this.file,
+    required this.dst,
     required super.name,
     required super.size,
     required super.createTime,
@@ -85,5 +91,18 @@ class DownloadFileTask extends FileTask {
   /// 进度[0-1]
   double get progress => downloaded.toDouble() / size;
 
-  String get progressStr => (progress * 100).toStringAsFixed(2);
+  String get progressStr => (progress * 100).toStringAsFixed(1);
+
+  start() {
+    if (_started) return;
+    _started = true;
+    FileAPI.downloadPublic(file.fullPath, dst, (count, total) {
+      downloaded = count;
+      size = total;
+      if (count == total) {
+        status = FileTaskStatus.done;
+        doneTime = DateTime.now();
+      }
+    });
+  }
 }

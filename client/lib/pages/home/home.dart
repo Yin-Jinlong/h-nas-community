@@ -14,6 +14,7 @@ import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/file_task.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/nerd.dart';
@@ -41,7 +42,7 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<FileInfo> files = [];
   List<FileInfo> images = [];
   List<String> dirs = [];
@@ -159,10 +160,7 @@ class _HomePageState extends State<HomePage> {
                     ).toString(),
                   ),
                 ),
-                _infoRow(
-                  S.current.file_size,
-                  Text(file.size.storageSizeStr),
-                ),
+                _infoRow(S.current.file_size, Text(file.size.storageSizeStr)),
               ],
             ),
           ],
@@ -187,6 +185,25 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  _download(FileInfo file) {
+    if (UniversalPlatform.isWeb) {
+      web.window.open(
+        FileAPIURL.publicFile(file.fullPath, download: true),
+        '_blank',
+      );
+      return;
+    }
+    final task = DownloadFileTask(
+      dst: '${Global.downloadDir}${file.fullPath}',
+      name: file.name,
+      size: file.size,
+      createTime: DateTime.now(),
+      file: file,
+    );
+    Global.downloadTasks.add(task);
+    task.start();
   }
 
   _delete(FileInfo file) {
@@ -367,14 +384,5 @@ class _HomePageState extends State<HomePage> {
 _onUploadMenu() {
   if (UniversalPlatform.isWeb) {
     Toast.showError(S.current.web_not_support(S.current.value_upload_file));
-  }
-}
-
-_download(FileInfo file) {
-  if (UniversalPlatform.isWeb) {
-    web.window.open(
-      FileAPIURL.publicFile(file.fullPath, download: true),
-      '_blank',
-    );
   }
 }

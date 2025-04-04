@@ -15,6 +15,7 @@ import 'generated/l10n.dart';
 void main() async {
   Intl.defaultLocale = 'zh';
   WidgetsFlutterBinding.ensureInitialized();
+  await Global.init();
   await Prefs.init();
   await Settings.init();
   Global.packageInfo = await PackageInfo.fromPlatform();

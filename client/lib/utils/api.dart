@@ -42,6 +42,21 @@ abstract class API {
         .catchError(_catchError<T>);
   }
 
+  static Future<Response?> _download(
+    String path,
+    String dst,
+    ProgressCallback onProgress,
+  ) {
+    return dio
+        .download(
+          '$API_ROOT$path',
+          dst,
+          onReceiveProgress: onProgress,
+          options: Options(responseType: ResponseType.stream),
+        )
+        .catchError(_catchError);
+  }
+
   static Future<T?> _delete<T>(
     String path,
     Object? data, {
