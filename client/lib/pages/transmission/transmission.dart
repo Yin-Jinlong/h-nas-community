@@ -187,16 +187,30 @@ class _TransmissionPageState extends State<TransmissionPage>
           dividerHeight: 1,
           controller: _tabController,
           tabs: [
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [Icon(Icons.upload), Text(S.current.upload)],
+            Badge(
+              label: Text('${Global.uploadTasks.length}'),
+              isLabelVisible: Global.uploadTasks.isNotEmpty,
+              child: Tab(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [Icon(Icons.upload), Text(S.current.upload)],
+                  ),
+                ),
               ),
             ),
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [Icon(Icons.download), Text(S.current.download)],
+            Badge(
+              label: Text('${Global.downloadTasks.length}'),
+              isLabelVisible: Global.downloadTasks.isNotEmpty,
+              child: Tab(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [Icon(Icons.download), Text(S.current.download)],
+                  ),
+                ),
               ),
             ),
             Tab(

@@ -204,6 +204,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
     Global.downloadTasks.add(task);
     task.start();
+    setState(() {});
   }
 
   _delete(FileInfo file) {

@@ -8,6 +8,8 @@ AppBar _appBar(
   required Function() onLogout,
 }) {
   final user = Provider.of<UserModel>(context, listen: false);
+  final taskCount = Global.uploadTasks.length + Global.downloadTasks.length;
+
   return AppBar(
     leading: Builder(
       builder: (context) {
@@ -29,10 +31,14 @@ AppBar _appBar(
         onPressed: onRefresh,
         icon: Icon(Icons.refresh),
       ),
-      IconButton(
-        tooltip: S.current.transmission,
-        onPressed: onTransmission,
-        icon: Icon(Icons.swap_vert),
+      Badge(
+        label: Text('$taskCount'),
+        isLabelVisible: taskCount > 0,
+        child: IconButton(
+          tooltip: S.current.transmission,
+          onPressed: onTransmission,
+          icon: Icon(Icons.swap_vert),
+        ),
       ),
       IconButton(
         tooltip: user.user == null ? S.current.login : user.user!.nick,
