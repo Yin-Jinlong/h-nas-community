@@ -42,16 +42,14 @@ class _LogInOnPageState extends State<LogInOnPage> {
                         children: [
                           Row(
                             children: [
-                              Tooltip(
-                                message: S.current.back,
-                                child: IconButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  icon: Hero(
-                                    tag: 'menu_back',
-                                    child: Icon(Icons.arrow_back),
-                                  ),
+                              IconButton(
+                                tooltip: S.current.back,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: Hero(
+                                  tag: 'menu_back',
+                                  child: Icon(Icons.arrow_back),
                                 ),
                               ),
                               Text(

@@ -12,39 +12,34 @@ AppBar _appBar(
     leading: Builder(
       builder: (context) {
         return Center(
-          child: Tooltip(
-            message: S.current.open_menu,
-            child: IconButton(
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              icon: Hero(tag: 'menu_back', child: const Icon(Icons.menu)),
-            ),
+          child: IconButton(
+            tooltip: S.current.open_menu,
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            icon: Hero(tag: 'menu_back', child: const Icon(Icons.menu)),
           ),
         );
       },
     ),
     title: Text(S.current.app_name),
     actions: [
-      Tooltip(
-        message: S.current.refresh,
-        child: IconButton(onPressed: onRefresh, icon: Icon(Icons.refresh)),
+      IconButton(
+        tooltip: S.current.refresh,
+        onPressed: onRefresh,
+        icon: Icon(Icons.refresh),
       ),
-      Tooltip(
-        message: S.current.transmission,
-        child: IconButton(
-          onPressed: onTransmission,
-          icon: Icon(Icons.swap_vert),
-        ),
+      IconButton(
+        tooltip: S.current.transmission,
+        onPressed: onTransmission,
+        icon: Icon(Icons.swap_vert),
       ),
-      Tooltip(
-        message: user.user == null ? S.current.login : user.user!.nick,
-        child: IconButton(
-          onPressed: user.user == null ? onLogin : onLogout,
-          icon: Hero(
-            tag: 'login',
-            child: Icon(user.user == null ? Icons.person : Icons.logout),
-          ),
+      IconButton(
+        tooltip: user.user == null ? S.current.login : user.user!.nick,
+        onPressed: user.user == null ? onLogin : onLogout,
+        icon: Hero(
+          tag: 'login',
+          child: Icon(user.user == null ? Icons.person : Icons.logout),
         ),
       ),
     ],
