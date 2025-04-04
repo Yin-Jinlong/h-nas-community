@@ -9,7 +9,5 @@ extension FileTypeCheck on FileInfo {
     return fileType == 'FILE';
   }
 
-  String get fullPath {
-    return '$dir/$name';
-  }
+  String get fullPath => dir == '/' ? '/$name' : '$dir/$name';
 }
