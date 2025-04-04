@@ -4,7 +4,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/model/user_model.dart';
-import 'package:h_nas/pages/pages.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
 import 'package:intl/intl.dart';
@@ -71,14 +70,11 @@ class _MyAppState extends State<MyApp> {
         onGenerateRoute: (settings) {
           return PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) {
-              return switch (settings.name) {
-                Routes.home => const HomePage(),
-                Routes.languages => LanguagesPage(onLocaleChanged: _setLocale),
-                Routes.loginOn => const LogInOnPage(),
-                Routes.settings => const SettingsPage(),
-                Routes.theme => const ThemePage(),
-                _ => const HomePage(),
-              };
+              return Routes.pageBuilder(
+                settings,
+                context,
+                onLocaleChanged: _setLocale,
+              );
             },
             transitionsBuilder: (
               context,
