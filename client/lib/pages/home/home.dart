@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                   Text(file.mediaType ?? '?'),
                 ),
                 _infoRow(
-                  S.current.file_info_create_time,
+                  S.current.create_time,
                   Text(
                     DateTime.fromMillisecondsSinceEpoch(
                       file.createTime,
@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 _infoRow(
-                  S.current.file_info_file_size,
+                  S.current.file_size,
                   Text(file.size.storageSizeStr),
                 ),
               ],

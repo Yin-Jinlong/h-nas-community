@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/prefs.dart';
+import 'package:h_nas/utils/file_task.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 abstract class Global {
@@ -14,4 +15,8 @@ abstract class Global {
   );
   static Locale locale = Prefs.locale;
   static ValueNotifier<ThemeData> theme = ValueNotifier(Prefs.theme);
+
+  static List<UploadFileTask> uploadTasks = [];
+  static List<DownloadFileTask> downloadTasks = [];
+  static List<FileTask> doneTasks = [];
 }
