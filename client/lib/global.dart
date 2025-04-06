@@ -13,6 +13,10 @@ abstract class Global {
 
   static late String downloadDir;
 
+  static const String nameNoChars='\'/\\<>\'';
+
+  static final nameNotRegex = RegExp(r'[/\\<>]');
+
   static PackageInfo packageInfo = PackageInfo(
     appName: '',
     packageName: '',

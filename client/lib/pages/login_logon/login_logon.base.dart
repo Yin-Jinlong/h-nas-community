@@ -19,16 +19,3 @@ abstract class _BaseState<T extends StatefulWidget> extends State<T> {
     );
   }
 }
-
-extension on _BaseState {
-  Widget? _textFieldClearButton(TextEditingController controller) {
-    if (controller.text.isEmpty) return null;
-    return IconButton(
-      icon: Icon(Icons.clear),
-      onPressed: () {
-        controller.clear();
-        validate();
-      },
-    );
-  }
-}

@@ -14,6 +14,7 @@ import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/pages/home/info_dialog.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
+import 'package:h_nas/pages/home/rename_dialog.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_task.dart';
@@ -152,6 +153,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
+  _showRenameDialog(BuildContext context, FileInfo file) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return RenameDialog(
+          file: file,
+          onRename: (newName) {
+            FileAPI.renamePublicFolder(file.fullPath, newName).then((v) {
+              if (v != true) return;
+              Navigator.of(context).pop();
+              updateFiles();
+            });
+          },
+        );
+      },
+    );
+  }
+
   _download(FileInfo file) {
     if (UniversalPlatform.isWeb) {
       web.window.open(
@@ -272,6 +291,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           contextMenu: GenericContextMenu(
                             buttonConfigs: _fileContextMenuButtons(
                               file,
+                              onRename: () {
+                                _showRenameDialog(context, file);
+                              },
                               onDownload: () {
                                 _download(file);
                               },

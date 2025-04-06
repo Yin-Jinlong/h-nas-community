@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/global.dart';
 
 import '../../generated/l10n.dart';
 
@@ -13,7 +14,6 @@ class NewFolderDialog extends StatefulWidget {
 
 class _NewFolderDialogState extends State<NewFolderDialog> {
   final form = GlobalKey<FormState>();
-  final nameNotRegex = RegExp(r'[/\\<>]');
   var name = '';
 
   @override
@@ -38,10 +38,10 @@ class _NewFolderDialogState extends State<NewFolderDialog> {
                   if (value == null || value.isEmpty) {
                     return S.current.error_empty(S.current.folder_name);
                   }
-                  if (nameNotRegex.hasMatch(value)) {
+                  if (Global.nameNotRegex.hasMatch(value)) {
                     return S.current.error_contains(
                       S.current.folder_name,
-                      '\'/\\<>\'',
+                      Global.nameNoChars,
                     );
                   }
                   return null;

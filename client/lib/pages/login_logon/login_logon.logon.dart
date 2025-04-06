@@ -53,7 +53,9 @@ class _LogonState extends _BaseState<_LogonWidget> {
             labelText: S.current.password,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.lock),
-            suffixIcon: _textFieldClearButton(password),
+            suffixIcon: EditFieldUtils.clearButton(password, () {
+              validate();
+            }),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -76,7 +78,9 @@ class _LogonState extends _BaseState<_LogonWidget> {
             labelText: S.current.password2,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.lock),
-            suffixIcon: _textFieldClearButton(password2),
+            suffixIcon: EditFieldUtils.clearButton(password2, () {
+              validate();
+            }),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {

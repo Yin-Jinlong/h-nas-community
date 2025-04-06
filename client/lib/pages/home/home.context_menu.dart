@@ -2,11 +2,17 @@ part of 'home.dart';
 
 List<ContextMenuButtonConfig> _fileContextMenuButtons(
   FileInfo file, {
+  required Function() onRename,
   required Function() onDownload,
   required Function() onInfo,
   required Function() onDelete,
 }) {
   return [
+    ContextMenuButtonConfig(
+      S.current.rename,
+      icon: Icon(Icons.edit, size: 20),
+      onPressed: onRename,
+    ),
     ContextMenuButtonConfig(
       '${S.current.download} ${file.isFolder ? 'tar.gz' : ''}',
       icon: Icon(Icons.download, size: 20),

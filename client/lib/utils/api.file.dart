@@ -45,6 +45,17 @@ extension FileAPI on API {
     );
   }
 
+  static Future<bool?> renamePublicFolder(String path, String name) {
+    return API._post<bool>(
+      '/file/public/rename',
+      {'path': path, 'name': name},
+      options: Options(
+        contentType: Headers.formUrlEncodedContentType,
+        headers: {ExtraHeaders.authorization: Prefs.token},
+      ),
+    );
+  }
+
   static Future downloadPublic(
     String path,
     String dst,

@@ -61,7 +61,9 @@ class _LoginState extends _BaseState<_LoginWidget> {
             hintStyle: TextStyle(color: Colors.grey),
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.lock),
-            suffixIcon: _textFieldClearButton(password),
+            suffixIcon: EditFieldUtils.clearButton(password, () {
+              validate();
+            }),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
