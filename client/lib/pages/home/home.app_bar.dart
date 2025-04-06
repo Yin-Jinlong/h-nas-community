@@ -2,6 +2,7 @@ part of 'home.dart';
 
 AppBar _appBar(
   BuildContext context, {
+  required Function() onSort,
   required Function() onRefresh,
   required Function() onTransmission,
   required Function() onLogin,
@@ -28,6 +29,11 @@ AppBar _appBar(
     ),
     title: Text(S.current.app_name),
     actions: [
+      IconButton(
+        tooltip: S.current.sort,
+        onPressed: onSort,
+        icon: Icon(Icons.sort),
+      ),
       IconButton(
         tooltip: S.current.refresh,
         onPressed: onRefresh,

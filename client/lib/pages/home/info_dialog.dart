@@ -63,7 +63,7 @@ class _InfoDialogState extends State<InfoDialog> {
               ),
             ),
             _infoRow(
-              S.current.file_info_update_time,
+              S.current.update_time,
               Text(
                 DateTime.fromMillisecondsSinceEpoch(file.updateTime).toString(),
               ),

@@ -15,6 +15,7 @@ import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/pages/home/info_dialog.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/pages/home/rename_dialog.dart';
+import 'package:h_nas/pages/home/sort_dialog.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_task.dart';
@@ -51,6 +52,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<String> dirs = [];
   late ModalRoute route;
   final _openFloatingMenu = ValueNotifier(false);
+  SortType sortType = SortType.name;
+  bool sortAsc = true;
 
   @override
   void initState() {
@@ -67,6 +70,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     FileAPI.getPublicFiles('/${dirs.join('/')}').then((v) {
       setState(() {
         files = v;
+        _sort();
         images = [];
         for (var file in v) {
           if (MediaType.parse(file.mediaType ?? '').type ==
@@ -153,6 +157,58 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
+  _sort() {
+    switch (sortType) {
+      case SortType.name:
+        files.sort(
+          (a, b) =>
+              sortAsc ? a.name.compareTo(b.name) : b.name.compareTo(a.name),
+        );
+        break;
+      case SortType.createTime:
+        files.sort(
+          (a, b) =>
+              sortAsc
+                  ? a.createTime.compareTo(b.createTime)
+                  : b.createTime.compareTo(a.createTime),
+        );
+        break;
+      case SortType.updateTime:
+        files.sort(
+          (a, b) =>
+              sortAsc
+                  ? a.updateTime.compareTo(b.updateTime)
+                  : b.updateTime.compareTo(a.updateTime),
+        );
+        break;
+      case SortType.size:
+        files.sort(
+          (a, b) =>
+              sortAsc ? a.size.compareTo(b.size) : b.size.compareTo(a.size),
+        );
+        break;
+    }
+  }
+
+  _showSortDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SortDialog(
+          initType: sortType,
+          initAsc: sortAsc,
+          onSort: (type, asc) {
+            setState(() {
+              sortType = type;
+              sortAsc = asc;
+              _sort();
+            });
+          },
+        );
+      },
+    );
+  }
+
   _showRenameDialog(BuildContext context, FileInfo file) {
     showDialog(
       context: context,
@@ -209,6 +265,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Scaffold(
       appBar: _appBar(
         context,
+        onSort: () {
+          _showSortDialog(context);
+        },
         onRefresh: () {
           setState(() {
             thumbnailCache.clear();
