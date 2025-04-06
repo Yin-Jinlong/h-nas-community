@@ -24,6 +24,16 @@ extension FileAPI on API {
         });
   }
 
+  static Future<FolderChildrenCount?> getPublicFolderChildrenCount(
+    String path,
+  ) {
+    return API
+        ._get<Map<String, dynamic>>('/file/public/folder/count', {'path': path})
+        .then((data) {
+          return data == null ? null : FolderChildrenCount.fromJson(data);
+        });
+  }
+
   static Future<bool?> newFolder(String path) {
     return API._post<bool>(
       '/file/public/folder',
@@ -40,7 +50,11 @@ extension FileAPI on API {
     String dst,
     ProgressCallback onProgress,
   ) {
-    return API._download('/file/public?path=${Uri.encodeQueryComponent(path)}', dst, onProgress);
+    return API._download(
+      '/file/public?path=${Uri.encodeQueryComponent(path)}',
+      dst,
+      onProgress,
+    );
   }
 
   static Future<bool?> deletePublic(String path) {

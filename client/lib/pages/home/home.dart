@@ -12,6 +12,7 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/model/user_model.dart';
+import 'package:h_nas/pages/home/info_dialog.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
@@ -128,44 +129,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     showDialog(
       context: context,
       builder: (context) {
-        return SimpleDialog(
-          title: Text(file.name),
-          contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-          children: [
-            Table(
-              columnWidths: {0: IntrinsicColumnWidth(), 1: FlexColumnWidth(1)},
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                _infoRow(
-                  S.current.file_info_path,
-                  Text('${file.dir}${file.dir == '/' ? '' : '/'}${file.name}'),
-                ),
-                _infoRow(S.current.file_info_file_type, Text(file.fileType)),
-                _infoRow(
-                  S.current.file_info_media_type,
-                  Text(file.mediaType ?? '?'),
-                ),
-                _infoRow(
-                  S.current.create_time,
-                  Text(
-                    DateTime.fromMillisecondsSinceEpoch(
-                      file.createTime,
-                    ).toString(),
-                  ),
-                ),
-                _infoRow(
-                  S.current.file_info_update_time,
-                  Text(
-                    DateTime.fromMillisecondsSinceEpoch(
-                      file.updateTime,
-                    ).toString(),
-                  ),
-                ),
-                _infoRow(S.current.file_size, Text(file.size.storageSizeStr)),
-              ],
-            ),
-          ],
-        );
+        return InfoDialog(file: file, infoRow: _infoRow);
       },
     );
   }
