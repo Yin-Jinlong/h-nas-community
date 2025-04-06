@@ -44,8 +44,8 @@ class _TransmissionPageState extends State<TransmissionPage>
   List<DataCell> _tableDataCells(
     FileTask task, {
     required Function(bool? value) onSelectedChanged,
-    required Function() onStart,
-    required Function() onPause,
+    Function()? onStart,
+    Function()? onPause,
     required Function() onRemove,
     List<DataCell> extras = const [],
   }) {
@@ -58,16 +58,20 @@ class _TransmissionPageState extends State<TransmissionPage>
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              tooltip: S.current.start,
-              onPressed: () {},
-              icon: Icon(Icons.play_arrow),
-            ),
-            IconButton(
-              tooltip: S.current.pause,
-              onPressed: onPause,
-              icon: Icon(Icons.pause),
-            ),
+            onStart != null
+                ? IconButton(
+                  tooltip: S.current.start,
+                  onPressed: () {},
+                  icon: Icon(Icons.play_arrow),
+                )
+                : Container(),
+            onPause != null
+                ? IconButton(
+                  tooltip: S.current.pause,
+                  onPressed: onPause,
+                  icon: Icon(Icons.pause),
+                )
+                : Container(),
             IconButton(
               tooltip: S.current.cancel,
               onPressed: onRemove,
@@ -93,9 +97,12 @@ class _TransmissionPageState extends State<TransmissionPage>
   }
 
   Widget _downloadView() {
+    final progressing = Global.downloadTasks.where((e) => !e.isDone);
+    final done = Global.downloadTasks.where((e) => e.isDone);
+
     return TransmissionView(
       progressingPage: Empty(
-        isEmpty: Global.downloadTasks.where((e) => !e.isDone).isEmpty,
+        isEmpty: progressing.isEmpty,
         child: DataTable(
           dividerThickness: 0,
           columns: _tableColumns(
@@ -108,7 +115,7 @@ class _TransmissionPageState extends State<TransmissionPage>
             ],
           ),
           rows: [
-            for (var task in Global.downloadTasks)
+            for (var task in progressing)
               DataRow(
                 selected: task.selected,
                 onSelectChanged: (value) {
@@ -147,8 +154,6 @@ class _TransmissionPageState extends State<TransmissionPage>
                     task.selected = value ?? false;
                     setState(() {});
                   },
-                  onStart: () {},
-                  onPause: () {},
                   onRemove: () {
                     // TODO
                     Global.downloadTasks.remove(task);
@@ -160,8 +165,34 @@ class _TransmissionPageState extends State<TransmissionPage>
         ),
       ),
       donePage: Empty(
-        isEmpty: Global.downloadTasks.where((e) => e.isDone).isEmpty,
-        child: Container(),
+        isEmpty: done.isEmpty,
+        child: DataTable(
+          dividerThickness: 0,
+          columns: _tableColumns(),
+          rows: [
+            for (var task in done)
+              DataRow(
+                selected: task.selected,
+                onSelectChanged: (value) {
+                  setState(() {
+                    task.selected = value ?? false;
+                  });
+                },
+                cells: _tableDataCells(
+                  task,
+                  onSelectedChanged: (value) {
+                    task.selected = value ?? false;
+                    setState(() {});
+                  },
+                  onRemove: () {
+                    // TODO
+                    Global.downloadTasks.remove(task);
+                    setState(() {});
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
