@@ -34,7 +34,7 @@ extension FileAPI on API {
         });
   }
 
-  static Future<bool?> newFolder(String path) {
+  static Future<bool?> newPublicFolder(String path) {
     return API._post<bool>(
       '/file/public/folder',
       {'path': path},

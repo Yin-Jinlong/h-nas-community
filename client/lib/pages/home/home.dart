@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       builder: (context) {
         return NewFolderDialog(
           onCreate: (name) {
-            FileAPI.newFolder('${dirs.join('/')}/$name').then((v) {
+            FileAPI.newPublicFolder('${dirs.join('/')}/$name').then((v) {
               if (v == true) {
                 Navigator.of(context).pop();
                 updateFiles();
