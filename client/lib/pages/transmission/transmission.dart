@@ -168,6 +168,9 @@ class _TransmissionPageState extends State<TransmissionPage>
 
   @override
   Widget build(BuildContext context) {
+    final uploadProgressing = Global.uploadTasks.where((e) => !e.isDone);
+    final downloadProgressing = Global.downloadTasks.where((e) => !e.isDone);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(S.current.transmission),
@@ -195,8 +198,8 @@ class _TransmissionPageState extends State<TransmissionPage>
           controller: _tabController,
           tabs: [
             Badge(
-              label: Text('${Global.uploadTasks.length}'),
-              isLabelVisible: Global.uploadTasks.isNotEmpty,
+              label: Text('${uploadProgressing.length}'),
+              isLabelVisible: uploadProgressing.isNotEmpty,
               child: Tab(
                 child: Padding(
                   padding: EdgeInsets.only(right: 8),
@@ -208,8 +211,8 @@ class _TransmissionPageState extends State<TransmissionPage>
               ),
             ),
             Badge(
-              label: Text('${Global.downloadTasks.length}'),
-              isLabelVisible: Global.downloadTasks.isNotEmpty,
+              label: Text('${downloadProgressing.length}'),
+              isLabelVisible: downloadProgressing.isNotEmpty,
               child: Tab(
                 child: Padding(
                   padding: EdgeInsets.only(right: 8),
