@@ -119,6 +119,15 @@ class _SortDialogState extends State<SortDialog> {
       actions: [
         TextButton(
           onPressed: () {
+            setState(() {
+              type = SortType.name;
+              isAsc = true;
+            });
+          },
+          child: Text(S.current.default_),
+        ),
+        TextButton(
+          onPressed: () {
             Navigator.of(context).pop();
           },
           child: Text(S.current.cancel),
