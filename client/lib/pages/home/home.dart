@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:h_nas/components/empty.dart';
 import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/global.dart';
@@ -297,49 +298,49 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ChangeNotifierProvider.value(
             value: thumbnailCache,
             child: Expanded(
-              child:
-                  files.isNotEmpty
-                      ? ContextMenuOverlay(
-                        child: ListView(
-                          children: [
-                            for (var file in files)
-                              ContextMenuRegion(
-                                contextMenu: GenericContextMenu(
-                                  buttonConfigs: _fileContextMenuButtons(
-                                    file,
-                                    onDownload: () {
-                                      _download(file);
-                                    },
-                                    onInfo: () {
-                                      _showFileInfo(file);
-                                    },
-                                    onDelete: () {
-                                      _delete(file);
-                                    },
-                                  ),
-                                ),
-                                child: _fileListItem(
-                                  context,
-                                  file,
-                                  onTap: () {
-                                    if (file.isFolder) {
-                                      enterFolder(file.name);
-                                    } else {
-                                      switch (MediaType.parse(
-                                        file.mediaType ?? '',
-                                      ).type) {
-                                        case MediaType.typeImage:
-                                          showImage(thumbnailCache, file);
-                                          break;
-                                      }
-                                    }
-                                  },
-                                ),
-                              ),
-                          ],
+              child: Empty(
+                isEmpty: files.isEmpty,
+                child: ContextMenuOverlay(
+                  child: ListView(
+                    children: [
+                      for (var file in files)
+                        ContextMenuRegion(
+                          contextMenu: GenericContextMenu(
+                            buttonConfigs: _fileContextMenuButtons(
+                              file,
+                              onDownload: () {
+                                _download(file);
+                              },
+                              onInfo: () {
+                                _showFileInfo(file);
+                              },
+                              onDelete: () {
+                                _delete(file);
+                              },
+                            ),
+                          ),
+                          child: _fileListItem(
+                            context,
+                            file,
+                            onTap: () {
+                              if (file.isFolder) {
+                                enterFolder(file.name);
+                              } else {
+                                switch (MediaType.parse(
+                                  file.mediaType ?? '',
+                                ).type) {
+                                  case MediaType.typeImage:
+                                    showImage(thumbnailCache, file);
+                                    break;
+                                }
+                              }
+                            },
+                          ),
                         ),
-                      )
-                      : Center(child: Text(S.current.no_data)),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],

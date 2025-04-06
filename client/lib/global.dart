@@ -24,7 +24,6 @@ abstract class Global {
 
   static ListModel<DownloadFileTask> uploadTasks = ListModel();
   static ListModel<DownloadFileTask> downloadTasks = ListModel();
-  static ListModel<DownloadFileTask> doneTasks = ListModel();
 
   static init() async {
     final dir = await getDownloadsDirectory();

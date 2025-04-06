@@ -8,7 +8,9 @@ AppBar _appBar(
   required Function() onLogout,
 }) {
   final user = Provider.of<UserModel>(context, listen: false);
-  final taskCount = Global.uploadTasks.length + Global.downloadTasks.length;
+  final taskCount =
+      Global.uploadTasks.where((e) => !e.isDone).length +
+      Global.downloadTasks.where((e) => !e.isDone).length;
 
   return AppBar(
     leading: Builder(

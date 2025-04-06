@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/empty.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/pages/transmission/transmission.view.dart';
 import 'package:h_nas/utils/file_task.dart';
 import 'package:h_nas/utils/storage_size.dart';
 
@@ -14,7 +16,7 @@ class TransmissionPage extends StatefulWidget {
 class _TransmissionPageState extends State<TransmissionPage>
     with TickerProviderStateMixin {
   late final TabController _tabController = TabController(
-    length: 3,
+    length: 2,
     vsync: this,
   );
 
@@ -78,85 +80,90 @@ class _TransmissionPageState extends State<TransmissionPage>
   }
 
   Widget _uploadView() {
-    if (Global.uploadTasks.isEmpty) {
-      return Center(child: Text(S.current.no_data));
-    }
-    return Container();
-  }
-
-  Widget _downloadView() {
-    if (Global.downloadTasks.isEmpty) {
-      return Center(child: Text(S.current.no_data));
-    }
-    return DataTable(
-      dividerThickness: 0,
-      columns: _tableColumns(
-        extras: [
-          DataColumn(
-            label: Text(S.current.progress),
-            numeric: true,
-            tooltip: S.current.progress,
-          ),
-        ],
+    return TransmissionView(
+      donePage: Empty(
+        isEmpty: Global.uploadTasks.where((e) => !e.isDone).isEmpty,
+        child: Container(),
       ),
-      rows: [
-        for (var task in Global.downloadTasks)
-          DataRow(
-            selected: task.selected,
-            onSelectChanged: (value) {
-              setState(() {
-                task.selected = value ?? false;
-              });
-            },
-            cells: _tableDataCells(
-              task,
-              extras: [
-                DataCell(
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: CircularProgressIndicator(
-                            value: task.progress,
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            task.progressStr,
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-              onSelectedChanged: (value) {
-                task.selected = value ?? false;
-                setState(() {});
-              },
-              onStart: () {},
-              onPause: () {},
-              onRemove: () {
-                // TODO
-                Global.downloadTasks.remove(task);
-                setState(() {});
-              },
-            ),
-          ),
-      ],
+      progressingPage: Empty(
+        isEmpty: Global.uploadTasks.where((e) => e.isDone).isEmpty,
+        child: Container(),
+      ),
     );
   }
 
-  Widget _doneView() {
-    if (Global.doneTasks.isEmpty) {
-      return Center(child: Text(S.current.no_data));
-    }
-    return Container();
+  Widget _downloadView() {
+    return TransmissionView(
+      progressingPage: Empty(
+        isEmpty: Global.downloadTasks.where((e) => !e.isDone).isEmpty,
+        child: DataTable(
+          dividerThickness: 0,
+          columns: _tableColumns(
+            extras: [
+              DataColumn(
+                label: Text(S.current.progress),
+                numeric: true,
+                tooltip: S.current.progress,
+              ),
+            ],
+          ),
+          rows: [
+            for (var task in Global.downloadTasks)
+              DataRow(
+                selected: task.selected,
+                onSelectChanged: (value) {
+                  setState(() {
+                    task.selected = value ?? false;
+                  });
+                },
+                cells: _tableDataCells(
+                  task,
+                  extras: [
+                    DataCell(
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: CircularProgressIndicator(
+                                value: task.progress,
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                task.progressStr,
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  onSelectedChanged: (value) {
+                    task.selected = value ?? false;
+                    setState(() {});
+                  },
+                  onStart: () {},
+                  onPause: () {},
+                  onRemove: () {
+                    // TODO
+                    Global.downloadTasks.remove(task);
+                    setState(() {});
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+      donePage: Empty(
+        isEmpty: Global.downloadTasks.where((e) => e.isDone).isEmpty,
+        child: Container(),
+      ),
+    );
   }
 
   @override
@@ -213,19 +220,13 @@ class _TransmissionPageState extends State<TransmissionPage>
                 ),
               ),
             ),
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [Icon(Icons.done), Text(S.current.done)],
-              ),
-            ),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         physics: const AlwaysScrollableScrollPhysics(),
-        children: [_uploadView(), _downloadView(), _doneView()],
+        children: [_uploadView(), _downloadView()],
       ),
       floatingActionButton: AnimatedSwitcher(
         duration: Duration(milliseconds: 200),
