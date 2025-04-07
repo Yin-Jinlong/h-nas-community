@@ -40,7 +40,7 @@ Drawer _drawer(BuildContext context) {
         Tooltip(
           message: S.current.theme,
           child: ListTile(
-            leading: Icon(Nerd.theme),
+            leading: Icon(TDTxNFIcons.nf_md_tshirt_crew),
             title: Text(S.current.theme),
             onTap: () {
               Navigator.of(

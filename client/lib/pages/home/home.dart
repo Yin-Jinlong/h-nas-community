@@ -25,10 +25,10 @@ import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_task.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
-import 'package:h_nas/utils/nerd.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:h_nas/utils/toast.dart';
 import 'package:provider/provider.dart';
+import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_html/html.dart' as web;
 import 'package:universal_platform/universal_platform.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:h_nas/utils/nerd.dart';
+import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
 import '../generated/l10n.dart';
 
@@ -30,7 +30,7 @@ class Empty extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Nerd.empty, size: 40),
+                  Icon(TDTxNFIcons.nf_oct_inbox, size: 40),
                   Text(S.current.no_data),
                 ],
               ),

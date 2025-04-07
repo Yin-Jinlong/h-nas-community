@@ -62,6 +62,7 @@ dependencies:
   convert: ^3.1.2
   desktop_drop: ^0.5.0
   dotted_decoration: ^2.0.0
+  tdtx_nf_icons: ^3.2.1+2
 
 dev_dependencies:
   flutter_test:

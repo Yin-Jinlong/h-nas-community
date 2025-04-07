@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
 class ImageViewer extends StatefulWidget {
   final List<Future<String> Function()> urls;
@@ -440,7 +441,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                   onPressed: () {
                     widget.onReset();
                   },
-                  icon: Transform.scale(scaleX: -1, child: Icon(Icons.refresh)),
+                  icon: Icon(TDTxNFIcons.nf_md_restore),
                 ),
               ),
             ],
