@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child:
           _dragging
               ? Container(
-                color: Colors.black.withValues(alpha: 0.3),
+                color: Colors.white70.withValues(alpha: 0.95),
                 child: Padding(
                   padding: EdgeInsets.all(2),
                   child: Container(
