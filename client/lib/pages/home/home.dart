@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:context_menus/context_menus.dart';
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +58,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final _openFloatingMenu = ValueNotifier(false);
   SortType sortType = SortType.name;
   bool sortAsc = true;
+
+  /// 正在拖拽
+  bool _dragging = false;
 
   @override
   void initState() {
@@ -280,6 +285,112 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     task.start();
   }
 
+  Widget _dropTip(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 200),
+      transitionBuilder: (child, animation) {
+        return FadeTransition(opacity: animation, child: child);
+      },
+      child:
+          _dragging
+              ? Container(
+                color: Colors.black.withValues(alpha: 0.3),
+                child: Padding(
+                  padding: EdgeInsets.all(2),
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: DottedDecoration(
+                      shape: Shape.box,
+                      strokeWidth: 4,
+                      dash: [12, 4],
+                      color: ColorScheme.of(context).primary,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.upload, size: 40),
+                        Text(S.current.drop_to_upload),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+              : Container(key: const ValueKey(0)),
+    );
+  }
+
+  Widget _dropContent(ThumbnailModel thumbnailCache) {
+    return Empty(
+      isEmpty: files.isEmpty,
+      child: ContextMenuOverlay(
+        child: ListView(
+          children: [
+            for (var file in files)
+              ContextMenuRegion(
+                contextMenu: GenericContextMenu(
+                  buttonConfigs: _fileContextMenuButtons(
+                    file,
+                    onRename: () {
+                      _showRenameDialog(context, file);
+                    },
+                    onDownload: () {
+                      _download(file);
+                    },
+                    onInfo: () {
+                      _showFileInfo(file);
+                    },
+                    onDelete: () {
+                      _delete(file);
+                    },
+                  ),
+                ),
+                child: _fileListItem(
+                  context,
+                  file,
+                  onTap: () {
+                    if (file.isFolder) {
+                      enterFolder(file.name);
+                    } else {
+                      switch (MediaType.parse(file.mediaType ?? '').type) {
+                        case MediaType.typeImage:
+                          showImage(thumbnailCache, file);
+                          break;
+                      }
+                    }
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _uploadFiles(List<DropItem> items) async {
+    for (var item in items) {
+      final file = File(item.path);
+      final stat = await file.stat();
+      if (stat.type == FileSystemEntityType.file) {
+        final name = file.path.split(Platform.pathSeparator).last;
+        final task = UploadFileTask(
+          file: file,
+          path: '${dirs.join('/')}/$name',
+          name: name,
+          size: file.lengthSync(),
+          createTime: DateTime.now(),
+        );
+        task.onDone = () {
+          updateFiles();
+        };
+        Global.uploadTasks.add(task);
+        task.start();
+      } else {
+        Toast.showError(S.current.only_support_upload_file);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -362,53 +473,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          ChangeNotifierProvider.value(
-            value: thumbnailCache,
-            child: Expanded(
-              child: Empty(
-                isEmpty: files.isEmpty,
-                child: ContextMenuOverlay(
-                  child: ListView(
-                    children: [
-                      for (var file in files)
-                        ContextMenuRegion(
-                          contextMenu: GenericContextMenu(
-                            buttonConfigs: _fileContextMenuButtons(
-                              file,
-                              onRename: () {
-                                _showRenameDialog(context, file);
-                              },
-                              onDownload: () {
-                                _download(file);
-                              },
-                              onInfo: () {
-                                _showFileInfo(file);
-                              },
-                              onDelete: () {
-                                _delete(file);
-                              },
-                            ),
-                          ),
-                          child: _fileListItem(
-                            context,
-                            file,
-                            onTap: () {
-                              if (file.isFolder) {
-                                enterFolder(file.name);
-                              } else {
-                                switch (MediaType.parse(
-                                  file.mediaType ?? '',
-                                ).type) {
-                                  case MediaType.typeImage:
-                                    showImage(thumbnailCache, file);
-                                    break;
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                    ],
-                  ),
+          DropTarget(
+            onDragEntered: (details) {
+              setState(() {
+                _dragging = true;
+              });
+            },
+            onDragExited: (details) {
+              setState(() {
+                _dragging = false;
+              });
+            },
+            onDragDone: (details) {
+              setState(() {
+                _dragging = false;
+                _uploadFiles(details.files);
+              });
+            },
+            child: ChangeNotifierProvider.value(
+              value: thumbnailCache,
+              child: Expanded(
+                child: Stack(
+                  children: [_dropContent(thumbnailCache), _dropTip(context)],
                 ),
               ),
             ),
