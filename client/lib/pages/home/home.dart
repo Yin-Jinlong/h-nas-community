@@ -164,38 +164,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  _sort() {
-    switch (sortType) {
-      case SortType.name:
-        files.sort(
-          (a, b) =>
-              sortAsc ? a.name.compareTo(b.name) : b.name.compareTo(a.name),
-        );
-        break;
-      case SortType.createTime:
-        files.sort(
-          (a, b) =>
-              sortAsc
-                  ? a.createTime.compareTo(b.createTime)
-                  : b.createTime.compareTo(a.createTime),
-        );
-        break;
-      case SortType.updateTime:
-        files.sort(
-          (a, b) =>
-              sortAsc
-                  ? a.updateTime.compareTo(b.updateTime)
-                  : b.updateTime.compareTo(a.updateTime),
-        );
-        break;
-      case SortType.size:
-        files.sort(
-          (a, b) =>
-              sortAsc ? a.size.compareTo(b.size) : b.size.compareTo(a.size),
-        );
-        break;
-    }
-  }
+  int _fileCompare(
+    FileInfo a,
+    FileInfo b,
+    Comparable Function(FileInfo f) fn,
+  ) =>
+      a.fileType == b.fileType
+          ? fn(a).compareTo(fn(b)) * (sortAsc ? 1 : -1)
+          : a.isFolder
+          ? -1
+          : 1;
+
+  _sort() => switch (sortType) {
+    SortType.name => files.sort((a, b) => _fileCompare(a, b, (f) => f.name)),
+    SortType.createTime => files.sort(
+      (a, b) => _fileCompare(a, b, (f) => f.createTime),
+    ),
+
+    SortType.updateTime => files.sort(
+      (a, b) => _fileCompare(a, b, (f) => f.updateTime),
+    ),
+    SortType.size => files.sort((a, b) => _fileCompare(a, b, (f) => f.size)),
+  };
 
   _showSortDialog(BuildContext context) {
     showDialog(
