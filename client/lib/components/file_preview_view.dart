@@ -57,11 +57,11 @@ class _FilePreviewViewState extends State<FilePreviewView> {
       }
     }, (error) {});
     if (widget.fileInfo.isFolder) return Icon(Icons.folder, size: size);
-    if (filePreview == null || filePreview?.preview == null) {
+    if (filePreview == null || filePreview?.thumbnail == null) {
       return _getFileIcon();
     }
 
-    if (filePreview?.preview == '') {
+    if (filePreview?.thumbnail == '') {
       return SizedBox(
         width: size,
         height: size,
@@ -69,7 +69,7 @@ class _FilePreviewViewState extends State<FilePreviewView> {
       );
     }
     return Image.network(
-      FileAPIURL.publicFileThumbnail(filePreview!.preview!),
+      FileAPIURL.publicFileThumbnail(filePreview!.thumbnail!),
       width: 50,
       height: 50,
       fit: BoxFit.cover,
