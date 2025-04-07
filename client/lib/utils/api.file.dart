@@ -56,6 +56,29 @@ extension FileAPI on API {
     );
   }
 
+  static Future upload(
+    String path,
+    Uint8List? bytes, {
+    required int start,
+    required int end,
+    required int size,
+    required String hash,
+  }) {
+    return API._post(
+      '/file/public/upload',
+      bytes,
+      options: Options(
+        headers: {
+          ExtraHeaders.authorization: Prefs.token,
+          ExtraHeaders.contentID: base64Url.encode(utf8.encode(path)),
+          ExtraHeaders.contentRange: '$start-$end/$size',
+          ExtraHeaders.hash: hash,
+        },
+        contentType: ExtraHeaders.contentTypeOctetStream,
+      ),
+    );
+  }
+
   static Future downloadPublic(
     String path,
     String dst,

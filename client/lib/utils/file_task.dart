@@ -1,3 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:async/async.dart';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
@@ -27,7 +34,7 @@ enum FileTaskStatus {
   };
 }
 
-class FileTask {
+abstract class FileTask {
   /// 文件名
   String name;
 
@@ -47,6 +54,8 @@ class FileTask {
 
   bool selected = false;
 
+  Function()? onDone;
+
   FileTask({required this.name, required this.size, required this.createTime});
 
   /// 是否已完成
@@ -59,15 +68,104 @@ class FileTask {
       status == FileTaskStatus.paused || status == FileTaskStatus.error;
 
   bool get canOp => status != FileTaskStatus.done;
+
+  double get progress;
+
+  String get progressStr;
 }
 
 /// 上传文件任务
 class UploadFileTask extends FileTask {
+  /// 文件
+  File file;
+
+  /// 目标路径
+  String path;
+
+  int uploaded = 0;
+
   UploadFileTask({
+    required this.file,
+    required this.path,
     required super.name,
     required super.size,
     required super.createTime,
   });
+
+  @override
+  double get progress => uploaded.toDouble() / size;
+
+  @override
+  String get progressStr => (progress * 100).toStringAsFixed(1);
+
+  Future<String> _calcHash() async {
+    final reader = ChunkedStreamReader(file.openRead());
+    var output = AccumulatorSink<Digest>();
+    var input = sha256.startChunkedConversion(output);
+    try {
+      while (true) {
+        final chunk = await reader.readChunk(1024 * 1024);
+        if (chunk.isEmpty) {
+          break;
+        } else {
+          input.add(chunk);
+        }
+      }
+    } finally {
+      reader.cancel();
+    }
+    input.close();
+    return base64UrlEncode(output.events.single.bytes);
+  }
+
+  start() async {
+    try {
+      final hash = await _calcHash();
+      status = FileTaskStatus.processing;
+
+      final reader = ChunkedStreamReader(file.openRead());
+      int start = 0, end = -1;
+      try {
+        while (true) {
+          final chunk = await reader.readChunk(1024 * 256);
+          if (chunk.isEmpty) {
+            break;
+          } else {
+            end += chunk.length;
+            await FileAPI.upload(
+              path,
+              Uint8List.fromList(chunk),
+              start: start,
+              end: end,
+              size: size,
+              hash: hash,
+            );
+            start += chunk.length;
+            uploaded = start;
+          }
+        }
+        await FileAPI.upload(
+          path,
+          null,
+          start: start,
+          end: start,
+          size: size,
+          hash: hash,
+        );
+      } finally {
+        reader.cancel();
+      }
+      status = FileTaskStatus.done;
+      doneTime = DateTime.now();
+      onDone?.call();
+    } catch (e) {
+      status = FileTaskStatus.error;
+      error = e;
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
 }
 
 /// 下载文件任务
@@ -89,8 +187,10 @@ class DownloadFileTask extends FileTask {
   });
 
   /// 进度[0-1]
+  @override
   double get progress => downloaded.toDouble() / size;
 
+  @override
   String get progressStr => (progress * 100).toStringAsFixed(1);
 
   start() {
@@ -102,6 +202,7 @@ class DownloadFileTask extends FileTask {
       if (count == total) {
         status = FileTaskStatus.done;
         doneTime = DateTime.now();
+        onDone?.call();
       }
     });
   }

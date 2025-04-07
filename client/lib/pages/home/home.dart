@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:context_menus/context_menus.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
@@ -255,6 +257,29 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
   }
 
+  _onUploadMenu(String dir) async {
+    if (UniversalPlatform.isWeb) {
+      Toast.showError(S.current.web_not_support(S.current.value_upload_file));
+      return;
+    }
+    final result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+    final file = File(result.files.single.path!);
+    final name = file.path.split(Platform.pathSeparator).last;
+    final task = UploadFileTask(
+      file: file,
+      path: '$dir/$name',
+      name: name,
+      size: file.lengthSync(),
+      createTime: DateTime.now(),
+    );
+    task.onDone = () {
+      updateFiles();
+    };
+    Global.uploadTasks.add(task);
+    task.start();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -418,18 +443,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               if (user.user == null) {
                 Toast.showError(S.current.please_login);
               } else {
-                _onUploadMenu();
+                _onUploadMenu(dirs.join('/'));
               }
             },
           ),
         ],
       ),
     );
-  }
-}
-
-_onUploadMenu() {
-  if (UniversalPlatform.isWeb) {
-    Toast.showError(S.current.web_not_support(S.current.value_upload_file));
   }
 }
