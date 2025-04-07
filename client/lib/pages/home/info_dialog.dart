@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
+import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
+import 'package:h_nas/utils/time_utils.dart';
 
 import '../../generated/l10n.dart';
 
 class InfoDialog extends StatefulWidget {
   final FileInfo file;
 
-  final Function(String label, Widget value) infoRow;
+  final TableRow Function(String label, Widget value) infoRow;
 
   const InfoDialog({super.key, required this.file, required this.infoRow});
 
@@ -18,14 +20,18 @@ class InfoDialog extends StatefulWidget {
 
 class _InfoDialogState extends State<InfoDialog> {
   late final FileInfo file;
-  late final Function(String label, Widget value) _infoRow;
+  late final MediaType? fileMediaType;
+  late final TableRow Function(String label, Widget value) _infoRow;
   FolderChildrenCount? count;
+  AudioFileInfo? audioFileInfo;
 
   @override
   void initState() {
     super.initState();
     file = widget.file;
     _infoRow = widget.infoRow;
+    fileMediaType = file.fileMediaType;
+
     if (file.isFolder) {
       FileAPI.getPublicFolderChildrenCount(file.fullPath).then((v) {
         if (v != null) {
@@ -34,7 +40,51 @@ class _InfoDialogState extends State<InfoDialog> {
           });
         }
       });
+    } else if (fileMediaType?.isAudio == true) {
+      FileAPI.getPublicAudioInfo(file.fullPath).then((v) {
+        if (v != null) {
+          setState(() {
+            audioFileInfo = v;
+          });
+        }
+      });
     }
+  }
+
+  List<TableRow> _folderInfo() {
+    TableRow item(String name, int? v) => _infoRow(
+      name,
+      Text(count == null ? S.current.loading : (v?.toString() ?? '?')),
+    );
+
+    return [
+      item(S.current.child_file_count, count?.subCount),
+      item(S.current.children_file_count, count?.subsCount),
+    ];
+  }
+
+  List<TableRow> _audioInfo() {
+    TableRow item(String name, String? v, {String nullDef = '?'}) => _infoRow(
+      name,
+      Text(audioFileInfo == null ? S.current.loading : v ?? nullDef),
+    );
+
+    return [
+      item(S.current.title, audioFileInfo?.title),
+      item(S.current.subtitle, audioFileInfo?.subTitle),
+      item(S.current.artists, audioFileInfo?.artists),
+      item(
+        S.current.duration,
+        audioFileInfo?.duration.shortTimeStr,
+        nullDef: '??:??',
+      ),
+      item(S.current.album, audioFileInfo?.album),
+      item(S.current.audio_year, audioFileInfo?.year),
+      item(S.current.audio_num, audioFileInfo?.num?.toString()),
+      item(S.current.audio_style, audioFileInfo?.style),
+      item(S.current.bitrate, '${audioFileInfo?.bitrate.toString()} kbps'),
+      item(S.current.audio_comment, audioFileInfo?.comment, nullDef: ''),
+    ];
   }
 
   @override
@@ -52,10 +102,11 @@ class _InfoDialogState extends State<InfoDialog> {
               Text('${file.dir}${file.dir == '/' ? '' : '/'}${file.name}'),
             ),
             _infoRow(S.current.file_info_file_type, Text(file.fileType)),
-            _infoRow(
-              S.current.file_info_media_type,
-              Text(file.mediaType ?? '?'),
-            ),
+            if (file.isFile)
+              _infoRow(
+                S.current.file_info_media_type,
+                Text(file.mediaType ?? '?'),
+              ),
             _infoRow(
               S.current.create_time,
               Text(
@@ -69,22 +120,8 @@ class _InfoDialogState extends State<InfoDialog> {
               ),
             ),
             _infoRow(S.current.file_size, Text(file.size.storageSizeStr)),
-            ...(file.isFolder
-                ? [
-                  _infoRow(
-                    S.current.child_file_count,
-                    Text(
-                      count == null ? S.current.loading : '${count!.subCount}',
-                    ),
-                  ),
-                  _infoRow(
-                    S.current.children_file_count,
-                    Text(
-                      count == null ? S.current.loading : '${count!.subsCount}',
-                    ),
-                  ),
-                ]
-                : []),
+            ...(file.isFolder ? _folderInfo() : const []),
+            ...(fileMediaType?.isAudio == true ? _audioInfo() : const []),
           ],
         ),
       ],

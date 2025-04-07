@@ -34,6 +34,14 @@ extension FileAPI on API {
         });
   }
 
+  static Future<AudioFileInfo?> getPublicAudioInfo(String path) {
+    return API
+        ._get<Map<String, dynamic>>('/file/public/audio/info', {'path': path})
+        .then((data) {
+          return data == null ? null : AudioFileInfo.fromJson(data);
+        });
+  }
+
   static Future<bool?> newPublicFolder(String path) {
     return API._post<bool>(
       '/file/public/folder',

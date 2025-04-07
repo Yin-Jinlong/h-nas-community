@@ -1,6 +1,7 @@
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/media_type.dart';
 
-extension FileTypeCheck on FileInfo {
+extension FileInfoExt on FileInfo {
   bool get isFolder {
     return fileType == 'FOLDER';
   }
@@ -10,4 +11,7 @@ extension FileTypeCheck on FileInfo {
   }
 
   String get fullPath => dir == '/' ? '/$name' : '$dir/$name';
+
+  MediaType? get fileMediaType =>
+      mediaType == null ? null : MediaType.parse(mediaType!);
 }
