@@ -26,7 +26,7 @@ abstract class Global {
   static Locale locale = Prefs.locale;
   static ValueNotifier<ThemeData> theme = ValueNotifier(Prefs.theme);
 
-  static ListModel<DownloadFileTask> uploadTasks = ListModel();
+  static ListModel<UploadFileTask> uploadTasks = ListModel();
   static ListModel<DownloadFileTask> downloadTasks = ListModel();
 
   static init() async {
