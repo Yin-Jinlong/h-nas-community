@@ -1,6 +1,6 @@
 String _2(int n) => n < 10 ? '0$n' : '$n';
 
-extension TImeExt on double {
+extension TImeExt on num {
   String get shortTimeStr {
     var t = toInt();
     final s = t % 60;

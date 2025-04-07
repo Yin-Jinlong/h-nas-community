@@ -12,6 +12,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:h_nas/components/empty.dart';
 import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
+import 'package:h_nas/components/mini_audio_player.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
@@ -66,6 +67,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
+    Global.player.playState.addListener(() {
+      setState(() {});
+    });
+
     updateFiles();
   }
 
@@ -99,7 +104,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var hover = false;
   var index = 0;
 
-  showImage(ThumbnailModel thumbnailCache, FileInfo file) {
+  _showImage(ThumbnailModel thumbnailCache, FileInfo file) {
     final overlay = navigatorKey.currentState?.overlay;
     if (overlay == null) return;
     OverlayEntry? entry;
@@ -118,6 +123,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       },
     );
     overlay.insert(entry);
+  }
+
+  _playAudio(FileInfo file) {
+    setState(() {
+      Global.player.open(FileAPIURL.publicFile(file.fullPath));
+      FileAPI.getPublicAudioInfo(file.fullPath).then((v) {
+        Global.player.audioInfo.value = v;
+      });
+    });
   }
 
   TableRow _infoRow(String label, Widget value) {
@@ -344,7 +358,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     } else {
                       switch (MediaType.parse(file.mediaType ?? '').type) {
                         case MediaType.typeImage:
-                          showImage(thumbnailCache, file);
+                          _showImage(thumbnailCache, file);
+                          break;
+                        case MediaType.typeAudio:
+                          _playAudio(file);
                           break;
                       }
                     }
@@ -420,75 +437,90 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           setState(() {});
         },
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                S.current.now,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-              BreadCrumb(
-                divider: Icon(Icons.chevron_right),
-                items: [
-                  BreadCrumbItem(
-                    content: Text(
-                      '/',
-                      style: Theme.of(context).textTheme.titleMedium,
+              Row(
+                children: [
+                  Text(
+                    S.current.now,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.normal,
                     ),
-                    onTap: () {
-                      setState(() {
-                        dirs.clear();
-                        updateFiles();
-                      });
-                    },
                   ),
-                  for (var i = 0; i < dirs.length; i++)
-                    BreadCrumbItem(
-                      content: Text(
-                        dirs[i],
-                        style: Theme.of(context).textTheme.titleMedium,
+                  BreadCrumb(
+                    divider: Icon(Icons.chevron_right),
+                    items: [
+                      BreadCrumbItem(
+                        content: Text(
+                          '/',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            dirs.clear();
+                            updateFiles();
+                          });
+                        },
                       ),
-                      onTap: () {
-                        setState(() {
-                          dirs.removeRange(i + 1, dirs.length);
-                          updateFiles();
-                        });
-                      },
-                    ),
+                      for (var i = 0; i < dirs.length; i++)
+                        BreadCrumbItem(
+                          content: Text(
+                            dirs[i],
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              dirs.removeRange(i + 1, dirs.length);
+                              updateFiles();
+                            });
+                          },
+                        ),
+                    ],
+                  ),
                 ],
+              ),
+              DropTarget(
+                onDragEntered: (details) {
+                  setState(() {
+                    _dragging = true;
+                  });
+                },
+                onDragExited: (details) {
+                  setState(() {
+                    _dragging = false;
+                  });
+                },
+                onDragDone: (details) {
+                  setState(() {
+                    _dragging = false;
+                    _uploadFiles(details.files);
+                  });
+                },
+                child: ChangeNotifierProvider.value(
+                  value: thumbnailCache,
+                  child: Expanded(
+                    child: Stack(
+                      children: [
+                        _dropContent(thumbnailCache),
+                        _dropTip(context),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-          DropTarget(
-            onDragEntered: (details) {
-              setState(() {
-                _dragging = true;
-              });
-            },
-            onDragExited: (details) {
-              setState(() {
-                _dragging = false;
-              });
-            },
-            onDragDone: (details) {
-              setState(() {
-                _dragging = false;
-                _uploadFiles(details.files);
-              });
-            },
-            child: ChangeNotifierProvider.value(
-              value: thumbnailCache,
-              child: Expanded(
-                child: Stack(
-                  children: [_dropContent(thumbnailCache), _dropTip(context)],
-                ),
+          if (Global.player.audioInfo.value != null)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: IntrinsicWidth(child: MiniAudioPlayer()),
               ),
             ),
-          ),
         ],
       ),
       drawer: _drawer(context),

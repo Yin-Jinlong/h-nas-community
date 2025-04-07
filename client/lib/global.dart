@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/model/list_model.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/directory_utils.dart';
 import 'package:h_nas/utils/file_task.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,7 +15,7 @@ abstract class Global {
 
   static late String downloadDir;
 
-  static const String nameNoChars='\'/\\<>\'';
+  static const String nameNoChars = '\'/\\<>\'';
 
   static final nameNotRegex = RegExp(r'[/\\<>]');
 
@@ -29,7 +31,11 @@ abstract class Global {
   static ListModel<UploadFileTask> uploadTasks = ListModel();
   static ListModel<DownloadFileTask> downloadTasks = ListModel();
 
+  static late final MediaPlayer player;
+
   static init() async {
+    player = MediaPlayer(player: Player());
+
     final dir = await getDownloadsDirectory();
     if (dir == null) {
       throw Exception('Downloads directory not found');

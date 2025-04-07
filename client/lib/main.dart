@@ -9,11 +9,13 @@ import 'package:h_nas/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:media_kit/media_kit.dart';
 
 import 'generated/l10n.dart';
 
 void main() async {
   Intl.defaultLocale = 'zh';
+  MediaKit.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   await Global.init();
   await Prefs.init();
