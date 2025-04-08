@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
@@ -52,12 +53,12 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     setState(() {});
     if (player.audioInfo.value != _lastInfo) {
       cover = ClipOval(
-        child: Image.network(
-          FileAPIURL.publicAudioCover(player.audioInfo.value!.path),
+        child: CachedNetworkImage(
+          imageUrl: FileAPIURL.publicAudioCover(player.audioInfo.value!.path),
           width: 40,
           height: 40,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
+          errorWidget: (context, error, stackTrace) {
             return Icon(Icons.broken_image);
           },
         ),

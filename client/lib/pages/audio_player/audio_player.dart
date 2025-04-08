@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/time_utils.dart';
@@ -85,12 +86,14 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
               Hero(
                 tag: 'audio_cover',
                 child: ClipOval(
-                  child: Image.network(
-                    FileAPIURL.publicAudioCover(player.audioInfo.value!.path),
+                  child: CachedNetworkImage(
+                    imageUrl: FileAPIURL.publicAudioCover(
+                      player.audioInfo.value!.path,
+                    ),
                     width: 200,
                     height: 200,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
+                    errorWidget: (context, error, stackTrace) {
                       return Icon(Icons.broken_image);
                     },
                   ),

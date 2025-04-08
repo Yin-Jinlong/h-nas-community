@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
@@ -68,12 +69,12 @@ class _FilePreviewViewState extends State<FilePreviewView> {
         child: CircularProgressIndicator(),
       );
     }
-    return Image.network(
-      FileAPIURL.publicFileThumbnail(filePreview!.thumbnail!),
+    return CachedNetworkImage(
+      imageUrl: FileAPIURL.publicFileThumbnail(filePreview!.thumbnail!),
       width: 50,
       height: 50,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
+      errorWidget: (context, error, stackTrace) {
         Toast.showError(error.toString());
         return Icon(Icons.broken_image, size: 50);
       },
