@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late ModalRoute route;
   final _openFloatingMenu = ValueNotifier(false);
   SortType sortType = SortType.name;
-  bool sortAsc = true;
+  bool sortAsc = true, _showPlayer = false;
 
   /// 正在拖拽
   bool _dragging = false;
@@ -131,6 +131,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   _playAudio(FileInfo file) {
     setState(() {
       Global.player.open(FileAPIURL.publicFile(file.fullPath));
+      _showPlayer = true;
       FileAPI.getPublicAudioInfo(file.fullPath).then((v) {
         Global.player.audioInfo.value = v;
       });
@@ -524,14 +525,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          if (Global.player.audioInfo.value != null)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: IntrinsicWidth(child: MiniAudioPlayer()),
+
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: AnimatedSwitcher(
+                duration: durationMedium,
+                transitionBuilder: (child, animation) {
+                  return MatrixTransition(
+                    animation: CurveTween(
+                      curve: Curves.easeOutBack,
+                    ).animate(animation),
+                    child: child,
+                    onTransform: (animationValue) {
+                      return Matrix4.identity()
+                        ..scale(animationValue * 0.2 + 0.8)
+                        ..translate(0.0, 100.0 * (1 - animationValue));
+                    },
+                  );
+                },
+                child:
+                    _showPlayer
+                        ? IntrinsicWidth(
+                          child: MiniAudioPlayer(
+                            onClose: () {
+                              Global.player.stop();
+                              setState(() {
+                                _showPlayer = false;
+                              });
+                              Future.delayed(durationMedium, () {
+                                Global.player.audioInfo.value = null;
+                              });
+                            },
+                          ),
+                        )
+                        : null,
               ),
             ),
+          ),
         ],
       ),
       drawer: _drawer(context),

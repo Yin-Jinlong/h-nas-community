@@ -1,3 +1,4 @@
+export 'audio_player/audio_player.dart';
 export 'home/home.dart';
 export 'languages/languages.dart';
 export 'login_logon/login_logon.dart';

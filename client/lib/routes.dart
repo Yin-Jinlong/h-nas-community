@@ -4,6 +4,7 @@ import 'pages/pages.dart';
 
 class Routes {
   static const String home = '/';
+  static const String audioPlayer = '/audio_player';
   static const String languages = '/languages';
   static const String loginOn = '/login_on';
   static const String settings = '/settings';
@@ -11,17 +12,18 @@ class Routes {
   static const String transmission = '/transmission';
 
   static pageBuilder(
-    RouteSettings settings,
+    RouteSettings routeSettings,
     BuildContext context, {
     required void Function(Locale) onLocaleChanged,
   }) {
-    return switch (settings.name) {
-      Routes.home => const HomePage(),
-      Routes.languages => LanguagesPage(onLocaleChanged: onLocaleChanged),
-      Routes.loginOn => const LogInOnPage(),
-      Routes.settings => const SettingsPage(),
-      Routes.theme => const ThemePage(),
-      Routes.transmission => const TransmissionPage(),
+    return switch (routeSettings.name) {
+      home => const HomePage(),
+      audioPlayer => const AudioPlayerPage(),
+      languages => LanguagesPage(onLocaleChanged: onLocaleChanged),
+      loginOn => const LogInOnPage(),
+      settings => const SettingsPage(),
+      theme => const ThemePage(),
+      transmission => const TransmissionPage(),
       _ => const HomePage(),
     };
   }

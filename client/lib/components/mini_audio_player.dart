@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
+import 'package:h_nas/routes.dart';
 import 'package:h_nas/utils/api.dart';
 
 import 'marquee.dart';
 
 class MiniAudioPlayer extends StatefulWidget {
-  const MiniAudioPlayer({super.key});
+  final VoidCallback onClose;
+
+  const MiniAudioPlayer({super.key, required this.onClose});
 
   @override
   State createState() => _MiniAudioPlayerState();
@@ -39,7 +42,6 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     player.audioInfo.addListener(_render);
     player.playState.addListener(_onPlay);
     player.position.addListener(_render);
-
   }
 
   _render() {
@@ -81,62 +83,66 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        decoration: _MiniProgressDecoration(
-          progress: player.progress ?? 0,
-          color: ColorScheme.of(context).primary,
-          lineHeight: 2,
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          offset: 50,
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(6),
-          child: Row(
-            children: [
-              player.audioInfo.value == null || cover == null
-                  ? Icon(Icons.image)
-                  : Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: Transform.scale(
-                      scale: 1.2,
-                      origin: Offset(20, 0),
-                      child: RotationTransition(
-                        turns: _coverController,
-                        child: cover!,
-                      ),
+  Widget _content(BuildContext context) {
+    var title = player.audioInfo.value?.title ?? '?';
+    var artists = player.audioInfo.value?.artists ?? '?';
+
+    return Container(
+      decoration: _MiniProgressDecoration(
+        progress: player.progress ?? 0,
+        color: ColorScheme.of(context).primary,
+        lineHeight: 2,
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        offset: 50,
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(6),
+        child: Row(
+          children: [
+            player.audioInfo.value == null || cover == null
+                ? Icon(Icons.image)
+                : Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  child: Transform.scale(
+                    scale: 1.2,
+                    origin: Offset(20, 0),
+                    child: RotationTransition(
+                      turns: _coverController,
+                      child: Hero(tag: 'audio_cover', child: cover!),
                     ),
                   ),
-              IntrinsicHeight(
-                child: Column(
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(minWidth: 50, maxWidth: 150),
-                      child: Marquee.text(
-                        text: player.audioInfo.value?.title ?? '?',
-                        space: 30,
-                        maxWidth: 150,
-                        style: TextTheme.of(
-                          context,
-                        ).titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(minWidth: 50, maxWidth: 150),
-                      child: Marquee.text(
-                        text: player.audioInfo.value?.artists ?? '?',
-                        space: 30,
-                        maxWidth: 150,
-                        style: TextTheme.of(context).titleMedium,
-                      ),
-                    ),
-                  ],
                 ),
+            IntrinsicHeight(
+              child: Column(
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: 50, maxWidth: 150),
+                    child: Marquee.text(
+                      key: ValueKey(title),
+                      text: title,
+                      space: 30,
+                      maxWidth: 150,
+                      style: TextTheme.of(
+                        context,
+                      ).titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: 50, maxWidth: 150),
+                    child: Marquee.text(
+                      key: ValueKey(artists),
+                      text: artists,
+                      space: 30,
+                      maxWidth: 150,
+                      style: TextTheme.of(context).titleMedium,
+                    ),
+                  ),
+                ],
               ),
-              IconButton(
+            ),
+            Hero(
+              tag: 'play_pause',
+              child: IconButton(
                 tooltip:
                     player.playing ? S.current.pause : S.current.media_play,
                 onPressed: () {
@@ -147,17 +153,30 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                   progress: _playPauseController,
                 ),
               ),
-              IconButton(
-                tooltip: S.current.close,
-                onPressed: () {
-                  player.stop();
-                  player.audioInfo.value = null;
-                },
-                icon: Icon(Icons.close),
-              ),
-            ],
-          ),
+            ),
+            IconButton(
+              tooltip: S.current.close,
+              onPressed: widget.onClose,
+              icon: Icon(Icons.close),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 5,
+      child: InkWell(
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.audioPlayer);
+        },
+        child: _content(context),
       ),
     );
   }

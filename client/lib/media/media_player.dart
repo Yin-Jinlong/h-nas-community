@@ -54,6 +54,10 @@ class MediaPlayer {
     await _player.stop();
   }
 
+  seek(Duration duration) async {
+    await _player.seek(duration);
+  }
+
   dispose() {
     position.dispose();
     duration.dispose();
