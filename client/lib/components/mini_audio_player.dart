@@ -36,22 +36,18 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
       vsync: this,
       duration: const Duration(seconds: 10),
     );
-    player.audioInfo.addListener(() {
-      setState(() {});
-    });
-    player.playState.addListener(() {
-      setState(() {
-        _onPlay();
-      });
-    });
-    player.position.addListener(() {
-      setState(() {});
-    });
+    player.audioInfo.addListener(_render);
+    player.playState.addListener(_onPlay);
+    player.position.addListener(_render);
 
-    _onPlay();
+  }
+
+  _render() {
+    setState(() {});
   }
 
   _onPlay() {
+    setState(() {});
     if (player.audioInfo.value != _lastInfo) {
       cover = ClipOval(
         child: Image.network(
@@ -72,6 +68,17 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
       _playPauseController.reverse();
       _coverController.stop();
     }
+  }
+
+  @override
+  void dispose() {
+    _coverController.dispose();
+    _playPauseController.dispose();
+
+    player.audioInfo.removeListener(_render);
+    player.playState.removeListener(_onPlay);
+    player.position.removeListener(_render);
+    super.dispose();
   }
 
   @override
@@ -139,6 +146,14 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                   icon: AnimatedIcons.play_pause,
                   progress: _playPauseController,
                 ),
+              ),
+              IconButton(
+                tooltip: S.current.close,
+                onPressed: () {
+                  player.stop();
+                  player.audioInfo.value = null;
+                },
+                icon: Icon(Icons.close),
               ),
             ],
           ),

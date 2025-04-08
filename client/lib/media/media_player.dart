@@ -49,6 +49,10 @@ class MediaPlayer {
   playPause() async {
     await _player.playOrPause();
   }
+
+  stop() async {
+    await _player.stop();
+  }
 }
 
 class _Listener with ChangeNotifier {

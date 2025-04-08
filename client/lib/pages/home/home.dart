@@ -66,12 +66,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
-    Global.player.playState.addListener(() {
-      setState(() {});
-    });
+    Global.player.playState.addListener(_render);
+    Global.player.audioInfo.addListener(_render);
+    Global.player.audioInfo.addListener(_render);
 
     updateFiles();
+  }
+
+  _render() {
+    setState(() {});
   }
 
   updateFiles() {
@@ -396,6 +399,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Toast.showError(S.current.only_support_upload_file);
       }
     }
+  }
+
+  @override
+  void dispose() {
+    Global.player.playState.removeListener(_render);
+    Global.player.audioInfo.removeListener(_render);
+    Global.player.audioInfo.removeListener(_render);
+    super.dispose();
   }
 
   @override

@@ -87,6 +87,12 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: min(contentWidth, widget.maxWidth),
