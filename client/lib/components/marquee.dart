@@ -75,15 +75,19 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
           })
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              Future.delayed(widget.turnDur, () {
-                _controller.repeat(count: widget.count);
-              });
+              _wait();
             }
           });
 
     if (widget.maxWidth < painter.contentSize.width) {
-      _controller.repeat(count: widget.count);
+      _wait();
     }
+  }
+
+  _wait() {
+    Future.delayed(widget.turnDur, () {
+      _controller.repeat(count: widget.count);
+    });
   }
 
   @override
