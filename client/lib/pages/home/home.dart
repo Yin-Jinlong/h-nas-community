@@ -294,7 +294,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _dropTip(BuildContext context) {
     return AnimatedSwitcher(
-      duration: Duration(milliseconds: 200),
+      duration: durationFast,
       transitionBuilder: (child, animation) {
         return FadeTransition(opacity: animation, child: child);
       },

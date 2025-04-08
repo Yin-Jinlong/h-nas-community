@@ -303,7 +303,7 @@ class _TransmissionPageState extends State<TransmissionPage>
         children: [_uploadView(), _downloadView()],
       ),
       floatingActionButton: AnimatedSwitcher(
-        duration: Duration(milliseconds: 200),
+        duration: durationFast,
         transitionBuilder: (child, animation) {
           return ScaleTransition(
             scale: CurveTween(

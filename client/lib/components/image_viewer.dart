@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/global.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
 class ImageViewer extends StatefulWidget {
@@ -65,7 +66,7 @@ class _ImageViewerState extends State<ImageViewer>
       vsync: this,
       lowerBound: -1,
       upperBound: 1,
-      duration: const Duration(milliseconds: 200),
+      duration: durationFast,
     )..addListener(() {
       setState(() {
         flipX = _flipXAnimController.value;
@@ -76,7 +77,7 @@ class _ImageViewerState extends State<ImageViewer>
       vsync: this,
       lowerBound: -1,
       upperBound: 1,
-      duration: const Duration(milliseconds: 200),
+      duration: durationFast,
     )..addListener(() {
       setState(() {
         flipY = _flipYAnimController.value;

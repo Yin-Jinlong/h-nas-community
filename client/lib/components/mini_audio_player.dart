@@ -30,7 +30,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     player = Global.player;
     _playPauseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: durationMedium,
     );
     _coverController = AnimationController(
       vsync: this,

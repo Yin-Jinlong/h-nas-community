@@ -8,6 +8,9 @@ import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
+const Duration durationFast = Duration(milliseconds: 200);
+const Duration durationMedium = Duration(milliseconds: 300);
+
 abstract class Global {
   static const String appName = 'H-NAS';
   static const String copyright =
