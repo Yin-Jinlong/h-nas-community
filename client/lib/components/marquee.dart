@@ -88,7 +88,9 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
 
   _wait() {
     Future.delayed(widget.turnDur, () {
-      _controller.repeat(count: widget.count);
+      if (!_controller.isDismissed) {
+        _controller.repeat(count: widget.count);
+      }
     });
   }
 
