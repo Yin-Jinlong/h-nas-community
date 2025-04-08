@@ -48,6 +48,12 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog.adaptive(
       title: Text(S.current.set_host_addr),

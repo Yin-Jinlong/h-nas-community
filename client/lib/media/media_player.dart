@@ -53,6 +53,14 @@ class MediaPlayer {
   stop() async {
     await _player.stop();
   }
+
+  dispose() {
+    position.dispose();
+    duration.dispose();
+    audioInfo.dispose();
+    _playState.dispose();
+    _player.dispose();
+  }
 }
 
 class _Listener with ChangeNotifier {

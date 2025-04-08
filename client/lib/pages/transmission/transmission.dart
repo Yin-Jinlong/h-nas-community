@@ -232,6 +232,12 @@ class _TransmissionPageState extends State<TransmissionPage>
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final uploadProgressing = Global.uploadTasks.where((e) => !e.isDone);
     final downloadProgressing = Global.downloadTasks.where((e) => !e.isDone);

@@ -7,9 +7,9 @@ import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
 import 'package:intl/intl.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:media_kit/media_kit.dart';
 
 import 'generated/l10n.dart';
 
@@ -49,6 +49,13 @@ class _MyAppState extends State<MyApp> {
     Global.theme.addListener(() {
       setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    Global.theme.dispose();
+    Global.player.dispose();
+    super.dispose();
   }
 
   @override

@@ -19,6 +19,12 @@ class _RenameDialogState extends State<RenameDialog> {
   final _form = GlobalKey<FormState>();
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.file.name),

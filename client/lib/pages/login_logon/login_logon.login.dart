@@ -25,6 +25,13 @@ class _LoginState extends _BaseState<_LoginWidget> {
   }
 
   @override
+  void dispose() {
+    logid.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget child(BuildContext context) {
     return Column(
       spacing: 12,

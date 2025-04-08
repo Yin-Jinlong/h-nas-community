@@ -87,6 +87,12 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
   }
 
   @override
+  void dispose() {
+    layerController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Opacity(
       opacity: layerProgress,

@@ -165,6 +165,15 @@ class _ImageViewerState extends State<ImageViewer>
   }
 
   @override
+  void dispose() {
+    _scaleAnimController.dispose();
+    _flipXAnimController.dispose();
+    _flipYAnimController.dispose();
+    _rotateAnimController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _screenSize = MediaQuery.of(context).size;
     load();

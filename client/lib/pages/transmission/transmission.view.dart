@@ -23,6 +23,12 @@ class _TransmissionViewState extends State<TransmissionView>
   );
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
