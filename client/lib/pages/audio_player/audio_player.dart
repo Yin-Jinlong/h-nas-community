@@ -76,9 +76,14 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   @override
   Widget build(BuildContext context) {
     final player = Global.player;
+    final audioInfo = player.audioInfo.value;
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(
+          '${audioInfo?.title} - ${audioInfo?.album} - ${audioInfo?.artists}',
+        ),
+      ),
       body: Stack(
         children: [
           Column(
