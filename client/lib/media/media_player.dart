@@ -16,12 +16,17 @@ class MediaPlayer {
 
   MediaPlayer({required player}) {
     _player = player;
-    _player.stream.duration.listen((dur) {
-      duration.value = dur.inSeconds;
-    });
-    _player.stream.position.listen((pos) {
-      position.value = pos.inSeconds;
-    });
+    final stream = _player.stream;
+    stream
+      ..playing.listen((playing) {
+        _playState.notify();
+      })
+      ..duration.listen((dur) {
+        duration.value = dur.inSeconds;
+      })
+      ..position.listen((pos) {
+        position.value = pos.inSeconds;
+      });
   }
 
   bool get playing => _player.state.playing;
@@ -31,22 +36,18 @@ class MediaPlayer {
 
   open(String url) async {
     await _player.open(Media(url));
-    _playState.notify();
   }
 
   play() async {
     await _player.play();
-    _playState.notify();
   }
 
   pause() async {
     await _player.pause();
-    _playState.notify();
   }
 
   playPause() async {
     await _player.playOrPause();
-    _playState.notify();
   }
 }
 
