@@ -27,6 +27,7 @@ class Marquee extends StatefulWidget {
   });
 
   factory Marquee.text({
+    Key? key,
     required String text,
     TextStyle? style,
     required double maxWidth,
@@ -35,6 +36,7 @@ class Marquee extends StatefulWidget {
     int count = 3,
     Duration turnDur = const Duration(seconds: 1),
   }) => Marquee(
+    key: key,
     TextSpan(text: text, style: style),
     maxWidth: maxWidth,
     space: space,
