@@ -111,11 +111,26 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
               context,
             ).headlineSmall?.copyWith(color: Colors.white),
           ),
-          Text(
-            info?.artists ?? '?',
-            style: TextTheme.of(
-              context,
-            ).bodyLarge?.copyWith(color: Colors.white),
+          Row(
+            spacing: 12,
+            children: [
+              Text(
+                info?.artists ?? '?',
+                style: TextTheme.of(
+                  context,
+                ).bodyLarge?.copyWith(color: Colors.white),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(2),
+                  child: Text('${info?.bitrate ?? '?'} kbps'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
