@@ -12,6 +12,7 @@ abstract class Prefs {
   static const String keyToken = 'token';
   static const String keyLocale = 'locale';
   static const String keyTheme = 'theme';
+  static const String keyPlayerVolume = 'player-volume';
 
   static late SharedPreferences _prefs;
 
@@ -39,6 +40,10 @@ abstract class Prefs {
         : ThemeUtils.fromJson(jsonDecode(value));
   }
 
+  static double get playerVolume {
+    return _prefs.getDouble(keyPlayerVolume) ?? 80;
+  }
+
   static setLocale(Locale l) {
     _prefs.setString(
       keyLocale,
@@ -48,6 +53,10 @@ abstract class Prefs {
 
   static setTheme(ThemeData l) {
     _prefs.setString(keyTheme, jsonEncode(l.toJson()));
+  }
+
+  static set playerVolume(double v) {
+    _prefs.setDouble(keyPlayerVolume, v);
   }
 
   static init() async {

@@ -17,8 +17,8 @@ void main() async {
   Intl.defaultLocale = 'zh';
   MediaKit.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
-  await Global.init();
   await Prefs.init();
+  await Global.init();
   await Settings.init();
   Global.packageInfo = await PackageInfo.fromPlatform();
 

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:media_kit/media_kit.dart';
 
@@ -34,7 +35,10 @@ class MediaPlayer {
       })
       ..volume.listen((volume) {
         this.volume.value = volume;
+        Prefs.playerVolume = volume;
       });
+
+    setVolume(Prefs.playerVolume);
   }
 
   bool get playing => _player.state.playing;
