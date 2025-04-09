@@ -123,27 +123,31 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _progressInfo() {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: EdgeInsets.only(left: 6),
-          child: Text(player.position.value.shortTimeStr),
+        Slider(
+          value: player.progress ?? 0,
+          inactiveColor: Colors.grey.withValues(alpha: 0.3),
+          onChanged: (value) {
+            player.seek(
+              Duration(seconds: (player.duration.value * value).toInt()),
+            );
+            setState(() {});
+          },
         ),
-        Expanded(
-          child: Slider(
-            value: player.progress ?? 0,
-            inactiveColor: Colors.grey.withValues(alpha: 0.3),
-            onChanged: (value) {
-              player.seek(
-                Duration(seconds: (player.duration.value * value).toInt()),
-              );
-              setState(() {});
-            },
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(right: 6),
-          child: Text(player.duration.value.shortTimeStr),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 12),
+              child: Text(player.position.value.shortTimeStr),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 12),
+              child: Text(player.duration.value.shortTimeStr),
+            ),
+          ],
         ),
       ],
     );
