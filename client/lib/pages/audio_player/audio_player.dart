@@ -22,6 +22,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
   late final MediaPlayer player;
+  bool _changing = false;
+  double _progress = 0;
 
   @override
   void initState() {
@@ -42,6 +44,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   _render() {
+    if (!_changing) {
+      _progress = player.progress ?? 0;
+    }
     setState(() {});
   }
 
@@ -179,15 +184,23 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         SliderTheme(
           data: SliderThemeData(showValueIndicator: ShowValueIndicator.always),
           child: Slider(
-            value: player.progress ?? 0,
+            value: _progress,
             secondaryTrackValue: player.bufferProgress ?? 0,
             inactiveColor: Colors.grey.withValues(alpha: 0.3),
-            label: player.position.value.shortTimeStr,
+            label: (player.duration.value * _progress).shortTimeStr,
+            onChangeStart: (value) {
+              _changing = true;
+            },
             onChanged: (value) {
+              _progress = value;
+              _render();
+            },
+            onChangeEnd: (value) {
               player.seek(
                 Duration(seconds: (player.duration.value * value).toInt()),
               );
-              setState(() {});
+              _changing = false;
+              _render();
             },
           ),
         ),
