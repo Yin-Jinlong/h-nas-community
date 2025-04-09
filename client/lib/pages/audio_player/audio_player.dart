@@ -194,7 +194,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         Row(children: [BackButton()]),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(40),
             child: Center(child: _cover()),
           ),
         ),
