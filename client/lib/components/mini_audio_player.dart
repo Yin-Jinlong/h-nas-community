@@ -26,7 +26,6 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
   late final MediaPlayer player;
 
   Widget? cover;
-  AudioFileInfo? _lastInfo;
 
   @override
   void initState() {
@@ -51,7 +50,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
 
   _onPlay() {
     setState(() {});
-    if (player.audioInfo.value != _lastInfo) {
+    if (player.playing && player.audioInfo.value != null) {
       cover = ClipOval(
         child: CachedNetworkImage(
           imageUrl: FileAPIURL.publicAudioCover(player.audioInfo.value!.path),
