@@ -7,6 +7,7 @@ class MediaPlayer {
 
   final ValueNotifier<int> position = ValueNotifier(0);
   final ValueNotifier<int> duration = ValueNotifier(0);
+  final ValueNotifier<int> buffer = ValueNotifier(0);
 
   final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
 
@@ -26,6 +27,9 @@ class MediaPlayer {
       })
       ..position.listen((pos) {
         position.value = pos.inSeconds;
+      })
+      ..buffer.listen((buffer) {
+        this.buffer.value = buffer.inSeconds;
       });
   }
 
@@ -33,6 +37,9 @@ class MediaPlayer {
 
   double? get progress =>
       duration.value > 0 ? position.value / duration.value : null;
+
+  double? get bufferProgress =>
+      duration.value > 0 ? buffer.value / duration.value : null;
 
   open(String url) async {
     await _player.open(Media(url));

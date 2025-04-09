@@ -35,6 +35,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     );
 
     player.position.addListener(_render);
+    player.buffer.addListener(_render);
 
     player.playState.addListener(_onPlay);
   }
@@ -57,6 +58,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   void dispose() {
     player.position.removeListener(_render);
     player.playState.removeListener(_onPlay);
+    player.buffer.removeListener(_render);
 
     _playPauseController.dispose();
 
@@ -160,6 +162,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       children: [
         Slider(
           value: player.progress ?? 0,
+          secondaryTrackValue: player.bufferProgress ?? 0,
           inactiveColor: Colors.grey.withValues(alpha: 0.3),
           onChanged: (value) {
             player.seek(
