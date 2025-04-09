@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:h_nas/components/record_view.dart';
+import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/time_utils.dart';
@@ -85,9 +85,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   Widget _cover() {
     return Hero(
       tag: 'audio_cover',
-      child: RecordView(
+      child: CoverView(
         rotate: player.playing,
-        size: MediaQuery.of(context).size.width * 0.5,
         child: CachedNetworkImage(
           imageUrl: FileAPIURL.publicAudioCover(player.audioInfo.value!.path),
           fit: BoxFit.cover,
@@ -154,7 +153,12 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     return Column(
       children: [
         Row(children: [BackButton()]),
-        Expanded(child: Center(child: _cover())),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Center(child: _cover()),
+          ),
+        ),
         _info(context),
         _progressInfo(),
         Row(

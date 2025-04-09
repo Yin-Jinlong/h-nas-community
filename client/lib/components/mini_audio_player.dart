@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:h_nas/components/record_view.dart';
+import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
@@ -86,17 +86,20 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                     origin: Offset(20, 0),
                     child: Hero(
                       tag: 'audio_cover',
-                      child: RecordView(
-                        rotate: player.playing,
-                        size: 40,
-                        child: CachedNetworkImage(
-                          imageUrl: FileAPIURL.publicAudioCover(
-                            player.audioInfo.value!.path,
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CoverView(
+                          rotate: player.playing,
+                          child: CachedNetworkImage(
+                            imageUrl: FileAPIURL.publicAudioCover(
+                              player.audioInfo.value!.path,
+                            ),
+                            fit: BoxFit.cover,
+                            errorWidget: (context, error, stackTrace) {
+                              return Icon(Icons.broken_image);
+                            },
                           ),
-                          fit: BoxFit.cover,
-                          errorWidget: (context, error, stackTrace) {
-                            return Icon(Icons.broken_image);
-                          },
                         ),
                       ),
                     ),

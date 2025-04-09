@@ -1,17 +1,15 @@
 import 'package:flutter/cupertino.dart';
 
-/// 唱片视图
-class RecordView extends StatefulWidget {
+/// 封面视图
+class CoverView extends StatefulWidget {
   /// 是否旋转
   final bool rotate;
-  final double size;
   final Duration duration;
   final Widget child;
 
-  const RecordView({
+  const CoverView({
     super.key,
     required this.rotate,
-    required this.size,
     this.duration = const Duration(seconds: 15),
     required this.child,
   });
@@ -20,7 +18,7 @@ class RecordView extends StatefulWidget {
   State createState() => _RecordViewState();
 }
 
-class _RecordViewState extends State<RecordView>
+class _RecordViewState extends State<CoverView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -43,9 +41,8 @@ class _RecordViewState extends State<RecordView>
     } else {
       _controller.stop();
     }
-    return SizedBox(
-      width: widget.size,
-      height: widget.size,
+    return AspectRatio(
+      aspectRatio: 1,
       child: RotationTransition(
         turns: _controller,
         child: ClipOval(child: widget.child),
