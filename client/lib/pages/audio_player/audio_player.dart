@@ -31,6 +31,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
 
     player = Global.player;
 
+    _progress=player.progress ?? 0;
+
     _playPauseController = AnimationController(
       value: Global.player.playing ? 1 : 0,
       vsync: this,
