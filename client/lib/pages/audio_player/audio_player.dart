@@ -71,17 +71,23 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         onPressed: () {},
         icon: Icon(Icons.skip_previous, size: size),
       ),
-      Hero(
-        tag: 'play_pause',
-        child: IconButton(
-          tooltip: player.playing ? S.current.pause : S.current.media_play,
-          onPressed: () {
-            player.playPause();
-          },
-          icon: AnimatedIcon(
-            icon: AnimatedIcons.play_pause,
-            progress: _playPauseController,
-            size: size,
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(size),
+        ),
+        child: Hero(
+          tag: 'play_pause',
+          child: IconButton(
+            tooltip: player.playing ? S.current.pause : S.current.media_play,
+            onPressed: () {
+              player.playPause();
+            },
+            icon: AnimatedIcon(
+              icon: AnimatedIcons.play_pause,
+              progress: _playPauseController,
+              size: size,
+            ),
           ),
         ),
       ),
