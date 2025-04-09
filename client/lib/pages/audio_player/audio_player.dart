@@ -64,7 +64,13 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   List<Widget> _controllers() {
+    const size = 40.0;
     return [
+      IconButton(
+        tooltip: S.current.audio_previous,
+        onPressed: () {},
+        icon: Icon(Icons.skip_previous, size: size),
+      ),
       Hero(
         tag: 'play_pause',
         child: IconButton(
@@ -75,9 +81,14 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           icon: AnimatedIcon(
             icon: AnimatedIcons.play_pause,
             progress: _playPauseController,
-            size: 40,
+            size: size,
           ),
         ),
+      ),
+      IconButton(
+        tooltip: S.current.audio_next,
+        onPressed: () {},
+        icon: Icon(Icons.skip_next, size: size),
       ),
     ];
   }
@@ -180,9 +191,12 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         ),
         _info(context),
         _progressInfo(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: _controllers(),
+        Padding(
+          padding: EdgeInsets.only(bottom: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: _controllers(),
+          ),
         ),
       ],
     );
