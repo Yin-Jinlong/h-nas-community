@@ -8,6 +8,7 @@ class MediaPlayer {
   final ValueNotifier<int> position = ValueNotifier(0);
   final ValueNotifier<int> duration = ValueNotifier(0);
   final ValueNotifier<int> buffer = ValueNotifier(0);
+  final ValueNotifier<double> volume = ValueNotifier(0);
 
   final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
 
@@ -30,6 +31,9 @@ class MediaPlayer {
       })
       ..buffer.listen((buffer) {
         this.buffer.value = buffer.inSeconds;
+      })
+      ..volume.listen((volume) {
+        this.volume.value = volume;
       });
   }
 
@@ -63,6 +67,11 @@ class MediaPlayer {
 
   seek(Duration duration) async {
     await _player.seek(duration);
+  }
+
+  setVolume(double v) async {
+    await _player.setVolume(v);
+    volume.value = v;
   }
 
   dispose() {

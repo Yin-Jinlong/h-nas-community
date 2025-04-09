@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
+import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/utils/time_utils.dart';
 
 import '../../generated/l10n.dart';
@@ -156,13 +157,15 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     );
   }
 
-  Widget _infoControllers() {
+  Widget _infoControllers(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           tooltip: S.current.more,
-          onPressed: () {},
+          onPressed: () {
+            _showMoreSheet(context);
+          },
           icon: Icon(Icons.more_vert),
         ),
       ],
@@ -217,7 +220,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
               _info(context),
               Align(
                 alignment: Alignment.centerRight,
-                child: _infoControllers(),
+                child: _infoControllers(context),
               ),
             ],
           ),
@@ -231,6 +234,16 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           ),
         ),
       ],
+    );
+  }
+
+  _showMoreSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      constraints: BoxConstraints(minWidth: 100),
+      builder: (context) {
+        return MoreSheet();
+      },
     );
   }
 
