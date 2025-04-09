@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/record_view.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
@@ -22,10 +23,7 @@ class MiniAudioPlayer extends StatefulWidget {
 class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
-  late final AnimationController _coverController;
   late final MediaPlayer player;
-
-  Widget? cover;
 
   @override
   void initState() {
@@ -34,10 +32,6 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     _playPauseController = AnimationController(
       vsync: this,
       duration: durationMedium,
-    );
-    _coverController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 10),
     );
     player.audioInfo.addListener(_render);
     player.playState.addListener(_onPlay);
@@ -50,31 +44,15 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
 
   _onPlay() {
     setState(() {});
-    if (player.playing && player.audioInfo.value != null) {
-      cover = ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: FileAPIURL.publicAudioCover(player.audioInfo.value!.path),
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
-          errorWidget: (context, error, stackTrace) {
-            return Icon(Icons.broken_image);
-          },
-        ),
-      );
-    }
     if (player.playing) {
       _playPauseController.forward();
-      _coverController.repeat();
     } else {
       _playPauseController.reverse();
-      _coverController.stop();
     }
   }
 
   @override
   void dispose() {
-    _coverController.dispose();
     _playPauseController.dispose();
 
     player.audioInfo.removeListener(_render);
@@ -99,16 +77,28 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
         padding: EdgeInsets.all(6),
         child: Row(
           children: [
-            player.audioInfo.value == null || cover == null
+            player.audioInfo.value == null
                 ? Icon(Icons.image)
                 : Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5),
                   child: Transform.scale(
                     scale: 1.2,
                     origin: Offset(20, 0),
-                    child: RotationTransition(
-                      turns: _coverController,
-                      child: Hero(tag: 'audio_cover', child: cover!),
+                    child: Hero(
+                      tag: 'audio_cover',
+                      child: RecordView(
+                        rotate: player.playing,
+                        size: 40,
+                        child: CachedNetworkImage(
+                          imageUrl: FileAPIURL.publicAudioCover(
+                            player.audioInfo.value!.path,
+                          ),
+                          fit: BoxFit.cover,
+                          errorWidget: (context, error, stackTrace) {
+                            return Icon(Icons.broken_image);
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),

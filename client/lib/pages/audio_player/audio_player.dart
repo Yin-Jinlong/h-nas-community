@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/record_view.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/time_utils.dart';
 
@@ -14,7 +15,7 @@ class AudioPlayerPage extends StatefulWidget {
 }
 
 class _AudioPlayerPageState extends State<AudioPlayerPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
 
   @override
@@ -50,6 +51,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   void dispose() {
     Global.player.position.removeListener(_render);
     Global.player.playState.removeListener(_onPlay);
+
+    _playPauseController.dispose();
+
     super.dispose();
   }
 
@@ -90,13 +94,13 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
             children: [
               Hero(
                 tag: 'audio_cover',
-                child: ClipOval(
+                child: RecordView(
+                  rotate: player.playing,
+                  size: 200,
                   child: CachedNetworkImage(
                     imageUrl: FileAPIURL.publicAudioCover(
                       player.audioInfo.value!.path,
                     ),
-                    width: 200,
-                    height: 200,
                     fit: BoxFit.cover,
                     errorWidget: (context, error, stackTrace) {
                       return Icon(Icons.broken_image);
