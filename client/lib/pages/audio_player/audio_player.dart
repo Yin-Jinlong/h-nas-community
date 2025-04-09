@@ -156,6 +156,19 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     );
   }
 
+  Widget _infoControllers() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          tooltip: S.current.more,
+          onPressed: () {},
+          icon: Icon(Icons.more_vert),
+        ),
+      ],
+    );
+  }
+
   Widget _progressInfo() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -198,7 +211,17 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
             child: Center(child: _cover()),
           ),
         ),
-        _info(context),
+        IntrinsicHeight(
+          child: Stack(
+            children: [
+              _info(context),
+              Align(
+                alignment: Alignment.centerRight,
+                child: _infoControllers(),
+              ),
+            ],
+          ),
+        ),
         _progressInfo(),
         Padding(
           padding: EdgeInsets.only(bottom: 12),
