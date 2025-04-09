@@ -236,6 +236,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           ),
           IconTheme(
             data: IconThemeData(
+              size: 30,
               color:
                   HSVColor.fromColor(
                     ColorScheme.of(context).primary,
