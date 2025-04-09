@@ -259,7 +259,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       context: context,
       constraints: BoxConstraints(minWidth: 100),
       builder: (context) {
-        return MoreSheet();
+        return MoreSheet(info: player.audioInfo.value!);
       },
     );
   }
