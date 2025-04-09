@@ -176,16 +176,20 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Slider(
-          value: player.progress ?? 0,
-          secondaryTrackValue: player.bufferProgress ?? 0,
-          inactiveColor: Colors.grey.withValues(alpha: 0.3),
-          onChanged: (value) {
-            player.seek(
-              Duration(seconds: (player.duration.value * value).toInt()),
-            );
-            setState(() {});
-          },
+        SliderTheme(
+          data: SliderThemeData(showValueIndicator: ShowValueIndicator.always),
+          child: Slider(
+            value: player.progress ?? 0,
+            secondaryTrackValue: player.bufferProgress ?? 0,
+            inactiveColor: Colors.grey.withValues(alpha: 0.3),
+            label: player.position.value.shortTimeStr,
+            onChanged: (value) {
+              player.seek(
+                Duration(seconds: (player.duration.value * value).toInt()),
+              );
+              setState(() {});
+            },
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -31,6 +31,7 @@ class _MoreSheetState extends State<MoreSheet> {
         Expanded(
           child: Slider(
             value: player.volume.value,
+            label: '${player.volume.value.toInt()}%',
             max: 100,
             divisions: 14,
             inactiveColor: Colors.grey.withValues(alpha: 0.5),
