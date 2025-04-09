@@ -53,6 +53,8 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   late final double contentWidth, contentHeight;
   late final AnimationController _controller;
 
+  bool _disposed = false;
+
   /// 是否需要滚动，超过最大宽度时滚动
   bool get shouldMarquee => widget.maxWidth < contentWidth;
 
@@ -81,14 +83,14 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
             }
           });
 
-    if (widget.maxWidth < painter.contentSize.width) {
+    if (shouldMarquee) {
       _wait();
     }
   }
 
   _wait() {
     Future.delayed(widget.turnDur, () {
-      if (!_controller.isDismissed) {
+      if (!_disposed) {
         _controller.repeat(count: widget.count);
       }
     });
@@ -96,6 +98,7 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    _disposed = true;
     _controller.dispose();
     super.dispose();
   }
