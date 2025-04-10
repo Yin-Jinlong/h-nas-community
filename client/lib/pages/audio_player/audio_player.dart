@@ -7,6 +7,7 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/utils/time_utils.dart';
+import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
 import '../../generated/l10n.dart';
 import '../../utils/api.dart';
@@ -31,7 +32,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
 
     player = Global.player;
 
-    _progress=player.progress ?? 0;
+    _progress = player.progress ?? 0;
 
     _playPauseController = AnimationController(
       value: Global.player.playing ? 1 : 0,
@@ -73,9 +74,42 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     super.dispose();
   }
 
+  Widget _playModeIcon(double size) {
+    return switch (player.playMode.value) {
+      PlayMode.none => Transform.translate(
+        key: ValueKey(0),
+        offset: Offset(0, -5),
+        child: Icon(NFIconData(0x21c9), size: size),
+      ),
+      PlayMode.single => Icon(key: ValueKey(1), Icons.repeat_one, size: size),
+      PlayMode.loop => Icon(key: ValueKey(2), Icons.repeat, size: size),
+      PlayMode.random => Icon(key: ValueKey(3), Icons.shuffle, size: size),
+    };
+  }
+
   List<Widget> _controllers() {
     const size = 40.0;
+
     return [
+      IconButton(
+        tooltip: player.playMode.value.name,
+        onPressed: () {
+          final index = PlayMode.values.indexOf(player.playMode.value);
+          player.playMode.value = PlayMode.values.elementAt(
+            (index + 1) % PlayMode.values.length,
+          );
+        },
+        icon: AnimatedSwitcher(
+          duration: durationFast,
+          transitionBuilder: (child, animation) {
+            return ScaleTransition(
+              scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+              child: child,
+            );
+          },
+          child: _playModeIcon(size),
+        ),
+      ),
       IconButton(
         tooltip: S.current.audio_previous,
         onPressed: () {},
@@ -105,6 +139,11 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         tooltip: S.current.audio_next,
         onPressed: () {},
         icon: Icon(Icons.skip_next, size: size),
+      ),
+      IconButton(
+        tooltip: S.current.playlist,
+        onPressed: () {},
+        icon: Icon(Icons.playlist_play, size: size),
       ),
     ];
   }

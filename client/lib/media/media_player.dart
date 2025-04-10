@@ -1,7 +1,31 @@
 import 'package:flutter/cupertino.dart';
+import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:media_kit/media_kit.dart';
+
+enum PlayMode {
+  /// 播放列表一遍
+  none,
+
+  /// 单曲循环
+  single,
+
+  /// 播放列表循环
+  loop,
+
+  /// 随机播放
+  random;
+
+  String get name {
+    return switch (this) {
+      PlayMode.none => S.current.play_sequential,
+      PlayMode.single => S.current.play_repeat,
+      PlayMode.loop => S.current.play_repeat_list,
+      PlayMode.random => S.current.play_random,
+    };
+  }
+}
 
 class MediaPlayer {
   late Player _player;
@@ -10,8 +34,11 @@ class MediaPlayer {
   final ValueNotifier<int> duration = ValueNotifier(0);
   final ValueNotifier<int> buffer = ValueNotifier(0);
   final ValueNotifier<double> volume = ValueNotifier(0);
+  final ValueNotifier<PlayMode> playMode = ValueNotifier(PlayMode.none);
 
   final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
+
+  bool _shuffle = false;
 
   final _playState = _Listener();
 
@@ -36,7 +63,29 @@ class MediaPlayer {
       ..volume.listen((volume) {
         this.volume.value = volume;
         Prefs.playerVolume = volume;
+      })
+      ..playlistMode.listen((mode) {
+        _updatePlayMode();
       });
+
+    playMode.addListener(() {
+      _shuffle = false;
+      switch (playMode.value) {
+        case PlayMode.none:
+          _player.setPlaylistMode(PlaylistMode.none);
+          break;
+        case PlayMode.single:
+          _player.setPlaylistMode(PlaylistMode.single);
+          break;
+        case PlayMode.loop:
+          _player.setPlaylistMode(PlaylistMode.loop);
+          break;
+        case PlayMode.random:
+          _player.setPlaylistMode(PlaylistMode.none);
+          _shuffle = true;
+          break;
+      }
+    });
 
     setVolume(Prefs.playerVolume);
   }
@@ -48,6 +97,21 @@ class MediaPlayer {
 
   double? get bufferProgress =>
       duration.value > 0 ? buffer.value / duration.value : null;
+
+  _updatePlayMode() {
+    if (_shuffle) {
+      playMode.value = PlayMode.random;
+      if (_player.state.playlistMode != PlaylistMode.none) {
+        _player.setPlaylistMode(PlaylistMode.none);
+      }
+    } else {
+      playMode.value = switch (_player.state.playlistMode) {
+        PlaylistMode.none => PlayMode.none,
+        PlaylistMode.single => PlayMode.single,
+        PlaylistMode.loop => PlayMode.loop,
+      };
+    }
+  }
 
   open(String url) async {
     await _player.open(Media(url));
