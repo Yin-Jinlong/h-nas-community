@@ -365,6 +365,8 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onTap: () {},
       onHover: (v) {
         setState(() {
