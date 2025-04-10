@@ -339,6 +339,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 contextMenu: GenericContextMenu(
                   buttonConfigs: _fileContextMenuButtons(
                     file,
+                    onPlay: () {
+                      _playAudio(file);
+                    },
                     onRename: () {
                       _showRenameDialog(context, file);
                     },

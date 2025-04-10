@@ -2,12 +2,19 @@ part of 'home.dart';
 
 List<ContextMenuButtonConfig> _fileContextMenuButtons(
   FileInfo file, {
+  required Function() onPlay,
   required Function() onRename,
   required Function() onDownload,
   required Function() onInfo,
   required Function() onDelete,
 }) {
   return [
+    if (file.fileMediaType?.isAudio == true)
+      ContextMenuButtonConfig(
+        S.current.media_play,
+        icon: Icon(Icons.play_circle, size: 20),
+        onPressed: onPlay,
+      ),
     ContextMenuButtonConfig(
       S.current.rename,
       icon: Icon(Icons.edit, size: 20),
