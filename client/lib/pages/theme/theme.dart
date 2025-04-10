@@ -45,6 +45,9 @@ _ThemeData _gen(Color color) {
 }
 
 class _ThemePageState extends State<ThemePage> {
+  double _slider = 50;
+  bool _check = false;
+
   final colors = <Color>[
     ..._colors(Colors.red),
     ..._colors(Colors.deepOrange),
@@ -139,12 +142,81 @@ class _ThemePageState extends State<ThemePage> {
           Divider(),
           FractionallySizedBox(
             widthFactor: 1,
-            child: Wrap(
-              children: [
-                FilledButton(onPressed: () {}, child: Text(S.current.button)),
-                ElevatedButton(onPressed: () {}, child: Text(S.current.button)),
-                TextButton(onPressed: () {}, child: Text(S.current.button)),
-              ],
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Column(
+                spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      FilledButton(
+                        onPressed: () {},
+                        child: Text(S.current.button),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Text(S.current.button),
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: Text(S.current.button),
+                      ),
+                    ],
+                  ),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      Checkbox(
+                        value: _check,
+                        onChanged: (value) {
+                          setState(() {
+                            _check = value ?? false;
+                          });
+                        },
+                      ),
+                      Switch(
+                        value: _check,
+                        activeColor: ColorScheme.of(context).primary,
+                        onChanged: (value) {
+                          setState(() {
+                            _check = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: S.current.title,
+                      hintText: S.current.title,
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
+                      ),
+                      border: OutlineInputBorder(
+                      ),
+                    ),
+                  ),
+                  SliderTheme(
+                    data: SliderThemeData(
+                      showValueIndicator: ShowValueIndicator.always,
+                    ),
+                    child: Slider(
+                      value: _slider,
+                      label: _slider.toStringAsFixed(0),
+                      max: 100,
+                      inactiveColor: Colors.grey.shade300,
+                      secondaryTrackValue: _slider / 2 + 50,
+                      onChanged: (value) {
+                        setState(() {
+                          _slider = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
