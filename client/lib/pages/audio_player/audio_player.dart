@@ -16,6 +16,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../generated/l10n.dart';
 import '../../utils/api.dart';
+import 'lrc_view.dart';
 
 class AudioPlayerPage extends StatefulWidget {
   const AudioPlayerPage({super.key});
@@ -323,16 +324,45 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _content(BuildContext context) {
+    bool wideMode = MediaQuery.of(context).size.aspectRatio > 1;
     return Column(
       children: [
         Row(children: [BackButton()]),
         Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(left: 40, right: 40, top: 30, bottom: 20),
-            child: Center(child: _cover()),
-          ),
+          child:
+              wideMode
+                  ? Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: EdgeInsets.all(30),
+                          child: Center(child: _cover()),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: EdgeInsets.all(30),
+                          child:
+                              lrc != null
+                                  ? LrcView(lrc: lrc!)
+                                  : Center(child: Text(S.current.no_lrc)),
+                        ),
+                      ),
+                    ],
+                  )
+                  : Padding(
+                    padding: EdgeInsets.only(
+                      left: 40,
+                      right: 40,
+                      top: 30,
+                      bottom: 20,
+                    ),
+                    child: Center(child: _cover()),
+                  ),
         ),
-        _miniLrc(),
+        if (!wideMode) _miniLrc(),
         IntrinsicHeight(
           child: Stack(
             children: [
