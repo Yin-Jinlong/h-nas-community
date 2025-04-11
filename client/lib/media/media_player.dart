@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/media/media_file.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/file_utils.dart';
 import 'package:media_kit/media_kit.dart';
 
 enum PlayMode {
@@ -66,6 +68,13 @@ class MediaPlayer {
       })
       ..playlistMode.listen((mode) {
         _updatePlayMode();
+      })
+      ..playlist.listen((list) {
+        FileAPI.getPublicAudioInfo(
+          (list.medias[list.index] as MediaFile).file.fullPath,
+        ).then((v) {
+          audioInfo.value = v;
+        });
       });
 
     playMode.addListener(() {
@@ -115,6 +124,12 @@ class MediaPlayer {
 
   open(String url) async {
     await _player.open(Media(url));
+  }
+
+  openList(Iterable<FileInfo> url, {int index = 0}) async {
+    await _player.open(
+      Playlist(url.map((e) => MediaFile(file: e)).toList(), index: index),
+    );
   }
 
   play() async {

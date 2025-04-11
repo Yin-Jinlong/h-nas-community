@@ -54,6 +54,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<FileInfo> files = [];
   List<FileInfo> images = [];
+  List<FileInfo> audios = [];
   List<String> dirs = [];
   late ModalRoute route;
   final _openFloatingMenu = ValueNotifier(false);
@@ -87,10 +88,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         files = v;
         _sort();
         images = [];
+        audios = [];
         for (var file in v) {
-          if (MediaType.parse(file.mediaType ?? '').type ==
-              MediaType.typeImage) {
+          final type = file.fileMediaType?.type;
+          if (type == MediaType.typeImage) {
             images.add(file);
+          } else if (type == MediaType.typeAudio) {
+            audios.add(file);
           }
         }
       });
@@ -130,11 +134,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   _playAudio(FileInfo file) {
     setState(() {
-      Global.player.open(FileAPIURL.publicFile(file.fullPath));
+      final index = audios.indexOf(file);
+      if (index < 0) return;
+      Global.player.openList(audios, index: index);
       _showPlayer = true;
-      FileAPI.getPublicAudioInfo(file.fullPath).then((v) {
-        Global.player.audioInfo.value = v;
-      });
     });
   }
 
