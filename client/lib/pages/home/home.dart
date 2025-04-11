@@ -560,9 +560,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               setState(() {
                                 _showPlayer = false;
                               });
-                              Future.delayed(durationMedium, () {
-                                Global.player.audioInfo.value = null;
-                              });
                             },
                           ),
                         )

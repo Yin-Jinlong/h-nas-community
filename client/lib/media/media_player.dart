@@ -70,6 +70,7 @@ class MediaPlayer {
         _updatePlayMode();
       })
       ..playlist.listen((list) {
+        if (list.medias.isEmpty) return;
         FileAPI.getPublicAudioInfo(
           (list.medias[list.index] as MediaFile).file.fullPath,
         ).then((v) {
