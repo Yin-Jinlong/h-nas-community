@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/media/media_file.dart';
@@ -104,10 +106,14 @@ class MediaPlayer {
   bool get playing => _player.state.playing;
 
   double? get progress =>
-      duration.value > 0 ? position.value / duration.value : null;
+      duration.value > 0
+          ? clampDouble(position.value / duration.value, 0, 1)
+          : null;
 
   double? get bufferProgress =>
-      duration.value > 0 ? buffer.value / duration.value : null;
+      duration.value > 0
+          ? clampDouble(buffer.value / duration.value, 0, 1)
+          : null;
 
   _updatePlayMode() {
     if (_shuffle) {
