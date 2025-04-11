@@ -139,10 +139,11 @@ bool Win32Window::Create(const std::wstring& title,
     const wchar_t* window_class =
         WindowClassRegistrar::GetInstance()->GetWindowClass();
 
-    const POINT target_point = {0, 0};
-    HMONITOR monitor = MonitorFromPoint(target_point, MONITOR_DEFAULTTONEAREST);
-    UINT dpi = FlutterDesktopGetDpiForMonitor(monitor);
-    double scale_factor = dpi / 96.0;
+
+    POINT target_point = {0, 0};
+    GetCursorPos(&target_point);
+    const HMONITOR monitor = MonitorFromPoint(target_point, MONITOR_DEFAULTTONEAREST);
+    const double scale_factor = FlutterDesktopGetDpiForMonitor(monitor) / 96.0;
 
     MONITORINFO monitor_info;
     monitor_info.cbSize = sizeof(monitor_info);
