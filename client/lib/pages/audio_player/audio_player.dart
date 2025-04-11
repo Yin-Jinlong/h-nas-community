@@ -417,7 +417,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         ),
         Expanded(child: wideMode ? _wideModeMain() : _narrowModeMain()),
         if (!wideMode && !_showLrcView) _miniLrc(),
-        if (!_showLrcView)
+        if (wideMode || !_showLrcView)
           IntrinsicHeight(
             child: Stack(
               children: [
