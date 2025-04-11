@@ -95,6 +95,8 @@ class MediaPlayer {
 
   bool get playing => _player.state.playing;
 
+  PlayerState get state => _player.state;
+
   double? get progress =>
       duration.value > 0
           ? clampDouble(position.value / duration.value, 0, 1)

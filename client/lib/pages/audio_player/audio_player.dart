@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,7 +8,9 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/pages/audio_player/play_sheet.dart';
+import 'package:h_nas/utils/lrc_utils.dart';
 import 'package:h_nas/utils/time_utils.dart';
+import 'package:lrc/lrc.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -27,6 +30,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   late final MediaPlayer player;
   bool _changing = false;
   double _progress = 0;
+  Lrc? lrc;
 
   @override
   void initState() {
@@ -42,11 +46,13 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       duration: durationFast,
     );
 
+    player.audioInfo.addListener(_newAudio);
     player.position.addListener(_render);
     player.buffer.addListener(_render);
 
     player.playState.addListener(_onPlay);
 
+    _newAudio();
     WakelockPlus.enable();
   }
 
@@ -55,6 +61,16 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       _progress = player.progress ?? 0;
     }
     setState(() {});
+  }
+
+  _newAudio() {
+    player.nowPlay.value?.loadInfo().then((v) {
+      var lrcStr = v?.lrc;
+      if (lrcStr?.isValidLrc == true) {
+        lrc = lrcStr!.toLrc();
+      }
+      setState(() {});
+    });
   }
 
   _onPlay() {
@@ -69,6 +85,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
 
   @override
   void dispose() {
+    player.audioInfo.removeListener(_newAudio);
     player.position.removeListener(_render);
     player.playState.removeListener(_onPlay);
     player.buffer.removeListener(_render);
@@ -171,6 +188,37 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           errorWidget: (context, error, stackTrace) {
             return Icon(Icons.broken_image);
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _miniLrc() {
+    final lines =
+        lrc?.getLines(player.state.position) ??
+        [
+          LrcLine(
+            timestamp: Duration(),
+            lyrics: S.current.no_lrc,
+            type: LrcTypes.simple,
+          ),
+        ];
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 6),
+      child: SizedBox(
+        height: 55,
+        child: IntrinsicHeight(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (var i = 0; i < min(lines.length, 2); i++)
+                Text(
+                  lines[i].lyrics,
+                  style: TextStyle(fontSize: 20),
+                  softWrap: false,
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -280,10 +328,11 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         Row(children: [BackButton()]),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(40),
+            padding: EdgeInsets.only(left: 40, right: 40, top: 30, bottom: 20),
             child: Center(child: _cover()),
           ),
         ),
+        _miniLrc(),
         IntrinsicHeight(
           child: Stack(
             children: [

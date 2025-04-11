@@ -65,6 +65,7 @@ dependencies:
   tdtx_nf_icons: ^3.2.1+2
   cached_network_image: ^3.4.1
   wakelock_plus: ^1.2.11
+  lrc: ^1.0.2
 
 dev_dependencies:
   flutter_test:

@@ -50,6 +50,7 @@
   "name": "名称",
   "new_name": "新名字",
   "no_data": "空空如也",
+  "no_lrc": "暂无歌词",
   "now": "当前：",
   "ok": "确定",
   "only_support_upload_file": "仅支持上传文件",
