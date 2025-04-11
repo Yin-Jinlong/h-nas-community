@@ -84,6 +84,7 @@ class _LrcViewState extends State<LrcView> {
       playing: player.playing,
       onTap: widget.onTap,
       lyricUi: _LrcStyle(
+        highlightColor: ColorScheme.of(context).primary,
         playingMainStyle: TextStyle(
           fontSize: 20,
           color: ColorScheme.of(context).primary,
@@ -103,14 +104,31 @@ class _LrcViewState extends State<LrcView> {
 }
 
 class _LrcStyle extends UINetease {
+  Color highlightColor;
   TextStyle playingMainStyle, playingExtStyle, otherMainStyle, otherExtStyle;
 
   _LrcStyle({
+    required this.highlightColor,
     required this.playingMainStyle,
     required this.playingExtStyle,
     required this.otherMainStyle,
     TextStyle? otherExtStyle,
   }) : otherExtStyle = otherExtStyle ?? otherMainStyle;
+
+  @override
+  double getInlineSpace() => 4;
+
+  @override
+  double getLineSpace() => 20;
+
+  @override
+  bool enableLineAnimation() => true;
+
+  @override
+  bool enableHighlight() => false;
+
+  @override
+  Color getLyricHightlightColor() => highlightColor;
 
   @override
   TextStyle getPlayingMainTextStyle() => playingMainStyle;
