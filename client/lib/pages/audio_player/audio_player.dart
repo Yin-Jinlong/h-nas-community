@@ -3,20 +3,21 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/anim/scale_animated_switcher.dart';
 import 'package:h_nas/components/cover_view.dart';
+import 'package:h_nas/components/tag.dart';
+import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/pages/audio_player/play_sheet.dart';
+import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/lrc_utils.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:lrc/lrc.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../../anim/scale_animated_switcher.dart';
-import '../../generated/l10n.dart';
-import '../../utils/api.dart';
 import 'lrc_view.dart';
 
 class AudioPlayerPage extends StatefulWidget {
@@ -264,16 +265,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                   context,
                 ).bodyLarge?.copyWith(color: Colors.white),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(2),
-                  child: Text('${info?.bitrate ?? '?'} kbps'),
-                ),
-              ),
+              Tag(text: '${info?.bitrate ?? '?'} kbps'),
             ],
           ),
         ],
@@ -286,16 +278,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       mainAxisSize: MainAxisSize.min,
       children: [
         if (player.speed.value != 1)
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(2),
-              child: Text('${player.speed.value.toStringAsFixed(2)}×'),
-            ),
-          ),
+          Tag(text: '${player.speed.value.toStringAsFixed(2)}×'),
         IconButton(
           tooltip: S.current.more,
           onPressed: () {
