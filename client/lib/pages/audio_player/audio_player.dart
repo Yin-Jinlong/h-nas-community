@@ -8,6 +8,7 @@ import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../generated/l10n.dart';
 import '../../utils/api.dart';
@@ -44,6 +45,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     player.buffer.addListener(_render);
 
     player.playState.addListener(_onPlay);
+
+    WakelockPlus.enable();
   }
 
   _render() {
@@ -70,6 +73,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     player.buffer.removeListener(_render);
 
     _playPauseController.dispose();
+
+    WakelockPlus.disable();
 
     super.dispose();
   }
