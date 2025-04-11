@@ -285,6 +285,17 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (player.speed.value != 1)
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(2),
+              child: Text('${player.speed.value.toStringAsFixed(2)}×'),
+            ),
+          ),
         IconButton(
           tooltip: S.current.more,
           onPressed: () {

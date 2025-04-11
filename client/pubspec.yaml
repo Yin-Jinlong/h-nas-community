@@ -67,6 +67,7 @@ dependencies:
   wakelock_plus: ^1.2.11
   lrc: ^1.0.2
   flutter_lyric: ^2.0.4+6
+  syncfusion_flutter_sliders: ^29.1.37
 
 dev_dependencies:
   flutter_test:

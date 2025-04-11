@@ -40,6 +40,7 @@ class MediaPlayer {
   final ValueNotifier<List<MediaFile>> playList = ValueNotifier([]);
   final ValueNotifier<PlayMode> playMode = ValueNotifier(Prefs.playerPlayMode);
   final ValueNotifier<MediaFile?> nowPlay = ValueNotifier(null);
+  final ValueNotifier<double> speed = ValueNotifier(1);
 
   final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
 
@@ -186,6 +187,11 @@ class MediaPlayer {
   setVolume(double v) async {
     await _player.setVolume(v);
     volume.value = v;
+  }
+
+  setSpeed(double rate) async {
+    await _player.setRate(rate);
+    speed.value = rate;
   }
 
   dispose() {
