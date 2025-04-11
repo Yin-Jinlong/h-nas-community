@@ -14,6 +14,7 @@ import 'package:lrc/lrc.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../anim/scale_animated_switcher.dart';
 import '../../generated/l10n.dart';
 import '../../utils/api.dart';
 import 'lrc_view.dart';
@@ -123,16 +124,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           player.playMode.value = v;
           setState(() {});
         },
-        icon: AnimatedSwitcher(
-          duration: durationFast,
-          transitionBuilder: (child, animation) {
-            return ScaleTransition(
-              scale: CurveTween(curve: Curves.easeInOut).animate(animation),
-              child: child,
-            );
-          },
-          child: _playModeIcon(size),
-        ),
+        icon: ScaleAnimatedSwitcher(child: _playModeIcon(size)),
       ),
       IconButton(
         tooltip: S.current.audio_previous,
