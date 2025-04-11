@@ -113,6 +113,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   List<Widget> _controllers(BuildContext context) {
+    final wide = MediaQuery.of(context).size.width > 650;
     const size = 40.0;
 
     return [
@@ -126,6 +127,17 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         },
         icon: ScaleAnimatedSwitcher(child: _playModeIcon(size)),
       ),
+      if (wide)
+        IconButton(
+          tooltip: S.current.replay_10s,
+          onPressed: () {
+            var duration = player.state.position - const Duration(seconds: 10);
+            player.seek(
+              duration < const Duration() ? const Duration() : duration,
+            );
+          },
+          icon: Icon(Icons.replay_10, size: size),
+        ),
       IconButton(
         tooltip: S.current.audio_previous,
         onPressed: () {
@@ -160,6 +172,19 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         },
         icon: Icon(Icons.skip_next, size: size),
       ),
+      if (wide)
+        IconButton(
+          tooltip: S.current.forward_10s,
+          onPressed: () {
+            var duration = player.state.position + const Duration(seconds: 10);
+            player.seek(
+              duration > player.state.duration
+                  ? player.state.duration
+                  : duration,
+            );
+          },
+          icon: Icon(Icons.forward_10, size: size),
+        ),
       IconButton(
         tooltip: S.current.playlist,
         onPressed: () {
