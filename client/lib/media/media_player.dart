@@ -148,6 +148,14 @@ class MediaPlayer {
     await _player.stop();
   }
 
+  previous() async {
+    await _player.previous();
+  }
+
+  next() async {
+    await _player.next();
+  }
+
   seek(Duration duration) async {
     await _player.seek(duration);
   }

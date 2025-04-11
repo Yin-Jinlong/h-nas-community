@@ -113,7 +113,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       ),
       IconButton(
         tooltip: S.current.audio_previous,
-        onPressed: () {},
+        onPressed: () {
+          player.previous();
+        },
         icon: Icon(Icons.skip_previous, size: size),
       ),
       Container(
@@ -138,7 +140,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       ),
       IconButton(
         tooltip: S.current.audio_next,
-        onPressed: () {},
+        onPressed: () {
+          player.next();
+        },
         icon: Icon(Icons.skip_next, size: size),
       ),
       IconButton(
