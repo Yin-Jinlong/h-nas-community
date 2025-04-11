@@ -51,7 +51,7 @@ abstract class Prefs {
     );
   }
 
-  static setTheme(ThemeData l) {
+  static set theme(ThemeData l) {
     _prefs.setString(keyTheme, jsonEncode(l.toJson()));
   }
 

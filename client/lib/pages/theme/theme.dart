@@ -82,7 +82,7 @@ class _ThemePageState extends State<ThemePage> {
 
     setState(() {
       final t = ThemeUtils.fromColorScheme(cs);
-      Prefs.setTheme(t);
+      Prefs.theme = t;
       Global.theme.value = t;
     });
   }
@@ -191,11 +191,8 @@ class _ThemePageState extends State<ThemePage> {
                     decoration: InputDecoration(
                       labelText: S.current.title,
                       hintText: S.current.title,
-                      hintStyle: TextStyle(
-                        color: Colors.grey.shade400,
-                      ),
-                      border: OutlineInputBorder(
-                      ),
+                      hintStyle: TextStyle(color: Colors.grey.shade400),
+                      border: OutlineInputBorder(),
                     ),
                   ),
                   SliderTheme(
