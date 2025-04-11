@@ -52,6 +52,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     player.audioInfo.addListener(_newAudio);
     player.position.addListener(_render);
     player.buffer.addListener(_render);
+    player.speed.addListener(_render);
 
     player.playState.addListener(_onPlay);
 
@@ -92,6 +93,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     player.position.removeListener(_render);
     player.playState.removeListener(_onPlay);
     player.buffer.removeListener(_render);
+    player.speed.removeListener(_render);
 
     _playPauseController.dispose();
 
