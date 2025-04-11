@@ -7,8 +7,9 @@ import 'package:lrc/lrc.dart';
 
 class LrcView extends StatefulWidget {
   final Lrc lrc;
+  final VoidCallback onTap;
 
-  const LrcView({super.key, required this.lrc});
+  const LrcView({super.key, required this.lrc, required this.onTap});
 
   @override
   State createState() => _LrcViewState();
@@ -81,6 +82,7 @@ class _LrcViewState extends State<LrcView> {
     return LyricsReader(
       model: lyricsReaderModel,
       playing: player.playing,
+      onTap: widget.onTap,
       lyricUi: _LrcStyle(
         playingMainStyle: TextStyle(
           fontSize: 20,

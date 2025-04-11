@@ -29,7 +29,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
   late final MediaPlayer player;
-  bool _changing = false;
+  bool _changing = false, _showLrcView = false;
   double _progress = 0;
   Lrc? lrc;
 
@@ -323,57 +323,112 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     );
   }
 
+  Widget _lrcView({required VoidCallback onTap}) {
+    return lrc != null
+        ? LrcView(lrc: lrc!, onTap: onTap)
+        : Center(child: Text(S.current.no_lrc));
+  }
+
+  Widget _narrowModeMain() {
+    return AnimatedSwitcher(
+      duration: durationFast,
+      child:
+          _showLrcView
+              ? _lrcView(
+                onTap: () {
+                  setState(() {
+                    _showLrcView = !_showLrcView;
+                  });
+                },
+              )
+              : Padding(
+                padding: EdgeInsets.only(
+                  left: 40,
+                  right: 40,
+                  top: 30,
+                  bottom: 20,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _showLrcView = !_showLrcView;
+                    });
+                  },
+                  child: Center(child: _cover()),
+                ),
+              ),
+    );
+  }
+
+  Widget _wideModeMain() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Padding(
+            padding: EdgeInsets.all(30),
+            child: Center(child: _cover()),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Padding(
+            padding: EdgeInsets.all(30),
+            child: _lrcView(onTap: () {}),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _content(BuildContext context) {
+    final info = player.audioInfo.value;
     bool wideMode = MediaQuery.of(context).size.aspectRatio > 1;
     return Column(
       children: [
-        Row(children: [BackButton()]),
-        Expanded(
-          child:
-              wideMode
-                  ? Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: EdgeInsets.all(30),
-                          child: Center(child: _cover()),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: EdgeInsets.all(30),
-                          child:
-                              lrc != null
-                                  ? LrcView(lrc: lrc!)
-                                  : Center(child: Text(S.current.no_lrc)),
-                        ),
-                      ),
-                    ],
-                  )
-                  : Padding(
-                    padding: EdgeInsets.only(
-                      left: 40,
-                      right: 40,
-                      top: 30,
-                      bottom: 20,
-                    ),
-                    child: Center(child: _cover()),
-                  ),
-        ),
-        if (!wideMode) _miniLrc(),
         IntrinsicHeight(
           child: Stack(
             children: [
-              _info(context),
-              Align(
-                alignment: Alignment.centerRight,
-                child: _infoControllers(context),
-              ),
+              Row(children: [BackButton()]),
+              if (!wideMode && _showLrcView)
+                SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        info?.title ?? '?',
+                        style: TextTheme.of(
+                          context,
+                        ).headlineSmall?.copyWith(color: Colors.white),
+                      ),
+                      Text(
+                        info?.artists ?? '?',
+                        style: TextTheme.of(context).bodySmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),
+        Expanded(child: wideMode ? _wideModeMain() : _narrowModeMain()),
+        if (!wideMode && !_showLrcView) _miniLrc(),
+        if (!_showLrcView)
+          IntrinsicHeight(
+            child: Stack(
+              children: [
+                _info(context),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: _infoControllers(context),
+                ),
+              ],
+            ),
+          ),
         _progressInfo(),
         Padding(
           padding: EdgeInsets.only(bottom: 12),
