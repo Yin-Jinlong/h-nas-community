@@ -36,7 +36,7 @@ class MediaPlayer {
   final ValueNotifier<int> duration = ValueNotifier(0);
   final ValueNotifier<int> buffer = ValueNotifier(0);
   final ValueNotifier<double> volume = ValueNotifier(0);
-  final ValueNotifier<PlayMode> playMode = ValueNotifier(PlayMode.none);
+  final ValueNotifier<PlayMode> playMode = ValueNotifier(Prefs.playerPlayMode);
 
   final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
 
@@ -94,6 +94,7 @@ class MediaPlayer {
           _shuffle = true;
           break;
       }
+      Prefs.playerPlayMode = playMode.value;
     });
 
     setVolume(Prefs.playerVolume);

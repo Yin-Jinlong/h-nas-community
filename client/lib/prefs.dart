@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,7 @@ abstract class Prefs {
   static const String keyLocale = 'locale';
   static const String keyTheme = 'theme';
   static const String keyPlayerVolume = 'player-volume';
+  static const String keyPlayerPlayMode = 'player-play-mode';
 
   static late SharedPreferences _prefs;
 
@@ -44,6 +46,13 @@ abstract class Prefs {
     return _prefs.getDouble(keyPlayerVolume) ?? 80;
   }
 
+  static PlayMode get playerPlayMode {
+    final value = _prefs.getInt(keyPlayerPlayMode);
+    return value == null || value < 0 || value > PlayMode.values.length - 1
+        ? PlayMode.none
+        : PlayMode.values[value];
+  }
+
   static setLocale(Locale l) {
     _prefs.setString(
       keyLocale,
@@ -57,6 +66,10 @@ abstract class Prefs {
 
   static set playerVolume(double v) {
     _prefs.setDouble(keyPlayerVolume, v);
+  }
+
+  static set playerPlayMode(PlayMode v) {
+    _prefs.setInt(keyPlayerPlayMode, v.index);
   }
 
   static init() async {

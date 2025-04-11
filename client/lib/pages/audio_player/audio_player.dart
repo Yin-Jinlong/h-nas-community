@@ -95,9 +95,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         tooltip: player.playMode.value.name,
         onPressed: () {
           final index = PlayMode.values.indexOf(player.playMode.value);
-          player.playMode.value = PlayMode.values.elementAt(
-            (index + 1) % PlayMode.values.length,
-          );
+          final v = PlayMode.values[(index + 1) % PlayMode.values.length];
+          player.playMode.value = v;
           setState(() {});
         },
         icon: AnimatedSwitcher(
