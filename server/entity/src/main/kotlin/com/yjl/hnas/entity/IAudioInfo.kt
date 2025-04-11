@@ -40,4 +40,8 @@ interface IAudioInfo : IMediaInfo {
      */
     var bitrate: Int
 
+    /**
+     * 歌词
+     */
+    var lrc: String?
 }

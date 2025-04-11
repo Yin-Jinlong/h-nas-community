@@ -69,5 +69,9 @@ class AudioInfo(
 
     @Column(length = IMediaInfo.ITEM_LENGTH)
     @Comment("备注")
-    override var comment: String? = null
+    override var comment: String? = null,
+
+    @Column(length = IMediaInfo.LRC_LENGTH)
+    @Comment("歌词")
+    override var lrc: String? = null
 ) : IAudioInfo

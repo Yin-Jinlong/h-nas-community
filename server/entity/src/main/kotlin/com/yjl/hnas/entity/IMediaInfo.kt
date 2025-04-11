@@ -32,5 +32,6 @@ interface IMediaInfo {
 
     companion object {
         const val ITEM_LENGTH = 256
+        const val LRC_LENGTH = 4 * 1024
     }
 }

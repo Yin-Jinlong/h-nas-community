@@ -54,6 +54,10 @@ data class AudioFileInfo(
      * 备注
      */
     val comment: String?,
+    /**
+     * 歌词
+     */
+    val lrc: String?
 ) {
     companion object {
         fun of(path: String, info: IAudioInfo): AudioFileInfo {
@@ -69,7 +73,8 @@ data class AudioFileInfo(
                 info.num,
                 info.style,
                 info.bitrate,
-                info.comment
+                info.comment,
+                info.lrc
             )
         }
     }

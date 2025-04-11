@@ -52,6 +52,7 @@ object AudioInfoHelper {
         style = getFirst(FieldKey.GENRE),
         bitrate = header.bitRateAsNumber.toInt(),
         comment = getFirst(FieldKey.COMMENT),
+        lrc = getFirst(FieldKey.LYRICS)
     )
 
     /**

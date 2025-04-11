@@ -16,7 +16,7 @@ interface AudioInfoMapper {
 
     @Select(
         """
-select fid, title, sub_title, artists, cover, album,duration, year, num, style, bitrate, comment 
+select fid, title, sub_title, artists, cover, album,duration, year, num, style, bitrate, comment, lrc
 from audio_info
 where fid = #{fid}
     """
@@ -39,8 +39,8 @@ for update
 
     @Insert(
         """
-insert into audio_info(fid, title, sub_title, artists, cover,duration, album, year, num, style, bitrate, comment) 
-values (#{fid}, #{title}, #{subTitle}, #{artists}, #{cover},#{duration}, #{album}, #{year}, #{num}, #{style}, #{bitrate}, #{comment})
+insert into audio_info(fid, title, sub_title, artists, cover,duration, album, year, num, style, bitrate, comment,lrc) 
+values (#{fid}, #{title}, #{subTitle}, #{artists}, #{cover},#{duration}, #{album}, #{year}, #{num}, #{style}, #{bitrate}, #{comment}, #{lrc})
     """
     )
     fun insert(audioInfo: AudioInfo): Int
