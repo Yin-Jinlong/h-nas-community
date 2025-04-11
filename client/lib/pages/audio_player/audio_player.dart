@@ -98,6 +98,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           player.playMode.value = PlayMode.values.elementAt(
             (index + 1) % PlayMode.values.length,
           );
+          setState(() {});
         },
         icon: AnimatedSwitcher(
           duration: durationFast,
