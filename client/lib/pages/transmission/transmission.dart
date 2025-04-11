@@ -23,12 +23,21 @@ class _TransmissionPageState extends State<TransmissionPage>
   @override
   void initState() {
     super.initState();
-    _tabController.addListener(() {
-      setState(() {});
+    Global.uploadTasks.addListener(_render);
+    Global.downloadTasks.addListener(_render);
+    WidgetsBinding.instance.addPostFrameCallback((timestamp) {
+      _render();
     });
-    Global.downloadTasks.addListener(() {
-      setState(() {});
-    });
+  }
+
+  _render() {
+    setState(() {});
+    if (Global.downloadTasks.where((e) => !e.isDone).isNotEmpty ||
+        Global.uploadTasks.where((e) => !e.isDone).isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((timestamp) {
+        _render();
+      });
+    }
   }
 
   List<DataColumn> _tableColumns({List<DataColumn> extras = const []}) {
@@ -234,6 +243,8 @@ class _TransmissionPageState extends State<TransmissionPage>
   @override
   void dispose() {
     _tabController.dispose();
+    Global.uploadTasks.removeListener(_render);
+    Global.downloadTasks.removeListener(_render);
     super.dispose();
   }
 
