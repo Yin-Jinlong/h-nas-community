@@ -39,6 +39,7 @@ class MediaPlayer {
   final ValueNotifier<double> volume = ValueNotifier(0);
   final ValueNotifier<List<MediaFile>> playList = ValueNotifier([]);
   final ValueNotifier<PlayMode> playMode = ValueNotifier(Prefs.playerPlayMode);
+  final ValueNotifier<MediaFile?> nowPlay = ValueNotifier(null);
 
   final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
 
@@ -72,8 +73,13 @@ class MediaPlayer {
         _updatePlayMode();
       })
       ..playlist.listen((list) {
-        if (list.medias.isEmpty) return;
-        (list.medias[list.index] as MediaFile).loadInfo().then((v) {
+        if (list.medias.isEmpty) {
+          nowPlay.value = null;
+          return;
+        }
+        var mediaFile = (list.medias[list.index] as MediaFile);
+        nowPlay.value = mediaFile;
+        mediaFile.loadInfo().then((v) {
           audioInfo.value = v;
         });
       });

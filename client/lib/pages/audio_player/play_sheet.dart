@@ -30,15 +30,18 @@ class _MoreSheetState extends State<PLayListSheet> {
         setState(() {});
       });
     }
+    var playingThis = player.nowPlay.value == file;
     return ListTile(
-      leading: Text('$num'),
+      leading:
+          playingThis
+              ? Icon(player.playing ? Icons.pause_circle : Icons.play_circle)
+              : Text('$num', style: TextStyle().copyWith(fontSize: 20)),
       title: Text(
         file.audioInfo?.title ?? '?',
-        style: TextTheme.of(
-          context,
-        ).titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        style: TextStyle().copyWith(fontWeight: FontWeight.bold),
       ),
       subtitle: Text(file.audioInfo?.artists ?? '?'),
+      selected: playingThis,
       onTap: () {
         player.jump(player.playList.value.indexOf(file));
         Navigator.of(context).pop();
