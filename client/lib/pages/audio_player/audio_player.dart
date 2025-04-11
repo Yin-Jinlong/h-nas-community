@@ -483,6 +483,10 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     final player = Global.player;
 
     return Scaffold(
+      backgroundColor:
+          HSVColor.fromColor(
+            ColorScheme.of(context).primary,
+          ).withValue(0.3).toColor(),
       body: Stack(
         children: [
           CachedNetworkImage(
@@ -493,13 +497,19 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
+            fadeInDuration: durationMedium,
             errorWidget: (context, error, stackTrace) {
-              return Container();
+              return Container(
+                color:
+                    HSVColor.fromColor(
+                      ColorScheme.of(context).primary,
+                    ).withValue(0.3).toColor(),
+              );
             },
           ),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-            child: Container(color: Colors.black.withValues(alpha: 0.3)),
+            child: Container(color: Colors.black.withValues(alpha: 0.4)),
           ),
           IconTheme(
             data: IconThemeData(
