@@ -6,6 +6,7 @@ import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
+import 'package:h_nas/pages/audio_player/play_sheet.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -92,7 +93,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     };
   }
 
-  List<Widget> _controllers() {
+  List<Widget> _controllers(BuildContext context) {
     const size = 40.0;
 
     return [
@@ -151,7 +152,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       ),
       IconButton(
         tooltip: S.current.playlist,
-        onPressed: () {},
+        onPressed: () {
+          _showPlayListSheet(context);
+        },
         icon: Icon(Icons.playlist_play, size: size),
       ),
     ];
@@ -297,7 +300,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           padding: EdgeInsets.only(bottom: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: _controllers(),
+            children: _controllers(context),
           ),
         ),
       ],
@@ -310,6 +313,16 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       constraints: BoxConstraints(minWidth: 100),
       builder: (context) {
         return MoreSheet(info: player.audioInfo.value!);
+      },
+    );
+  }
+
+  _showPlayListSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      constraints: BoxConstraints(minWidth: 100),
+      builder: (context) {
+        return PLayListSheet();
       },
     );
   }

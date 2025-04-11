@@ -5,7 +5,6 @@ import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/media/media_file.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
-import 'package:h_nas/utils/file_utils.dart';
 import 'package:media_kit/media_kit.dart';
 
 enum PlayMode {
@@ -38,6 +37,7 @@ class MediaPlayer {
   final ValueNotifier<int> duration = ValueNotifier(0);
   final ValueNotifier<int> buffer = ValueNotifier(0);
   final ValueNotifier<double> volume = ValueNotifier(0);
+  final ValueNotifier<List<MediaFile>> playList = ValueNotifier([]);
   final ValueNotifier<PlayMode> playMode = ValueNotifier(Prefs.playerPlayMode);
 
   final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
@@ -73,9 +73,7 @@ class MediaPlayer {
       })
       ..playlist.listen((list) {
         if (list.medias.isEmpty) return;
-        FileAPI.getPublicAudioInfo(
-          (list.medias[list.index] as MediaFile).file.fullPath,
-        ).then((v) {
+        (list.medias[list.index] as MediaFile).loadInfo().then((v) {
           audioInfo.value = v;
         });
       });
@@ -139,10 +137,10 @@ class MediaPlayer {
     await _player.open(Media(url));
   }
 
-  openList(Iterable<FileInfo> url, {int index = 0}) async {
-    await _player.open(
-      Playlist(url.map((e) => MediaFile(file: e)).toList(), index: index),
-    );
+  openList(Iterable<FileInfo> files, {int index = 0}) async {
+    final list = files.map((e) => MediaFile(file: e)).toList();
+    playList.value = list;
+    await _player.open(Playlist(list, index: index));
   }
 
   play() async {
@@ -171,6 +169,10 @@ class MediaPlayer {
 
   seek(Duration duration) async {
     await _player.seek(duration);
+  }
+
+  jump(int index) async {
+    await _player.jump(index);
   }
 
   setVolume(double v) async {
