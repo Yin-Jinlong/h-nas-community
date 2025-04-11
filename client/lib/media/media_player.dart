@@ -81,25 +81,11 @@ class MediaPlayer {
       });
 
     playMode.addListener(() {
-      _shuffle = false;
-      switch (playMode.value) {
-        case PlayMode.none:
-          _player.setPlaylistMode(PlaylistMode.none);
-          break;
-        case PlayMode.single:
-          _player.setPlaylistMode(PlaylistMode.single);
-          break;
-        case PlayMode.loop:
-          _player.setPlaylistMode(PlaylistMode.loop);
-          break;
-        case PlayMode.random:
-          _player.setPlaylistMode(PlaylistMode.none);
-          _shuffle = true;
-          break;
-      }
+      _updatePlayListMode();
       Prefs.playerPlayMode = playMode.value;
     });
 
+    _updatePlayListMode();
     setVolume(Prefs.playerVolume);
   }
 
@@ -114,6 +100,25 @@ class MediaPlayer {
       duration.value > 0
           ? clampDouble(buffer.value / duration.value, 0, 1)
           : null;
+
+  _updatePlayListMode() {
+    _shuffle = false;
+    switch (playMode.value) {
+      case PlayMode.none:
+        _player.setPlaylistMode(PlaylistMode.none);
+        break;
+      case PlayMode.single:
+        _player.setPlaylistMode(PlaylistMode.single);
+        break;
+      case PlayMode.loop:
+        _player.setPlaylistMode(PlaylistMode.loop);
+        break;
+      case PlayMode.random:
+        _player.setPlaylistMode(PlaylistMode.none);
+        _shuffle = true;
+        break;
+    }
+  }
 
   _updatePlayMode() {
     if (_shuffle) {
