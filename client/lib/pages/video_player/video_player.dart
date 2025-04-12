@@ -66,7 +66,7 @@ class _VideoControlsState extends State<_VideoControls>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
   final MediaPlayer player = Global.player;
-  bool _showControls = false;
+  bool _showControls = false, _disposed = false;
   CancelableOperation? _showControlsOperation;
 
   @override
@@ -123,6 +123,8 @@ class _VideoControlsState extends State<_VideoControls>
 
   @override
   void dispose() {
+    _disposed = true;
+
     _playPauseController.dispose();
     player.playState.removeListener(_onPlay);
     player.position.removeListener(_render);
@@ -138,6 +140,7 @@ class _VideoControlsState extends State<_VideoControls>
     _showControlsOperation = CancelableOperation.fromFuture(
       Future.delayed(const Duration(seconds: 2)),
     ).then((v) {
+      if (_disposed) return;
       setState(() {
         _showControls = false;
       });
