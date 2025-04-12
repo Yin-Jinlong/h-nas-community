@@ -110,7 +110,7 @@ class MediaPlayer {
           ? clampDouble(buffer.value / duration.value, 0, 1)
           : null;
 
-  _updatePlayListMode() {
+  void _updatePlayListMode() {
     _shuffle = false;
     switch (playMode.value) {
       case PlayMode.none:
@@ -129,7 +129,7 @@ class MediaPlayer {
     }
   }
 
-  _updatePlayMode() {
+  void _updatePlayMode() {
     if (_shuffle) {
       playMode.value = PlayMode.random;
       if (_player.state.playlistMode != PlaylistMode.none) {
@@ -144,59 +144,59 @@ class MediaPlayer {
     }
   }
 
-  open(FileInfo file) async {
+  Future<void> open(FileInfo file) async {
     await _player.open(MediaFile(file: file));
   }
 
-  openList(Iterable<FileInfo> files, {int index = 0}) async {
+  Future<void> openList(Iterable<FileInfo> files, {int index = 0}) async {
     final list = files.map((e) => MediaFile(file: e)).toList();
     playList.value = list;
     await _player.open(Playlist(list, index: index));
   }
 
-  play() async {
+  Future<void> play() async {
     await _player.play();
   }
 
-  pause() async {
+  Future<void> pause() async {
     await _player.pause();
   }
 
-  playPause() async {
+  Future<void> playPause() async {
     await _player.playOrPause();
   }
 
-  stop() async {
+  Future<void> stop() async {
     await _player.stop();
   }
 
-  previous() async {
+  Future<void> previous() async {
     await _player.previous();
   }
 
-  next() async {
+  Future<void> next() async {
     await _player.next();
   }
 
-  seek(Duration duration) async {
+  Future<void> seek(Duration duration) async {
     await _player.seek(duration);
   }
 
-  jump(int index) async {
+  Future<void> jump(int index) async {
     await _player.jump(index);
   }
 
-  setVolume(double v) async {
+  Future<void> setVolume(double v) async {
     await _player.setVolume(v);
     volume.value = v;
   }
 
-  setSpeed(double rate) async {
+  Future<void> setSpeed(double rate) async {
     await _player.setRate(rate);
     speed.value = rate;
   }
 
-  dispose() {
+  void dispose() {
     position.dispose();
     duration.dispose();
     audioInfo.dispose();
