@@ -5,6 +5,7 @@ import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/time_utils.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
@@ -110,6 +111,9 @@ class _VideoControlsState extends State<_VideoControls>
             progress: _playPauseController,
             size: 30,
           ),
+        ),
+        Text(
+          '${(player.position.value / 1000).shortTimeStr}/${(player.duration.value / 1000).shortTimeStr}',
         ),
       ],
     );
