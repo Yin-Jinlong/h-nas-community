@@ -60,13 +60,13 @@ class MediaPlayer {
         _playState.notify();
       })
       ..duration.listen((dur) {
-        duration.value = dur.inSeconds;
+        duration.value = dur.inMilliseconds;
       })
       ..position.listen((pos) {
-        position.value = pos.inSeconds;
+        position.value = pos.inMilliseconds;
       })
       ..buffer.listen((buffer) {
-        this.buffer.value = buffer.inSeconds;
+        this.buffer.value = buffer.inMilliseconds;
       })
       ..volume.listen((volume) {
         this.volume.value = volume;

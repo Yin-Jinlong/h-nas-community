@@ -293,6 +293,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _progressInfo() {
+    var dur = player.duration.value / 1000;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -302,7 +303,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
             value: _progress,
             secondaryTrackValue: player.bufferProgress ?? 0,
             inactiveColor: Colors.grey.withValues(alpha: 0.3),
-            label: (player.duration.value * _progress).shortTimeStr,
+            label: (dur * _progress).shortTimeStr,
             onChangeStart: (value) {
               _changing = true;
             },
@@ -312,7 +313,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
             },
             onChangeEnd: (value) {
               player.seek(
-                Duration(seconds: (player.duration.value * value).toInt()),
+                Duration(milliseconds: (player.duration.value * value).toInt()),
               );
               _changing = false;
               _render();
@@ -324,11 +325,11 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           children: [
             Padding(
               padding: EdgeInsets.only(left: 12),
-              child: Text(player.position.value.shortTimeStr),
+              child: Text((player.position.value / 1000).shortTimeStr),
             ),
             Padding(
               padding: EdgeInsets.only(right: 12),
-              child: Text(player.duration.value.shortTimeStr),
+              child: Text(dur.shortTimeStr),
             ),
           ],
         ),
