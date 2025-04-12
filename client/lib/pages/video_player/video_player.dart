@@ -79,7 +79,12 @@ class _VideoControlsState extends State<_VideoControls>
     );
 
     player.playState.addListener(_onPlay);
+    player.position.addListener(_render);
     _show();
+  }
+
+  _render() {
+    setState(() {});
   }
 
   _onPlay() {
@@ -120,6 +125,7 @@ class _VideoControlsState extends State<_VideoControls>
   void dispose() {
     _playPauseController.dispose();
     player.playState.removeListener(_onPlay);
+    player.position.removeListener(_render);
     super.dispose();
   }
 
@@ -136,6 +142,17 @@ class _VideoControlsState extends State<_VideoControls>
         _showControls = false;
       });
     });
+  }
+
+  Widget _miniProgressBar(BuildContext context, double progress) {
+    return Transform.scale(
+      scaleX: progress,
+      alignment: Alignment.bottomLeft,
+      child: Container(
+        color: ColorScheme.of(context).primary,
+        child: SizedBox(width: double.infinity, height: 2),
+      ),
+    );
   }
 
   @override
@@ -157,6 +174,10 @@ class _VideoControlsState extends State<_VideoControls>
             },
             child: Stack(
               children: [
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: _miniProgressBar(context, player.progress ?? 0),
+                ),
                 if (_showControls)
                   Align(
                     alignment: Alignment.topCenter,
