@@ -141,6 +141,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
   }
 
+  _playVideo(FileInfo file) {
+    setState(() {
+      _showPlayer = false;
+    });
+    Navigator.of(context).pushNamed(Routes.videoPlayer, arguments: file);
+  }
+
   TableRow _infoRow(String label, Widget value) {
     return TableRow(
       children: [
@@ -343,7 +350,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   buttonConfigs: _fileContextMenuButtons(
                     file,
                     onPlay: () {
-                      _playAudio(file);
+                      switch (file.fileMediaType?.type) {
+                        case MediaType.typeAudio:
+                          _playAudio(file);
+                          break;
+                        case MediaType.typeVideo:
+                          _playVideo(file);
+                          break;
+                      }
                     },
                     onRename: () {
                       _showRenameDialog(context, file);
@@ -372,6 +386,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           break;
                         case MediaType.typeAudio:
                           _playAudio(file);
+                          break;
+                        case MediaType.typeVideo:
+                          _playVideo(file);
                           break;
                       }
                     }

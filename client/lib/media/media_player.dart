@@ -48,6 +48,8 @@ class MediaPlayer {
 
   final _playState = _Listener();
 
+  Player get nativePlayer => _player;
+
   ChangeNotifier get playState => _playState;
 
   MediaPlayer({required player}) {
@@ -142,8 +144,8 @@ class MediaPlayer {
     }
   }
 
-  open(String url) async {
-    await _player.open(Media(url));
+  open(FileInfo file) async {
+    await _player.open(MediaFile(file: file));
   }
 
   openList(Iterable<FileInfo> files, {int index = 0}) async {

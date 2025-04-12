@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:h_nas/pages/video_player/video_player.dart';
 
 import 'pages/pages.dart';
 
@@ -10,6 +11,7 @@ class Routes {
   static const String settings = '/settings';
   static const String theme = '/theme';
   static const String transmission = '/transmission';
+  static const String videoPlayer = '/video_player';
 
   static pageBuilder(
     RouteSettings routeSettings,
@@ -24,6 +26,7 @@ class Routes {
       settings => const SettingsPage(),
       theme => const ThemePage(),
       transmission => const TransmissionPage(),
+      videoPlayer => const VideoPlayerPage(),
       _ => const HomePage(),
     };
   }

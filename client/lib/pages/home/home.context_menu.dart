@@ -9,7 +9,7 @@ List<ContextMenuButtonConfig> _fileContextMenuButtons(
   required Function() onDelete,
 }) {
   return [
-    if (file.fileMediaType?.isAudio == true)
+    if (file.canPlay)
       ContextMenuButtonConfig(
         S.current.media_play,
         icon: Icon(Icons.play_circle, size: 20),

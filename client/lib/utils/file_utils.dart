@@ -14,4 +14,12 @@ extension FileInfoExt on FileInfo {
 
   MediaType? get fileMediaType =>
       mediaType == null ? null : MediaType.parse(mediaType!);
+
+  bool get canPlay {
+    final type = fileMediaType;
+    if (type == null) {
+      return false;
+    }
+    return type.type == MediaType.typeAudio || type.type == MediaType.typeVideo;
+  }
 }
