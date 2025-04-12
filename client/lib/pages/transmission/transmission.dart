@@ -28,6 +28,9 @@ class _TransmissionPageState extends State<TransmissionPage>
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {
       _render();
     });
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   _render() {
