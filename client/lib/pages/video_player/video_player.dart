@@ -97,6 +97,25 @@ class _VideoControlsState extends State<_VideoControls>
     setState(() {});
   }
 
+  Widget _progressBar() {
+    return SizedBox(
+      height: 20,
+      child: SliderTheme(
+        data: SliderThemeData(showValueIndicator: ShowValueIndicator.always),
+        child: Slider(
+          value: player.progress ?? 0,
+          label: (player.position.value / 1000).shortTimeStr,
+          onChanged: (value) {
+            _show();
+            player.seek(
+              Duration(milliseconds: (value * player.duration.value).toInt()),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _bottomControls() {
     return Row(
       children: [
@@ -234,7 +253,9 @@ class _VideoControlsState extends State<_VideoControls>
                         child: SizedBox(
                           width: double.infinity,
                           child: IntrinsicHeight(
-                            child: Column(children: [_bottomControls()]),
+                            child: Column(
+                              children: [_progressBar(), _bottomControls()],
+                            ),
                           ),
                         ),
                       ),
@@ -243,7 +264,7 @@ class _VideoControlsState extends State<_VideoControls>
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 20, bottom: 60),
+                    padding: EdgeInsets.only(right: 20, bottom: 80),
                     child: ScaleAnimatedSwitcher(
                       child:
                           player.playing
