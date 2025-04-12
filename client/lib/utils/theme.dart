@@ -28,7 +28,7 @@ extension ThemeUtils on ThemeData {
     colorScheme: colorScheme,
     iconTheme: IconThemeData(
       color:
-          HSLColor.fromColor(colorScheme.primary).withLightness(0.15).toColor(),
+          HSLColor.fromColor(colorScheme.primary).withLightness(0.3).toColor(),
     ),
   );
 
