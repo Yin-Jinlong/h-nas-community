@@ -214,7 +214,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     );
   }
 
-  Widget _miniLrc() {
+  Widget _miniLrc(BuildContext context) {
+    final colorSchema = ColorScheme.of(context);
     final lines =
         lrc?.getLines(player.state.position) ??
         [
@@ -226,8 +227,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         ];
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 6),
-      child: SizedBox(
-        height: 55,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: 55),
         child: IntrinsicHeight(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -235,8 +236,11 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
               for (var i = 0; i < min(lines.length, 2); i++)
                 Text(
                   lines[i].lyrics,
-                  style: TextStyle(fontSize: 20),
-                  softWrap: false,
+                  style: TextStyle(
+                    fontSize: i == 0 ? 20 : 16,
+                    color: i == 0 ? colorSchema.primary : colorSchema.tertiary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
             ],
           ),
@@ -430,7 +434,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           ),
         ),
         Expanded(child: wideMode ? _wideModeMain() : _narrowModeMain()),
-        if (!wideMode && !_showLrcView) _miniLrc(),
+        if (!wideMode && !_showLrcView) _miniLrc(context),
         if (wideMode || !_showLrcView)
           IntrinsicHeight(
             child: Stack(
