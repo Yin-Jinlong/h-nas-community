@@ -9,7 +9,10 @@ Widget _fileListItem(BuildContext context,FileInfo file, {required Function() on
       ).toString(),
     ),
     leading: IconTheme(
-      data: IconTheme.of(context),
+      data: IconThemeData(
+        color:
+        HSLColor.fromColor(ColorScheme.of(context).primary).withLightness(0.3).toColor(),
+      ),
       child: FilePreviewView(fileInfo: file),
     ),
     trailing: Text(file.size.storageSizeStr),

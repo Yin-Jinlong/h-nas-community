@@ -26,10 +26,6 @@ extension ThemeUtils on ThemeData {
   static ThemeData fromColorScheme(ColorScheme colorScheme) => ThemeData(
     appBarTheme: AppBarTheme(backgroundColor: colorScheme.primary),
     colorScheme: colorScheme,
-    iconTheme: IconThemeData(
-      color:
-          HSLColor.fromColor(colorScheme.primary).withLightness(0.3).toColor(),
-    ),
   );
 
   Map<String, dynamic> toJson() => {'colorScheme': colorScheme.toJson()};
