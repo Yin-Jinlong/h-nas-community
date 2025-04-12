@@ -175,7 +175,7 @@ class _VideoControlsState extends State<_VideoControls>
       scaleX: progress,
       alignment: Alignment.bottomLeft,
       child: Container(
-        color: ColorScheme.of(context).primary,
+        color: ColorScheme.of(context).primary.withValues(alpha: 0.5),
         child: SizedBox(width: double.infinity, height: 2),
       ),
     );
