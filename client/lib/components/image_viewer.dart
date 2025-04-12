@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
@@ -384,7 +385,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
             spacing: 8,
             children: [
               Tooltip(
-                message: '水平翻转',
+                message: S.current.photo_flip,
                 child: IconButton.filledTonal(
                   onPressed: () {
                     widget.onFlip();
@@ -393,7 +394,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: '逆时针旋转90度',
+                message: S.current.photo_rotate_left,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.greenAccent,
@@ -405,7 +406,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: '上一张',
+                message: S.current.photo_previous,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(backgroundColor: Colors.green),
                   onPressed: () {
@@ -423,7 +424,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 child: Text(widget.infoText),
               ),
               Tooltip(
-                message: '下一张',
+                message: S.current.photo_next,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(backgroundColor: Colors.green),
                   onPressed: () {
@@ -433,7 +434,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: '顺时针旋转90度',
+                message: S.current.photo_rotate_right,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.greenAccent,
@@ -445,7 +446,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: '重置',
+                message: S.current.reset,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.redAccent,
