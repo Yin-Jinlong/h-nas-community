@@ -79,6 +79,7 @@ class _MyAppState extends State<MyApp> {
         navigatorObservers: [BotToastNavigatorObserver()],
         onGenerateRoute: (settings) {
           return PageRouteBuilder(
+            settings: settings,
             pageBuilder: (context, animation, secondaryAnimation) {
               return Routes.pageBuilder(
                 settings,
