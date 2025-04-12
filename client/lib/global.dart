@@ -7,6 +7,7 @@ import 'package:h_nas/utils/file_task.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 const Duration durationFast = Duration(milliseconds: 200);
 const Duration durationMedium = Duration(milliseconds: 300);
@@ -39,10 +40,14 @@ abstract class Global {
   static init() async {
     player = MediaPlayer(player: Player());
 
-    final dir = await getDownloadsDirectory();
-    if (dir == null) {
-      throw Exception('Downloads directory not found');
+    if (!UniversalPlatform.isWeb) {
+      final dir = await getDownloadsDirectory();
+      if (dir == null) {
+        throw Exception('Downloads directory not found');
+      }
+      downloadDir = dir.childPath(appName);
+    } else {
+      downloadDir = '';
     }
-    downloadDir = dir.childPath(appName);
   }
 }
