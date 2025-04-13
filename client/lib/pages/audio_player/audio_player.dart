@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/components/tag.dart';
@@ -58,6 +59,10 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
 
     _newAudio();
     WakelockPlus.enable();
+
+    Future.delayed(durationMedium, () {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+    });
   }
 
   _render() {
@@ -522,9 +527,11 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
             ),
             child: DefaultTextStyle(
               style: TextStyle(color: Colors.white),
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: _content(context),
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: _content(context),
+                ),
               ),
             ),
           ),
