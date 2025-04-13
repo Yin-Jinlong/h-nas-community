@@ -83,6 +83,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       Toast.showError(S.current.error_set_server_addr);
       return;
     }
+    setState(() {
+      files.clear();
+      images.clear();
+      audios.clear();
+    });
     FileAPI.getPublicFiles('/${dirs.join('/')}').then((v) {
       setState(() {
         files = v;
