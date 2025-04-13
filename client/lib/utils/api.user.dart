@@ -13,27 +13,13 @@ extension UserAPI on API {
           onResp: (res) {
             final token = res.headers.value(ExtraHeaders.authorization);
             if (token != null) {
-              Prefs.setString(Prefs.keyAuthToken, token);
+              Prefs.token=token;
             }
           },
         )
         .then((data) {
-          if (Prefs.authToken != null) auth();
           return data == null ? null : UserInfo.fromJson(data);
         });
   }
 
-  static Future<bool?> auth() {
-    return API._post<bool>(
-      '/user/auth',
-      null,
-      options: Options(headers: {ExtraHeaders.authorization: Prefs.authToken}),
-      onResp: (res) {
-        final token = res.headers.value(ExtraHeaders.authorization);
-        if (token != null) {
-          Prefs.setString(Prefs.keyToken, token);
-        }
-      },
-    );
-  }
 }

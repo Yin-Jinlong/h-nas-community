@@ -1,7 +1,6 @@
 package com.yjl.hnas.ar
 
 import com.yjl.hnas.annotation.ShouldLogin
-import com.yjl.hnas.annotation.TokenLevel
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.token.Token
 import com.yjl.hnas.utils.hasAnno
@@ -35,14 +34,6 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
                 throw ErrorCode.BAD_TOKEN.error
             else return null
 
-        val r = Token[auth]
-
-        val tl = parameter.method!!.getAnnotation(TokenLevel::class.java)
-        if (tl != null) {
-            if (r.type.level < tl.min.level || r.type.level > tl.max.level)
-                throw ErrorCode.BAD_TOKEN.error
-        }
-
-        return r
+        return Token[auth]
     }
 }

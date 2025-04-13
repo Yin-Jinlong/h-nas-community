@@ -1,7 +1,6 @@
 package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
-import com.yjl.hnas.annotation.TokenLevel
 import com.yjl.hnas.data.*
 import com.yjl.hnas.entity.Hash
 import com.yjl.hnas.entity.VirtualFile
@@ -11,7 +10,6 @@ import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.token.Token
-import com.yjl.hnas.token.TokenType
 import com.yjl.hnas.utils.*
 import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
 import io.github.yinjinlong.spring.boot.util.getLogger
@@ -98,7 +96,6 @@ class PubFileController(
     }
 
     @PostMapping("folder")
-    @TokenLevel(TokenType.FULL_ACCESS)
     fun createFolder(
         @RequestParam("path") path: String,
         @ShouldLogin user: Token,
@@ -109,7 +106,6 @@ class PubFileController(
 
     @Async
     @PostMapping("upload")
-    @TokenLevel(TokenType.FULL_ACCESS)
     fun uploadFile(
         @ShouldLogin token: Token,
         @RequestHeader("Content-ID") pathBase64: String,
@@ -141,7 +137,6 @@ class PubFileController(
     }
 
     @DeleteMapping
-    @TokenLevel(TokenType.FULL_ACCESS)
     fun deleteFile(
         @ShouldLogin token: Token,
         path: String,

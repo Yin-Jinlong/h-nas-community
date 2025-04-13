@@ -473,7 +473,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         onLogout: () {
           user.set(null);
           Prefs.remove(Prefs.keyToken);
-          Prefs.remove(Prefs.keyAuthToken);
           setState(() {});
         },
       ),

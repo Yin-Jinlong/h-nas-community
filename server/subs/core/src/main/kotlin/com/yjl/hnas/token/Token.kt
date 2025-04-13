@@ -10,7 +10,6 @@ import kotlin.random.Random
 
 data class Token(
     val user: Uid,
-    val type: TokenType,
     val token: String = genKey(),
 ) {
     private val key = "$TOKEN_PREFIX$token"

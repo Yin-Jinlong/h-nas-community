@@ -9,7 +9,6 @@ import com.yjl.hnas.mapper.UserMapper
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.token.Auth
 import com.yjl.hnas.token.Token
-import com.yjl.hnas.token.TokenType
 import io.github.yinjinlong.md.sha256
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -45,14 +44,6 @@ class UserServiceImpl(
                 Auth.login(it.uid)
             )
         } ?: throw ErrorCode.USER_LOGIN_ERROR.data(username))
-    }
-
-    override fun genToken(token: Token, type: TokenType): Token {
-        return when (type) {
-            TokenType.FULL_ACCESS -> Auth.fullAccessToken(token.user)
-
-            else -> throw ErrorCode.BAD_REQUEST.error
-        }
     }
 
     override fun logout(token: Token) {

@@ -1,11 +1,8 @@
 package com.yjl.hnas.controller
 
-import com.yjl.hnas.annotation.ShouldLogin
 import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.service.UserService
-import com.yjl.hnas.token.TokenType
-import com.yjl.hnas.token.Token
 import com.yjl.hnas.validator.Password
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotBlank
@@ -46,15 +43,6 @@ class UserController(
             resp.addHeader(HttpHeaders.AUTHORIZATION, it.token.token)
             it.user
         }
-    }
-
-    @PostMapping("auth")
-    fun auth(
-        @ShouldLogin token: Token,
-        resp: HttpServletResponse
-    ) {
-        val nt = userService.genToken(token, TokenType.FULL_ACCESS)
-        resp.addHeader(HttpHeaders.AUTHORIZATION, nt.token)
     }
 
     @PostMapping("logon")

@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class Prefs {
   static const String keyApiHost = 'api.host';
   static const String keyUser = 'user';
-  static const String keyAuthToken = 'auth-token';
   static const String keyToken = 'token';
   static const String keyLocale = 'locale';
   static const String keyTheme = 'theme';
@@ -18,9 +17,15 @@ abstract class Prefs {
 
   static late SharedPreferences _prefs;
 
-  static String? get authToken => _prefs.getString(keyAuthToken);
-
   static String? get token => _prefs.getString(keyToken);
+
+  static set token(String? token) {
+    if (token == null) {
+      _prefs.remove(keyToken);
+    } else {
+      _prefs.setString(keyToken, token);
+    }
+  }
 
   static Locale get locale {
     final value = _prefs.getString(keyLocale);
