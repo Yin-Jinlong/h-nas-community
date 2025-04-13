@@ -23,10 +23,15 @@ abstract class API {
   static Future<T?> _get<T>(
     String path,
     Map<String, dynamic>? queryParameters, {
+    Options? options,
     OnResp? onResp,
   }) {
     return dio
-        .get<String>('$API_ROOT$path', queryParameters: queryParameters)
+        .get<String>(
+          '$API_ROOT$path',
+          queryParameters: queryParameters,
+          options: options,
+        )
         .then((res) => _then<T>(res, onResp))
         .catchError(_catchError<T>);
   }
