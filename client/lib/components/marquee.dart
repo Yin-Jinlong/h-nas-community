@@ -50,7 +50,7 @@ class Marquee extends StatefulWidget {
 }
 
 class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
-  late final double contentWidth, contentHeight;
+  late double contentWidth, contentHeight;
   late final AnimationController _controller;
 
   bool _disposed = false;
@@ -94,6 +94,25 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
         _controller.repeat(count: widget.count);
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant Marquee oldWidget) {
+    // 计算文本尺寸
+    final painter = _MarqueePainter(widget.text);
+    contentWidth = painter.contentSize.width;
+    contentHeight = painter.contentSize.height;
+
+    _controller.duration = Duration(
+      milliseconds: (contentWidth * 1000) ~/ widget.speed,
+    );
+
+    if (shouldMarquee) {
+      _wait();
+    } else {
+      _controller.reset();
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
