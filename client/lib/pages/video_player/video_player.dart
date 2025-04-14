@@ -7,7 +7,10 @@ import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:media_kit_video/media_kit_video_controls/media_kit_video_controls.dart'
+as media_kit_video_controls;
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   const VideoPlayerPage({super.key});
@@ -40,24 +43,26 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     if (file == null) {
-      file = ModalRoute.of(context)?.settings.arguments as FileInfo;
+      file = ModalRoute
+          .of(context)
+          ?.settings
+          .arguments as FileInfo;
       _load();
     }
 
     return Scaffold(
       body: Video(
         controller: _controller,
-        controls: (state) => _VideoControls(state: state, file: file!),
+        controls: (state) => _VideoControls(file: file!),
       ),
     );
   }
 }
 
 class _VideoControls extends StatefulWidget {
-  final VideoState state;
   final FileInfo file;
 
-  const _VideoControls({required this.state, required this.file});
+  const _VideoControls({required this.file});
 
   @override
   State<StatefulWidget> createState() => _VideoControlsState();
@@ -67,7 +72,8 @@ class _VideoControlsState extends State<_VideoControls>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
   final MediaPlayer player = Global.player;
-  bool _showControls = false, _disposed = false;
+  bool _showControls = false,
+      _disposed = false;
   CancelableOperation? _showControlsOperation;
 
   @override
@@ -97,6 +103,14 @@ class _VideoControlsState extends State<_VideoControls>
     setState(() {});
   }
 
+  bool _isFullscreen(BuildContext context) {
+    return media_kit_video_controls.isFullscreen(context);
+  }
+
+  Future<void> _toggleFullscreen(BuildContext context) {
+    return media_kit_video_controls.toggleFullscreen(context);
+  }
+
   Widget _progressBar() {
     return SizedBox(
       height: 20,
@@ -116,7 +130,7 @@ class _VideoControlsState extends State<_VideoControls>
     );
   }
 
-  Widget _bottomControls() {
+  Widget _bottomControls(BuildContext context) {
     return Row(
       children: [
         IconButton(
@@ -132,22 +146,22 @@ class _VideoControlsState extends State<_VideoControls>
           ),
         ),
         Text(
-          '${(player.position.value / 1000).shortTimeStr}/${(player.duration.value / 1000).shortTimeStr}',
+          '${(player.position.value / 1000).shortTimeStr}/${(player.duration
+              .value / 1000).shortTimeStr}',
         ),
         Expanded(child: Container()),
         IconButton(
-          tooltip: _isFullscreen(context)
+          tooltip:
+          _isFullscreen(context)
               ? S.current.exit_fullscreen
               : S.current.fullscreen,
           onPressed: () {
             setState(() {
-              widget.state.toggleFullscreen();
+              _toggleFullscreen(context);
             });
           },
           icon: Icon(
-            widget.state.isFullscreen()
-                ? Icons.fullscreen_exit
-                : Icons.fullscreen,
+            _isFullscreen(context) ? Icons.fullscreen_exit : Icons.fullscreen,
           ),
         ),
       ],
@@ -191,7 +205,10 @@ class _VideoControlsState extends State<_VideoControls>
       scaleX: progress,
       alignment: Alignment.bottomLeft,
       child: Container(
-        color: ColorScheme.of(context).primary.withValues(alpha: 0.5),
+        color: ColorScheme
+            .of(context)
+            .primary
+            .withValues(alpha: 0.5),
         child: SizedBox(width: double.infinity, height: 2),
       ),
     );
@@ -270,7 +287,10 @@ class _VideoControlsState extends State<_VideoControls>
                           width: double.infinity,
                           child: IntrinsicHeight(
                             child: Column(
-                              children: [_progressBar(), _bottomControls()],
+                              children: [
+                                _progressBar(),
+                                _bottomControls(context),
+                              ],
                             ),
                           ),
                         ),
@@ -283,13 +303,13 @@ class _VideoControlsState extends State<_VideoControls>
                     padding: EdgeInsets.only(right: 20, bottom: 80),
                     child: ScaleAnimatedSwitcher(
                       child:
-                          player.playing
-                              ? null
-                              : Icon(
-                                TDTxNFIcons.nf_md_presentation_play,
-                                size: 50,
-                                color: Colors.white.withValues(alpha: 0.7),
-                              ),
+                      player.playing
+                          ? null
+                          : Icon(
+                        TDTxNFIcons.nf_md_presentation_play,
+                        size: 50,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
                     ),
                   ),
                 ),
