@@ -86,6 +86,7 @@
   "replay_10s": "后退10s",
   "reset": "重置",
   "scan_login": "扫码登录",
+  "scanning": "扫描中",
   "server_addr": "服务器地址",
   "set_host_addr": "配置服务器地址",
   "settings": "设置",

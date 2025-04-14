@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/pages/languages/languages.dart';
+import 'package:h_nas/pages/settings/scan_dialog.dart';
+import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import '../../generated/l10n.dart';
 import '../../prefs.dart';

@@ -47,6 +47,21 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
     Navigator.of(context).pop();
   }
 
+  void _showScanDialog(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return ScanDialog();
+      },
+    ).then((v) {
+      if (v != null) {
+        controller.text = v as String;
+        _url = v;
+        _check();
+      }
+    });
+  }
+
   @override
   void dispose() {
     controller.dispose();
@@ -92,6 +107,16 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
         ],
       ),
       actions: [
+        if (UniversalPlatform.isAndroid)
+          IconButton(
+            onPressed: () {
+              _showScanDialog(context);
+            },
+            icon: Icon(
+              TDTxNFIcons.nf_md_search_web,
+              color: ColorScheme.of(context).primary.withValues(alpha: 0.6),
+            ),
+          ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
