@@ -74,7 +74,7 @@ class _VideoControlsState extends State<_VideoControls>
   void initState() {
     super.initState();
     _playPauseController = AnimationController(
-      value: player.playing ? 0 : 1,
+      value: player.playing ? 1 : 0,
       vsync: this,
       duration: durationFast,
     );
@@ -133,6 +133,22 @@ class _VideoControlsState extends State<_VideoControls>
         ),
         Text(
           '${(player.position.value / 1000).shortTimeStr}/${(player.duration.value / 1000).shortTimeStr}',
+        ),
+        Expanded(child: Container()),
+        IconButton(
+          tooltip: _isFullscreen(context)
+              ? S.current.exit_fullscreen
+              : S.current.fullscreen,
+          onPressed: () {
+            setState(() {
+              widget.state.toggleFullscreen();
+            });
+          },
+          icon: Icon(
+            widget.state.isFullscreen()
+                ? Icons.fullscreen_exit
+                : Icons.fullscreen,
+          ),
         ),
       ],
     );
