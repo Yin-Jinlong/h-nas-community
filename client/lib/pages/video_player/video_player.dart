@@ -8,7 +8,7 @@ import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:media_kit_video/media_kit_video_controls/media_kit_video_controls.dart'
-as media_kit_video_controls;
+    as media_kit_video_controls;
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
 
@@ -43,10 +43,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     if (file == null) {
-      file = ModalRoute
-          .of(context)
-          ?.settings
-          .arguments as FileInfo;
+      file = ModalRoute.of(context)?.settings.arguments as FileInfo;
       _load();
     }
 
@@ -72,8 +69,7 @@ class _VideoControlsState extends State<_VideoControls>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
   final MediaPlayer player = Global.player;
-  bool _showControls = false,
-      _disposed = false;
+  bool _showControls = false, _disposed = false;
   CancelableOperation? _showControlsOperation;
 
   @override
@@ -146,15 +142,14 @@ class _VideoControlsState extends State<_VideoControls>
           ),
         ),
         Text(
-          '${(player.position.value / 1000).shortTimeStr}/${(player.duration
-              .value / 1000).shortTimeStr}',
+          '${(player.position.value / 1000).shortTimeStr}/${(player.duration.value / 1000).shortTimeStr}',
         ),
         Expanded(child: Container()),
         IconButton(
           tooltip:
-          _isFullscreen(context)
-              ? S.current.exit_fullscreen
-              : S.current.fullscreen,
+              _isFullscreen(context)
+                  ? S.current.exit_fullscreen
+                  : S.current.fullscreen,
           onPressed: () {
             setState(() {
               _toggleFullscreen(context);
@@ -205,10 +200,7 @@ class _VideoControlsState extends State<_VideoControls>
       scaleX: progress,
       alignment: Alignment.bottomLeft,
       child: Container(
-        color: ColorScheme
-            .of(context)
-            .primary
-            .withValues(alpha: 0.5),
+        color: ColorScheme.of(context).primary.withValues(alpha: 0.5),
         child: SizedBox(width: double.infinity, height: 2),
       ),
     );
@@ -228,8 +220,25 @@ class _VideoControlsState extends State<_VideoControls>
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () {
-              player.playPause();
-              setState(() {});
+              if (UniversalPlatform.isDesktopOrWeb) {
+                player.playPause();
+              } else {
+                if (_showControls) {
+                  _showControlsOperation?.cancel();
+                  setState(() {
+                    _showControls = false;
+                  });
+                } else {
+                  _show();
+                }
+              }
+            },
+            onDoubleTap: () {
+              if (!UniversalPlatform.isDesktopOrWeb) {
+                player.playPause();
+              } else {
+                _toggleFullscreen(context);
+              }
             },
             child: Stack(
               children: [
@@ -303,13 +312,13 @@ class _VideoControlsState extends State<_VideoControls>
                     padding: EdgeInsets.only(right: 20, bottom: 80),
                     child: ScaleAnimatedSwitcher(
                       child:
-                      player.playing
-                          ? null
-                          : Icon(
-                        TDTxNFIcons.nf_md_presentation_play,
-                        size: 50,
-                        color: Colors.white.withValues(alpha: 0.7),
-                      ),
+                          player.playing
+                              ? null
+                              : Icon(
+                                TDTxNFIcons.nf_md_presentation_play,
+                                size: 50,
+                                color: Colors.white.withValues(alpha: 0.7),
+                              ),
                     ),
                   ),
                 ),
