@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/media/media_file.dart';
 import 'package:h_nas/media/media_player.dart';
+import 'package:h_nas/utils/audio_info_exts.dart';
 
 import '../../global.dart';
 
@@ -37,10 +38,10 @@ class _MoreSheetState extends State<PLayListSheet> {
               ? Icon(player.playing ? Icons.pause_circle : Icons.play_circle)
               : Text('$num', style: TextStyle().copyWith(fontSize: 20)),
       title: Text(
-        file.audioInfo?.title ?? '?',
+        file.audioInfo?.userTitle ?? '?',
         style: TextStyle().copyWith(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(file.audioInfo?.artists ?? '?'),
+      subtitle: Text(file.audioInfo?.artistAlbum ?? '?'),
       selected: playingThis,
       onTap: () {
         if (player.nowPlay.value == file) {

@@ -13,6 +13,7 @@ import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/pages/audio_player/play_sheet.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/audio_info_exts.dart';
 import 'package:h_nas/utils/lrc_utils.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:lrc/lrc.dart';
@@ -421,13 +422,13 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        info?.title ?? '?',
+                        info?.userTitle ?? '?',
                         style: TextTheme.of(
                           context,
                         ).headlineSmall?.copyWith(color: Colors.white),
                       ),
                       Text(
-                        info?.artists ?? '?',
+                        info?.userArtist ?? '?',
                         style: TextTheme.of(context).bodySmall?.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
                         ),

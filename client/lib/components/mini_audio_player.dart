@@ -8,6 +8,7 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/routes.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/audio_info_exts.dart';
 
 import 'marquee.dart';
 
@@ -62,8 +63,8 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
   }
 
   Widget _content(BuildContext context) {
-    var title = player.audioInfo.value?.title ?? '?';
-    var artists = player.audioInfo.value?.artists ?? '?';
+    var title = player.audioInfo.value?.userTitle ?? '?';
+    var artists = player.audioInfo.value?.userArtist ?? '?';
 
     return Container(
       decoration: _MiniProgressDecoration(
