@@ -31,6 +31,7 @@ abstract class Global {
   );
   static Locale locale = Prefs.locale;
   static ValueNotifier<ThemeData> theme = ValueNotifier(Prefs.theme);
+  static ValueNotifier<bool> isDark = ValueNotifier(false);
 
   static ListModel<UploadFileTask> uploadTasks = ListModel();
   static ListModel<DownloadFileTask> downloadTasks = ListModel();

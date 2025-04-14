@@ -2,10 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_file.dart';
+import 'package:h_nas/plugin/notifications_plugin.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/audio_info_exts.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 enum PlayMode {
   /// 播放列表一遍
@@ -58,6 +62,7 @@ class MediaPlayer {
     stream
       ..playing.listen((playing) {
         _playState.notify();
+        _showNotification();
       })
       ..duration.listen((dur) {
         duration.value = dur.inMilliseconds;
@@ -78,14 +83,20 @@ class MediaPlayer {
       ..playlist.listen((list) {
         if (list.medias.isEmpty) {
           nowPlay.value = null;
+          playList.value = [];
           return;
         }
+        playList.value = list.medias.map((e) => e as MediaFile).toList();
+
         var mediaFile = (list.medias[list.index] as MediaFile);
         nowPlay.value = mediaFile;
         mediaFile.loadInfo().then((v) {
           audioInfo.value = v;
+          _showNotification();
         });
       });
+
+    Global.isDark.addListener(_showNotification);
 
     playMode.addListener(() {
       _updatePlayListMode();
@@ -109,6 +120,16 @@ class MediaPlayer {
       duration.value > 0
           ? clampDouble(buffer.value / duration.value, 0, 1)
           : null;
+
+  void _showNotification() {
+    if (!UniversalPlatform.isAndroid) return;
+    final info = audioInfo.value;
+    NotificationsPlugin.showPlayerNotification(
+      info?.userTitle ?? '?',
+      info?.userArtist ?? '?',
+      playing,
+    );
+  }
 
   void _updatePlayListMode() {
     _shuffle = false;
@@ -150,7 +171,6 @@ class MediaPlayer {
 
   Future<void> openList(Iterable<FileInfo> files, {int index = 0}) async {
     final list = files.map((e) => MediaFile(file: e)).toList();
-    playList.value = list;
     await _player.open(Playlist(list, index: index));
   }
 
@@ -168,6 +188,12 @@ class MediaPlayer {
 
   Future<void> stop() async {
     await _player.stop();
+    playList.value = [];
+    nowPlay.value = null;
+    audioInfo.value = null;
+    if (UniversalPlatform.isAndroid) {
+      NotificationsPlugin.removePlayerNotification();
+    }
   }
 
   Future<void> previous() async {
@@ -197,6 +223,7 @@ class MediaPlayer {
   }
 
   void dispose() {
+    Global.isDark.removeListener(_showNotification);
     position.dispose();
     duration.dispose();
     audioInfo.dispose();

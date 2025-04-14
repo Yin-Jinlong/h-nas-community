@@ -76,6 +76,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   _newAudio() {
+    lrc = null;
     player.nowPlay.value?.loadInfo().then((v) {
       var lrcStr = v?.lrc;
       if (lrcStr?.isValidLrc == true) {
@@ -211,18 +212,22 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _cover() {
+    final path = player.audioInfo.value?.path;
     return Hero(
       tag: 'audio_cover',
-      child: CoverView(
-        rotate: player.playing,
-        child: CachedNetworkImage(
-          imageUrl: FileAPIURL.publicAudioCover(player.audioInfo.value!.path),
-          fit: BoxFit.cover,
-          errorWidget: (context, error, stackTrace) {
-            return Icon(Icons.broken_image);
-          },
-        ),
-      ),
+      child:
+          path == null
+              ? Icon(Icons.broken_image)
+              : CoverView(
+                rotate: player.playing,
+                child: CachedNetworkImage(
+                  imageUrl: FileAPIURL.publicAudioCover(path),
+                  fit: BoxFit.cover,
+                  errorWidget: (context, error, stackTrace) {
+                    return Icon(Icons.broken_image);
+                  },
+                ),
+              ),
     );
   }
 
@@ -480,7 +485,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       context: context,
       constraints: BoxConstraints(minWidth: 100),
       builder: (context) {
-        return MoreSheet(info: player.audioInfo.value!);
+        return MoreSheet(info: player.audioInfo.value);
       },
     );
   }

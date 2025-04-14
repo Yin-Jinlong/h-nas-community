@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../../global.dart';
 
 class MoreSheet extends StatefulWidget {
-  final AudioFileInfo info;
+  final AudioFileInfo? info;
 
   const MoreSheet({super.key, required this.info});
 
@@ -45,7 +45,7 @@ class _MoreSheetState extends State<MoreSheet> {
     setState(() {});
   }
 
-  Widget _info(BuildContext context) {
+  Widget _info(BuildContext context, AudioFileInfo info) {
     return IntrinsicHeight(
       child: Padding(
         padding: EdgeInsets.all(12),
@@ -54,7 +54,7 @@ class _MoreSheetState extends State<MoreSheet> {
             ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               child: CachedNetworkImage(
-                imageUrl: FileAPIURL.publicAudioCover(widget.info.path),
+                imageUrl: FileAPIURL.publicAudioCover(info.path),
                 fit: BoxFit.cover,
                 width: 80,
                 height: 80,
@@ -68,12 +68,12 @@ class _MoreSheetState extends State<MoreSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      widget.info.userTitle,
+                      info.userTitle,
                       style: TextTheme.of(
                         context,
                       ).titleLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    Text(widget.info.artistAlbum),
+                    Text(info.artistAlbum),
                   ],
                 ),
               ),
@@ -148,7 +148,11 @@ class _MoreSheetState extends State<MoreSheet> {
         padding: EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [_info(context), _volume(), _speed()],
+          children: [
+            if (widget.info != null) _info(context, widget.info!),
+            _volume(),
+            _speed(),
+          ],
         ),
       ),
     );

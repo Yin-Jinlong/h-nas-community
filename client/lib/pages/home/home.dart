@@ -51,8 +51,6 @@ class HomePage extends StatefulWidget {
   }
 }
 
-bool _showPlayer = false;
-
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<FileInfo> files = [];
   List<FileInfo> images = [];
@@ -69,8 +67,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    Global.player.playList.addListener(_render);
     Global.player.playState.addListener(_render);
-    Global.player.audioInfo.addListener(_render);
     Global.player.audioInfo.addListener(_render);
 
     updateFiles();
@@ -144,14 +142,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       final index = audios.indexOf(file);
       if (index < 0) return;
       Global.player.openList(audios, index: index);
-      _showPlayer = true;
     });
   }
 
   _playVideo(FileInfo file) {
-    setState(() {
-      _showPlayer = false;
-    });
+    setState(() {});
     Navigator.of(context).pushNamed(Routes.videoPlayer, arguments: file);
   }
 
@@ -434,6 +429,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    Global.player.playList.removeListener(_render);
     Global.player.playState.removeListener(_render);
     Global.player.audioInfo.removeListener(_render);
     Global.player.audioInfo.removeListener(_render);
@@ -575,14 +571,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   );
                 },
                 child:
-                    _showPlayer
+                    Global.player.playList.value.isNotEmpty
                         ? IntrinsicWidth(
                           child: MiniAudioPlayer(
                             onClose: () {
                               Global.player.stop();
-                              setState(() {
-                                _showPlayer = false;
-                              });
                             },
                           ),
                         )
@@ -643,7 +636,10 @@ class _HomeFloatingActionButtonLocation extends StandardFabLocation
       getOffsetY(
         scaffoldGeometry,
         adjustment -
-            ((!UniversalPlatform.isDesktopOrWeb && _showPlayer) ? 50 : 0),
+            ((!UniversalPlatform.isDesktopOrWeb &&
+                    Global.player.playList.value.isNotEmpty)
+                ? 50
+                : 0),
       ),
     );
   }

@@ -6,12 +6,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/model/user_model.dart';
+import 'package:h_nas/plugin/notifications_plugin.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import 'generated/l10n.dart';
 
@@ -22,6 +24,7 @@ void main() async {
   await Prefs.init();
   await Global.init();
   await Settings.init();
+  NotificationsPlugin.init();
   Global.packageInfo = await PackageInfo.fromPlatform();
 
   runApp(const MyApp());
@@ -51,6 +54,21 @@ class _MyAppState extends State<MyApp> {
     Global.theme.addListener(() {
       setState(() {});
     });
+
+    Global.isDark.value =
+        PlatformDispatcher.instance.platformBrightness == Brightness.dark;
+    PlatformDispatcher.instance.onPlatformBrightnessChanged = () {
+      Global.isDark.value =
+          PlatformDispatcher.instance.platformBrightness == Brightness.dark;
+    };
+
+    if (UniversalPlatform.isAndroid) {
+      NotificationsPlugin.hasPermission().then((v) {
+        if (!v) {
+          NotificationsPlugin.requestPermission();
+        }
+      });
+    }
   }
 
   @override

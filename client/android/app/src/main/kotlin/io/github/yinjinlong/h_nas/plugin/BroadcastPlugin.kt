@@ -1,7 +1,8 @@
-package io.github.yinjinlong.h_nas
+package io.github.yinjinlong.h_nas.plugin
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.github.yinjinlong.h_nas.Broadcast
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
