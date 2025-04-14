@@ -51,6 +51,8 @@ class HomePage extends StatefulWidget {
   }
 }
 
+bool _showPlayer = false;
+
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<FileInfo> files = [];
   List<FileInfo> images = [];
@@ -59,7 +61,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late ModalRoute route;
   final _openFloatingMenu = ValueNotifier(false);
   SortType sortType = SortType.name;
-  bool sortAsc = true, _showPlayer = false;
+  bool sortAsc = true;
 
   /// 正在拖拽
   bool _dragging = false;
@@ -591,6 +593,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ],
       ),
       drawer: _drawer(context),
+      floatingActionButtonLocation: const _HomeFloatingActionButtonLocation(),
       floatingActionButton: SpeedDial(
         openCloseDial: _openFloatingMenu,
         overlayColor: Colors.black,
@@ -623,6 +626,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _HomeFloatingActionButtonLocation extends StandardFabLocation
+    with FabEndOffsetX, FabFloatOffsetY {
+  const _HomeFloatingActionButtonLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double adjustment = isMini() ? kMiniButtonOffsetAdjustment : 0.0;
+    return Offset(
+      getOffsetX(scaffoldGeometry, adjustment),
+      getOffsetY(
+        scaffoldGeometry,
+        adjustment -
+            ((!UniversalPlatform.isDesktopOrWeb && _showPlayer) ? 50 : 0),
       ),
     );
   }
