@@ -19,6 +19,8 @@ class _MoreSheetState extends State<PLayListSheet> {
   void initState() {
     super.initState();
     player = Global.player;
+    player.nowPlay.addListener(_render);
+    player.playState.addListener(_render);
   }
 
   _render() {
@@ -45,9 +47,7 @@ class _MoreSheetState extends State<PLayListSheet> {
       selected: playingThis,
       onTap: () {
         if (player.nowPlay.value == file) {
-          player.playPause().then((value) {
-            setState(() {});
-          });
+          player.playPause();
         } else {
           player.jump(player.playList.value.indexOf(file));
           Navigator.of(context).pop();
@@ -58,7 +58,8 @@ class _MoreSheetState extends State<PLayListSheet> {
 
   @override
   void dispose() {
-    player.volume.removeListener(_render);
+    player.nowPlay.removeListener(_render);
+    player.playState.removeListener(_render);
     super.dispose();
   }
 
