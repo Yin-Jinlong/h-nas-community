@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
 import 'package:h_nas/components/cover_view.dart';
+import 'package:h_nas/components/marquee.dart';
 import 'package:h_nas/components/tag.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
@@ -421,16 +422,20 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        info?.userTitle ?? '?',
+                      Marquee.text(
+                        text: info?.userTitle ?? '?',
+                        maxWidth: MediaQuery.of(context).size.width * 0.7,
+                        space: 30,
                         style: TextTheme.of(
                           context,
-                        ).headlineSmall?.copyWith(color: Colors.white),
+                        ).titleMedium?.copyWith(color: Colors.white),
                       ),
-                      Text(
-                        info?.userArtist ?? '?',
+                      Marquee.text(
+                        text: info?.userArtist ?? '?',
+                        maxWidth: MediaQuery.of(context).size.width * 0.6,
+                        space: 20,
                         style: TextTheme.of(context).bodySmall?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: Colors.white.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
