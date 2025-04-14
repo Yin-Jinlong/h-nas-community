@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/media/media_file.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/audio_info_exts.dart';
@@ -70,10 +71,17 @@ class _MoreSheetState extends State<PLayListSheet> {
       width: double.infinity,
       child: Padding(
         padding: EdgeInsets.all(8),
-        child: ListView(
+        child: Column(
           children: [
-            for (var i = 0; i < list.length; i++)
-              _item(context, i + 1, list[i]),
+            Text(S.current.playlist),
+            Expanded(
+              child: ListView(
+                children: [
+                  for (var i = 0; i < list.length; i++)
+                    _item(context, i + 1, list[i]),
+                ],
+              ),
+            ),
           ],
         ),
       ),
