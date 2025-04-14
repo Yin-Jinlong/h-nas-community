@@ -43,8 +43,14 @@ class _MoreSheetState extends State<PLayListSheet> {
       subtitle: Text(file.audioInfo?.artists ?? '?'),
       selected: playingThis,
       onTap: () {
-        player.jump(player.playList.value.indexOf(file));
-        Navigator.of(context).pop();
+        if (player.nowPlay.value == file) {
+          player.playPause().then((value) {
+            setState(() {});
+          });
+        } else {
+          player.jump(player.playList.value.indexOf(file));
+          Navigator.of(context).pop();
+        }
       },
     );
   }
