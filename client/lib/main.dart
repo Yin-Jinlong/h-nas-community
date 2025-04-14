@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -75,6 +77,7 @@ class _MyAppState extends State<MyApp> {
         ],
         supportedLocales: S.delegate.supportedLocales,
         theme: Global.theme.value,
+        scrollBehavior: const _ScrollBehavior(),
         navigatorKey: navigatorKey,
         navigatorObservers: [BotToastNavigatorObserver()],
         onGenerateRoute: (settings) {
@@ -115,4 +118,14 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+class _ScrollBehavior extends MaterialScrollBehavior {
+  const _ScrollBehavior();
+
+  @override
+  final Set<PointerDeviceKind> dragDevices = const {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+  };
 }
