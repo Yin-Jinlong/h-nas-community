@@ -478,7 +478,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   _showPlayListSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      constraints: BoxConstraints(minWidth: 100),
+      isScrollControlled: true,
+      constraints: BoxConstraints(minWidth: 100, maxHeight: double.infinity),
       builder: (context) {
         return PLayListSheet();
       },

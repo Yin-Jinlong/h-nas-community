@@ -67,24 +67,33 @@ class _MoreSheetState extends State<PLayListSheet> {
   @override
   Widget build(BuildContext context) {
     final list = player.playList.value;
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          children: [
-            Text(S.current.playlist),
-            Expanded(
-              child: ListView(
-                children: [
-                  for (var i = 0; i < list.length; i++)
-                    _item(context, i + 1, list[i]),
-                ],
-              ),
+    return DraggableScrollableSheet(
+      initialChildSize: 0.5,
+      minChildSize: 0.3,
+      maxChildSize: 0.9,
+      expand: false,
+      builder: (context, scrollController) {
+        return SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              children: [
+                Text(S.current.playlist),
+                Expanded(
+                  child: ListView(
+                    controller: scrollController,
+                    children: [
+                      for (var i = 0; i < list.length; i++)
+                        _item(context, i + 1, list[i]),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
