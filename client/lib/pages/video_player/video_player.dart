@@ -48,6 +48,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     }
 
     return Scaffold(
+      appBar: AppBar(title: Text(file?.name ?? '')),
       body: Video(
         controller: _controller,
         controls: (state) => _VideoControls(file: file!),
@@ -246,7 +247,7 @@ class _VideoControlsState extends State<_VideoControls>
                   alignment: Alignment.bottomLeft,
                   child: _miniProgressBar(context, player.progress ?? 0),
                 ),
-                if (_showControls)
+                if (_showControls && _isFullscreen(context))
                   Align(
                     alignment: Alignment.topCenter,
                     child: Container(
