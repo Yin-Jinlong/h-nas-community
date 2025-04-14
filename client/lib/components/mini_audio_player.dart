@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
@@ -25,6 +26,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
   late final MediaPlayer player;
+  final FocusNode _rootNode = FocusNode();
 
   @override
   void initState() {
@@ -49,6 +51,21 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
       _playPauseController.forward();
     } else {
       _playPauseController.reverse();
+    }
+  }
+
+  void _onKeyDown(KeyDownEvent e) {
+    switch (e.logicalKey) {
+      case LogicalKeyboardKey.mediaPlay:
+        player.play();
+        break;
+      case LogicalKeyboardKey.mediaPause:
+        player.pause();
+        break;
+      case LogicalKeyboardKey.space:
+      case LogicalKeyboardKey.mediaPlayPause:
+        player.playPause();
+        break;
     }
   }
 
@@ -161,16 +178,27 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: InkWell(
-        hoverColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        splashColor: Colors.transparent,
-        onTap: () {
-          Navigator.of(context).pushNamed(Routes.audioPlayer);
-        },
-        child: _content(context),
+    return KeyboardListener(
+      focusNode: _rootNode,
+      autofocus: true,
+      onKeyEvent: (value) {
+        switch (value) {
+          case KeyDownEvent e:
+            _onKeyDown(e);
+            break;
+        }
+      },
+      child: Card(
+        elevation: 5,
+        child: InkWell(
+          hoverColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.audioPlayer);
+          },
+          child: _content(context),
+        ),
       ),
     );
   }

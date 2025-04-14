@@ -37,6 +37,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   bool _changing = false, _showLrcView = false;
   double _progress = 0;
   Lrc? lrc;
+  final FocusScopeNode _rootNode = FocusScopeNode();
 
   @override
   void initState() {
@@ -122,6 +123,18 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     };
   }
 
+  void _seekBackward(Duration t) {
+    var duration = player.state.position - t;
+    player.seek(duration < const Duration() ? const Duration() : duration);
+  }
+
+  void _seekForward(Duration t) {
+    var duration = player.state.position + t;
+    player.seek(
+      duration > player.state.duration ? player.state.duration : duration,
+    );
+  }
+
   List<Widget> _controllers(BuildContext context) {
     final wide = MediaQuery.of(context).size.width > 650;
     const size = 40.0;
@@ -141,10 +154,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         IconButton(
           tooltip: S.current.replay_10s,
           onPressed: () {
-            var duration = player.state.position - const Duration(seconds: 10);
-            player.seek(
-              duration < const Duration() ? const Duration() : duration,
-            );
+            _seekBackward(const Duration(seconds: 10));
           },
           icon: Icon(Icons.replay_10, size: size),
         ),
@@ -186,12 +196,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         IconButton(
           tooltip: S.current.forward_10s,
           onPressed: () {
-            var duration = player.state.position + const Duration(seconds: 10);
-            player.seek(
-              duration > player.state.duration
-                  ? player.state.duration
-                  : duration,
-            );
+            _seekForward(const Duration(seconds: 10));
           },
           icon: Icon(Icons.forward_10, size: size),
         ),
@@ -491,6 +496,24 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
     );
   }
 
+  void _onKeyDown(KeyDownEvent e) {
+    switch (e.logicalKey) {
+      case LogicalKeyboardKey.mediaPlay:
+        player.play();
+        break;
+      case LogicalKeyboardKey.mediaPause:
+        player.pause();
+        break;
+      case LogicalKeyboardKey.space:
+      case LogicalKeyboardKey.mediaPlayPause:
+        player.playPause();
+        break;
+      case LogicalKeyboardKey.escape:
+        Navigator.of(context).pop();
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final player = Global.player;
@@ -500,49 +523,62 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           HSVColor.fromColor(
             ColorScheme.of(context).primary,
           ).withValue(0.3).toColor(),
-      body: Stack(
-        children: [
-          CachedNetworkImage(
-            imageUrl:
-                player.audioInfo.value != null
-                    ? FileAPIURL.publicAudioCover(player.audioInfo.value!.path)
-                    : '',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-            fadeInDuration: durationMedium,
-            errorWidget: (context, error, stackTrace) {
-              return Container(
+      body: KeyboardListener(
+        focusNode: _rootNode,
+        autofocus: true,
+        onKeyEvent: (value) {
+          switch (value) {
+            case KeyDownEvent e:
+              _onKeyDown(e);
+              break;
+          }
+        },
+        child: Stack(
+          children: [
+            CachedNetworkImage(
+              imageUrl:
+                  player.audioInfo.value != null
+                      ? FileAPIURL.publicAudioCover(
+                        player.audioInfo.value!.path,
+                      )
+                      : '',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              fadeInDuration: durationMedium,
+              errorWidget: (context, error, stackTrace) {
+                return Container(
+                  color:
+                      HSVColor.fromColor(
+                        ColorScheme.of(context).primary,
+                      ).withValue(0.3).toColor(),
+                );
+              },
+            ),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+              child: Container(color: Colors.black.withValues(alpha: 0.4)),
+            ),
+            IconTheme(
+              data: IconThemeData(
+                size: 30,
                 color:
                     HSVColor.fromColor(
                       ColorScheme.of(context).primary,
-                    ).withValue(0.3).toColor(),
-              );
-            },
-          ),
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-            child: Container(color: Colors.black.withValues(alpha: 0.4)),
-          ),
-          IconTheme(
-            data: IconThemeData(
-              size: 30,
-              color:
-                  HSVColor.fromColor(
-                    ColorScheme.of(context).primary,
-                  ).withSaturation(0.1).withValue(1).toColor(),
-            ),
-            child: DefaultTextStyle(
-              style: TextStyle(color: Colors.white),
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: _content(context),
+                    ).withSaturation(0.1).withValue(1).toColor(),
+              ),
+              child: DefaultTextStyle(
+                style: TextStyle(color: Colors.white),
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: _content(context),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
