@@ -35,9 +35,6 @@ interface ChildrenCountMapper {
     //  改  //
     //******//
 
-    @Update("update children_count set fid = #{newId} where fid = #{fid}")
-    fun updateId(fid: FileId, newId: FileId): Int
-
     @Update("update children_count set sub_count = #{subCount}, subs_count = #{subsCount} where fid = #{fid}")
     fun updateCount(fid: FileId, subCount: Int, subsCount: Int): Int
 

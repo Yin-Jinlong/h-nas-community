@@ -227,9 +227,9 @@ class PubFileController(
         val end = kotlin.math.min(range?.getRangeEnd(len) ?: (len - 1), len - 1)
         val size = end - start + 1
 
-        resp.contentType = vf.mediaType
         if (range != null)
             resp.status = HttpStatus.PARTIAL_CONTENT.value()
+        resp.contentType = "${map.type}/${map.subType}"
         resp.setContentLengthLong(size)
         resp.setHeader(HttpHeaders.CONTENT_RANGE, "bytes $start-$end/$len")
 

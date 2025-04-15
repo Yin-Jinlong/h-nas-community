@@ -1,8 +1,6 @@
 package com.yjl.hnas.mapper
 
-import com.yjl.hnas.entity.FileId
-import com.yjl.hnas.entity.Hash
-import com.yjl.hnas.entity.VirtualFile
+import com.yjl.hnas.entity.*
 import org.apache.ibatis.annotations.*
 import java.sql.Timestamp
 
@@ -17,7 +15,7 @@ interface VirtualFileMapper {
 
     @Select(
         """
-select fid, name, parent, hash, owner,user,media_type, create_time, update_time, size 
+select fid, name, parent, hash, owner,user, create_time, update_time, size 
 from virtual_file 
 where fid = #{fid}
 """
@@ -26,7 +24,35 @@ where fid = #{fid}
 
     @Select(
         """
-select fid, name, parent, hash, owner,user,media_type, create_time, update_time, size 
+select update_time
+from virtual_file 
+where fid = #{fid}
+"""
+    )
+    fun selectUpdateTimeById(id: FileId): Timestamp?
+
+    @Select(
+        """
+select fid
+from virtual_file 
+where name = #{name} and parent = #{parent}
+"""
+    )
+    fun selectIdByNameParent(name: String, parent: FileId): FileId?
+
+    @Select(
+        """
+select fid
+from virtual_file 
+where user = #{user} and parent = #{parent}
+limit 1
+"""
+    )
+    fun selectRootIdByUser(user: Uid, parent: Hash = Hash(IVirtualFile.ID_LENGTH)): FileId?
+
+    @Select(
+        """
+select fid, name, parent, hash, owner,user, create_time, update_time ,size
 from virtual_file 
 where fid = #{fid} 
 for update
@@ -36,7 +62,7 @@ for update
 
     @Select(
         """
-select fid, name, parent, hash, owner,user,media_type, create_time, update_time, size 
+select fid, name, parent, hash, owner,user, create_time, update_time, size
 from virtual_file 
 where parent = #{parent} 
 order by hash is not null,name
@@ -53,8 +79,8 @@ order by hash is not null,name
 
     @Insert(
         """
-insert into virtual_file(fid,hash, name, parent, owner,user,media_type,create_time,update_time,size) 
-VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{mediaType}, #{createTime}, #{updateTime}, #{size})
+insert into virtual_file(hash, name, parent, owner,user,size) 
+VALUES (#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{size})
 """
     )
     fun insert(virtualFile: VirtualFile): Int
@@ -62,6 +88,9 @@ VALUES (#{fid},#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{mediaType}, #{c
     //******//
     //  改  //
     //******//
+
+    @Update("update virtual_file set name = #{name},update_time=current_timestamp() where fid = #{fid}")
+    fun updateName(fid: FileId, name: String): Int
 
     @Update("update virtual_file set size = #{size} where fid = #{fid}")
     fun updateSize(fid: FileId, size: Long): Int

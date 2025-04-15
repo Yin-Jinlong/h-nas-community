@@ -17,7 +17,10 @@ import com.yjl.hnas.mapper.VirtualFileMapper
 import com.yjl.hnas.service.AbstractVirtualFileService
 import com.yjl.hnas.service.TooManyChildrenException
 import com.yjl.hnas.tika.FileDetector
-import com.yjl.hnas.utils.*
+import com.yjl.hnas.utils.del
+import com.yjl.hnas.utils.isAudioMediaType
+import com.yjl.hnas.utils.isVideoMediaType
+import com.yjl.hnas.utils.mkParent
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
@@ -69,7 +72,7 @@ class VirtualFileServiceImpl(
     }
 
     private tailrec fun updateParent(path: VirtualPath, op: VirtualFile.() -> Unit) {
-        val vf = virtualFileMapper.selectByIdLock(path.id)
+        val vf = virtualFileMapper.selectByIdLock(pathIdOrThrow(path))
             ?: throw IllegalStateException("数据库文件不存在: $path")
         vf.op()
         val p = path.parent
@@ -93,29 +96,28 @@ class VirtualFileServiceImpl(
         path: VirtualPath,
         hash: Hash,
         size: Long,
-        mediaType: MediaType,
         dataFile: File,
-        dataPath: String
+        dataPath: String,
+        sis: Long
     ) {
         if (size != dataFile.length())
             throw IllegalArgumentException("文件大小不匹配: $path")
-        val time = System.currentTimeMillis().timestamp
         val parent = path.parent
         virtualFileMapper.insert(
             VirtualFile(
-                fid = path.id,
                 name = path.name,
                 parent = parent.id,
                 hash = hash,
                 owner = owner,
                 user = user,
-                mediaType = mediaType.toString(),
-                createTime = time,
-                updateTime = time,
                 size = size
             )
         )
         updateParentSize(parent, size)
+
+        val time = virtualFileMapper.selectUpdateTimeById(path.id)
+            ?: throw IllegalStateException("数据库文件不存在: $path")
+
         updateParentUpdateTime(parent, time)
         updateCount(parent, 1)
 
@@ -156,7 +158,7 @@ class VirtualFileServiceImpl(
             val type = FileDetector.detect(ins, path.name)
             val dataFile = dataFile(type, hash)
             if (dataFile.exists()) {
-                insertFile(owner, user, path, hash, fileSize, type, dataFile, dataPath(type, hash))
+                insertFile(owner, user, path, hash, fileSize, dataFile, dataPath(type, hash), dataFile.length())
                 return true
             }
         }
@@ -171,7 +173,7 @@ class VirtualFileServiceImpl(
                 throw IllegalArgumentException("文件不存在: $path")
             val type = tmpFile.inputStream().buffered().use { FileDetector.detect(it, path.name) }
             val dataFile = dataFile(type, hash)
-            insertFile(owner, user, path, hash, fileSize, type, tmpFile, dataPath(type, hash))
+            insertFile(owner, user, path, hash, fileSize, tmpFile, dataPath(type, hash), dataFile.length())
             dataFile.mkParent()
             Files.move(tmpFile.toPath(), dataFile.toPath())
             return true
@@ -211,22 +213,7 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     protected fun insertDir(owner: Uid, user: Uid, dir: VirtualPath) {
-        val fid = dir.id
-        if (dir.isRoot) {
-            val time = System.currentTimeMillis().timestamp
-            virtualFileMapper.insert(
-                VirtualFile(
-                    fid = fid,
-                    name = "",
-                    parent = Hash(IVirtualFile.ID_LENGTH),
-                    hash = null,
-                    createTime = time,
-                    updateTime = time,
-                )
-            )
-            childrenCountMapper.insert(fid)
-            return
-        }
+        if (dir.isRoot) return
 
         val p = dir.parent
         if (!exists(p))
@@ -234,55 +221,41 @@ class VirtualFileServiceImpl(
 
         if (p same dir)
             return
-        val time = System.currentTimeMillis().timestamp
-        virtualFileMapper.insert(
+        val id = insertAndGetId(
             VirtualFile(
-                fid = fid,
                 name = dir.name,
                 parent = p.id,
                 hash = null,
                 owner = owner,
                 user = user,
-                createTime = time,
-                updateTime = time,
             )
         )
-        childrenCountMapper.insert(fid)
-        updateParentUpdateTime(p, time)
+        childrenCountMapper.insert(id)
+        updateParentUpdateTime(
+            p, virtualFileMapper.selectUpdateTimeById(id)
+                ?: throw IllegalStateException("数据库没有文件: ${dir.fullPath}")
+        )
         updateCount(p, 1)
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun rename(path: VirtualPath, name: String) {
-        val oldId = path.id
-        val vf = virtualFileMapper.selectById(oldId)
+        val id = path.id
+        virtualFileMapper.selectByIdLock(id)
             ?: throw NoSuchFileException(path.fullPath)
-        if (vf.isFolder())
-            throw NoSuchFileException("不支持重命名文件夹")
-        val new = path.parent.resolve(name)
-        val newId = new.id
-        val time = System.currentTimeMillis().timestamp
-        virtualFileMapper.insert(
-            vf.copy(
-                fid = newId,
-                name = name,
-                updateTime = time,
-            )
-        )
-        virtualFileMapper.deleteById(vf.fid)
-        val cc = childrenCountMapper.selectByFidLock(oldId)
-            ?: throw IllegalStateException("children_count 不存在目录：$oldId")
-        childrenCountMapper.updateId(cc.fid, newId)
+        virtualFileMapper.updateName(id, name)
     }
 
     @Transactional(rollbackFor = [Exception::class])
     override fun getAudioInfo(path: VirtualPath): AudioFileInfo {
         val vf = getOrThrow(path)
-        val ai = checkAudio(vf)
+        val ai = getAudio(vf)
         if (ai != null)
             return AudioFileInfo.of(path.path, ai)
         val fm = fileMappingMapper.selectByHash(vf.hash!!)
             ?: throw IllegalStateException("file_mapping 不存在hash: ${vf.hash}")
+        if (!fm.type.isAudioMediaType)
+            throw ErrorCode.BAD_FILE_FORMAT.error
         return AudioFileInfo.of(
             path.path,
             (AudioInfoHelper.getInfo(vf.hash!!, fm) ?: AudioInfo(fid = path.id))
@@ -292,7 +265,7 @@ class VirtualFileServiceImpl(
 
     override fun getAudioCover(path: VirtualPath): File {
         val vf = getOrThrow(path)
-        val ai = checkAudio(vf)
+        val ai = getAudio(vf)
             ?: throw ErrorCode.BAD_FILE_FORMAT.error
         if (!ai.cover.isNullOrEmpty()) {
             return DataHelper.coverFile(ai.cover!!).apply {
@@ -346,7 +319,6 @@ class VirtualFileServiceImpl(
     override fun delete(path: VirtualPath) {
         val parent = path.parent
         val vf = getOrThrow(path)
-        val time = System.currentTimeMillis().timestamp
         val hash = vf.hash
         if (hash == null) {
             val counts = childrenCountMapper.selectByFid(vf.fid)
@@ -359,6 +331,7 @@ class VirtualFileServiceImpl(
                     delete(path.resolve(child.name))
                 }
             }
+            val time = Timestamp(System.currentTimeMillis())
             virtualFileMapper.deleteById(vf.fid)
             childrenCountMapper.deleteById(vf.fid)
             updateCount(parent, -1)
@@ -366,6 +339,7 @@ class VirtualFileServiceImpl(
             return
         }
         val count = virtualFileMapper.countHash(hash)
+        val time = Timestamp(System.currentTimeMillis())
         virtualFileMapper.deleteById(vf.fid)
         updateParentSize(parent, -vf.size)
         updateParentUpdateTime(parent, time)

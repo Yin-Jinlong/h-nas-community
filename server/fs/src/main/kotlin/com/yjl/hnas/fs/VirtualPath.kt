@@ -3,7 +3,7 @@ package com.yjl.hnas.fs
 import java.io.File
 import java.net.URI
 import java.nio.file.*
-import java.util.Arrays
+import java.util.*
 
 /**
  * `access:/path`
@@ -77,6 +77,8 @@ class VirtualPath private constructor(
         abs: Boolean,
         paths: Collection<String>,
     ) : this(fs, access, toPaths(paths), abs)
+
+    val names: List<String> = paths.toList()
 
     override fun compareTo(other: Path): Int = compareTo(check(other))
 

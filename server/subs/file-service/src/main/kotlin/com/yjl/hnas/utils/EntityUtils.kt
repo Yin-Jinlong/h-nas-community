@@ -13,7 +13,7 @@ fun IVirtualFile.toFileInfo(
         name = name,
         dir = dir.fullPath,
         fileType = type,
-        mediaType = mediaType.ifEmpty { null },
+        mediaType = hash?.let { fileMappingService.getMediaType(it) },
         createTime = createTime.time,
         updateTime = updateTime.time,
         size = if (type == IVirtualFile.Type.FOLDER) {

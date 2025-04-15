@@ -21,8 +21,6 @@ interface IVirtualFile {
 
     var user: Uid
 
-    var mediaType: String
-
     var createTime: Timestamp
 
     var updateTime: Timestamp
@@ -32,7 +30,7 @@ interface IVirtualFile {
     companion object {
         const val NAME_LENGTH = 128
         const val PATH_LENGTH = 1024
-        const val ID_LENGTH = 32
+        const val ID_LENGTH = 16
         const val HASH_LENGTH = 32
         const val TYPE_LENGTH = 32
         const val SUB_TYPE_LENGTH = 96

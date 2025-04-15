@@ -17,6 +17,9 @@ interface FileMappingMapper {
     @Select("select hash, data_path, type, sub_type, preview, size from file_mapping where hash = #{hash}")
     fun selectByHash(hash: Hash): FileMapping?
 
+    @Select("select concat(type,'/',sub_type) from file_mapping where hash = #{hash}")
+    fun selectMediaTypeByHash(hash: Hash): String?
+
     @Select("select hash, data_path, type, sub_type, preview, size from file_mapping where hash = #{hash} for update")
     fun selectByHashLock(hash: Hash): FileMapping?
 

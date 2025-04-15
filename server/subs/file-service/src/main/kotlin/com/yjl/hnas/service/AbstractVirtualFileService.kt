@@ -1,9 +1,6 @@
 package com.yjl.hnas.service
 
-import com.yjl.hnas.entity.AudioInfo
-import com.yjl.hnas.entity.ChildrenCount
-import com.yjl.hnas.entity.Hash
-import com.yjl.hnas.entity.IVirtualFile
+import com.yjl.hnas.entity.*
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.fs.VirtualFileSystemProvider
 import com.yjl.hnas.fs.VirtualFilesystem
@@ -11,8 +8,6 @@ import com.yjl.hnas.fs.VirtualPath
 import com.yjl.hnas.mapper.AudioInfoMapper
 import com.yjl.hnas.mapper.ChildrenCountMapper
 import com.yjl.hnas.mapper.VirtualFileMapper
-import com.yjl.hnas.utils.isAudioMediaType
-import io.github.yinjinlong.md.sha256
 import java.nio.file.NoSuchFileException
 import java.nio.file.NotDirectoryException
 
@@ -29,44 +24,81 @@ abstract class AbstractVirtualFileService(
     protected lateinit var fs: VirtualFilesystem
 
     protected val VirtualPath.id: Hash
-        get() = genId(this.toAbsolutePath())
+        get() = pathIdOrThrow(this)
 
     override fun exists(path: VirtualPath): Boolean {
-        return virtualFileMapper.selectById(path.id) != null
+        return pathId(path) != null
     }
 
     override fun onBind(fsp: VirtualFileSystemProvider) {
         fs = fsp.virtualFilesystem
     }
 
-    override fun genId(path: VirtualPath): Hash {
-        return Hash(path.toAbsolutePath().fullPath.sha256)
+    override fun getId(name: String, parent: FileId): Hash? {
+        return virtualFileMapper.selectIdByNameParent(name, parent)
+    }
+
+    override fun getRootId(user: Uid): Hash {
+        val id = virtualFileMapper.selectRootIdByUser(user)
+        if (id != null)
+            return id
+        virtualFileMapper.insert(
+            VirtualFile(
+                name = "",
+                user = user,
+                owner = user,
+            )
+        )
+        return (virtualFileMapper.selectRootIdByUser(user)
+            ?: throw IllegalStateException("Root id get Failed : $user")).also {
+            childrenCountMapper.insert(it)
+        }
+    }
+
+    /**
+     * 获取path对应的id，不存在则返回null
+     */
+    protected fun pathId(path: VirtualPath): FileId? {
+        var id: FileId? = getRootId(path.user() ?: 0L)
+        for (name in path.toAbsolutePath().names) {
+            id = getId(name, id ?: return null)
+        }
+        return id
+    }
+
+    /**
+     * 获取path对应的id，不存在则抛出异常
+     */
+    protected fun pathIdOrThrow(path: VirtualPath): FileId {
+        return pathId(path) ?: throw NoSuchFileException(path.fullPath)
+    }
+
+    fun insertAndGetId(vf: VirtualFile): FileId {
+        virtualFileMapper.insert(vf)
+        return virtualFileMapper.selectIdByNameParent(vf.name, vf.parent)
+            ?: throw IllegalStateException("Insert Failed : $vf")
     }
 
     override fun get(path: VirtualPath): IVirtualFile? {
-        return virtualFileMapper.selectById(path.id)
+        return pathId(path)?.let { virtualFileMapper.selectById(it) }
     }
 
     protected fun getOrThrow(path: VirtualPath): IVirtualFile {
-        return virtualFileMapper.selectById(path.id)
-            ?: throw NoSuchFileException(path.fullPath)
+        return get(path) ?: throw NoSuchFileException(path.fullPath)
     }
 
     override fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile> {
-        val p = parent.toAbsolutePath()
-        if (!exists(p) && !p.isRoot)
-            throw NoSuchFileException(p.fullPath)
-        return virtualFileMapper.selectsByParent(p.id)
+        val id = pathIdOrThrow(parent.toAbsolutePath())
+        return virtualFileMapper.selectsByParent(id)
     }
 
     override fun getFolderChildrenCount(path: VirtualPath): ChildrenCount {
-        return childrenCountMapper.selectByFid(path.id)
+        val id = pathIdOrThrow(path)
+        return childrenCountMapper.selectByFid(id)
             ?: throw NotDirectoryException(path.fullPath)
     }
 
-    protected fun checkAudio(vf: IVirtualFile): AudioInfo? {
-        if (!vf.mediaType.isAudioMediaType)
-            throw ErrorCode.BAD_FILE_FORMAT.error
+    protected fun getAudio(vf: IVirtualFile): AudioInfo? {
         return audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
     }
 }

@@ -17,6 +17,8 @@ interface FileMappingService {
      */
     fun getMapping(hash: Hash): IFileMapping?
 
+    fun getMediaType(hash: Hash): String
+
     /**
      * 删除映射
      */

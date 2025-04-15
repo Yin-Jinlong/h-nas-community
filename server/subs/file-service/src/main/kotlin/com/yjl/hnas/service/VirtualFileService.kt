@@ -2,10 +2,7 @@ package com.yjl.hnas.service
 
 import com.yjl.hnas.data.AudioFileInfo
 import com.yjl.hnas.data.FileRange
-import com.yjl.hnas.entity.ChildrenCount
-import com.yjl.hnas.entity.Hash
-import com.yjl.hnas.entity.IVirtualFile
-import com.yjl.hnas.entity.Uid
+import com.yjl.hnas.entity.*
 import com.yjl.hnas.fs.VirtualFileManager
 import com.yjl.hnas.fs.VirtualPath
 import java.io.BufferedInputStream
@@ -26,9 +23,14 @@ interface VirtualFileService : VirtualFileManager {
     fun exists(path: VirtualPath): Boolean
 
     /**
-     * 生成路径id
+     * 获取id
      */
-    fun genId(path: VirtualPath): Hash
+    fun getId(name: String, parent: FileId): Hash?
+
+    /**
+     * 获取根目录id，目录不存在会自动创建
+     */
+    fun getRootId(user: Uid): Hash
 
     /**
      * 获取文件信息
