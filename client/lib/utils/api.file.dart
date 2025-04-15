@@ -64,7 +64,7 @@ extension FileAPI on API {
     );
   }
 
-  static Future upload(
+  static Future<bool> upload(
     String path,
     Uint8List? bytes, {
     required int start,
@@ -72,19 +72,21 @@ extension FileAPI on API {
     required int size,
     required String hash,
   }) {
-    return API._post(
-      '/file/public/upload',
-      bytes,
-      options: Options(
-        headers: {
-          ExtraHeaders.authorization: Prefs.token,
-          ExtraHeaders.contentID: base64Url.encode(utf8.encode(path)),
-          ExtraHeaders.contentRange: '$start-$end/$size',
-          ExtraHeaders.hash: hash,
-        },
-        contentType: ExtraHeaders.contentTypeOctetStream,
-      ),
-    );
+    return API
+        ._post(
+          '/file/public/upload',
+          bytes,
+          options: Options(
+            headers: {
+              ExtraHeaders.authorization: Prefs.token,
+              ExtraHeaders.contentID: base64Url.encode(utf8.encode(path)),
+              ExtraHeaders.contentRange: '$start-$end/$size',
+              ExtraHeaders.hash: hash,
+            },
+            contentType: ExtraHeaders.contentTypeOctetStream,
+          ),
+        )
+        .then((res) => res ?? false);
   }
 
   static Future downloadPublic(

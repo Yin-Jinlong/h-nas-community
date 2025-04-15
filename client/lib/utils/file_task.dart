@@ -132,7 +132,7 @@ class UploadFileTask extends FileTask {
             break;
           } else {
             end += chunk.length;
-            await FileAPI.upload(
+            final r = await FileAPI.upload(
               path,
               Uint8List.fromList(chunk),
               start: start,
@@ -140,6 +140,13 @@ class UploadFileTask extends FileTask {
               size: size,
               hash: hash,
             );
+            if (r) {
+              uploaded = end;
+              status = FileTaskStatus.done;
+              doneTime = DateTime.now();
+              onDone?.call();
+              return;
+            }
             start += chunk.length;
             uploaded = start;
           }
