@@ -520,6 +520,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ],
               ),
               DropTarget(
+                enable: UniversalPlatform.isWindows,
                 onDragEntered: (details) {
                   setState(() {
                     _dragging = true;
