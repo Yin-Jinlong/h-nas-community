@@ -8,7 +8,7 @@ interface IMediaInfo {
     /**
      * 文件id
      */
-    var fid: Hash
+    var hash: Hash
 
     /**
      * 标题

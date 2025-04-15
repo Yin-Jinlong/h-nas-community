@@ -40,7 +40,7 @@ object AudioInfoHelper {
      * @param coverFn 封面文件生成
      */
     fun Tag.toInfo(header: AudioHeader, hash: Hash, coverFn: () -> String?) = AudioInfo(
-        fid = hash,
+        hash = hash,
         title = getFirst(FieldKey.TITLE),
         subTitle = getFirst(FieldKey.SUBTITLE),
         artists = getFirst(FieldKey.ARTIST),

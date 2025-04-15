@@ -23,9 +23,9 @@ class AudioInfo(
     @Id
     @Type(value = HashUserType::class)
     @Convert(converter = HashConverter::class)
-    @Column(columnDefinition = "binary(${IVirtualFile.ID_LENGTH})")
+    @Column(columnDefinition = "binary(${IVirtualFile.HASH_LENGTH})")
     @Comment("文件id")
-    override var fid: Hash = Hash(),
+    override var hash: Hash = Hash(),
 
     @Column(length = IMediaInfo.ITEM_LENGTH)
     @Comment("标题")

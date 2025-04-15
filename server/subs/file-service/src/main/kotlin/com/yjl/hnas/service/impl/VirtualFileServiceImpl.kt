@@ -258,7 +258,7 @@ class VirtualFileServiceImpl(
             throw ErrorCode.BAD_FILE_FORMAT.error
         return AudioFileInfo.of(
             path.path,
-            (AudioInfoHelper.getInfo(vf.hash!!, fm) ?: AudioInfo(fid = path.id))
+            (AudioInfoHelper.getInfo(vf.hash!!, fm) ?: AudioInfo(hash = path.id))
                 .apply(audioInfoMapper::insert)
         )
     }
@@ -270,8 +270,8 @@ class VirtualFileServiceImpl(
         if (!ai.cover.isNullOrEmpty()) {
             return DataHelper.coverFile(ai.cover!!).apply {
                 if (!exists()) {
-                    val fm = fileMappingMapper.selectByHash(ai.fid)
-                        ?: throw IllegalStateException("file_mapping 不存在hash: ${ai.fid}")
+                    val fm = fileMappingMapper.selectByHash(ai.hash)
+                        ?: throw IllegalStateException("file_mapping 不存在hash: ${ai.hash}")
                     AudioInfoHelper.saveCover(DataHelper.dataFile(fm.dataPath))
                 }
             }

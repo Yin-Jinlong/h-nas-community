@@ -16,22 +16,22 @@ interface AudioInfoMapper {
 
     @Select(
         """
-select fid, title, sub_title, artists, cover, album,duration, year, num, style, bitrate, comment, lrc
+select hash, title, sub_title, artists, cover, album,duration, year, num, style, bitrate, comment, lrc
 from audio_info
-where fid = #{fid}
+where hash = #{hash}
     """
     )
-    fun selectByHash(fid: Hash): AudioInfo?
+    fun selectByHash(hash: Hash): AudioInfo?
 
     @Select(
         """
-select fid, title, sub_title, artists, cover, album,duration, year, num, style, bitrate, comment 
+select hash, title, sub_title, artists, cover, album,duration, year, num, style, bitrate, comment 
 from audio_info
-where fid = #{fid}
+where hash = #{fid}
 for update
     """
     )
-    fun selectByHashLock(fid: Hash): AudioInfo?
+    fun selectByHashLock(hash: Hash): AudioInfo?
 
     //******//
     //  增  //
@@ -39,8 +39,8 @@ for update
 
     @Insert(
         """
-insert into audio_info(fid, title, sub_title, artists, cover,duration, album, year, num, style, bitrate, comment,lrc) 
-values (#{fid}, #{title}, #{subTitle}, #{artists}, #{cover},#{duration}, #{album}, #{year}, #{num}, #{style}, #{bitrate}, #{comment}, #{lrc})
+insert into audio_info(hash, title, sub_title, artists, cover,duration, album, year, num, style, bitrate, comment,lrc) 
+values (#{hash}, #{title}, #{subTitle}, #{artists}, #{cover},#{duration}, #{album}, #{year}, #{num}, #{style}, #{bitrate}, #{comment}, #{lrc})
     """
     )
     fun insert(audioInfo: AudioInfo): Int
@@ -63,7 +63,7 @@ num = #{num},
 style = #{style}, 
 bitrate = #{bitrate}, 
 comment = #{comment} 
-where fid = #{fid}
+where hash = #{fid}
     """
     )
     fun update(audioInfo: AudioInfo): Int
@@ -72,7 +72,7 @@ where fid = #{fid}
     //  删  //
     //******//
 
-    @Delete("delete from audio_info where fid = #{fid}")
+    @Delete("delete from audio_info where hash = #{fid}")
     fun deleteById(fid: Hash): Int
 
 }
