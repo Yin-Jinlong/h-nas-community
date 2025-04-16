@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.initState();
     Global.player.playList.addListener(_render);
     Global.player.playState.addListener(_render);
-    Global.player.audioInfo.addListener(_render);
+    Global.player.nowPlay.addListener(_render);
 
     updateFiles();
   }
@@ -431,8 +431,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void dispose() {
     Global.player.playList.removeListener(_render);
     Global.player.playState.removeListener(_render);
-    Global.player.audioInfo.removeListener(_render);
-    Global.player.audioInfo.removeListener(_render);
+    Global.player.nowPlay.removeListener(_render);
     super.dispose();
   }
 
@@ -572,7 +571,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   );
                 },
                 child:
-                    Global.player.playList.value.isNotEmpty
+                    Global.player.nowPlay.value?.audioInfo != null
                         ? IntrinsicWidth(
                           child: MiniAudioPlayer(
                             onClose: () {
@@ -638,7 +637,7 @@ class _HomeFloatingActionButtonLocation extends StandardFabLocation
         scaffoldGeometry,
         adjustment -
             ((!UniversalPlatform.isDesktopOrWeb &&
-                    Global.player.playList.value.isNotEmpty)
+                    Global.player.nowPlay.value != null)
                 ? 50
                 : 0),
       ),

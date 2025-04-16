@@ -46,8 +46,6 @@ class MediaPlayer {
   final ValueNotifier<MediaFile?> nowPlay = ValueNotifier(null);
   final ValueNotifier<double> speed = ValueNotifier(1);
 
-  final ValueNotifier<AudioFileInfo?> audioInfo = ValueNotifier(null);
-
   bool _shuffle = false;
 
   final _playState = _Listener();
@@ -91,7 +89,6 @@ class MediaPlayer {
         var mediaFile = (list.medias[list.index] as MediaFile);
         nowPlay.value = mediaFile;
         mediaFile.loadInfo().then((v) {
-          audioInfo.value = v;
           _showNotification();
         });
       });
@@ -123,7 +120,7 @@ class MediaPlayer {
 
   void _showNotification() {
     if (!UniversalPlatform.isAndroid) return;
-    final info = audioInfo.value;
+    final info = nowPlay.value?.audioInfo;
     NotificationsPlugin.showPlayerNotification(
       info?.userTitle ?? '?',
       info?.userArtist ?? '?',
@@ -190,7 +187,6 @@ class MediaPlayer {
     await _player.stop();
     playList.value = [];
     nowPlay.value = null;
-    audioInfo.value = null;
     if (UniversalPlatform.isAndroid) {
       NotificationsPlugin.removePlayerNotification();
     }
@@ -226,7 +222,6 @@ class MediaPlayer {
     Global.isDark.removeListener(_showNotification);
     position.dispose();
     duration.dispose();
-    audioInfo.dispose();
     _playState.dispose();
     _player.dispose();
   }

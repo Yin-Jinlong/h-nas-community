@@ -36,7 +36,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
       vsync: this,
       duration: durationMedium,
     );
-    player.audioInfo.addListener(_render);
+    player.nowPlay.addListener(_render);
     player.playState.addListener(_onPlay);
     player.position.addListener(_render);
   }
@@ -73,15 +73,16 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
   void dispose() {
     _playPauseController.dispose();
 
-    player.audioInfo.removeListener(_render);
+    player.nowPlay.removeListener(_render);
     player.playState.removeListener(_onPlay);
     player.position.removeListener(_render);
     super.dispose();
   }
 
   Widget _content(BuildContext context) {
-    var title = player.audioInfo.value?.userTitle ?? '?';
-    var artists = player.audioInfo.value?.userArtist ?? '?';
+    var info = player.nowPlay.value?.audioInfo;
+    var title = info?.userTitle ?? '?';
+    var artists = info?.userArtist ?? '?';
 
     return Container(
       decoration: _MiniProgressDecoration(
@@ -95,7 +96,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
         padding: EdgeInsets.all(6),
         child: Row(
           children: [
-            player.audioInfo.value == null
+            info == null
                 ? Icon(Icons.image)
                 : Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5),
@@ -110,9 +111,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                         child: CoverView(
                           rotate: player.playing,
                           child: CachedNetworkImage(
-                            imageUrl: FileAPIURL.publicAudioCover(
-                              player.audioInfo.value!.path,
-                            ),
+                            imageUrl: FileAPIURL.publicAudioCover(info.path),
                             fit: BoxFit.cover,
                             errorWidget: (context, error, stackTrace) {
                               return Icon(Icons.broken_image);

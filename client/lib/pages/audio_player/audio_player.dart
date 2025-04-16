@@ -53,7 +53,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       duration: durationFast,
     );
 
-    player.audioInfo.addListener(_newAudio);
+    player.nowPlay.addListener(_newAudio);
     player.position.addListener(_render);
     player.buffer.addListener(_render);
     player.speed.addListener(_render);
@@ -98,7 +98,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
 
   @override
   void dispose() {
-    player.audioInfo.removeListener(_newAudio);
+    player.nowPlay.removeListener(_newAudio);
     player.position.removeListener(_render);
     player.playState.removeListener(_onPlay);
     player.buffer.removeListener(_render);
@@ -212,7 +212,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _cover() {
-    final path = player.audioInfo.value?.path;
+    final path = player.nowPlay.value?.audioInfo?.path;
     return Hero(
       tag: 'audio_cover',
       child:
@@ -267,7 +267,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _info(BuildContext context) {
-    final info = player.audioInfo.value;
+    final info = player.nowPlay.value?.audioInfo;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -417,7 +417,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _content(BuildContext context) {
-    final info = player.audioInfo.value;
+    final info = player.nowPlay.value?.audioInfo;
     bool wideMode = MediaQuery.of(context).size.aspectRatio > 1;
     return Column(
       children: [
@@ -485,7 +485,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       context: context,
       constraints: BoxConstraints(minWidth: 100),
       builder: (context) {
-        return MoreSheet(info: player.audioInfo.value);
+        return MoreSheet(info: player.nowPlay.value?.audioInfo);
       },
     );
   }
@@ -542,9 +542,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           children: [
             CachedNetworkImage(
               imageUrl:
-                  player.audioInfo.value != null
+                  player.nowPlay.value?.audioInfo != null
                       ? FileAPIURL.publicAudioCover(
-                        player.audioInfo.value!.path,
+                        player.nowPlay.value!.audioInfo!.path,
                       )
                       : '',
               fit: BoxFit.cover,
