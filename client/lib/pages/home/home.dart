@@ -462,15 +462,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           });
           updateFiles();
         },
-        onTransmission: () {
-          if (UniversalPlatform.isWeb) {
-            Toast.showError(
-              S.current.web_not_support(S.current.value_transmission),
-            );
-            return;
-          }
-          Navigator.of(context).pushNamed(Routes.transmission);
-        },
       ),
       body: Stack(
         children: [

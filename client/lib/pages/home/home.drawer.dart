@@ -21,6 +21,10 @@ Drawer _drawer(
   required VoidCallback onLogout,
 }) {
   final user = Provider.of<UserModel>(context, listen: false);
+  final taskCount =
+      Global.uploadTasks.where((e) => !e.isDone).length +
+      Global.downloadTasks.where((e) => !e.isDone).length;
+
   return Drawer(
     child: ListView(
       padding: EdgeInsets.zero,
@@ -73,6 +77,23 @@ Drawer _drawer(
             },
           ),
         ),
+        if (!UniversalPlatform.isWeb)
+          Tooltip(
+            message: S.current.transmission,
+            child: ListTile(
+              leading: Icon(Icons.swap_vert),
+              title: Badge(
+                label: Text('$taskCount'),
+                isLabelVisible: taskCount > 0,
+                child: Text(S.current.transmission),
+              ),
+              onTap: () {
+                Navigator.of(
+                  navigatorKey.currentContext!,
+                ).pushNamed(Routes.transmission);
+              },
+            ),
+          ),
         Tooltip(
           message: S.current.language,
           child: ListTile(
