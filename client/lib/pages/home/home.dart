@@ -440,6 +440,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final textTheme = Theme.of(context).textTheme;
     final user = Provider.of<UserModel>(context);
     final thumbnailCache = ThumbnailModel();
+    final nowPlay = Global.player.nowPlay.value;
     route = ModalRoute.of(context)!;
 
     return Scaffold(
@@ -571,7 +572,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   );
                 },
                 child:
-                    Global.player.nowPlay.value != null
+                    nowPlay != null && (nowPlay.type?.isAudio ?? false)
                         ? IntrinsicWidth(
                           child: MiniAudioPlayer(
                             onClose: () {
