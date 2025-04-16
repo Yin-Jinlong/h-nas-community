@@ -60,7 +60,7 @@ class MediaPlayer {
     stream
       ..playing.listen((playing) {
         _playState.notify();
-        _showNotification();
+        if (_player.state.audioBitrate != null) _showNotification();
       })
       ..duration.listen((dur) {
         duration.value = dur.inMilliseconds;
