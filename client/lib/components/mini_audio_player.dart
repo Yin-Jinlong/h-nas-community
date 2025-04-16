@@ -33,6 +33,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     super.initState();
     player = Global.player;
     _playPauseController = AnimationController(
+      value: player.playing ? 1 : 0,
       vsync: this,
       duration: durationMedium,
     );
