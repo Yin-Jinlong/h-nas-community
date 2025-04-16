@@ -23,6 +23,14 @@ class _TransmissionViewState extends State<TransmissionView>
   );
 
   @override
+  void initState() {
+    super.initState();
+    _tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
