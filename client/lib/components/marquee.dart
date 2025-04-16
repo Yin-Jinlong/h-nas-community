@@ -56,7 +56,7 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   bool _disposed = false;
 
   /// 是否需要滚动，超过最大宽度时滚动
-  bool get shouldMarquee => widget.maxWidth < contentWidth;
+  final shouldMarquee = ValueNotifier(false);
 
   @override
   void initState() {
@@ -83,8 +83,14 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
             }
           });
 
-    if (shouldMarquee) {
+    shouldMarquee.addListener(_onChange);
+  }
+
+  _onChange() {
+    if (shouldMarquee.value) {
       _wait();
+    } else {
+      _controller.reset();
     }
   }
 
@@ -107,11 +113,8 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
       milliseconds: (contentWidth * 1000) ~/ widget.speed,
     );
 
-    if (shouldMarquee) {
-      _wait();
-    } else {
-      _controller.reset();
-    }
+    shouldMarquee.value = contentWidth > widget.maxWidth;
+
     super.didUpdateWidget(oldWidget);
   }
 
@@ -119,6 +122,7 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   void dispose() {
     _disposed = true;
     _controller.dispose();
+    shouldMarquee.dispose();
     super.dispose();
   }
 
