@@ -15,7 +15,12 @@ _showAboutDialog(BuildContext context) {
   });
 }
 
-Drawer _drawer(BuildContext context) {
+Drawer _drawer(
+  BuildContext context, {
+  required VoidCallback onLogin,
+  required VoidCallback onLogout,
+}) {
+  final user = Provider.of<UserModel>(context, listen: false);
   return Drawer(
     child: ListView(
       padding: EdgeInsets.zero,
@@ -24,16 +29,35 @@ Drawer _drawer(BuildContext context) {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.secondary,
           ),
-          child: Center(
-            child: SizedBox(
-              width: 80,
-              height: 80,
-              child: CircleAvatar(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(S.current.app_name),
+          child: IntrinsicHeight(
+            child: Column(
+              spacing: 8,
+              children: [
+                SizedBox.square(
+                  dimension: 80,
+                  child: CircleAvatar(
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      child:
+                          user.user == null
+                              ? Hero(tag: 'login', child: Icon(Icons.person))
+                              : Text(user.user!.nick),
+                    ),
+                  ),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (user.user == null) {
+                      onLogin();
+                    } else {
+                      onLogout();
+                    }
+                  },
+                  child: Text(
+                    user.user == null ? S.current.login : S.current.logout,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

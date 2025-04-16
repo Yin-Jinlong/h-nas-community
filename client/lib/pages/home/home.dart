@@ -471,14 +471,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           }
           Navigator.of(context).pushNamed(Routes.transmission);
         },
-        onLogin: () {
-          Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
-        },
-        onLogout: () {
-          user.set(null);
-          Prefs.remove(Prefs.keyToken);
-          setState(() {});
-        },
       ),
       body: Stack(
         children: [
@@ -592,7 +584,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ],
       ),
-      drawer: _drawer(context),
+      drawer: _drawer(
+        context,
+        onLogin: () {
+          Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
+        },
+        onLogout: () {
+          user.set(null);
+          Prefs.remove(Prefs.keyToken);
+          setState(() {});
+        },
+      ),
       floatingActionButtonLocation: const _HomeFloatingActionButtonLocation(),
       floatingActionButton: SpeedDial(
         openCloseDial: _openFloatingMenu,

@@ -74,10 +74,7 @@ class _LogInOnPageState extends State<LogInOnPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      icon: Hero(
-                        tag: 'menu_back',
-                        child: Icon(Icons.arrow_back),
-                      ),
+                      icon: Icon(Icons.arrow_back),
                     ),
                     Text(
                       pageIndex == 0 ? S.current.login : S.current.logon,
