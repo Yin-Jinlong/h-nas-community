@@ -27,6 +27,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
   late final AnimationController _playPauseController;
   late final MediaPlayer player;
   final FocusNode _rootNode = FocusNode();
+  AudioFileInfo? _cachedAudioInfo;
 
   @override
   void initState() {
@@ -37,12 +38,27 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
       vsync: this,
       duration: durationMedium,
     );
-    player.nowPlay.addListener(_render);
+    player.nowPlay.addListener(_onNowPlayChange);
     player.playState.addListener(_onPlay);
     player.position.addListener(_render);
+
+    _onNowPlayChange();
   }
 
   _render() {
+    setState(() {});
+  }
+
+  _onNowPlayChange() {
+    player.nowPlay.value?.addListener(_onAudioInfo);
+    _onAudioInfo();
+    setState(() {});
+  }
+
+  _onAudioInfo() {
+    final info = player.nowPlay.value?.audioInfo;
+    if (info == null) return;
+    _cachedAudioInfo = info;
     setState(() {});
   }
 
@@ -74,14 +90,15 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
   void dispose() {
     _playPauseController.dispose();
 
-    player.nowPlay.removeListener(_render);
+    player.nowPlay.value?.removeListener(_onAudioInfo);
+    player.nowPlay.removeListener(_onNowPlayChange);
     player.playState.removeListener(_onPlay);
     player.position.removeListener(_render);
     super.dispose();
   }
 
   Widget _content(BuildContext context) {
-    var info = player.nowPlay.value?.audioInfo;
+    var info = _cachedAudioInfo;
     var title = info?.userTitle ?? '?';
     var artists = info?.userArtist ?? '?';
 

@@ -80,6 +80,7 @@ class MediaPlayer {
       })
       ..playlist.listen((list) {
         if (list.medias.isEmpty) {
+          nowPlay.value?.dispose();
           nowPlay.value = null;
           playList.value = [];
           return;

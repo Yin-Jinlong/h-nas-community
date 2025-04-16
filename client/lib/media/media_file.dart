@@ -1,10 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:media_kit/media_kit.dart';
 
-class MediaFile extends Media {
-  FileInfo file;
+class MediaFile extends Media with ChangeNotifier {
+  final FileInfo file;
   late final MediaType? type;
   AudioFileInfo? audioInfo;
 
@@ -18,6 +19,7 @@ class MediaFile extends Media {
       if (file.fileMediaType?.isAudio == true) {
         final v = await FileAPI.getPublicAudioInfo(file.fullPath);
         audioInfo = v;
+        notifyListeners();
       }
     }
     return audioInfo;

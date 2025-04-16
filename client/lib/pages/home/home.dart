@@ -571,7 +571,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   );
                 },
                 child:
-                    Global.player.nowPlay.value?.audioInfo != null
+                    Global.player.nowPlay.value != null
                         ? IntrinsicWidth(
                           child: MiniAudioPlayer(
                             onClose: () {
