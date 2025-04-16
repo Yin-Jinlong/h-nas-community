@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     setState(() {});
   }
 
-  updateFiles() {
+  Future<void> updateFiles() async {
     if (API.API_ROOT.isEmpty) {
       Toast.showError(S.current.error_set_server_addr);
       return;
@@ -88,21 +88,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       images.clear();
       audios.clear();
     });
-    FileAPI.getPublicFiles('/${dirs.join('/')}').then((v) {
-      setState(() {
-        files = v;
-        _sort();
-        images = [];
-        audios = [];
-        for (var file in v) {
-          final type = file.fileMediaType?.type;
-          if (type == MediaType.typeImage) {
-            images.add(file);
-          } else if (type == MediaType.typeAudio) {
-            audios.add(file);
-          }
+    final values = await FileAPI.getPublicFiles('/${dirs.join('/')}');
+    setState(() {
+      files = values;
+      _sort();
+      images = [];
+      audios = [];
+      for (var file in values) {
+        final type = file.fileMediaType?.type;
+        if (type == MediaType.typeImage) {
+          images.add(file);
+        } else if (type == MediaType.typeAudio) {
+          audios.add(file);
         }
-      });
+      }
     });
   }
 
@@ -344,60 +343,67 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Empty(
       isEmpty: files.isEmpty,
       child: ContextMenuOverlay(
-        child: ListView(
-          children: [
-            for (var file in files)
-              ContextMenuRegion(
-                contextMenu: GenericContextMenu(
-                  buttonConfigs: _fileContextMenuButtons(
+        child: RefreshIndicator(
+          displacement: 20,
+          child: ListView(
+            children: [
+              for (var file in files)
+                ContextMenuRegion(
+                  contextMenu: GenericContextMenu(
+                    buttonConfigs: _fileContextMenuButtons(
+                      file,
+                      onPlay: () {
+                        switch (file.fileMediaType?.type) {
+                          case MediaType.typeAudio:
+                            _playAudio(file);
+                            break;
+                          case MediaType.typeVideo:
+                            _playVideo(file);
+                            break;
+                        }
+                      },
+                      onRename: () {
+                        _showRenameDialog(context, file);
+                      },
+                      onDownload: () {
+                        _download(file);
+                      },
+                      onInfo: () {
+                        _showFileInfo(file);
+                      },
+                      onDelete: () {
+                        _delete(file);
+                      },
+                    ),
+                  ),
+                  child: _fileListItem(
+                    context,
                     file,
-                    onPlay: () {
-                      switch (file.fileMediaType?.type) {
-                        case MediaType.typeAudio:
-                          _playAudio(file);
-                          break;
-                        case MediaType.typeVideo:
-                          _playVideo(file);
-                          break;
+                    onTap: () {
+                      if (file.isFolder) {
+                        enterFolder(file.name);
+                      } else {
+                        switch (MediaType.parse(file.mediaType ?? '').type) {
+                          case MediaType.typeImage:
+                            _showImage(thumbnailCache, file);
+                            break;
+                          case MediaType.typeAudio:
+                            _playAudio(file);
+                            break;
+                          case MediaType.typeVideo:
+                            _playVideo(file);
+                            break;
+                        }
                       }
-                    },
-                    onRename: () {
-                      _showRenameDialog(context, file);
-                    },
-                    onDownload: () {
-                      _download(file);
-                    },
-                    onInfo: () {
-                      _showFileInfo(file);
-                    },
-                    onDelete: () {
-                      _delete(file);
                     },
                   ),
                 ),
-                child: _fileListItem(
-                  context,
-                  file,
-                  onTap: () {
-                    if (file.isFolder) {
-                      enterFolder(file.name);
-                    } else {
-                      switch (MediaType.parse(file.mediaType ?? '').type) {
-                        case MediaType.typeImage:
-                          _showImage(thumbnailCache, file);
-                          break;
-                        case MediaType.typeAudio:
-                          _playAudio(file);
-                          break;
-                        case MediaType.typeVideo:
-                          _playVideo(file);
-                          break;
-                      }
-                    }
-                  },
-                ),
-              ),
-          ],
+            ],
+          ),
+          onRefresh: () async {
+            await Future.delayed(durationSlow);
+            await updateFiles();
+          },
         ),
       ),
     );

@@ -11,6 +11,7 @@ import 'package:universal_platform/universal_platform.dart';
 
 const Duration durationFast = Duration(milliseconds: 200);
 const Duration durationMedium = Duration(milliseconds: 300);
+const Duration durationSlow = Duration(milliseconds: 500);
 
 abstract class Global {
   static const String appName = 'H-NAS';
