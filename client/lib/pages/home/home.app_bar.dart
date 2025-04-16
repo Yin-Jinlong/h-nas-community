@@ -6,7 +6,6 @@ AppBar _appBar(
   required Function() onRefresh,
 }) {
   return AppBar(
-    title: Text(S.current.app_name),
     actions: [
       IconButton(
         tooltip: S.current.sort,
