@@ -5,7 +5,7 @@ Widget _fileListItem(BuildContext context,FileInfo file, {required Function() on
     title: Text(file.name),
     subtitle: Text(
       DateTime.fromMillisecondsSinceEpoch(
-        file.createTime,
+        file.updateTime,
       ).toString(),
     ),
     leading: IconTheme(
