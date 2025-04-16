@@ -130,6 +130,9 @@ flutter:
     - family: JetBrainsMapleMono
       fonts:
         - asset: assets/fonts/JetBrainsMapleMono-Regular.ttf
+    - family: JetBrainsMonoNerd
+      fonts:
+        - asset: assets/fonts/JetBrainsMonoNerdFont-Medium.ttf
 
 flutter_intl:
   enabled: true

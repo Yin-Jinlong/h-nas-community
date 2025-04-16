@@ -18,7 +18,6 @@ import 'package:h_nas/utils/audio_info_exts.dart';
 import 'package:h_nas/utils/lrc_utils.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:lrc/lrc.dart';
-import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'lrc_view.dart';
@@ -116,7 +115,10 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       PlayMode.none => Transform.translate(
         key: ValueKey(0),
         offset: Offset(0, -5),
-        child: Icon(NFIconData(0x21c9), size: size),
+        child: Icon(
+          const IconData(0x21c9, fontFamily: 'JetBrainsMonoNerd'),
+          size: size,
+        ),
       ),
       PlayMode.single => Icon(key: ValueKey(1), Icons.repeat_one, size: size),
       PlayMode.loop => Icon(key: ValueKey(2), Icons.repeat, size: size),
