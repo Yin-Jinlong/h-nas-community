@@ -244,6 +244,10 @@ class VirtualFileServiceImpl(
         virtualFileMapper.selectByIdLock(id)
             ?: throw NoSuchFileException(path.fullPath)
         virtualFileMapper.updateName(id, name)
+        updateParentUpdateTime(
+            path.parent,
+            virtualFileMapper.selectUpdateTimeById(id) ?: throw IllegalStateException()
+        )
     }
 
     @Transactional(rollbackFor = [Exception::class])

@@ -89,7 +89,7 @@ VALUES (#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{size})
     //  改  //
     //******//
 
-    @Update("update virtual_file set name = #{name},update_time=current_timestamp() where fid = #{fid}")
+    @Update("update virtual_file set name = #{name} where fid = #{fid}")
     fun updateName(fid: FileId, name: String): Int
 
     @Update("update virtual_file set size = #{size} where fid = #{fid}")
