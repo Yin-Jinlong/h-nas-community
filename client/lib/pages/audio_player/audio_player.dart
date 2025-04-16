@@ -273,20 +273,26 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            info?.title ?? '?',
-            style: TextTheme.of(
-              context,
-            ).headlineSmall?.copyWith(color: Colors.white),
+          Hero(
+            tag: 'audio_title',
+            child: Text(
+              info?.title ?? '?',
+              style: TextTheme.of(
+                context,
+              ).headlineSmall?.copyWith(color: Colors.white),
+            ),
           ),
           Row(
             spacing: 12,
             children: [
-              Text(
-                info?.artists ?? '?',
-                style: TextTheme.of(
-                  context,
-                ).bodyLarge?.copyWith(color: Colors.white),
+              Hero(
+                tag: 'audio_artists',
+                child: Text(
+                  info?.artists ?? '?',
+                  style: TextTheme.of(
+                    context,
+                  ).bodyLarge?.copyWith(color: Colors.white),
+                ),
               ),
               Tag(text: '${info?.bitrate ?? '?'} kbps'),
             ],
@@ -432,20 +438,26 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Marquee.text(
-                        text: info?.userTitle ?? '?',
-                        maxWidth: MediaQuery.of(context).size.width * 0.7,
-                        space: 30,
-                        style: TextTheme.of(
-                          context,
-                        ).titleMedium?.copyWith(color: Colors.white),
+                      Hero(
+                        tag: 'audio_title',
+                        child: Marquee.text(
+                          text: info?.userTitle ?? '?',
+                          maxWidth: MediaQuery.of(context).size.width * 0.7,
+                          space: 30,
+                          style: TextTheme.of(
+                            context,
+                          ).titleMedium?.copyWith(color: Colors.white),
+                        ),
                       ),
-                      Marquee.text(
-                        text: info?.userArtist ?? '?',
-                        maxWidth: MediaQuery.of(context).size.width * 0.6,
-                        space: 20,
-                        style: TextTheme.of(context).bodySmall?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.6),
+                      Hero(
+                        tag: 'audio_artists',
+                        child: Marquee.text(
+                          text: info?.userArtist ?? '?',
+                          maxWidth: MediaQuery.of(context).size.width * 0.6,
+                          space: 20,
+                          style: TextTheme.of(context).bodySmall?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.6),
+                          ),
                         ),
                       ),
                     ],

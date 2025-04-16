@@ -145,24 +145,30 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                 children: [
                   ConstrainedBox(
                     constraints: BoxConstraints(minWidth: 50, maxWidth: 150),
-                    child: Marquee.text(
-                      key: ValueKey(title),
-                      text: title,
-                      space: 30,
-                      maxWidth: 150,
-                      style: TextTheme.of(
-                        context,
-                      ).titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    child: Hero(
+                      tag: 'audio_title',
+                      child: Marquee.text(
+                        key: ValueKey(title),
+                        text: title,
+                        space: 30,
+                        maxWidth: 150,
+                        style: TextTheme.of(
+                          context,
+                        ).titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                   ConstrainedBox(
                     constraints: BoxConstraints(minWidth: 50, maxWidth: 150),
-                    child: Marquee.text(
-                      key: ValueKey(artists),
-                      text: artists,
-                      space: 30,
-                      maxWidth: 150,
-                      style: TextTheme.of(context).titleMedium,
+                    child: Hero(
+                      tag: 'audio_artists',
+                      child: Marquee.text(
+                        key: ValueKey(artists),
+                        text: artists,
+                        space: 30,
+                        maxWidth: 150,
+                        style: TextTheme.of(context).titleMedium,
+                      ),
                     ),
                   ),
                 ],
