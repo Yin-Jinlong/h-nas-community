@@ -123,7 +123,15 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
     );
   }
 
-  Widget _info(UserInfo user) {
+  Widget _copyIcon(BuildContext context) {
+    return Icon(
+      Icons.copy,
+      size: 14,
+      color: ColorScheme.of(context).onSecondary.withValues(alpha: 0.2),
+    );
+  }
+
+  Widget _info(BuildContext context, UserInfo user) {
     return Stack(
       children: [
         Align(
@@ -160,13 +168,30 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      user.username,
-                      style: TextTheme.of(
-                        context,
-                      ).titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    InkWell(
+                      onTap: () {
+                        Clipboard.setData(ClipboardData(text: user.username));
+                        Toast.showSuccess(
+                          S.current.action_success(S.current.copy),
+                        );
+                      },
+                      child: Row(
+                        spacing: 4,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            user.username,
+                            style: TextTheme.of(
+                              context,
+                            ).titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          _copyIcon(context),
+                        ],
+                      ),
                     ),
                     Row(
+                      spacing: 4,
                       children: [
                         Text(
                           'ID:',
@@ -176,14 +201,25 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
                             ).onSecondary.withValues(alpha: 0.6),
                           ),
                         ),
-                        Text(
-                          user.uid.toString(),
-                          style: TextStyle(
-                            color: ColorScheme.of(
-                              context,
-                            ).onSecondary.withValues(alpha: 0.6),
+                        InkWell(
+                          onTap: () {
+                            Clipboard.setData(
+                              ClipboardData(text: user.uid.toString()),
+                            );
+                            Toast.showSuccess(
+                              S.current.action_success(S.current.copy),
+                            );
+                          },
+                          child: Text(
+                            user.uid.toString(),
+                            style: TextStyle(
+                              color: ColorScheme.of(
+                                context,
+                              ).onSecondary.withValues(alpha: 0.6),
+                            ),
                           ),
                         ),
+                        _copyIcon(context),
                       ],
                     ),
                   ],
@@ -212,7 +248,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
   Widget build(BuildContext context) {
     return DrawerHeader(
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondary),
-      child: widget.user == null ? _login() : _info(widget.user!),
+      child: widget.user == null ? _login() : _info(context, widget.user!),
     );
   }
 }

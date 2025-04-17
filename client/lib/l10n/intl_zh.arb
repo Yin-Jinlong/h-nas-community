@@ -1,6 +1,7 @@
 {
   "@@locale": "zh",
   "about": "关于",
+  "action_success": "{action}成功",
   "album": "专辑",
   "app_name": "H NAS",
   "artists": "艺术家",
@@ -18,6 +19,7 @@
   "child_file_count": "子文件（当前）",
   "children_file_count": "子文件（所有）",
   "close": "关闭",
+  "copy": "复制",
   "create_new_folder": "创建文件夹",
   "create_time": "创建时间",
   "default_": "默认",
