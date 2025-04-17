@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   _playVideo(FileInfo file) {
     setState(() {});
-    Navigator.of(context).pushNamed(Routes.videoPlayer, arguments: file);
+    navigatorKey.currentState?.pushNamed(Routes.videoPlayer, arguments: file);
   }
 
   TableRow _infoRow(String label, Widget value) {
@@ -183,7 +183,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           onCreate: (name) {
             FileAPI.newPublicFolder('${dirs.join('/')}/$name').then((v) {
               if (v == true) {
-                Navigator.of(context).pop();
+                navigatorKey.currentState?.pop();
                 updateFiles();
               }
             });
@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           onRename: (newName) {
             FileAPI.renamePublicFolder(file.fullPath, newName).then((v) {
               if (v != true) return;
-              Navigator.of(context).pop();
+              navigatorKey.currentState?.pop();
               updateFiles();
             });
           },
@@ -578,7 +578,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       drawer: _drawer(
         context,
         onLogin: () {
-          Navigator.of(navigatorKey.currentContext!).pushNamed(Routes.loginOn);
+          navigatorKey.currentState?.pushNamed(Routes.loginOn);
         },
         onLogout: () {
           user.set(null);

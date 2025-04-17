@@ -77,9 +77,7 @@ Drawer _drawer(
             leading: Icon(TDTxNFIcons.nf_md_tshirt_crew),
             title: Text(S.current.theme),
             onTap: () {
-              Navigator.of(
-                navigatorKey.currentContext!,
-              ).pushNamed(Routes.theme);
+              navigatorKey.currentState?.pushNamed(Routes.theme);
             },
           ),
         ),
@@ -94,9 +92,7 @@ Drawer _drawer(
                 child: Text(S.current.transmission),
               ),
               onTap: () {
-                Navigator.of(
-                  navigatorKey.currentContext!,
-                ).pushNamed(Routes.transmission);
+                navigatorKey.currentState?.pushNamed(Routes.transmission);
               },
             ),
           ),
@@ -106,9 +102,7 @@ Drawer _drawer(
             leading: Icon(Icons.language),
             title: Text(S.current.language),
             onTap: () {
-              Navigator.of(
-                navigatorKey.currentContext!,
-              ).pushNamed(Routes.languages);
+              navigatorKey.currentState?.pushNamed(Routes.languages);
             },
           ),
         ),
@@ -128,9 +122,7 @@ Drawer _drawer(
             leading: Icon(Icons.settings),
             title: Text(S.current.settings),
             onTap: () {
-              Navigator.of(
-                navigatorKey.currentContext!,
-              ).pushNamed(Routes.settings);
+              navigatorKey.currentState?.pushNamed(Routes.settings);
             },
           ),
         ),

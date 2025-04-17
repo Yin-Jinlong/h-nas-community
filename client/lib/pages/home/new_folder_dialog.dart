@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/main.dart';
 
 import '../../generated/l10n.dart';
 
@@ -58,7 +59,7 @@ class _NewFolderDialogState extends State<NewFolderDialog> {
         TextButton(
           child: Text(S.current.cancel),
           onPressed: () {
-            Navigator.of(context).pop();
+            navigatorKey.currentState?.pop();
           },
         ),
         TextButton(

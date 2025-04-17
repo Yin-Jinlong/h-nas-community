@@ -44,7 +44,7 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
   _setAPIHost() {
     Prefs.setString(Prefs.keyApiHost, _url);
     API.API_ROOT = _url;
-    Navigator.of(context).pop();
+    navigatorKey.currentState?.pop();
   }
 
   void _showScanDialog(BuildContext context) {
@@ -119,7 +119,7 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
           ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            navigatorKey.currentState?.pop();
           },
           child: Text(S.current.cancel),
         ),

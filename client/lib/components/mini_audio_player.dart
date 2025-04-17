@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/routes.dart';
 import 'package:h_nas/utils/api.dart';
@@ -218,7 +219,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.audioPlayer);
+            navigatorKey.currentState?.pushNamed(Routes.audioPlayer);
           },
           child: _content(context),
         ),

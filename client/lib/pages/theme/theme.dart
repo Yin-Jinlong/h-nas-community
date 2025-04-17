@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/theme.dart';
 
@@ -114,7 +115,7 @@ class _ThemePageState extends State<ThemePage> {
               child: Text(S.current.ok),
               onPressed: () {
                 _setColor(pickerColor);
-                Navigator.of(context).pop();
+                navigatorKey.currentState?.pop();
               },
             ),
           ],

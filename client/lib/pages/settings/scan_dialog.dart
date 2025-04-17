@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/plugin/broadcast_plugin.dart';
 
 class ScanDialog extends StatefulWidget {
@@ -56,7 +57,7 @@ class _ScanDialogState extends State<ScanDialog> {
             for (final api in _apiList)
               InkWell(
                 onTap: () {
-                  Navigator.of(context).pop(api);
+                  navigatorKey.currentState?.pop(api);
                 },
                 child: Padding(
                   padding: EdgeInsets.all(6),
@@ -77,7 +78,7 @@ class _ScanDialogState extends State<ScanDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            navigatorKey.currentState?.pop();
           },
           child: Text(S.current.cancel),
         ),

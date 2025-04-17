@@ -10,6 +10,7 @@ import 'package:h_nas/components/marquee.dart';
 import 'package:h_nas/components/tag.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/pages/audio_player/play_sheet.dart';
@@ -528,7 +529,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         player.playPause();
         break;
       case LogicalKeyboardKey.escape:
-        Navigator.of(context).pop();
+        navigatorKey.currentState?.pop();
         break;
     }
   }

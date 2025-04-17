@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/edit_field_utils.dart';
 
@@ -70,7 +71,7 @@ class _RenameDialogState extends State<RenameDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            navigatorKey.currentState?.pop();
           },
           child: Text(S.current.cancel),
         ),

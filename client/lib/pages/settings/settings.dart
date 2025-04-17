@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/pages/languages/languages.dart';
 import 'package:h_nas/pages/settings/scan_dialog.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
@@ -42,7 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   '???',
             ),
             onTap: () {
-              Navigator.of(context).pushNamed(Routes.languages).then((v) {
+              navigatorKey.currentState?.pushNamed(Routes.languages).then((v) {
                 setState(() {});
               });
             },

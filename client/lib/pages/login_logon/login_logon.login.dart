@@ -19,7 +19,7 @@ class _LoginState extends _BaseState<_LoginWidget> {
       if (v != null) {
         Toast.showSuccess('Hi ${v.nick}!');
         Provider.of<UserModel>(context, listen: false).set(v);
-        Navigator.of(context).pop();
+        navigatorKey.currentState?.pop();
       }
     });
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/media/media_file.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/audio_info_exts.dart';
@@ -51,7 +52,7 @@ class _MoreSheetState extends State<PLayListSheet> {
           player.playPause();
         } else {
           player.jump(player.playList.value.indexOf(file));
-          Navigator.of(context).pop();
+          navigatorKey.currentState?.pop();
         }
       },
     );

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/tab_page.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/edit_field_utils.dart';
@@ -72,7 +73,7 @@ class _LogInOnPageState extends State<LogInOnPage> {
                     IconButton(
                       tooltip: S.current.back,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        navigatorKey.currentState?.pop();
                       },
                       icon: Icon(Icons.arrow_back),
                     ),

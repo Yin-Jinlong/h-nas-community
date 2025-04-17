@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/main.dart';
 
 enum SortType { name, createTime, updateTime, size }
 
@@ -128,14 +129,14 @@ class _SortDialogState extends State<SortDialog> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            navigatorKey.currentState?.pop();
           },
           child: Text(S.current.cancel),
         ),
         TextButton(
           onPressed: () {
             widget.onSort(type, isAsc);
-            Navigator.of(context).pop();
+            navigatorKey.currentState?.pop();
           },
           child: Text(S.current.ok),
         ),
