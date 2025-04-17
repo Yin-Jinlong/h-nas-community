@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:h_nas/components/cover_view.dart';
+import 'package:h_nas/components/spring_draggable_container.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
@@ -117,24 +118,26 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
           children: [
             info == null
                 ? Icon(Icons.image)
-                : Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Transform.scale(
-                    scale: 1.2,
-                    origin: Offset(20, 0),
-                    child: Hero(
-                      tag: 'audio_cover',
-                      child: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: CoverView(
-                          rotate: player.playing,
-                          child: CachedNetworkImage(
-                            imageUrl: FileAPIURL.publicAudioCover(info.path),
-                            fit: BoxFit.cover,
-                            errorWidget: (context, error, stackTrace) {
-                              return Icon(Icons.broken_image);
-                            },
+                : SpringDraggableContainer(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Transform.scale(
+                      scale: 1.2,
+                      origin: Offset(20, 0),
+                      child: Hero(
+                        tag: 'audio_cover',
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: CoverView(
+                            rotate: player.playing,
+                            child: CachedNetworkImage(
+                              imageUrl: FileAPIURL.publicAudioCover(info.path),
+                              fit: BoxFit.cover,
+                              errorWidget: (context, error, stackTrace) {
+                                return Icon(Icons.broken_image);
+                              },
+                            ),
                           ),
                         ),
                       ),
