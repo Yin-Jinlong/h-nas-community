@@ -29,50 +29,7 @@ Drawer _drawer(
     child: ListView(
       padding: EdgeInsets.zero,
       children: [
-        DrawerHeader(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          child: IntrinsicHeight(
-            child: Column(
-              spacing: 8,
-              children: [
-                InkWell(
-                  onTap: () {
-                    navigatorKey.currentState!.pushNamed(Routes.my);
-                  },
-                  child: SizedBox.square(
-                    dimension: 80,
-                    child: CircleAvatar(
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: Hero(
-                          tag: 'avatar',
-                          child:
-                              user?.avatar == null
-                                  ? Icon(Icons.person, size: 30)
-                                  : Container(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (user == null) {
-                      onLogin();
-                    } else {
-                      onLogout();
-                    }
-                  },
-                  child: Text(
-                    user == null ? S.current.login : S.current.logout,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _DrawerHeader(user: user, onLogin: onLogin, onLogout: onLogout),
         Tooltip(
           message: S.current.theme,
           child: ListTile(
@@ -131,4 +88,131 @@ Drawer _drawer(
       ],
     ),
   );
+}
+
+class _DrawerHeader extends StatefulWidget {
+  final UserInfo? user;
+  final VoidCallback onLogin, onLogout;
+
+  const _DrawerHeader({
+    required this.user,
+    required this.onLogin,
+    required this.onLogout,
+  });
+
+  @override
+  State createState() => _DrawerHeaderState();
+}
+
+class _DrawerHeaderState extends State<_DrawerHeader> {
+  Widget _login() {
+    return Column(
+      spacing: 8,
+      children: [
+        SizedBox.square(
+          dimension: 80,
+          child: CircleAvatar(
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              child: Hero(tag: 'avatar', child: Icon(Icons.person, size: 30)),
+            ),
+          ),
+        ),
+        ElevatedButton(onPressed: widget.onLogin, child: Text(S.current.login)),
+      ],
+    );
+  }
+
+  Widget _info(UserInfo user) {
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: InkWell(
+            onTap: () {
+              navigatorKey.currentState?.pushNamed(Routes.my);
+            },
+            child: Row(
+              spacing: 12,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox.square(
+                      dimension: 80,
+                      child: CircleAvatar(
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: Hero(
+                            tag: 'avatar',
+                            child:
+                                user.avatar == null
+                                    ? Icon(Icons.person, size: 30)
+                                    : Container(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Text(user.nick),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.username,
+                      style: TextTheme.of(
+                        context,
+                      ).titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          'ID:',
+                          style: TextStyle(
+                            color: ColorScheme.of(
+                              context,
+                            ).onSecondary.withValues(alpha: 0.6),
+                          ),
+                        ),
+                        Text(
+                          user.uid.toString(),
+                          style: TextStyle(
+                            color: ColorScheme.of(
+                              context,
+                            ).onSecondary.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Icon(Icons.keyboard_arrow_right),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+            tooltip: S.current.logout,
+            onPressed: widget.onLogout,
+            icon: Icon(Icons.logout),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DrawerHeader(
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondary),
+      child: widget.user == null ? _login() : _info(widget.user!),
+    );
+  }
 }
