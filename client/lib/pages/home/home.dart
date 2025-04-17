@@ -14,6 +14,7 @@ import 'package:h_nas/components/empty.dart';
 import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/components/mini_audio_player.dart';
+import 'package:h_nas/components/spring_draggable_container.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
@@ -588,38 +589,40 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         },
       ),
       floatingActionButtonLocation: const _HomeFloatingActionButtonLocation(),
-      floatingActionButton: SpeedDial(
-        openCloseDial: _openFloatingMenu,
-        overlayColor: Colors.black,
-        overlayOpacity: 0.5,
-        icon: Icons.add,
-        activeIcon: Icons.close,
-        children: [
-          SpeedDialChild(
-            label: S.current.create_new_folder,
-            child: Icon(Icons.create_new_folder),
-            onTap: () {
-              if (user.user == null) {
-                Toast.showError(S.current.please_login);
-              } else {
-                _newFolderMenu(context);
-              }
-            },
-          ),
-          SpeedDialChild(
-            foregroundColor: ColorScheme.of(context).onSecondary,
-            backgroundColor: ColorScheme.of(context).secondary,
-            label: S.current.upload,
-            child: Icon(Icons.upload),
-            onTap: () {
-              if (user.user == null) {
-                Toast.showError(S.current.please_login);
-              } else {
-                _onUploadMenu(dirs.join('/'));
-              }
-            },
-          ),
-        ],
+      floatingActionButton: SpringDraggableContainer(
+        child: SpeedDial(
+          openCloseDial: _openFloatingMenu,
+          overlayColor: Colors.black,
+          overlayOpacity: 0.5,
+          icon: Icons.add,
+          activeIcon: Icons.close,
+          children: [
+            SpeedDialChild(
+              label: S.current.create_new_folder,
+              child: Icon(Icons.create_new_folder),
+              onTap: () {
+                if (user.user == null) {
+                  Toast.showError(S.current.please_login);
+                } else {
+                  _newFolderMenu(context);
+                }
+              },
+            ),
+            SpeedDialChild(
+              foregroundColor: ColorScheme.of(context).onSecondary,
+              backgroundColor: ColorScheme.of(context).secondary,
+              label: S.current.upload,
+              child: Icon(Icons.upload),
+              onTap: () {
+                if (user.user == null) {
+                  Toast.showError(S.current.please_login);
+                } else {
+                  _onUploadMenu(dirs.join('/'));
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/empty.dart';
+import 'package:h_nas/components/spring_draggable_container.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/pages/transmission/transmission.view.dart';
@@ -331,11 +332,13 @@ class _TransmissionPageState extends State<TransmissionPage>
         },
         child:
             _tabController.index == 0
-                ? FloatingActionButton(
-                  tooltip: S.current.upload,
-                  shape: const CircleBorder(),
-                  onPressed: () {},
-                  child: Icon(Icons.upload_file),
+                ? SpringDraggableContainer(
+                  child: FloatingActionButton(
+                    tooltip: S.current.upload,
+                    shape: const CircleBorder(),
+                    onPressed: () {},
+                    child: Icon(Icons.upload_file),
+                  ),
                 )
                 : null,
       ),
