@@ -31,7 +31,8 @@ abstract class Global {
     buildNumber: '',
   );
   static Locale locale = Prefs.locale;
-  static ValueNotifier<ThemeData> theme = ValueNotifier(Prefs.theme);
+  static ValueNotifier<ThemeMode> themeMode = ValueNotifier(Prefs.themeMode);
+  static ValueNotifier<Color> themeColor = ValueNotifier(Prefs.themeColor);
   static ValueNotifier<bool> isDark = ValueNotifier(false);
 
   static ListModel<UploadFileTask> uploadTasks = ListModel();
@@ -51,5 +52,13 @@ abstract class Global {
     } else {
       downloadDir = '';
     }
+  }
+
+  static void dispose() {
+    player.dispose();
+    uploadTasks.dispose();
+    downloadTasks.dispose();
+    themeColor.dispose();
+    isDark.dispose();
   }
 }

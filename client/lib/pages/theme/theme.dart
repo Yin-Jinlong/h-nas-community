@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/prefs.dart';
-import 'package:h_nas/utils/theme.dart';
 
 import '../../generated/l10n.dart';
 
@@ -15,14 +12,6 @@ class ThemePage extends StatefulWidget {
   @override
   State createState() => _ThemePageState();
 }
-
-Color _color(HSVColor hsv, double sFactor, double vFactor) =>
-    HSVColor.fromAHSV(
-      hsv.alpha,
-      hsv.hue,
-      max(0, min(1, hsv.saturation * sFactor)),
-      max(0, min(1, hsv.value * vFactor)),
-    ).toColor();
 
 List<Color> _colors(MaterialColor color) => [
   color.shade900,
@@ -36,18 +25,11 @@ List<Color> _colors(MaterialColor color) => [
   color.shade100,
 ];
 
-_ThemeData _gen(Color color) {
-  final hsv = HSVColor.fromColor(color);
-  return _ThemeData(
-    primary: color,
-    secondary: _color(hsv, 0.7, 1.2),
-    tertiary: _color(hsv, 0.4, 1.3),
-  );
-}
-
 class _ThemePageState extends State<ThemePage> {
   double _slider = 50;
-  bool _check = false;
+  bool _check = false, _auto = Prefs.themeMode == ThemeMode.system;
+  Brightness _brightness =
+      Prefs.themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light;
 
   final colors = <Color>[
     ..._colors(Colors.red),
@@ -66,31 +48,14 @@ class _ThemePageState extends State<ThemePage> {
   ];
 
   _setColor(Color c) {
-    final theme = _gen(c);
-    final cs = ColorScheme(
-      brightness: Brightness.light,
-      primary: theme.primary,
-      onPrimary: Colors.white,
-      secondary: theme.secondary,
-      onSecondary: Colors.black87,
-      tertiary: theme.tertiary,
-      onTertiary: Colors.black54,
-      error: Colors.red,
-      onError: Colors.black54,
-      surface: Colors.grey.shade200,
-      onSurface: Colors.black87,
-    );
-
     setState(() {
-      final t = ThemeUtils.fromColorScheme(cs);
-      Prefs.theme = t;
-      Global.theme.value = t;
+      Prefs.themeColor = c;
     });
   }
 
   _showColorPicker() {
     // create some values
-    Color pickerColor = Global.theme.value.primaryColor;
+    Color pickerColor = Global.themeColor.value;
 
     // ValueChanged<Color> callback
     void changeColor(Color color) {
@@ -124,111 +89,150 @@ class _ThemePageState extends State<ThemePage> {
     );
   }
 
+  Widget _themePreview() {
+    return FractionallySizedBox(
+      widthFactor: 1,
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 8,
+              children: [
+                FilledButton(onPressed: () {}, child: Text(S.current.button)),
+                ElevatedButton(onPressed: () {}, child: Text(S.current.button)),
+                TextButton(onPressed: () {}, child: Text(S.current.button)),
+              ],
+            ),
+            Wrap(
+              spacing: 8,
+              children: [
+                Checkbox(
+                  value: _check,
+                  onChanged: (value) {
+                    setState(() {
+                      _check = value ?? false;
+                    });
+                  },
+                ),
+                Switch(
+                  value: _check,
+                  activeColor: ColorScheme.of(context).primary,
+                  onChanged: (value) {
+                    setState(() {
+                      _check = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: S.current.title,
+                hintText: S.current.title,
+                hintStyle: TextStyle(color: Colors.grey.shade400),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SliderTheme(
+              data: SliderThemeData(
+                showValueIndicator: ShowValueIndicator.always,
+              ),
+              child: Slider(
+                value: _slider,
+                label: _slider.toStringAsFixed(0),
+                max: 100,
+                inactiveColor: Colors.grey.shade300,
+                secondaryTrackValue: _slider / 2 + 50,
+                onChanged: (value) {
+                  setState(() {
+                    _slider = value;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _update() {
+    if (_auto) {
+      Prefs.themeMode = ThemeMode.system;
+    } else {
+      Prefs.themeMode =
+          _brightness == Brightness.light ? ThemeMode.light : ThemeMode.dark;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(S.current.theme)),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: FilledButton(
-              onPressed: () {
-                _showColorPicker();
-              },
-              child: Text(S.current.pick_color),
+      body: Padding(
+        padding: EdgeInsets.all(8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Checkbox(
+                  value: _auto,
+                  onChanged: (value) {
+                    setState(() {
+                      _auto = value ?? false;
+                      _update();
+                    });
+                  },
+                ),
+                Text(S.current.theme_auto),
+                Radio(
+                  value: Brightness.light,
+                  groupValue: _brightness,
+                  onChanged:
+                      _auto
+                          ? null
+                          : (Brightness? value) {
+                            setState(() {
+                              _brightness = value!;
+                              _update();
+                            });
+                          },
+                ),
+                Text(S.current.theme_light),
+                Radio(
+                  value: Brightness.dark,
+                  groupValue: _brightness,
+                  onChanged:
+                      _auto
+                          ? null
+                          : (Brightness? value) {
+                            setState(() {
+                              _brightness = value!;
+                              _update();
+                            });
+                          },
+                ),
+                Text(S.current.theme_dark),
+              ],
             ),
-          ),
-          Divider(),
-          FractionallySizedBox(
-            widthFactor: 1,
-            child: Padding(
-              padding: EdgeInsets.all(12),
-              child: Column(
-                spacing: 8,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      FilledButton(
-                        onPressed: () {},
-                        child: Text(S.current.button),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Text(S.current.button),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(S.current.button),
-                      ),
-                    ],
-                  ),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      Checkbox(
-                        value: _check,
-                        onChanged: (value) {
-                          setState(() {
-                            _check = value ?? false;
-                          });
-                        },
-                      ),
-                      Switch(
-                        value: _check,
-                        activeColor: ColorScheme.of(context).primary,
-                        onChanged: (value) {
-                          setState(() {
-                            _check = value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: S.current.title,
-                      hintText: S.current.title,
-                      hintStyle: TextStyle(color: Colors.grey.shade400),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SliderTheme(
-                    data: SliderThemeData(
-                      showValueIndicator: ShowValueIndicator.always,
-                    ),
-                    child: Slider(
-                      value: _slider,
-                      label: _slider.toStringAsFixed(0),
-                      max: 100,
-                      inactiveColor: Colors.grey.shade300,
-                      secondaryTrackValue: _slider / 2 + 50,
-                      onChanged: (value) {
-                        setState(() {
-                          _slider = value;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: FilledButton(
+                onPressed: () {
+                  _showColorPicker();
+                },
+                child: Text(S.current.pick_color),
               ),
             ),
-          ),
-        ],
+            Divider(),
+            _themePreview(),
+          ],
+        ),
       ),
     );
   }
-}
-
-class _ThemeData {
-  Color primary, secondary, tertiary;
-
-  _ThemeData({
-    required this.primary,
-    required this.secondary,
-    required this.tertiary,
-  });
 }

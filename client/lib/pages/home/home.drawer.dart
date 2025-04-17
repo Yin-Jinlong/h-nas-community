@@ -182,9 +182,10 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
                         children: [
                           Text(
                             user.username,
-                            style: TextTheme.of(
-                              context,
-                            ).titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                            style: TextTheme.of(context).titleLarge?.copyWith(
+                              color: ColorScheme.of(context).onSecondary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           _copyIcon(context),
                         ],

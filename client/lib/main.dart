@@ -9,6 +9,7 @@ import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/plugin/notifications_plugin.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
+import 'package:h_nas/utils/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -51,7 +52,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    Global.theme.addListener(() {
+    Global.themeMode.addListener(() {
+      setState(() {});
+    });
+    Global.themeColor.addListener(() {
       setState(() {});
     });
 
@@ -73,8 +77,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    Global.theme.dispose();
-    Global.player.dispose();
+    Global.dispose();
     super.dispose();
   }
 
@@ -94,7 +97,12 @@ class _MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: S.delegate.supportedLocales,
-        theme: Global.theme.value,
+        themeMode: Prefs.themeMode,
+        theme: ThemeUtils.fromColor(Global.themeColor.value, Brightness.light),
+        darkTheme: ThemeUtils.fromColor(
+          Global.themeColor.value,
+          Brightness.dark,
+        ),
         scrollBehavior: const _ScrollBehavior(),
         navigatorKey: navigatorKey,
         navigatorObservers: [BotToastNavigatorObserver()],

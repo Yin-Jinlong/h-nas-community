@@ -1,63 +1,106 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 extension ThemeUtils on ThemeData {
+  static Color defaultColor = Colors.orange.shade300;
+
   static ThemeData get defaultTheme {
-    final colorScheme = ColorScheme(
-      brightness: Brightness.light,
-      primary: Colors.orange.shade300,
-      onPrimary: Colors.white,
-      secondary: Colors.orange.shade200,
-      onSecondary: Colors.black87,
-      tertiary: Colors.orange.shade100,
-      onTertiary: Colors.black54,
-      error: Colors.red,
-      onError: Colors.black54,
-      surface: Colors.grey.shade200,
-      onSurface: Colors.black87,
-    );
-    return fromColorScheme(colorScheme);
+    return fromColor(defaultColor, Brightness.light);
   }
 
-  static ThemeData fromJson(Map<String, dynamic> json) {
-    final colorScheme = ColorSchemeUtils.fromJson(json['colorScheme']);
-    return fromColorScheme(colorScheme);
-  }
-
-  static ThemeData fromColorScheme(ColorScheme colorScheme) => ThemeData(
-    appBarTheme: AppBarTheme(backgroundColor: colorScheme.primary),
+  static ThemeData _fromColorScheme(ColorScheme colorScheme) => ThemeData(
+    appBarTheme: AppBarTheme(
+      backgroundColor: colorScheme.primary,
+      titleTextStyle: TextStyle(fontSize: 20, color: colorScheme.onPrimary),
+      iconTheme: IconThemeData(color: colorScheme.onPrimary),
+      actionsIconTheme: IconThemeData(color: colorScheme.onPrimary),
+    ),
     colorScheme: colorScheme,
   );
 
-  Map<String, dynamic> toJson() => {'colorScheme': colorScheme.toJson()};
-}
-
-extension ColorSchemeUtils on ColorScheme {
-  static ColorScheme fromJson(Map<String, dynamic> json) {
-    return ColorScheme(
-      brightness: Brightness.light,
-      primary: Color(json['primary']),
-      onPrimary: Color(json['onPrimary']),
-      secondary: Color(json['secondary']),
-      onSecondary: Color(json['onSecondary']),
-      tertiary: Color(json['tertiary']),
-      onTertiary: Color(json['onTertiary']),
-      surface: Color(json['surface']),
-      onSurface: Color(json['onSurface']),
-      error: Color(json['error']),
-      onError: Color(json['onError']),
+  ///
+  /// primary 亮色的主题色
+  ///
+  static ThemeData fromColor(Color primary, Brightness brightness) {
+    final dark = brightness == Brightness.dark;
+    if (dark) {
+      primary = primary.dark;
+    }
+    final error = primary.errorColor;
+    final secondary = dark ? primary.darkSecondary : primary.secondary;
+    final tertiary = dark ? primary.darkTertiary : primary.tertiary;
+    final surface =
+        brightness == Brightness.light
+            ? Colors.grey.shade100
+            : Colors.grey.shade900;
+    return _fromColorScheme(
+      ColorScheme(
+        brightness: brightness,
+        primary: primary,
+        onPrimary: primary.onColor,
+        secondary: secondary,
+        onSecondary: secondary.onColor,
+        tertiary: tertiary,
+        onTertiary: tertiary.onColor,
+        error: error,
+        onError: error.onColor,
+        surface: surface,
+        onSurface: surface.onColor,
+      ),
     );
   }
+}
 
-  Map<String, dynamic> toJson() => {
-    'primary': primary.toARGB32(),
-    'onPrimary': onPrimary.toARGB32(),
-    'secondary': secondary.toARGB32(),
-    'onSecondary': onSecondary.toARGB32(),
-    'tertiary': tertiary.toARGB32(),
-    'onTertiary': onTertiary.toARGB32(),
-    'surface': surface.toARGB32(),
-    'onSurface': onSurface.toARGB32(),
-    'error': error.toARGB32(),
-    'onError': onError.toARGB32(),
-  };
+extension _OnColor on Color {
+  static final Color error = HSVColor.fromAHSV(1, 0, 0.6, 0.95).toColor();
+  static final Color errorHighSaturation =
+      HSVColor.fromAHSV(1, 0, 0.8, 0.95).toColor();
+
+  Color get onColor {
+    final hsv = HSVColor.fromColor(this);
+    if (hsv.value > 0.8 && hsv.saturation > 0.8) {
+      return Colors.white;
+    } else if (hsv.value > 0.9) {
+      return Colors.black87;
+    } else {
+      return Colors.white;
+    }
+  }
+
+  Color get dark {
+    final hsv = HSVColor.fromColor(this);
+    return hsv.withValue(hsv.value * 0.6).toColor();
+  }
+
+  Color get secondary {
+    final hsv = HSVColor.fromColor(this);
+    return hsv.withSaturation(hsv.saturation * 0.7).toColor();
+  }
+
+  Color get darkSecondary {
+    final hsv = HSVColor.fromColor(this);
+    final v = min(hsv.value + 0.1, 1.0);
+    return hsv.withValue(v).toColor();
+  }
+
+  Color get tertiary {
+    final hsv = HSVColor.fromColor(this);
+    return hsv.withSaturation(hsv.saturation * 0.4).toColor();
+  }
+
+  Color get darkTertiary {
+    final hsv = HSVColor.fromColor(this);
+    final v = min(hsv.value + 0.2, 1.0);
+    return hsv.withValue(v).toColor();
+  }
+
+  Color get errorColor {
+    final hsv = HSVColor.fromColor(this);
+    if (hsv.hue < 5 && hsv.value > 0.9) {
+      return hsv.saturation > 0.75 ? error : errorHighSaturation;
+    } else {
+      return error;
+    }
+  }
 }

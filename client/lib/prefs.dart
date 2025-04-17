@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/theme.dart';
@@ -12,23 +11,24 @@ abstract class Prefs {
   static const String keyToken = 'token';
   static const String keyLocale = 'locale';
   static const String keyTheme = 'theme';
+  static const String keyThemeMode = 'theme-mode';
   static const String keyPlayerVolume = 'player-volume';
   static const String keyPlayerPlayMode = 'player-play-mode';
 
   static late SharedPreferences _prefs;
 
-  static String? get token => _prefs.getString(keyToken);
+  static String? get token => getString(keyToken);
 
   static set token(String? token) {
     if (token == null) {
-      _prefs.remove(keyToken);
+      remove(keyToken);
     } else {
-      _prefs.setString(keyToken, token);
+      setString(keyToken, token);
     }
   }
 
   static Locale get locale {
-    final value = _prefs.getString(keyLocale);
+    final value = getString(keyLocale);
     if (value == null) {
       return Locale('zh');
     }
@@ -40,41 +40,57 @@ abstract class Prefs {
     );
   }
 
-  static ThemeData get theme {
-    final value = _prefs.getString(keyTheme);
-    return value == null
-        ? ThemeUtils.defaultTheme
-        : ThemeUtils.fromJson(jsonDecode(value));
+  static ThemeMode get themeMode {
+    final value = getInt(keyThemeMode);
+    return value == null || value < 0 || value > ThemeMode.values.length - 1
+        ? ThemeMode.system
+        : ThemeMode.values[value];
+  }
+
+  static set themeMode(ThemeMode mode) {
+    setInt(keyThemeMode, mode.index);
+    Global.themeMode.value = mode;
+  }
+
+  static Color get themeColor {
+    var value = getInt(keyTheme);
+    if (value == null) return ThemeUtils.defaultColor;
+    return Color(value);
+  }
+
+  static set themeColor(Color color) {
+    setInt(keyTheme, color.toARGB32());
+    Global.themeColor.value = color;
+  }
+
+  static ThemeData getTheme(Brightness brightness) {
+    return ThemeUtils.fromColor(themeColor, brightness);
   }
 
   static double get playerVolume {
-    return _prefs.getDouble(keyPlayerVolume) ?? 80;
+    return getDouble(keyPlayerVolume) ?? 80;
   }
 
   static PlayMode get playerPlayMode {
-    final value = _prefs.getInt(keyPlayerPlayMode);
+    final value = getInt(keyPlayerPlayMode);
     return value == null || value < 0 || value > PlayMode.values.length - 1
         ? PlayMode.none
         : PlayMode.values[value];
   }
 
   static setLocale(Locale l) {
-    _prefs.setString(
+    setString(
       keyLocale,
       '${l.languageCode}-${l.scriptCode ?? ''}-${l.countryCode ?? ''}',
     );
   }
 
-  static set theme(ThemeData l) {
-    _prefs.setString(keyTheme, jsonEncode(l.toJson()));
-  }
-
   static set playerVolume(double v) {
-    _prefs.setDouble(keyPlayerVolume, v);
+    setDouble(keyPlayerVolume, v);
   }
 
   static set playerPlayMode(PlayMode v) {
-    _prefs.setInt(keyPlayerPlayMode, v.index);
+    setInt(keyPlayerPlayMode, v.index);
   }
 
   static init() async {
@@ -87,15 +103,45 @@ abstract class Prefs {
 
   static Object? get(String key) => _prefs.get(key);
 
-  static bool? getBool(String key) => _prefs.getBool(key);
+  static bool? getBool(String key) {
+    try {
+      return _prefs.getBool(key);
+    } catch (e) {
+      return null;
+    }
+  }
 
-  static int? getInt(String key) => _prefs.getInt(key);
+  static int? getInt(String key) {
+    try {
+      return _prefs.getInt(key);
+    } catch (e) {
+      return null;
+    }
+  }
 
-  static double? getDouble(String key) => _prefs.getDouble(key);
+  static double? getDouble(String key) {
+    try {
+      return _prefs.getDouble(key);
+    } catch (e) {
+      return null;
+    }
+  }
 
-  static String? getString(String key) => _prefs.getString(key);
+  static String? getString(String key) {
+    try {
+      return _prefs.getString(key);
+    } catch (e) {
+      return null;
+    }
+  }
 
-  static List<String>? getStringList(String key) => _prefs.getStringList(key);
+  static List<String>? getStringList(String key) {
+    try {
+      return _prefs.getStringList(key);
+    } catch (e) {
+      return null;
+    }
+  }
 
   static Future<bool> setBool(String key, bool value) =>
       _prefs.setBool(key, value);
