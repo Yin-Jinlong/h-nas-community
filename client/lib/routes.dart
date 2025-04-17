@@ -8,6 +8,7 @@ class Routes {
   static const String audioPlayer = '/audio_player';
   static const String languages = '/languages';
   static const String loginOn = '/login_on';
+  static const String my = '/my';
   static const String settings = '/settings';
   static const String theme = '/theme';
   static const String transmission = '/transmission';
@@ -23,6 +24,7 @@ class Routes {
       audioPlayer => const AudioPlayerPage(),
       languages => LanguagesPage(onLocaleChanged: onLocaleChanged),
       loginOn => const LogInOnPage(),
+      my => const MyPage(),
       settings => const SettingsPage(),
       theme => const ThemePage(),
       transmission => const TransmissionPage(),

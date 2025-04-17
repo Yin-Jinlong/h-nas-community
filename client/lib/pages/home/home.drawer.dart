@@ -38,7 +38,9 @@ Drawer _drawer(
               spacing: 8,
               children: [
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    navigatorKey.currentState!.pushNamed(Routes.my);
+                  },
                   child: SizedBox.square(
                     dimension: 80,
                     child: CircleAvatar(
