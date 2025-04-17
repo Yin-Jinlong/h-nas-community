@@ -1,16 +1,18 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 /// 封面视图
 class CoverView extends StatefulWidget {
   /// 是否旋转
   final bool rotate;
   final Duration duration;
+  final BoxShadow? shadow;
   final Widget child;
 
   const CoverView({
     super.key,
     required this.rotate,
     this.duration = const Duration(seconds: 15),
+    this.shadow,
     required this.child,
   });
 
@@ -43,9 +45,15 @@ class _RecordViewState extends State<CoverView>
     }
     return AspectRatio(
       aspectRatio: 1,
-      child: RotationTransition(
-        turns: _controller,
-        child: ClipOval(child: widget.child),
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: widget.shadow != null ? [widget.shadow!] : [],
+        ),
+        child: RotationTransition(
+          turns: _controller,
+          child: ClipOval(child: widget.child),
+        ),
       ),
     );
   }

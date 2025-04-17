@@ -27,6 +27,7 @@ class MiniAudioPlayer extends StatefulWidget {
 class _MiniAudioPlayerState extends State<MiniAudioPlayer>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
+  late final Animation<double> _coverShadowAnimation;
   late final MediaPlayer player;
   final FocusNode _rootNode = FocusNode();
   AudioFileInfo? _cachedAudioInfo;
@@ -40,6 +41,10 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
       vsync: this,
       duration: durationMedium,
     );
+    _coverShadowAnimation = _playPauseController.drive(
+      CurveTween(curve: Curves.easeInOut),
+    )..addListener(_render);
+
     player.nowPlay.addListener(_onNowPlayChange);
     player.playState.addListener(_onPlay);
     player.position.addListener(_render);
@@ -91,6 +96,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
   @override
   void dispose() {
     _playPauseController.dispose();
+    _coverShadowAnimation.removeListener(_render);
 
     player.nowPlay.value?.removeListener(_onAudioInfo);
     player.nowPlay.removeListener(_onNowPlayChange);
@@ -131,6 +137,11 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                           height: 40,
                           child: CoverView(
                             rotate: player.playing,
+                            shadow: BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.4),
+                              blurRadius: _coverShadowAnimation.value * 8,
+                              blurStyle: BlurStyle.outer,
+                            ),
                             child: CachedNetworkImage(
                               imageUrl: FileAPIURL.publicAudioCover(info.path),
                               fit: BoxFit.cover,
