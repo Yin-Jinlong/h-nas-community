@@ -82,7 +82,7 @@ class _LogInOnPageState extends State<LogInOnPage> {
                     ),
                   ],
                 ),
-                Hero(tag: 'login', child: const Icon(Icons.person, size: 50)),
+                Hero(tag: 'avatar', child: const Icon(Icons.person, size: 50)),
                 TabPage(
                   index: pageIndex,
                   children: [

@@ -20,7 +20,7 @@ Drawer _drawer(
   required VoidCallback onLogin,
   required VoidCallback onLogout,
 }) {
-  final user = Provider.of<UserModel>(context, listen: false);
+  final user = Provider.of<UserModel>(context, listen: false).user;
   final taskCount =
       Global.uploadTasks.where((e) => !e.isDone).length +
       Global.downloadTasks.where((e) => !e.isDone).length;
@@ -37,28 +37,34 @@ Drawer _drawer(
             child: Column(
               spacing: 8,
               children: [
-                SizedBox.square(
-                  dimension: 80,
-                  child: CircleAvatar(
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      child:
-                          user.user == null
-                              ? Hero(tag: 'login', child: Icon(Icons.person))
-                              : Text(user.user!.nick),
+                InkWell(
+                  onTap: () {},
+                  child: SizedBox.square(
+                    dimension: 80,
+                    child: CircleAvatar(
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Hero(
+                          tag: 'avatar',
+                          child:
+                              user?.avatar == null
+                                  ? Icon(Icons.person, size: 30)
+                                  : Container(),
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (user.user == null) {
+                    if (user == null) {
                       onLogin();
                     } else {
                       onLogout();
                     }
                   },
                   child: Text(
-                    user.user == null ? S.current.login : S.current.logout,
+                    user == null ? S.current.login : S.current.logout,
                   ),
                 ),
               ],
