@@ -564,11 +564,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 },
                 child:
                     nowPlay != null && (nowPlay.type?.isAudio ?? false)
-                        ? IntrinsicWidth(
-                          child: MiniAudioPlayer(
-                            onClose: () {
-                              Global.player.stop();
-                            },
+                        ? SpringDraggableContainer(
+                          child: IntrinsicWidth(
+                            child: MiniAudioPlayer(
+                              onClose: () {
+                                Global.player.stop();
+                              },
+                            ),
                           ),
                         )
                         : null,
