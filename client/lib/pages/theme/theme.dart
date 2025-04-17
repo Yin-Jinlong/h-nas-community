@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:h_nas/global.dart';
@@ -54,36 +56,16 @@ class _ThemePageState extends State<ThemePage> {
   }
 
   _showColorPicker() {
-    // create some values
-    Color pickerColor = Global.themeColor.value;
-
-    // ValueChanged<Color> callback
-    void changeColor(Color color) {
-      setState(() => pickerColor = color);
-    }
-
-    // raise the [showDialog] widget
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(S.current.pick_color),
-          content: SingleChildScrollView(
-            child: BlockPicker(
-              availableColors: colors,
-              pickerColor: pickerColor,
-              onColorChanged: changeColor,
-            ),
-          ),
-          actions: <Widget>[
-            FilledButton(
-              child: Text(S.current.ok),
-              onPressed: () {
-                _setColor(pickerColor);
-                navigatorKey.currentState?.pop();
-              },
-            ),
-          ],
+        return _ColorPickerDialog(
+          colors: colors,
+          pickerColor: Global.themeColor.value,
+          onCommit: (Color color) {
+            _setColor(color);
+            navigatorKey.currentState?.pop();
+          },
         );
       },
     );
@@ -233,6 +215,119 @@ class _ThemePageState extends State<ThemePage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ColorPickerDialog extends StatefulWidget {
+  final List<Color> colors;
+  final Color pickerColor;
+  final void Function(Color) onCommit;
+
+  const _ColorPickerDialog({
+    required this.colors,
+    required this.pickerColor,
+    required this.onCommit,
+  });
+
+  @override
+  State createState() => _ColorPickerDialogState();
+}
+
+class _ColorPickerDialogState extends State<_ColorPickerDialog>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller;
+  late Color pickerColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(length: 4, vsync: this);
+    pickerColor = widget.pickerColor;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    pickerColor = widget.pickerColor;
+  }
+
+  void changeColor(Color color) {
+    setState(() {
+      pickerColor = color;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final hsv = HSVColor.fromColor(pickerColor);
+    return AlertDialog(
+      title: Text(S.current.pick_color),
+      content: IntrinsicHeight(
+        child: Column(
+          spacing: 8,
+          children: [
+            TabBar(
+              controller: _controller,
+              tabs: [
+                Text(S.current.color_picker_set),
+                Text(S.current.color_picker_broad),
+                Text(S.current.color_picker_bar),
+                Text(S.current.color_picker_ring),
+              ],
+            ),
+            SizedBox(
+              width: size.width * 0.9,
+              height: max(size.height - 300, 300),
+              child: TabBarView(
+                controller: _controller,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  BlockPicker(
+                    availableColors: widget.colors,
+                    pickerColor: pickerColor,
+                    useInShowDialog: true,
+                    onColorChanged: changeColor,
+                  ),
+                  ColorPicker(
+                    pickerColor: pickerColor,
+                    enableAlpha: false,
+                    onColorChanged: changeColor,
+                  ),
+                  SlidePicker(
+                    colorModel: ColorModel.hsv,
+                    pickerColor: pickerColor,
+                    enableAlpha: false,
+                    onColorChanged: changeColor,
+                  ),
+                  HueRingPicker(
+                    pickerColor: pickerColor,
+                    onColorChanged: changeColor,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            navigatorKey.currentState?.pop();
+          },
+          child: Text(S.current.cancel),
+        ),
+        FilledButton(
+          onPressed:
+              hsv.saturation < 0.05 || hsv.value < 0.1
+                  ? null
+                  : () {
+                    widget.onCommit(pickerColor);
+                  },
+          child: Text(S.current.ok),
+        ),
+      ],
     );
   }
 }
