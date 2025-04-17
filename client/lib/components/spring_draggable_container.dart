@@ -16,7 +16,7 @@ class SpringDraggableContainer extends StatefulWidget {
 
 class _SpringContainerState extends State<SpringDraggableContainer>
     with SingleTickerProviderStateMixin {
-  double _downX = 0, _downY = 0, _offX = 0, _offY = 0;
+  Offset _down = Offset(0, 0), _off = Offset(0, 0);
   late final AnimationController _controller;
   late final Animation<double> _animation;
 
@@ -28,6 +28,10 @@ class _SpringContainerState extends State<SpringDraggableContainer>
         setState(() {});
       });
     _animation = _controller.drive(CurveTween(curve: Curves.elasticIn));
+  }
+
+  void _start() {
+    _controller.reverse();
   }
 
   @override
@@ -44,27 +48,25 @@ class _SpringContainerState extends State<SpringDraggableContainer>
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: (event) {
+    return GestureDetector(
+      onPanDown: (event) {
         setState(() {
           _controller.value = 1;
-          _downX = event.localPosition.dx;
-          _downY = event.localPosition.dy;
-          _offX = 0;
-          _offY = 0;
+          _down = event.localPosition;
+          _off = Offset(0, 0);
         });
       },
-      onPointerMove: (event) {
+      onPanUpdate: (event) {
         setState(() {
-          _offX = event.localPosition.dx - _downX;
-          _offY = event.localPosition.dy - _downY;
+          _off = event.localPosition - _down;
         });
       },
-      onPointerUp: (event) {
-        _controller.animateTo(0);
+      onPanEnd: (details) {
+        _start();
       },
+      onPanCancel: _start,
       child: Transform.translate(
-        offset: Offset(_offX, _offY) * _animation.value,
+        offset: _off * _animation.value,
         child: widget.child,
       ),
     );
