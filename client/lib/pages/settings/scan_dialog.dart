@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/plugin/broadcast_plugin.dart';
@@ -10,9 +11,8 @@ class ScanDialog extends StatefulWidget {
   State createState() => _ScanDialogState();
 }
 
-class _ScanDialogState extends State<ScanDialog> {
+class _ScanDialogState extends DisposeFlagState<ScanDialog> {
   final Set<String> _apiList = {};
-  bool _disposed = false;
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _ScanDialogState extends State<ScanDialog> {
 
   void _scan() {
     BroadcastPlugin.receiveAPIURL().then((value) {
-      if (_disposed) return;
+      if (disposed) return;
       if (value != null) {
         setState(() {
           _apiList.add(value);
@@ -30,12 +30,6 @@ class _ScanDialogState extends State<ScanDialog> {
       }
       _scan();
     });
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
   }
 
   @override

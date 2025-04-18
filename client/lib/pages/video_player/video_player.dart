@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
+import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
@@ -66,11 +67,11 @@ class _VideoControls extends StatefulWidget {
   State<StatefulWidget> createState() => _VideoControlsState();
 }
 
-class _VideoControlsState extends State<_VideoControls>
+class _VideoControlsState extends DisposeFlagState<_VideoControls>
     with TickerProviderStateMixin {
   late final AnimationController _playPauseController;
   final MediaPlayer player = Global.player;
-  bool _showControls = false, _disposed = false;
+  bool _showControls = false;
   CancelableOperation? _showControlsOperation;
 
   @override
@@ -172,8 +173,6 @@ class _VideoControlsState extends State<_VideoControls>
 
   @override
   void dispose() {
-    _disposed = true;
-
     _playPauseController.dispose();
     player.playState.removeListener(_onPlay);
     player.position.removeListener(_render);
@@ -189,7 +188,7 @@ class _VideoControlsState extends State<_VideoControls>
     _showControlsOperation = CancelableOperation.fromFuture(
       Future.delayed(const Duration(seconds: 2)),
     ).then((v) {
-      if (_disposed) return;
+      if (disposed) return;
       setState(() {
         _showControls = false;
       });

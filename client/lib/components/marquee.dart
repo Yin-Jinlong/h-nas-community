@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:h_nas/components/dispose.dart';
 
 class Marquee extends StatefulWidget {
   final double maxWidth, space, speed;
@@ -49,11 +50,9 @@ class Marquee extends StatefulWidget {
   State createState() => _MarqueeState();
 }
 
-class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
+class _MarqueeState extends DisposeFlagState<Marquee> with SingleTickerProviderStateMixin {
   late double contentWidth, contentHeight;
   late final AnimationController _controller;
-
-  bool _disposed = false;
 
   /// 是否需要滚动，超过最大宽度时滚动
   final shouldMarquee = ValueNotifier(false);
@@ -96,7 +95,7 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
 
   _wait() {
     Future.delayed(widget.turnDur, () {
-      if (!_disposed) {
+      if (disposed) {
         _controller.repeat(count: widget.count);
       }
     });
@@ -120,7 +119,6 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    _disposed = true;
     _controller.dispose();
     shouldMarquee.dispose();
     super.dispose();
