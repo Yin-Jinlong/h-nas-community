@@ -13,7 +13,7 @@ extension UserAPI on API {
           onResp: (res) {
             final token = res.headers.value(ExtraHeaders.authorization);
             if (token != null) {
-              Prefs.token=token;
+              Prefs.token = token;
             }
           },
         )
@@ -22,4 +22,52 @@ extension UserAPI on API {
         });
   }
 
+  static Future<String?> requestLoginQR() {
+    return API._post<String>('/user/login/qr/request', {}).then((data) {
+      return data;
+    });
+  }
+
+  static Future<QRGrantInfo?> getQRGrantInfo(String id) {
+    return API
+        ._post<Map<String, dynamic>>(
+          '/user/grant/qr/info',
+          {'id': id},
+          options: Options(
+            headers: {ExtraHeaders.authorization: Prefs.token},
+            contentType: Headers.formUrlEncodedContentType,
+            responseType: ResponseType.json,
+          ),
+        )
+        .then((data) {
+          return data == null ? null : QRGrantInfo.fromJson(data);
+        });
+  }
+
+  static Future<bool?> grant(String id, bool grant) {
+    return API._post<bool>(
+      '/user/grant/qr',
+      {'id': id, 'grant': grant},
+      options: Options(
+        headers: {ExtraHeaders.authorization: Prefs.token},
+        contentType: Headers.formUrlEncodedContentType,
+        responseType: ResponseType.json,
+      ),
+    );
+  }
+
+  static Future<LoginQRResult?> loginQR(String id) {
+    return API
+        ._post<Map<String, dynamic>>(
+          '/user/login/qr',
+          {'id': id},
+          options: Options(
+            contentType: Headers.formUrlEncodedContentType,
+            responseType: ResponseType.json,
+          ),
+        )
+        .then((data) {
+          return data == null ? null : LoginQRResult.fromJson(data);
+        });
+  }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:h_nas/components/tab_page.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/user_model.dart';
+import 'package:h_nas/pages/login_logon/login_qr.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/edit_field_utils.dart';
 import 'package:h_nas/utils/toast.dart';
@@ -28,6 +29,7 @@ class LogInOnPage extends StatefulWidget {
 
 class _LogInOnPageState extends State<LogInOnPage> {
   var pageIndex = 0;
+  bool _qr = false;
   final List<_BackgroundItem> _bgItems = [];
 
   @override
@@ -83,33 +85,79 @@ class _LogInOnPageState extends State<LogInOnPage> {
                     ),
                   ],
                 ),
-                Hero(tag: 'avatar', child: const Icon(Icons.person, size: 50)),
-                TabPage(
-                  index: pageIndex,
-                  children: [
-                    _LoginWidget(
-                      onGotoLogon: () {
-                        setState(() {
-                          pageIndex = 1;
-                        });
-                      },
-                    ),
-                    _LogonWidget(
-                      onGotoLogin: () {
-                        setState(() {
-                          pageIndex = 0;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                if (!_qr)
+                  Hero(
+                    tag: 'avatar',
+                    child: const Icon(Icons.person, size: 50),
+                  ),
+                if (!_qr)
+                  TabPage(
+                    index: pageIndex,
+                    children: [
+                      _LoginWidget(
+                        onGotoLogon: () {
+                          setState(() {
+                            pageIndex = 1;
+                          });
+                        },
+                      ),
+                      _LogonWidget(
+                        onGotoLogin: () {
+                          setState(() {
+                            pageIndex = 0;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                if (_qr) _qrView(),
               ],
             ),
-            pageIndex == 0 ? _qrLayout() : Container(),
+            pageIndex == 0 && !_qr ? _qrLayout() : Container(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _qrView() {
+    return Column(
+      children: [
+        LoginQR(),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _qr = false;
+            });
+          },
+          child: Text(S.current.back_password_login),
+        ),
+      ],
+    );
+  }
+
+  Widget _qrLayout() {
+    if (UniversalPlatform.isDesktopOrWeb) {
+      return Align(
+        alignment: Alignment.topRight,
+        child: Tooltip(
+          message: S.current.scan_login,
+          child: ClipPath(
+            clipper: _QRClipper(),
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  _qr = true;
+                });
+              },
+              child: Icon(Icons.qr_code, size: 60),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   @override
@@ -136,26 +184,6 @@ class _LogInOnPageState extends State<LogInOnPage> {
         ],
       ),
     );
-  }
-}
-
-Widget _qrLayout() {
-  if (UniversalPlatform.isDesktopOrWeb) {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Tooltip(
-        message: S.current.scan_login,
-        child: ClipPath(
-          clipper: _QRClipper(),
-          child: TextButton(
-            onPressed: () {},
-            child: Icon(Icons.qr_code, size: 60),
-          ),
-        ),
-      ),
-    );
-  } else {
-    return Container();
   }
 }
 

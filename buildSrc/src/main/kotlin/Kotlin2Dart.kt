@@ -1,11 +1,14 @@
-import java.io.File
-import psi.*
-import env.*
+import env.parseNodes
 import io.IndentWriter
 import io.intentWriter
-import task.*
+import psi.ClassNode
+import psi.EnumNode
+import psi.Node
+import psi.PropertyNode
+import task.AbstractKotlin2TypeTask
+import java.io.File
 import java.text.DateFormat
-import java.util.Date
+import java.util.*
 
 abstract class Kotlin2Dart : AbstractKotlin2TypeTask() {
 
@@ -26,6 +29,7 @@ abstract class Kotlin2Dart : AbstractKotlin2TypeTask() {
         "ULong" to "int",
         "Float" to "double",
         "Double" to "double",
+        "String" to "String",
         "Any" to "dynamic"
     )
 
@@ -138,11 +142,13 @@ abstract class Kotlin2Dart : AbstractKotlin2TypeTask() {
 
                 write(prop.name)
                 write(": ")
-                if (list)
-                    write("(")
+                write("(")
                 write("json['")
                 write(prop.name)
                 write("'] as ")
+
+                var cusType = false
+
                 if (prop.type.isSub) {
                     when (linkMap[prop.type.name]) {
                         is EnumNode -> write("String")
@@ -151,13 +157,25 @@ abstract class Kotlin2Dart : AbstractKotlin2TypeTask() {
                 } else {
                     if (list)
                         write("List<dynamic>")
-                    else
-                        write(typeMap[prop.type.name] ?: prop.type.name)
+                    else {
+                        val dn = typeMap[prop.type.name]
+                        if (dn != null) {
+                            write(dn)
+                        } else {
+                            cusType = true
+                            write("Map<String, dynamic>")
+                        }
+                    }
                 }
                 if (prop.type.nullable)
                     write("?")
-                if (list) {
+                write(")")
+                if (cusType) {
+                    write("._to(")
+                    write(prop.type.name)
+                    write(".fromJson")
                     write(")")
+                } else if (list) {
                     newLine()
                     write("    .map((e) => ")
                     val st = prop.type.subTypes[0]

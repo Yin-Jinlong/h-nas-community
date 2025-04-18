@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_scankit/flutter_scankit.dart';
+import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
+import 'package:h_nas/utils/api.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -11,9 +13,11 @@ class QRScanPage extends StatefulWidget {
   State createState() => _QRScanPageState();
 }
 
-class _QRScanPageState extends State<QRScanPage> {
+class _QRScanPageState extends DisposeFlagState<QRScanPage> {
   late final ScanKitController _controller;
   String? _result;
+  QRGrantInfo? _info;
+  bool _requesting = false;
 
   @override
   void initState() {
@@ -24,6 +28,7 @@ class _QRScanPageState extends State<QRScanPage> {
       setState(() {
         _result = event.originalValue;
         _controller.pauseContinuouslyScan();
+        _getInfo();
       });
     });
 
@@ -37,6 +42,30 @@ class _QRScanPageState extends State<QRScanPage> {
         navigatorKey.currentState?.pop();
       }
     }
+  }
+
+  void _getInfo() async {
+    final r = await UserAPI.getQRGrantInfo(_result!);
+    if (r == null) {
+      return;
+    }
+    setState(() {
+      _info = r;
+    });
+  }
+
+  void _grant(bool grant) async {
+    setState(() {
+      _requesting = grant;
+    });
+    final r = await UserAPI.grant(_result!, grant);
+    if (disposed) return;
+    if (r != null) {
+      navigatorKey.currentState?.pop();
+    }
+    setState(() {
+      _requesting = false;
+    });
   }
 
   Widget _scanView() {
@@ -54,7 +83,35 @@ class _QRScanPageState extends State<QRScanPage> {
   }
 
   Widget _grantView() {
-    return Column(children: [Text(_result!)]);
+    return _info == null
+        ? Center(child: CircularProgressIndicator())
+        : SizedBox.expand(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 12,
+            children: [
+              Text(_info!.ip),
+              ElevatedButton(
+                onPressed:
+                    _requesting
+                        ? null
+                        : () {
+                          _grant(false);
+                        },
+                child: Text(S.current.cancel),
+              ),
+              FilledButton(
+                onPressed:
+                    _requesting
+                        ? null
+                        : () {
+                          _grant(true);
+                        },
+                child: Text(S.current.login),
+              ),
+            ],
+          ),
+        );
   }
 
   @override
