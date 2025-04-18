@@ -242,7 +242,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog>
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: 4, vsync: this);
+    _controller = TabController(length: 3, vsync: this);
     pickerColor = widget.pickerColor;
   }
 
@@ -274,12 +274,11 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog>
                 Text(S.current.color_picker_set),
                 Text(S.current.color_picker_broad),
                 Text(S.current.color_picker_bar),
-                Text(S.current.color_picker_ring),
               ],
             ),
             SizedBox(
               width: size.width * 0.9,
-              height: max(size.height - 300, 300),
+              height: max(size.height - 350, 350),
               child: TabBarView(
                 controller: _controller,
                 physics: const NeverScrollableScrollPhysics(),
@@ -290,20 +289,19 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog>
                     useInShowDialog: true,
                     onColorChanged: changeColor,
                   ),
-                  ColorPicker(
-                    pickerColor: pickerColor,
-                    enableAlpha: false,
-                    onColorChanged: changeColor,
+                  SingleChildScrollView(
+                    child: ColorPicker(
+                      pickerColor: pickerColor,
+                      enableAlpha: false,
+                      onColorChanged: changeColor,
+                    ),
                   ),
                   SlidePicker(
                     colorModel: ColorModel.hsv,
                     pickerColor: pickerColor,
                     enableAlpha: false,
                     onColorChanged: changeColor,
-                  ),
-                  HueRingPicker(
-                    pickerColor: pickerColor,
-                    onColorChanged: changeColor,
+                    sliderSize: Size(double.infinity, 60),
                   ),
                 ],
               ),
