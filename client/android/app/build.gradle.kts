@@ -29,6 +29,9 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
+        proguardFiles += getDefaultProguardFile("proguard-android.txt")
+        proguardFiles += file("proguard-rules.pro")
+
         ndk {
             //noinspection ChromeOsAbiSupport
             abiFilters += "arm64-v8a"
