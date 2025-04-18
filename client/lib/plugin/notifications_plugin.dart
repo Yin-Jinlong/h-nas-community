@@ -7,8 +7,14 @@ abstract class NotificationsPlugin {
   static void init() {
     _channel.setMethodCallHandler((call) async {
       switch (call.method) {
+        case 'onPrevious':
+          _onPrevious();
+          break;
         case 'onPlayPause':
           _onPlayPause();
+          break;
+        case 'onNext':
+          _onNext();
           break;
         case 'onClose':
           _onClose();
@@ -28,12 +34,14 @@ abstract class NotificationsPlugin {
 
   static Future<void> showPlayerNotification(
     String title,
-    String subText,
+    String artists,
+    String? cover,
     bool playing,
   ) async {
     await _channel.invokeMethod('showPlayerNotification', [
       title,
-      subText,
+      artists,
+      cover,
       playing,
     ]);
   }
@@ -42,8 +50,16 @@ abstract class NotificationsPlugin {
     return await _channel.invokeMethod('close');
   }
 
+  static void _onPrevious() {
+    Global.player.previous();
+  }
+
   static void _onPlayPause() {
     Global.player.playPause();
+  }
+
+  static void _onNext() {
+    Global.player.next();
   }
 
   static void _onClose() {

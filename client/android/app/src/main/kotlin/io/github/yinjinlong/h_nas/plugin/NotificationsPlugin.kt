@@ -7,7 +7,7 @@ class NotificationsPlugin(
     val channel: MethodChannel,
     val hasPermission: () -> Boolean,
     val requestPermission: () -> Unit,
-    val postNotification: (title: String, subText: String, playing: Boolean) -> Unit,
+    val postNotification: (title: String, artists: String, cover: String?, playing: Boolean) -> Unit,
     val closeNotification: () -> Unit,
 ) : MethodChannel.MethodCallHandler {
 
@@ -47,9 +47,10 @@ class NotificationsPlugin(
             "showPlayerNotification" -> {
                 val args: List<*> = call.arguments as List<*>
                 val title = args[0] as String
-                val subText = args[1] as String
-                val playing = args[2] as Boolean
-                postNotification(title, subText, playing)
+                val artists = args[1] as String
+                val cover = args[2] as String?
+                val playing = args[3] as Boolean
+                postNotification(title, artists, cover, playing)
                 result.success(true)
             }
 
@@ -62,8 +63,16 @@ class NotificationsPlugin(
         }
     }
 
+    fun onPrevious() {
+        channel.invokeMethod("onPrevious", null)
+    }
+
     fun onPlayPause() {
         channel.invokeMethod("onPlayPause", null)
+    }
+
+    fun onNext() {
+        channel.invokeMethod("onNext", null)
     }
 
     fun onClose() {

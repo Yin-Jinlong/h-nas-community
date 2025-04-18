@@ -96,11 +96,12 @@ class MainActivity : FlutterActivity() {
         )
     }
 
-    fun postNotification(title: String, subText: String, playing: Boolean) {
+    fun postNotification(title: String, artists: String, cover: String?, playing: Boolean) {
         startForegroundService(Intent(activity, MusicControlService::class.java).apply {
             action = MusicControlService.ACTION_UPDATE
             putExtra(MusicControlService.EXTRA_TITLE, title)
-            putExtra(MusicControlService.EXTRA_ARTIST, subText)
+            putExtra(MusicControlService.EXTRA_ARTIST, artists)
+            putExtra(MusicControlService.EXTRA_COVER, cover)
             putExtra(MusicControlService.EXTRA_PLAYING, playing)
         })
     }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
@@ -122,9 +123,11 @@ class MediaPlayer {
   void _showNotification() {
     if (!UniversalPlatform.isAndroid) return;
     final info = nowPlay.value?.audioInfo;
+    final cover = info?.cover;
     NotificationsPlugin.showPlayerNotification(
       info?.userTitle ?? '?',
       info?.userArtist ?? '?',
+      cover == null ? null : FileAPIURL.publicAudioCover(cover),
       playing,
     );
   }
