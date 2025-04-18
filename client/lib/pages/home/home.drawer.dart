@@ -243,6 +243,16 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
             icon: Icon(Icons.logout),
           ),
         ),
+        if (UniversalPlatform.isAndroid)
+          Align(
+            alignment: Alignment.bottomRight,
+            child: IconButton(
+              onPressed: () {
+                navigatorKey.currentState?.pushNamed(Routes.qrScan);
+              },
+              icon: Icon(Icons.qr_code_scanner),
+            ),
+          ),
       ],
     );
   }

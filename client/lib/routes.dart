@@ -9,6 +9,7 @@ class Routes {
   static const String languages = '/languages';
   static const String loginOn = '/login_on';
   static const String my = '/my';
+  static const String qrScan = '/qr_scan';
   static const String settings = '/settings';
   static const String theme = '/theme';
   static const String transmission = '/transmission';
@@ -25,6 +26,7 @@ class Routes {
       languages => LanguagesPage(onLocaleChanged: onLocaleChanged),
       loginOn => const LogInOnPage(),
       my => const MyPage(),
+      qrScan => const QRScanPage(),
       settings => const SettingsPage(),
       theme => const ThemePage(),
       transmission => const TransmissionPage(),
