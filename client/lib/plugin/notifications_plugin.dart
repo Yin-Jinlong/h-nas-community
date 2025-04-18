@@ -38,8 +38,8 @@ abstract class NotificationsPlugin {
     ]);
   }
 
-  static Future<bool> removePlayerNotification() async {
-    return await _channel.invokeMethod('removePlayerNotification');
+  static Future<bool> closePlayerNotification() async {
+    return await _channel.invokeMethod('close');
   }
 
   static void _onPlayPause() {

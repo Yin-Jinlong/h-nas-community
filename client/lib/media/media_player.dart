@@ -189,7 +189,7 @@ class MediaPlayer {
     playList.value = [];
     nowPlay.value = null;
     if (UniversalPlatform.isAndroid) {
-      NotificationsPlugin.removePlayerNotification();
+      NotificationsPlugin.closePlayerNotification();
     }
   }
 

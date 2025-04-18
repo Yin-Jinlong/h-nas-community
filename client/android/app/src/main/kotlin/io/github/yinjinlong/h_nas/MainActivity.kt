@@ -11,10 +11,12 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.github.yinjinlong.h_nas.plugin.BroadcastPlugin
 import io.github.yinjinlong.h_nas.plugin.NotificationsPlugin
+import io.github.yinjinlong.h_nas.service.MusicControlService
 
 class MainActivity : FlutterActivity() {
 
     lateinit var notificationsPlugin: NotificationsPlugin
+    lateinit var notificationsManager: NotificationManagerCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setHighRefreshRate()
@@ -36,9 +38,16 @@ class MainActivity : FlutterActivity() {
                 BroadcastPlugin()
             )
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NotificationsPlugin.NAME).apply {
-            setMethodCallHandler(NotificationsPlugin(this, this@MainActivity).apply {
-                notificationsPlugin = this
-            })
+            setMethodCallHandler(
+                NotificationsPlugin(
+                    this,
+                    ::hasNotificationPermission,
+                    ::requestNotificationPermission,
+                    ::postNotification,
+                    ::closeNotification
+                ).apply {
+                    notificationsPlugin = this
+                })
         }
     }
 
@@ -53,16 +62,16 @@ class MainActivity : FlutterActivity() {
     }
 
     fun initNotifications() {
-        val manager = NotificationManagerCompat.from(this)
-        manager.deleteUnlistedNotificationChannels(listOf(Notifications.CHANNEL_MUSIC_PLAYER))
+        notificationsManager = NotificationManagerCompat.from(this)
+        notificationsManager.deleteUnlistedNotificationChannels(listOf(Notifications.CHANNEL_MUSIC_PLAYER))
 
-        manager.notificationChannelGroups.forEach {
+        notificationsManager.notificationChannelGroups.forEach {
             if (it.id != Notifications.GROUP_STATUS) {
-                manager.deleteNotificationChannelGroup(it.id)
+                notificationsManager.deleteNotificationChannelGroup(it.id)
             }
         }
 
-        manager.createNotificationChannelGroup(
+        notificationsManager.createNotificationChannelGroup(
             NotificationChannelGroupCompat.Builder(
                 Notifications.GROUP_STATUS
             ).setName("状态")
@@ -70,7 +79,7 @@ class MainActivity : FlutterActivity() {
                 .build()
         )
 
-        manager.createNotificationChannel(
+        notificationsManager.createNotificationChannel(
             NotificationChannelCompat.Builder(Notifications.CHANNEL_MUSIC_PLAYER, NotificationManager.IMPORTANCE_LOW)
                 .setName("音乐播放")
                 .setDescription("音乐播放信息")
@@ -78,12 +87,25 @@ class MainActivity : FlutterActivity() {
         )
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        when (intent.action) {
-            NotificationsPlugin.ACTION_PLAY_PAUSE -> notificationsPlugin.onPlayPause()
+    fun hasNotificationPermission() = notificationsManager.areNotificationsEnabled()
+    fun requestNotificationPermission() {
+        requestPermissions(
+            arrayOf(
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ), 0
+        )
+    }
 
-            NotificationsPlugin.ACTION_CLOSE -> notificationsPlugin.onClose()
-        }
+    fun postNotification(title: String, subText: String, playing: Boolean) {
+        startForegroundService(Intent(activity, MusicControlService::class.java).apply {
+            action = MusicControlService.ACTION_UPDATE
+            putExtra(MusicControlService.EXTRA_TITLE, title)
+            putExtra(MusicControlService.EXTRA_ARTIST, subText)
+            putExtra(MusicControlService.EXTRA_PLAYING, playing)
+        })
+    }
+
+    fun closeNotification() {
+        stopService(Intent(activity, MusicControlService::class.java))
     }
 }
