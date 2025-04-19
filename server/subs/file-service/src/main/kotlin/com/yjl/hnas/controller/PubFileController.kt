@@ -78,6 +78,21 @@ class PubFileController(
         )
     }
 
+    @GetMapping("file/info")
+    fun getFileInfo(
+        @NotBlank(message = "path 不能为空") path: String
+    ): FileInfo = withCatch {
+        if (path.isBlank())
+            throw ErrorCode.BAD_ARGUMENTS.error
+        val p = path.trim().ifEmpty { "/" }
+
+        val pp = getPubPath(p).toAbsolutePath()
+        val file = virtualFileService.get(pp)
+            ?: throw ErrorCode.NO_SUCH_FILE.data(path)
+
+        file.toFileInfo(pp, fileMappingService)
+    }
+
     @GetMapping("files")
     fun getFiles(
         @NotBlank(message = "path 不能为空") path: String,
