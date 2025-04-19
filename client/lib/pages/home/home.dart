@@ -16,6 +16,7 @@ import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/components/mini_audio_player.dart';
 import 'package:h_nas/components/spring_draggable_container.dart';
 import 'package:h_nas/components/user_avatar.dart';
+import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
@@ -24,6 +25,7 @@ import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/pages/home/rename_dialog.dart';
 import 'package:h_nas/pages/home/sort_dialog.dart';
 import 'package:h_nas/prefs.dart';
+import 'package:h_nas/routes.dart';
 import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_task.dart';
@@ -36,10 +38,6 @@ import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_html/html.dart' as web;
 import 'package:universal_platform/universal_platform.dart';
 
-import '../../generated/l10n.dart';
-import '../../routes.dart';
-
-part 'home.app_bar.dart';
 part 'home.context_menu.dart';
 part 'home.drawer.dart';
 part 'home.file_list.dart';
@@ -63,6 +61,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final _openFloatingMenu = ValueNotifier(false);
   SortType sortType = SortType.name;
   bool sortAsc = true;
+  final thumbnailCache = ThumbnailModel();
 
   /// 正在拖拽
   bool _dragging = false;
@@ -87,6 +86,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return;
     }
     setState(() {
+      thumbnailCache.clear();
       files.clear();
       images.clear();
       audios.clear();
@@ -447,23 +447,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final thumbnailCache = ThumbnailModel();
     final nowPlay = Global.player.nowPlay.value;
     route = ModalRoute.of(context)!;
 
     return Scaffold(
-      appBar: _appBar(
-        context,
-        onSort: () {
-          _showSortDialog(context);
-        },
-        onRefresh: () {
-          setState(() {
-            thumbnailCache.clear();
-            files = [];
-          });
-          updateFiles();
-        },
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            tooltip: S.current.sort,
+            onPressed: () {
+              _showSortDialog(context);
+            },
+            icon: Icon(Icons.sort),
+          ),
+        ],
       ),
       body: Stack(
         children: [
