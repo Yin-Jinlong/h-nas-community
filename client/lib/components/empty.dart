@@ -8,6 +8,8 @@ class Empty extends StatelessWidget {
   /// 是否为空
   final bool isEmpty;
 
+  final bool enableScroll;
+
   /// 空页面
   final Widget? empty;
 
@@ -17,24 +19,29 @@ class Empty extends StatelessWidget {
   const Empty({
     super.key,
     required this.isEmpty,
+    this.enableScroll = true,
     this.empty,
     required this.child,
   });
+
+  Widget _content() => Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(TDTxNFIcons.nf_oct_inbox, size: 40),
+        Text(S.current.no_data),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     return isEmpty
         ? empty ??
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(TDTxNFIcons.nf_oct_inbox, size: 40),
-                  Text(S.current.no_data),
-                ],
-              ),
-            )
+            (enableScroll
+                ? Stack(children: [_content(), CustomScrollView()])
+                : _content())
         : child;
   }
 }

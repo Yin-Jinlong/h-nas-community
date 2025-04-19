@@ -343,11 +343,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _dropContent(ThumbnailModel thumbnailCache) {
-    return Empty(
-      isEmpty: files.isEmpty,
-      child: ContextMenuOverlay(
-        child: RefreshIndicator(
-          displacement: 20,
+    return RefreshIndicator(
+      displacement: 20,
+      child: Empty(
+        isEmpty: files.isEmpty,
+        child: ContextMenuOverlay(
           child: ListView(
             children: [
               for (var file in files)
@@ -403,12 +403,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
             ],
           ),
-          onRefresh: () async {
-            await Future.delayed(durationSlow);
-            await updateFiles();
-          },
         ),
       ),
+      onRefresh: () async {
+        await Future.delayed(durationSlow);
+        await updateFiles();
+      },
     );
   }
 
@@ -585,7 +585,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           navigatorKey.currentState?.pushNamed(Routes.loginOn);
         },
         onLogout: () {
-          UserS.user=null;
+          UserS.user = null;
           Prefs.remove(Prefs.keyToken);
           setState(() {});
         },
