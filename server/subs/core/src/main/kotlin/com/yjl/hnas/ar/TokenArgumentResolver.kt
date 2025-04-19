@@ -12,6 +12,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 
 /**
+ * [Token]参数解析
+ *
  * @author YJL
  */
 class TokenArgumentResolver : HandlerMethodArgumentResolver {

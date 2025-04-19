@@ -8,6 +8,9 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import java.time.Duration
 import kotlin.random.Random
 
+/**
+ * @author YJL
+ */
 data class Token(
     val user: Uid,
     val token: String = genKey(),
@@ -26,6 +29,9 @@ data class Token(
             this.gson = gson
         }
 
+        /**
+         * 随机生成token，32字节，一般不会生成重复的
+         */
         private fun genKey() = Random.nextBytes(32).base64Url
 
         operator fun get(token: String): Token {
@@ -34,6 +40,9 @@ data class Token(
         }
     }
 
+    /**
+     * 注册token
+     */
     fun register(timeout: Duration? = null) {
         val json = gson.toJson(this)
         if (timeout == null)
@@ -42,6 +51,9 @@ data class Token(
             redis.opsForValue().set(key, json, timeout)
     }
 
+    /**
+     * 注销token
+     */
     fun unregister() {
         redis.delete(key)
     }
