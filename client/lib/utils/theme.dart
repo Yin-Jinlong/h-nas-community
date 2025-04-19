@@ -16,6 +16,13 @@ extension ThemeUtils on ThemeData {
       iconTheme: IconThemeData(color: colorScheme.onPrimary),
       actionsIconTheme: IconThemeData(color: colorScheme.onPrimary),
     ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        return states.contains(WidgetState.selected)
+            ? colorScheme.onPrimary
+            : colorScheme.primary;
+      }),
+    ),
     colorScheme: colorScheme,
   );
 

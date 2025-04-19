@@ -100,7 +100,6 @@ class _ThemePageState extends State<ThemePage> {
                 ),
                 Switch(
                   value: _check,
-                  activeColor: ColorScheme.of(context).primary,
                   onChanged: (value) {
                     setState(() {
                       _check = value;
