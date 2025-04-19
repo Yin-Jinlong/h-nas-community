@@ -2,6 +2,7 @@
   "@@locale": "en",
   "about": "About",
   "action_success": "{action} success",
+  "admin_mode": "Admin mode",
   "album": "Album",
   "app_name": "H NAS",
   "artists": "Artists",

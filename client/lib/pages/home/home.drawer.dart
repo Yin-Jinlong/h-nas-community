@@ -102,7 +102,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
   @override
   void initState() {
     super.initState();
-    UserS.addListener(_render);
+    UserS.addUserListener(_render);
   }
 
   void _render() {
@@ -238,7 +238,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
 
   @override
   void dispose() {
-    UserS.removeListener(_render);
+    UserS.removeUserListener(_render);
     super.dispose();
   }
 

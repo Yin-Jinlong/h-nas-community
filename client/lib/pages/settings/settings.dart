@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/pages/languages/languages.dart';
@@ -24,12 +24,30 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  void _onAdminMode(bool value) {
+    if (value) {
+      UserS.enableAdminMode();
+    } else {
+      UserS.disableAdminMode();
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
       body: ListView(
         children: [
+          if (UserS.user?.admin ?? false)
+            ListTile(
+              title: Text(S.current.admin_mode),
+              leading: const Icon(Icons.admin_panel_settings),
+              trailing: Switch(value: UserS.adminMode, onChanged: _onAdminMode),
+              onTap: () {
+                _onAdminMode(!UserS.adminMode);
+              },
+            ),
           ListTile(
             leading: const Icon(Icons.language),
             trailing: const Icon(Icons.arrow_forward_ios),
