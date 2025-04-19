@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
-import 'package:h_nas/prefs.dart';
+import 'package:h_nas/settings/theme.dart';
 
 import '../../generated/l10n.dart';
 
@@ -29,9 +28,9 @@ List<Color> _colors(MaterialColor color) => [
 
 class _ThemePageState extends State<ThemePage> {
   double _slider = 50;
-  bool _check = false, _auto = Prefs.themeMode == ThemeMode.system;
+  bool _check = false, _auto = ThemeS.themeMode == ThemeMode.system;
   Brightness _brightness =
-      Prefs.themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light;
+      ThemeS.themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light;
 
   final colors = <Color>[
     ..._colors(Colors.red),
@@ -51,7 +50,7 @@ class _ThemePageState extends State<ThemePage> {
 
   _setColor(Color c) {
     setState(() {
-      Prefs.themeColor = c;
+      ThemeS.themeColor = c;
     });
   }
 
@@ -61,7 +60,7 @@ class _ThemePageState extends State<ThemePage> {
       builder: (context) {
         return _ColorPickerDialog(
           colors: colors,
-          pickerColor: Global.themeColor.value,
+          pickerColor: ThemeS.themeColor,
           onCommit: (Color color) {
             _setColor(color);
             navigatorKey.currentState?.pop();
@@ -143,9 +142,9 @@ class _ThemePageState extends State<ThemePage> {
 
   void _update() {
     if (_auto) {
-      Prefs.themeMode = ThemeMode.system;
+      ThemeS.themeMode = ThemeMode.system;
     } else {
-      Prefs.themeMode =
+      ThemeS.themeMode =
           _brightness == Brightness.light ? ThemeMode.light : ThemeMode.dark;
     }
   }

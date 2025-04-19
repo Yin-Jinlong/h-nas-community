@@ -18,12 +18,12 @@ import 'package:h_nas/components/spring_draggable_container.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
-import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/pages/home/info_dialog.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/pages/home/rename_dialog.dart';
 import 'package:h_nas/pages/home/sort_dialog.dart';
 import 'package:h_nas/prefs.dart';
+import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_task.dart';
 import 'package:h_nas/utils/file_utils.dart';
@@ -446,7 +446,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final user = Provider.of<UserModel>(context);
     final thumbnailCache = ThumbnailModel();
     final nowPlay = Global.player.nowPlay.value;
     route = ModalRoute.of(context)!;
@@ -585,7 +584,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           navigatorKey.currentState?.pushNamed(Routes.loginOn);
         },
         onLogout: () {
-          user.set(null);
+          UserS.user=null;
           Prefs.remove(Prefs.keyToken);
           setState(() {});
         },
@@ -603,7 +602,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               label: S.current.create_new_folder,
               child: Icon(Icons.create_new_folder),
               onTap: () {
-                if (user.user == null) {
+                if (UserS.user == null) {
                   Toast.showError(S.current.please_login);
                 } else {
                   _newFolderMenu(context);
@@ -616,7 +615,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               label: S.current.upload,
               child: Icon(Icons.upload),
               onTap: () {
-                if (user.user == null) {
+                if (UserS.user == null) {
                   Toast.showError(S.current.please_login);
                 } else {
                   _onUploadMenu(dirs.join('/'));

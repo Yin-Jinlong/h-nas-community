@@ -18,7 +18,7 @@ class _LoginState extends _BaseState<_LoginWidget> {
     UserAPI.login(logid.text, password.text).then((v) {
       if (v != null) {
         Toast.showSuccess('Hi ${v.nick}!');
-        Provider.of<UserModel>(context, listen: false).set(v);
+        UserS.user = v;
         navigatorKey.currentState?.pop();
       }
     });

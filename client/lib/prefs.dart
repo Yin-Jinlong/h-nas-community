@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/api.dart';
-import 'package:h_nas/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class Prefs {
   static const String keyApiHost = 'api.host';
-  static const String keyUser = 'user';
   static const String keyToken = 'token';
   static const String keyLocale = 'locale';
-  static const String keyTheme = 'theme';
-  static const String keyThemeMode = 'theme-mode';
   static const String keyPlayerVolume = 'player-volume';
   static const String keyPlayerPlayMode = 'player-play-mode';
 
@@ -38,33 +33,6 @@ abstract class Prefs {
       scriptCode: v[1].isEmpty ? null : v[1],
       countryCode: v[2].isEmpty ? null : v[2],
     );
-  }
-
-  static ThemeMode get themeMode {
-    final value = getInt(keyThemeMode);
-    return value == null || value < 0 || value > ThemeMode.values.length - 1
-        ? ThemeMode.system
-        : ThemeMode.values[value];
-  }
-
-  static set themeMode(ThemeMode mode) {
-    setInt(keyThemeMode, mode.index);
-    Global.themeMode.value = mode;
-  }
-
-  static Color get themeColor {
-    var value = getInt(keyTheme);
-    if (value == null) return ThemeUtils.defaultColor;
-    return Color(value);
-  }
-
-  static set themeColor(Color color) {
-    setInt(keyTheme, color.toARGB32());
-    Global.themeColor.value = color;
-  }
-
-  static ThemeData getTheme(Brightness brightness) {
-    return ThemeUtils.fromColor(themeColor, brightness);
   }
 
   static double get playerVolume {

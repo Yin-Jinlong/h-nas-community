@@ -20,7 +20,6 @@ Drawer _drawer(
   required VoidCallback onLogin,
   required VoidCallback onLogout,
 }) {
-  final user = Provider.of<UserModel>(context, listen: false).user;
   final taskCount =
       Global.uploadTasks.where((e) => !e.isDone).length +
       Global.downloadTasks.where((e) => !e.isDone).length;
@@ -29,7 +28,7 @@ Drawer _drawer(
     child: ListView(
       padding: EdgeInsets.zero,
       children: [
-        _DrawerHeader(user: user, onLogin: onLogin, onLogout: onLogout),
+        _DrawerHeader(onLogin: onLogin, onLogout: onLogout),
         Tooltip(
           message: S.current.theme,
           child: ListTile(
@@ -91,20 +90,25 @@ Drawer _drawer(
 }
 
 class _DrawerHeader extends StatefulWidget {
-  final UserInfo? user;
   final VoidCallback onLogin, onLogout;
 
-  const _DrawerHeader({
-    required this.user,
-    required this.onLogin,
-    required this.onLogout,
-  });
+  const _DrawerHeader({required this.onLogin, required this.onLogout});
 
   @override
   State createState() => _DrawerHeaderState();
 }
 
 class _DrawerHeaderState extends State<_DrawerHeader> {
+  @override
+  void initState() {
+    super.initState();
+    UserS.addListener(_render);
+  }
+
+  void _render() {
+    setState(() {});
+  }
+
   Widget _login() {
     return Column(
       spacing: 8,
@@ -258,10 +262,16 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
   }
 
   @override
+  void dispose() {
+    UserS.removeListener(_render);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DrawerHeader(
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondary),
-      child: widget.user == null ? _login() : _info(context, widget.user!),
+      child: UserS.user == null ? _login() : _info(context, UserS.user!),
     );
   }
 }

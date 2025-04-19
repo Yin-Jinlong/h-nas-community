@@ -4,10 +4,9 @@ import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
-import 'package:h_nas/model/user_model.dart';
 import 'package:h_nas/prefs.dart';
+import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/api.dart';
-import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class LoginQR extends StatefulWidget {
@@ -86,7 +85,7 @@ class _LoginQRState extends DisposeFlagState<LoginQR> {
       _loopQuery();
     } else if (_status == _Status.success && r?.user != null) {
       Prefs.token = r?.token;
-      Provider.of<UserModel>(context, listen: false).set(r?.user);
+      UserS.user = r?.user;
       navigatorKey.currentState?.pop();
     }
     setState(() {});
