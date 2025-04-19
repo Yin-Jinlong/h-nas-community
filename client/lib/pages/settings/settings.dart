@@ -4,13 +4,12 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/pages/languages/languages.dart';
 import 'package:h_nas/pages/settings/scan_dialog.dart';
+import 'package:h_nas/prefs.dart';
+import 'package:h_nas/routes.dart';
+import 'package:h_nas/settings/user.dart';
+import 'package:h_nas/utils/api.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
-
-import '../../generated/l10n.dart';
-import '../../prefs.dart';
-import '../../routes.dart';
-import '../../utils/api.dart';
 
 part 'settings.api_host.dart';
 part 'settings.app_bar.dart';
@@ -29,8 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
-      body: SettingsScreen(
-        hasAppBar: false,
+      body: ListView(
         children: [
           ListTile(
             leading: const Icon(Icons.language),
