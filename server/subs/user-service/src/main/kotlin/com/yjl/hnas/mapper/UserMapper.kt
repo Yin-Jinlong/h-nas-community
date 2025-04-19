@@ -14,16 +14,16 @@ interface UserMapper {
     //  查  //
     //******//
 
-    @Select("select uid, username, nick, password, password_type from user where uid = #{uid}")
+    @Select("select uid, username, nick, password, password_type,role from user where uid = #{uid}")
     fun selectByUid(uid: Uid): User?
 
-    @Select("select uid, username, nick, password, password_type from user where uid = #{uid} && password = #{password}")
+    @Select("select uid, username, nick, password, password_type,role from user where uid = #{uid} && password = #{password}")
     fun selectByUidPassword(uid: Uid, password: String): User?
 
-    @Select("select uid, username, nick, password, password_type from user where username = #{username}")
+    @Select("select uid, username, nick, password, password_type,role from user where username = #{username}")
     fun selectByUsername(username: String): User?
 
-    @Select("select uid, username, nick, password, password_type from user where username = #{username} && password = #{password}")
+    @Select("select uid, username, nick, password, password_type,role from user where username = #{username} && password = #{password}")
     fun selectByUsernamePassword(username: String, password: String): User?
 
     @Select("select count(*) from user limit 1")
