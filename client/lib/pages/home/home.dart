@@ -15,6 +15,7 @@ import 'package:h_nas/components/file_preview_view.dart';
 import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/components/mini_audio_player.dart';
 import 'package:h_nas/components/spring_draggable_container.dart';
+import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
