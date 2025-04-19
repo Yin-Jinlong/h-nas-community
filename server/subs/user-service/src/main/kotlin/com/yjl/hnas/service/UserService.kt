@@ -39,6 +39,8 @@ interface UserService {
 
     fun grant(id: String)
 
+    fun getUserCount(uid: Uid): Int
+
     fun cancelRequest(id: String)
 
     fun logout(token: Token)

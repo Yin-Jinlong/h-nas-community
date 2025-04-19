@@ -13,6 +13,7 @@ class ServerInfoPage extends StatefulWidget {
 class _UserManagementPageState extends State<ServerInfoPage> {
   FolderChildrenCount? rootCount;
   FileInfo? rootInfo;
+  int? userCount;
 
   @override
   void initState() {
@@ -25,6 +26,11 @@ class _UserManagementPageState extends State<ServerInfoPage> {
     FileAPI.getPublicFolderChildrenCount('/').then((value) {
       setState(() {
         rootCount = value;
+      });
+    });
+    UserAPI.getUserCount().then((value) {
+      setState(() {
+        userCount = value;
       });
     });
   }
@@ -62,6 +68,12 @@ class _UserManagementPageState extends State<ServerInfoPage> {
                 DataCell(
                   Text(rootInfo?.size.storageSizeStr ?? S.current.loading),
                 ),
+              ],
+            ),
+            DataRow(
+              cells: [
+                DataCell(Text(S.current.info_user_count)),
+                DataCell(Text(userCount?.toString() ?? S.current.loading)),
               ],
             ),
           ],

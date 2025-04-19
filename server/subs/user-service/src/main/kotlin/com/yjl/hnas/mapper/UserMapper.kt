@@ -29,6 +29,9 @@ interface UserMapper {
     @Select("select count(*) from user limit 1")
     fun hasUser(): Boolean
 
+    @Select("select count(*) from user")
+    fun selectUserCount(): Int
+
     //******//
     //  增  //
     //******//

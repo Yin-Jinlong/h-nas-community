@@ -70,4 +70,16 @@ extension UserAPI on API {
           return data == null ? null : LoginQRResult.fromJson(data);
         });
   }
+
+  static Future<int?> getUserCount() {
+    return API
+        ._get<int>(
+          '/user/count',
+          {},
+          options: Options(headers: {ExtraHeaders.authorization: Prefs.token}),
+        )
+        .then((data) {
+          return data;
+        });
+  }
 }

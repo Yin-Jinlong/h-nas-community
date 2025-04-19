@@ -97,6 +97,13 @@ class UserController(
             userService.cancelRequest(id)
     }
 
+    @GetMapping("count")
+    fun getUserCount(
+        @ShouldLogin token: Token
+    ): Int {
+        return userService.getUserCount(token.user)
+    }
+
     @PostMapping("logon")
     fun register(@NotBlank(message = "用户名不能为空") username: String, @Password password: String) {
         userService.register(username, password)
