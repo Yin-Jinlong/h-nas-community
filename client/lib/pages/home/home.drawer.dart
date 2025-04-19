@@ -39,6 +39,28 @@ Drawer _drawer(
             },
           ),
         ),
+        if (UserS.adminMode)
+          Tooltip(
+            message: S.current.server_info,
+            child: ListTile(
+              title: Text(S.current.server_info),
+              leading: Icon(Icons.admin_panel_settings),
+              onTap: () {
+                navigatorKey.currentState?.pushNamed(Routes.serverInfo);
+              },
+            ),
+          ),
+        if (UserS.adminMode)
+          Tooltip(
+            message: S.current.user_management,
+            child: ListTile(
+              title: Text(S.current.user_management),
+              leading: Icon(Icons.people),
+              onTap: () {
+                navigatorKey.currentState?.pushNamed(Routes.userManagement);
+              },
+            ),
+          ),
         if (!UniversalPlatform.isWeb)
           Tooltip(
             message: S.current.transmission,
