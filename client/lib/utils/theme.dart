@@ -20,7 +20,7 @@ extension ThemeUtils on ThemeData {
       trackColor: WidgetStateProperty.resolveWith((states) {
         return states.contains(WidgetState.selected)
             ? colorScheme.primary
-            : colorScheme.onPrimary;
+            : colorScheme.surface;
       }),
       thumbColor: WidgetStateProperty.resolveWith((states) {
         return states.contains(WidgetState.selected)
@@ -73,7 +73,7 @@ extension _OnColor on Color {
     final hsv = HSVColor.fromColor(this);
     if (hsv.value > 0.8 && hsv.saturation > 0.8) {
       return Colors.white;
-    } else if (hsv.value > 0.9) {
+    } else if (hsv.value > 0.9 && hsv.saturation < 0.3) {
       return Colors.black87;
     } else {
       return Colors.white;
