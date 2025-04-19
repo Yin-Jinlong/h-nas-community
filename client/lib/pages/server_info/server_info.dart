@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/storage_size.dart';
 
 class ServerInfoPage extends StatefulWidget {
   const ServerInfoPage({super.key});
@@ -9,8 +11,62 @@ class ServerInfoPage extends StatefulWidget {
 }
 
 class _UserManagementPageState extends State<ServerInfoPage> {
+  FolderChildrenCount? rootCount;
+  FileInfo? rootInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    FileAPI.getPublicFile('/').then((value) {
+      setState(() {
+        rootInfo = value;
+      });
+    });
+    FileAPI.getPublicFolderChildrenCount('/').then((value) {
+      setState(() {
+        rootCount = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text(S.current.server_info)));
+    return Scaffold(
+      appBar: AppBar(title: Text(S.current.server_info)),
+      body: SingleChildScrollView(
+        child: DataTable(
+          columns: [
+            DataColumn(label: Text(S.current.info_item)),
+            DataColumn(label: Text(S.current.info_value)),
+          ],
+          rows: [
+            DataRow(
+              cells: [
+                DataCell(Text(S.current.info_root_sub)),
+                DataCell(
+                  Text(rootCount?.subCount.toString() ?? S.current.loading),
+                ),
+              ],
+            ),
+            DataRow(
+              cells: [
+                DataCell(Text(S.current.info_root_subs)),
+                DataCell(
+                  Text(rootCount?.subsCount.toString() ?? S.current.loading),
+                ),
+              ],
+            ),
+            DataRow(
+              cells: [
+                DataCell(Text(S.current.info_root_size)),
+                DataCell(
+                  Text(rootInfo?.size.storageSizeStr ?? S.current.loading),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

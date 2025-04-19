@@ -16,6 +16,16 @@ extension FileAPI on API {
     });
   }
 
+  static Future<FileInfo?> getPublicFile(String path) {
+    return API
+        ._get<Map<String, dynamic>>('/file/public/file/info', {'path': path})
+        .then((data) {
+          if (data == null) return null;
+
+          return FileInfo.fromJson(data);
+        });
+  }
+
   static Future<FilePreview?> getPublicFilePreviewInfo(String path) {
     return API
         ._get<Map<String, dynamic>>('/file/public/preview/info', {'path': path})
