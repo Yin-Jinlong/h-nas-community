@@ -15,11 +15,12 @@ data class UserInfo(
     val uid: Long,
     val username: String,
     val nick: String,
-    val avatar: String?
+    val avatar: String?,
+    val admin: Boolean,
 ) {
     companion object {
         fun of(user: IUser): UserInfo {
-            return UserInfo(user.uid, user.username, user.nick, user.avatar)
+            return UserInfo(user.uid, user.username, user.nick, user.avatar, user.role == IUser.ROLE_ADMIN)
         }
     }
 
