@@ -33,6 +33,7 @@
   "download": "下载",
   "drop_to_upload": "松开开始上传",
   "duration": "时长",
+  "edit": "编辑",
   "empty_content": "内容为空",
   "error": "错误",
   "error_contains": "{item}不能包含{value}",

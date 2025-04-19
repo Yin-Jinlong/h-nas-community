@@ -33,6 +33,7 @@
   "download": "Download",
   "drop_to_upload": "Release to upload",
   "duration": "Duration",
+  "edit": "Edit",
   "empty_content": "Empty content",
   "error": "Error",
   "error_contains": "{item} cannot contain {value}",
