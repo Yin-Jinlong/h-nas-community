@@ -67,6 +67,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   /// 正在拖拽
   bool _dragging = false;
 
+  String get nowDir => '/${dirs.join('/')}';
+
   @override
   void initState() {
     super.initState();
@@ -92,10 +94,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       images.clear();
       audios.clear();
     });
-    final values = await FileAPI.getFiles(
-      '/${dirs.join('/')}',
-      private: private,
-    );
+    final values = await FileAPI.getFiles(nowDir, private: private);
     setState(() {
       files = values;
       _sort();
@@ -192,14 +191,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       builder: (context) {
         return NewFolderDialog(
           onCreate: (name) {
-            FileAPI.newFolder('${dirs.join('/')}/$name', private: private).then(
-              (v) {
-                if (v == true) {
-                  navigatorKey.currentState?.pop();
-                  updateFiles();
-                }
-              },
-            );
+            FileAPI.newFolder('$nowDir/$name', private: private).then((v) {
+              if (v == true) {
+                navigatorKey.currentState?.pop();
+                updateFiles();
+              }
+            });
           },
         );
       },
@@ -433,7 +430,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         final name = file.path.split(Platform.pathSeparator).last;
         final task = UploadFileTask(
           file: file,
-          path: '${dirs.join('/')}/$name',
+          path: '$nowDir/$name',
           name: name,
           size: file.lengthSync(),
           createTime: DateTime.now(),
@@ -646,7 +643,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 if (UserS.user == null) {
                   Toast.showError(S.current.please_login);
                 } else {
-                  _onUploadMenu(dirs.join('/'));
+                  _onUploadMenu(nowDir);
                 }
               },
             ),

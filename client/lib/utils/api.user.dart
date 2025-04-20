@@ -1,10 +1,12 @@
 part of 'api.dart';
 
-extension UserAPI on API {
+abstract class UserAPI extends API {
+  static final String root = '/user';
+
   static Future<UserInfo?> login(String logid, String password) {
     return API
         ._post<Map<String, dynamic>>(
-          '/user/login',
+          '$root/login',
           {'logId': logid, 'password': password},
           options: Options(
             contentType: Headers.formUrlEncodedContentType,
@@ -23,7 +25,7 @@ extension UserAPI on API {
   }
 
   static Future<String?> requestLoginQR() {
-    return API._post<String>('/user/login/qr/request', {}).then((data) {
+    return API._post<String>('$root/login/qr/request', {}).then((data) {
       return data;
     });
   }
@@ -31,10 +33,10 @@ extension UserAPI on API {
   static Future<QRGrantInfo?> getQRGrantInfo(String id) {
     return API
         ._post<Map<String, dynamic>>(
-          '/user/grant/qr/info',
+          '$root/grant/qr/info',
           {'id': id},
           options: Options(
-            headers: {ExtraHeaders.authorization: Prefs.token},
+            headers: {...API.tokenHeader()},
             contentType: Headers.formUrlEncodedContentType,
             responseType: ResponseType.json,
           ),
@@ -46,10 +48,10 @@ extension UserAPI on API {
 
   static Future<bool?> grant(String id, bool grant) {
     return API._post<bool>(
-      '/user/grant/qr',
+      '$root/grant/qr',
       {'id': id, 'grant': grant},
       options: Options(
-        headers: {ExtraHeaders.authorization: Prefs.token},
+        headers: {...API.tokenHeader()},
         contentType: Headers.formUrlEncodedContentType,
         responseType: ResponseType.json,
       ),
@@ -59,7 +61,7 @@ extension UserAPI on API {
   static Future<LoginQRResult?> loginQR(String id) {
     return API
         ._post<Map<String, dynamic>>(
-          '/user/login/qr',
+          '$root/login/qr',
           {'id': id},
           options: Options(
             contentType: Headers.formUrlEncodedContentType,
@@ -74,9 +76,9 @@ extension UserAPI on API {
   static Future<int?> getUserCount() {
     return API
         ._get<int>(
-          '/user/count',
+          '$root/count',
           {},
-          options: Options(headers: {ExtraHeaders.authorization: Prefs.token}),
+          options: Options(headers: {...API.tokenHeader()}),
         )
         .then((data) {
           return data;
@@ -85,11 +87,10 @@ extension UserAPI on API {
 
   static Future<List<UserInfo>> getUsers(int stratId, int count) {
     return API
-        ._get<List<dynamic>>(
-          '/user/users',
-          {'startId': stratId, 'count': count},
-          options: Options(headers: {ExtraHeaders.authorization: Prefs.token}),
-        )
+        ._get<List<dynamic>>('$root/users', {
+          'startId': stratId,
+          'count': count,
+        }, options: Options(headers: {...API.tokenHeader()}))
         .then((data) {
           if (data == null) return [];
           final r = <UserInfo>[];

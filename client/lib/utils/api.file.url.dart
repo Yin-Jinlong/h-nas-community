@@ -1,15 +1,17 @@
 part of 'api.dart';
 
-extension FileAPIURL on API {
+abstract class FileAPIURL extends FileAPI {
+  static String get root => '${API.API_ROOT}/file';
+
   static String _withPath(String path, String pathArg, bool private) =>
-      "${API.API_ROOT}/file$path?path=${Uri.encodeQueryComponent(pathArg)}&private=$private";
+      "$root$path?${API._encodeQueryParms(FileAPI._base(pathArg, private))}";
 
   static String file(
     String path, {
     bool download = false,
     required bool private,
   }) =>
-      "${API.API_ROOT}/file?path=${Uri.encodeQueryComponent(path)}&download=$download&private=$private";
+      "$root?${API._encodeQueryParms({...FileAPI._base(path, private), 'download': download})}";
 
   static String fileThumbnail(String path, {required bool private}) =>
       _withPath('/thumbnail', path, private);

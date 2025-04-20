@@ -25,6 +25,15 @@ abstract class API {
     if (Prefs.token != null) ExtraHeaders.authorization: Prefs.token!,
   };
 
+  static String _encodeQueryParms(QueryParameters? parms) {
+    return parms?.entries
+            .map(
+              (e) => '${e.key}=${Uri.encodeQueryComponent(e.value.toString())}',
+            )
+            .join('&') ??
+        '';
+  }
+
   static Future<T?> _get<T>(
     String path,
     QueryParameters? queryParameters, {

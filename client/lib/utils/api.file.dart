@@ -1,12 +1,20 @@
 part of 'api.dart';
 
-extension FileAPI on API {
+abstract class FileAPI extends API {
+  static final String root = '/file';
+
+  static QueryParameters _base(String path, bool private) => {
+    'private': private,
+    'path': path,
+  };
+
   static Future<List<FileInfo>> getFiles(String path, {required bool private}) {
     return API
-        ._get<List<dynamic>>('/file/files', {
-          'path': path,
-          'private': private,
-        }, options: Options(headers: {...API.tokenHeader()}))
+        ._get<List<dynamic>>(
+          '$root/files',
+          _base(path, private),
+          options: Options(headers: {...API.tokenHeader()}),
+        )
         .then((data) {
           if (data == null) return [];
           List<FileInfo> list = [];
@@ -21,10 +29,11 @@ extension FileAPI on API {
 
   static Future<FileInfo?> getFile(String path, {required bool private}) {
     return API
-        ._get<Map<String, dynamic>>('/file/info', {
-          'path': path,
-          'private': private,
-        }, options: Options(headers: {...API.tokenHeader()}))
+        ._get<Map<String, dynamic>>(
+          '$root/info',
+          _base(path, private),
+          options: Options(headers: {...API.tokenHeader()}),
+        )
         .then((data) {
           if (data == null) return null;
 
@@ -37,10 +46,11 @@ extension FileAPI on API {
     required bool private,
   }) {
     return API
-        ._get<Map<String, dynamic>>('/file/preview/info', {
-          'path': path,
-          'private': private,
-        }, options: Options(headers: {...API.tokenHeader()}))
+        ._get<Map<String, dynamic>>(
+          '$root/preview/info',
+          _base(path, private),
+          options: Options(headers: {...API.tokenHeader()}),
+        )
         .then((data) {
           return data == null ? null : FilePreview.fromJson(data);
         });
@@ -51,10 +61,11 @@ extension FileAPI on API {
     required bool private,
   }) {
     return API
-        ._get<Map<String, dynamic>>('/file/folder/count', {
-          'path': path,
-          'private': private,
-        }, options: Options(headers: {...API.tokenHeader()}))
+        ._get<Map<String, dynamic>>(
+          '$root/folder/count',
+          _base(path, private),
+          options: Options(headers: {...API.tokenHeader()}),
+        )
         .then((data) {
           return data == null ? null : FolderChildrenCount.fromJson(data);
         });
@@ -65,10 +76,11 @@ extension FileAPI on API {
     required bool private,
   }) {
     return API
-        ._get<Map<String, dynamic>>('/file/audio/info', {
-          'path': path,
-          'private': private,
-        }, options: Options(headers: {...API.tokenHeader()}))
+        ._get<Map<String, dynamic>>(
+          '$root/audio/info',
+          _base(path, private),
+          options: Options(headers: {...API.tokenHeader()}),
+        )
         .then((data) {
           return data == null ? null : AudioFileInfo.fromJson(data);
         });
@@ -76,8 +88,8 @@ extension FileAPI on API {
 
   static Future<bool?> newFolder(String path, {required bool private}) {
     return API._post<bool>(
-      '/file/folder',
-      {'path': path, 'private': private},
+      '$root/folder',
+      _base(path, private),
       options: Options(
         headers: {...API.tokenHeader()},
         contentType: Headers.formUrlEncodedContentType,
@@ -91,8 +103,8 @@ extension FileAPI on API {
     required bool private,
   }) {
     return API._post<bool>(
-      '/file/rename',
-      {'path': path, 'name': name},
+      '$root/rename',
+      {..._base(path, private), 'name': name},
       options: Options(
         headers: {...API.tokenHeader()},
         contentType: Headers.formUrlEncodedContentType,
@@ -111,7 +123,7 @@ extension FileAPI on API {
   }) {
     return API
         ._post(
-          '/file/upload',
+          '$root/upload',
           bytes,
           parms: {'private': private},
           options: Options(
@@ -133,18 +145,13 @@ extension FileAPI on API {
     ProgressCallback onProgress, {
     required bool private,
   }) {
-    return API._download(
-      '/file',
-      dst,
-      onProgress,
-      parms: {'path': path, 'private': private},
-    );
+    return API._download(root, dst, onProgress, parms: _base(path, private));
   }
 
   static Future<bool?> delete(String path, {required bool private}) {
     return API._delete<bool>(
-      '/file',
-      {'path': path},
+      root,
+      _base(path, private),
       options: Options(
         contentType: Headers.formUrlEncodedContentType,
         headers: {ExtraHeaders.authorization: Prefs.token},
