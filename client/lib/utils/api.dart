@@ -49,7 +49,12 @@ abstract class API {
     OnResp? onResp,
   }) {
     return dio
-        .post<String>('$API_ROOT$path', data: data, options: options)
+        .post<String>(
+          '$API_ROOT$path',
+          data: data,
+          options: options,
+          queryParameters: parms,
+        )
         .then((res) => _then<T>(res, onResp))
         .catchError(_catchError<T>);
   }
