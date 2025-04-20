@@ -11,7 +11,7 @@ fun IVirtualFile.toFileInfo(
 ): FileInfo {
     return FileInfo(
         name = name,
-        dir = dir.fullPath,
+        dir = dir.path,
         fileType = type,
         mediaType = hash?.let { fileMappingService.getMediaType(it) },
         createTime = createTime.time,
