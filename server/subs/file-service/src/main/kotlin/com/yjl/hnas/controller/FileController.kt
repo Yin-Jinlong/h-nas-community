@@ -155,7 +155,7 @@ class FileController(
 
         virtualFileService.upload(
             token.user,
-            path.toAbsolutePath(),
+            path,
             Hash(hash),
             size,
             FileRange(start, end),
@@ -212,7 +212,7 @@ class FileController(
     @Async
     @GetMapping
     @ResponseEmpty
-    fun getPublicFile(
+    fun getFile(
         token: Token?,
         path: String,
         @RequestHeader(HttpHeaders.RANGE) rangeStr: String?,
