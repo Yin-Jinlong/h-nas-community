@@ -7,6 +7,7 @@ Widget _fileListItem(
   required Function() onTap,
 }) {
   return ListTile(
+    key: ValueKey(file.fullPath),
     title: Text(file.name),
     subtitle: Text(
       DateTime.fromMillisecondsSinceEpoch(file.updateTime).toString(),
