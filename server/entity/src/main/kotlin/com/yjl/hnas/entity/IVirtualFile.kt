@@ -38,7 +38,7 @@ interface IVirtualFile {
 
     enum class Type {
         /**
-         * 文件夹
+         * 目录
          */
         FOLDER,
 

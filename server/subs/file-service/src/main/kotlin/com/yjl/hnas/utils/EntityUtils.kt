@@ -19,7 +19,7 @@ fun IVirtualFile.toFileInfo(
         size = if (type == IVirtualFile.Type.FOLDER) {
             size.also {
                 if (it < 0)
-                    throw IllegalStateException("文件夹没有大小：$fid")
+                    throw IllegalStateException("目录没有大小：$fid")
             }
         } else size.let {
             if (it == -1L) {

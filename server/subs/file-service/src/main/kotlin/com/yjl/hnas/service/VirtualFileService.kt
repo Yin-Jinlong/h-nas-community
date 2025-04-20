@@ -38,7 +38,7 @@ interface VirtualFileService : VirtualFileManager {
     fun get(path: VirtualPath): IVirtualFile?
 
     /**
-     * 获取父级文件夹下所有文件
+     * 获取父级目录下所有文件
      */
     @Throws(NoSuchFileException::class)
     fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile>
@@ -71,7 +71,7 @@ interface VirtualFileService : VirtualFileManager {
     fun rename(path: VirtualPath, name: String)
 
     /**
-     * 获取文件夹下文件数量
+     * 获取目录下文件数量
      */
     @Throws(
         NotDirectoryException::class
