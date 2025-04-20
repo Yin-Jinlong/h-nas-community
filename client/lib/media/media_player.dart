@@ -54,6 +54,10 @@ class MediaPlayer {
 
   ChangeNotifier get playState => _playState;
 
+  bool _private = false;
+
+  bool get private => _private;
+
   MediaPlayer({required player}) {
     _player = player;
     final stream = _player.stream;
@@ -168,6 +172,7 @@ class MediaPlayer {
   }
 
   Future<void> open(FileInfo file, {required bool private}) async {
+    _private = private;
     await _player.open(MediaFile(file: file, private: private));
   }
 
@@ -176,6 +181,7 @@ class MediaPlayer {
     int index = 0,
     required bool private,
   }) async {
+    _private = private;
     final list =
         files.map((e) => MediaFile(file: e, private: private)).toList();
     await _player.open(Playlist(list, index: index));

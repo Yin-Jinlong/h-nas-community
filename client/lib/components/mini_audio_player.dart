@@ -145,7 +145,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                             child: CachedNetworkImage(
                               imageUrl: FileAPIURL.audioCover(
                                 info.path,
-                                private: player.nowPlay.value!.private,
+                                private: player.private,
                               ),
                               httpHeaders: {...API.tokenHeader()},
                               fit: BoxFit.cover,

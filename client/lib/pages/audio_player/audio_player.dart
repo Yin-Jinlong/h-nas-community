@@ -507,7 +507,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       builder: (context) {
         return MoreSheet(
           info: player.nowPlay.value?.audioInfo,
-          private: player.nowPlay.value?.private ?? false,
+          private: player.private,
         );
       },
     );
