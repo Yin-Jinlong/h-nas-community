@@ -5,6 +5,7 @@ import com.yjl.hnas.data.LoginQRInfo
 import com.yjl.hnas.data.LoginQRResult
 import com.yjl.hnas.data.QRGrantInfo
 import com.yjl.hnas.data.UserInfo
+import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.service.UserService
 import com.yjl.hnas.token.Token
@@ -12,6 +13,7 @@ import com.yjl.hnas.validator.Password
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.constraints.NotBlank
+import org.hibernate.validator.constraints.Range
 import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.*
 import java.net.InetAddress
@@ -102,6 +104,17 @@ class UserController(
         @ShouldLogin token: Token
     ): Int {
         return userService.getUserCount(token.user)
+    }
+
+    @GetMapping("users")
+    fun getUsers(
+        @ShouldLogin token: Token,
+        @RequestParam startId: Uid,
+        @RequestParam
+        @Range(min = 1, max = 100)
+        count: Int
+    ): List<UserInfo> {
+        return userService.getUsers(token.user, startId, count)
     }
 
     @PostMapping("logon")

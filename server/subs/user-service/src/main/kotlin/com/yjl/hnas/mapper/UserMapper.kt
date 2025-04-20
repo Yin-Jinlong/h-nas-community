@@ -32,6 +32,15 @@ interface UserMapper {
     @Select("select count(*) from user")
     fun selectUserCount(): Int
 
+    @Select("""
+select uid, username, nick, password, password_type,role
+from user
+where uid >= #{start}
+order by uid
+limit #{count}
+""")
+    fun selectUsers(start:Uid, count:Int):List<User>
+
     //******//
     //  增  //
     //******//

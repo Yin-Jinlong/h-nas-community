@@ -113,12 +113,25 @@ class UserServiceImpl(
         }
     }
 
-    override fun getUserCount(uid: Uid): Int {
+    fun checkAdmin(uid: Uid): User {
         val user = mapper.selectByUid(uid)
             ?: throw ErrorCode.NO_PERMISSION.error
-        if (user.role != IUser.ROLE_ADMIN)
+        return if (user.role != IUser.ROLE_ADMIN)
             throw ErrorCode.NO_PERMISSION.error
+        else
+            user
+    }
+
+    override fun getUserCount(uid: Uid): Int {
+        checkAdmin(uid)
         return mapper.selectUserCount()
+    }
+
+    override fun getUsers(user: Uid, startId: Uid, count: Int): List<UserInfo> {
+        checkAdmin(user)
+        return mapper.selectUsers(startId, count).map {
+            UserInfo.of(it)
+        }
     }
 
     override fun cancelRequest(id: String) {
