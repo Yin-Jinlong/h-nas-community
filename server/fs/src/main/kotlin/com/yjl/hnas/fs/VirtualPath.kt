@@ -102,7 +102,7 @@ class VirtualPath private constructor(
 
     override fun getRoot() = clone(access, true, emptyArray())
 
-    override fun getFileName() = emptyOr { clone(access, false, arrayOf(paths[paths.lastIndex])) }
+    override fun getFileName() = emptyOr { clone(null, false, arrayOf(paths[paths.lastIndex])) }
 
     override fun getParent() = emptyOr { clone(access, absolute, paths.sliceArray(0..<paths.lastIndex)) }
 
