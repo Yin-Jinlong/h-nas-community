@@ -75,10 +75,14 @@ extension FileAPI on API {
   }
 
   static Future<bool?> newFolder(String path, {required bool private}) {
-    return API._post<bool>('/file/folder', {
-      'path': path,
-      'private': private,
-    }, options: Options(headers: {...API.tokenHeader()}));
+    return API._post<bool>(
+      '/file/folder',
+      {'path': path, 'private': private},
+      options: Options(
+        headers: {...API.tokenHeader()},
+        contentType: Headers.formUrlEncodedContentType,
+      ),
+    );
   }
 
   static Future<bool?> rename(
@@ -86,10 +90,14 @@ extension FileAPI on API {
     String name, {
     required bool private,
   }) {
-    return API._post<bool>('/file/rename', {
-      'path': path,
-      'name': name,
-    }, options: Options(headers: {...API.tokenHeader()}));
+    return API._post<bool>(
+      '/file/rename',
+      {'path': path, 'name': name},
+      options: Options(
+        headers: {...API.tokenHeader()},
+        contentType: Headers.formUrlEncodedContentType,
+      ),
+    );
   }
 
   static Future<bool> upload(
