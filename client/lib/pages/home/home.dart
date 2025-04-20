@@ -41,6 +41,7 @@ import 'package:universal_platform/universal_platform.dart';
 part 'home.context_menu.dart';
 part 'home.drawer.dart';
 part 'home.file_list.dart';
+part 'home.floating_action_button.dart';
 part 'home.image_viewer.dart';
 
 class HomePage extends StatefulWidget {
@@ -615,62 +616,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         },
       ),
       floatingActionButtonLocation: const _HomeFloatingActionButtonLocation(),
-      floatingActionButton: SpringDraggableContainer(
-        child: SpeedDial(
-          openCloseDial: _openFloatingMenu,
-          overlayColor: Colors.black,
-          overlayOpacity: 0.5,
-          icon: Icons.add,
-          activeIcon: Icons.close,
-          children: [
-            SpeedDialChild(
-              label: S.current.create_new_folder,
-              child: Icon(Icons.create_new_folder),
-              onTap: () {
-                if (UserS.user == null) {
-                  Toast.showError(S.current.please_login);
-                } else {
-                  _newFolderMenu(context);
-                }
-              },
-            ),
-            SpeedDialChild(
-              foregroundColor: ColorScheme.of(context).onSecondary,
-              backgroundColor: ColorScheme.of(context).secondary,
-              label: S.current.upload,
-              child: Icon(Icons.upload),
-              onTap: () {
-                if (UserS.user == null) {
-                  Toast.showError(S.current.please_login);
-                } else {
-                  _onUploadMenu(nowDir);
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HomeFloatingActionButtonLocation extends StandardFabLocation
-    with FabEndOffsetX, FabFloatOffsetY {
-  const _HomeFloatingActionButtonLocation();
-
-  @override
-  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
-    final double adjustment = isMini() ? kMiniButtonOffsetAdjustment : 0.0;
-    return Offset(
-      getOffsetX(scaffoldGeometry, adjustment),
-      getOffsetY(
-        scaffoldGeometry,
-        adjustment -
-            ((!UniversalPlatform.isDesktopOrWeb &&
-                    Global.player.nowPlay.value != null)
-                ? 50
-                : 0),
-      ),
+      floatingActionButton: _floatingActionButton(context),
     );
   }
 }
