@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return RenameDialog(
           file: file,
           onRename: (newName) {
-            FileAPI.renameFolder(file.fullPath, newName, private: private).then(
+            FileAPI.rename(file.fullPath, newName, private: private).then(
               (v) {
                 if (v != true) return;
                 navigatorKey.currentState?.pop();

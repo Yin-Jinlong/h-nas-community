@@ -81,7 +81,7 @@ extension FileAPI on API {
     }, options: Options(headers: {...API.tokenHeader()}));
   }
 
-  static Future<bool?> renameFolder(
+  static Future<bool?> rename(
     String path,
     String name, {
     required bool private,
