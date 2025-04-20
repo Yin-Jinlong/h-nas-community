@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/utils/api.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_platform/universal_platform.dart';

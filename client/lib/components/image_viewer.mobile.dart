@@ -40,6 +40,7 @@ class _MobileImageViewerState extends State<_MobileImageViewer> {
         return PhotoViewGalleryPageOptions.customChild(
           child: CachedNetworkImage(
             imageUrl: url ?? '',
+            httpHeaders: API.tokenHeader(),
             fadeInDuration: durationFast,
             fadeOutDuration: durationMedium,
             errorWidget: (context, url, error) {

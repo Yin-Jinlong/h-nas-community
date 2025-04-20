@@ -108,17 +108,23 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
     if (widget.index < 0) return;
     final i = widget.index;
     widget.urls[widget.index]().then((url) {
-      _dio.get(url, options: Options(responseType: ResponseType.bytes)).then((
-        res,
-      ) {
-        ui.decodeImageFromList(res.data, (image) {
-          setState(() {
-            img = image;
-            imgIndex = i;
-            _reset(image);
+      _dio
+          .get(
+            url,
+            options: Options(
+              responseType: ResponseType.bytes,
+              headers: API.tokenHeader(),
+            ),
+          )
+          .then((res) {
+            ui.decodeImageFromList(res.data, (image) {
+              setState(() {
+                img = image;
+                imgIndex = i;
+                _reset(image);
+              });
+            });
           });
-        });
-      });
     });
   }
 
