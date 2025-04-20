@@ -11,7 +11,10 @@ class MediaFile extends Media with ChangeNotifier {
   final bool private;
 
   MediaFile({required this.file, required this.private})
-    : super(FileAPIURL.file(file.fullPath, private: private)) {
+    : super(
+        FileAPIURL.file(file.fullPath, private: private),
+        httpHeaders: private ? API.tokenHeader() : null,
+      ) {
     type = file.fileMediaType;
   }
 
