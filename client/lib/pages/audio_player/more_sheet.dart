@@ -59,6 +59,7 @@ class _MoreSheetState extends State<MoreSheet> {
                   info.path,
                   private: widget.private,
                 ),
+                httpHeaders: {...API.tokenHeader()},
                 fit: BoxFit.cover,
                 width: 80,
                 height: 80,

@@ -105,6 +105,8 @@
   "rename": "Rename",
   "replay_10s": "Replay 10s",
   "reset": "Reset",
+  "root_private": "private",
+  "root_public": "public",
   "scan_login": "Scan code to log in",
   "scanned": "Scanned",
   "scanning": "Scanning",

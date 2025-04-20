@@ -79,6 +79,7 @@ class _FilePreviewViewState extends State<FilePreviewView> {
         filePreview!.thumbnail!,
         private: widget.private,
       ),
+      httpHeaders: {...API.tokenHeader()},
       width: 50,
       height: 50,
       fit: BoxFit.cover,

@@ -147,6 +147,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                                 info.path,
                                 private: player.nowPlay.value!.private,
                               ),
+                              httpHeaders: {...API.tokenHeader()},
                               fit: BoxFit.cover,
                               errorWidget: (context, error, stackTrace) {
                                 return Icon(Icons.broken_image);

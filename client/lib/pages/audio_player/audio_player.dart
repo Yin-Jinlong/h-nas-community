@@ -229,6 +229,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                     path,
                     private: nowPlay!.private,
                   ),
+                  httpHeaders: {...API.tokenHeader()},
                   fit: BoxFit.cover,
                   errorWidget: (context, error, stackTrace) {
                     return Icon(Icons.broken_image);
@@ -571,6 +572,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                         private: nowPlay.private,
                       )
                       : '',
+              httpHeaders: {...API.tokenHeader()},
               fit: BoxFit.cover,
               width: double.infinity,
               height: double.infinity,

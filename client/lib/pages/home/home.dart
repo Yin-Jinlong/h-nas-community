@@ -255,13 +255,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return RenameDialog(
           file: file,
           onRename: (newName) {
-            FileAPI.rename(file.fullPath, newName, private: private).then(
-              (v) {
-                if (v != true) return;
-                navigatorKey.currentState?.pop();
-                updateFiles();
-              },
-            );
+            FileAPI.rename(file.fullPath, newName, private: private).then((v) {
+              if (v != true) return;
+              navigatorKey.currentState?.pop();
+              updateFiles();
+            });
           },
         );
       },
@@ -427,7 +425,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  _uploadFiles(List<DropItem> items) async {
+  _uploadFiles(List<File> items) async {
     for (var item in items) {
       final file = File(item.path);
       final stat = await file.stat();
@@ -462,7 +460,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final nowPlay = Global.player.nowPlay.value;
     route = ModalRoute.of(context)!;
 
@@ -485,11 +482,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             children: [
               Row(
                 children: [
-                  Text(
-                    S.current.now,
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.normal,
-                    ),
+                  DropdownButton(
+                    value: private,
+                    items: [
+                      DropdownMenuItem(
+                        value: false,
+                        child: Text(S.current.root_public),
+                      ),
+                      DropdownMenuItem(
+                        value: true,
+                        child: Text(S.current.root_private),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        private = value!;
+                        thumbnailCache.private = private;
+                        dirs.clear();
+                        updateFiles();
+                      });
+                    },
                   ),
                   BreadCrumb(
                     divider: Icon(Icons.chevron_right),
@@ -538,7 +550,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 onDragDone: (details) {
                   setState(() {
                     _dragging = false;
-                    _uploadFiles(details.files);
+                    _uploadFiles(
+                      details.files.map((e) => File(e.path)).toList(),
+                    );
                   });
                 },
                 child: ChangeNotifierProvider.value(

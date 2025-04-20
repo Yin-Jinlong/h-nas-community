@@ -105,6 +105,8 @@
   "rename": "重命名",
   "replay_10s": "后退10s",
   "reset": "重置",
+  "root_private": "私有",
+  "root_public": "公开",
   "scan_login": "扫码登录",
   "scanned": "已扫描",
   "scanning": "扫描中",
