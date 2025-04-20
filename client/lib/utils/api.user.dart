@@ -82,4 +82,23 @@ extension UserAPI on API {
           return data;
         });
   }
+
+  static Future<List<UserInfo>> getUsers(int stratId, int count) {
+    return API
+        ._get<List<dynamic>>(
+          '/user/users',
+          {'startId': stratId, 'count': count},
+          options: Options(headers: {ExtraHeaders.authorization: Prefs.token}),
+        )
+        .then((data) {
+          if (data == null) return [];
+          final r = <UserInfo>[];
+
+          for (final d in data) {
+            r.add(UserInfo.fromJson(d));
+          }
+
+          return r;
+        });
+  }
 }
