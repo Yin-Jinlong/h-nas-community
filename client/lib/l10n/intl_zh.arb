@@ -47,6 +47,7 @@
   "file_name": "文件名",
   "file_size": "文件大小",
   "folder_name": "文件夹名",
+  "folder_root": "根目录",
   "forward_10s": "前进10s",
   "fullscreen": "全屏",
   "goto_login": "去登录",

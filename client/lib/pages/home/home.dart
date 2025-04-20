@@ -496,7 +496,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     items: [
                       BreadCrumbItem(
                         content: Text(
-                          '/',
+                          S.current.folder_root,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         onTap: () {

@@ -47,6 +47,7 @@
   "file_name": "File Name",
   "file_size": "File Size",
   "folder_name": "Folder name",
+  "folder_root": "root",
   "forward_10s": "Forward 10s",
   "fullscreen": "Fullscreen",
   "goto_login": "Go to login",
