@@ -8,16 +8,17 @@ class MediaFile extends Media with ChangeNotifier {
   final FileInfo file;
   late final MediaType? type;
   AudioFileInfo? audioInfo;
+  final bool private;
 
-  MediaFile({required this.file})
-    : super(FileAPIURL.publicFile(file.fullPath)) {
+  MediaFile({required this.file, required this.private})
+    : super(FileAPIURL.file(file.fullPath, private: private)) {
     type = file.fileMediaType;
   }
 
   Future<AudioFileInfo?> loadInfo() async {
     if (audioInfo == null && type?.isAudio == true) {
       if (file.fileMediaType?.isAudio == true) {
-        final v = await FileAPI.getPublicAudioInfo(file.fullPath);
+        final v = await FileAPI.getAudioInfo(file.fullPath, private: private);
         audioInfo = v;
         notifyListeners();
       }

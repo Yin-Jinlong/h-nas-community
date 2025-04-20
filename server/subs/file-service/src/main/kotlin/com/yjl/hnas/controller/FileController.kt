@@ -25,10 +25,8 @@ import org.springframework.http.*
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
-import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
-import java.net.URLDecoder
 import java.nio.file.Files
 import java.nio.file.attribute.FileTime
 import kotlin.io.path.name
@@ -37,8 +35,8 @@ import kotlin.io.path.name
  * @author YJL
  */
 @Controller
-@RequestMapping(API.PUBLIC_FILE)
-class PubFileController(
+@RequestMapping(API.FILE)
+class FileController(
     virtualFileSystemProvider: VirtualFileSystemProvider,
     val fileMappingService: FileMappingService,
     val virtualFileService: VirtualFileService
@@ -47,8 +45,12 @@ class PubFileController(
     val logger = getLogger()
 
     @GetMapping("preview/info")
-    fun getFilePreview(path: String): FilePreview {
-        val pp = getPubPath(path)
+    fun getFilePreview(
+        token: Token?,
+        @RequestParam path: String,
+        @RequestParam(required = false) private: Boolean = false,
+    ): FilePreview {
+        val pp = getPath(private, token?.user, path)
         val vf = virtualFileService.get(pp)
             ?: throw ErrorCode.NO_SUCH_FILE.data(path)
         if (vf.hash != null) {
@@ -68,8 +70,12 @@ class PubFileController(
     }
 
     @GetMapping("folder/count")
-    fun folderChildrenCount(path: String): FolderChildrenCount = withCatch {
-        val pp = getPubPath(path).toAbsolutePath()
+    fun folderChildrenCount(
+        token: Token?,
+        @RequestParam path: String,
+        @RequestParam(required = false) private: Boolean = false,
+    ): FolderChildrenCount = withCatch {
+        val pp = getPath(private, token?.user, path)
         val cc = virtualFileService.getFolderChildrenCount(pp)
         FolderChildrenCount(
             pp.path,
@@ -78,15 +84,17 @@ class PubFileController(
         )
     }
 
-    @GetMapping("file/info")
+    @GetMapping("info")
     fun getFileInfo(
-        @NotBlank(message = "path 不能为空") path: String
+        token: Token?,
+        @NotBlank(message = "path 不能为空") path: String,
+        @RequestParam(required = false) private: Boolean = false,
     ): FileInfo = withCatch {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
-        val pp = getPubPath(p).toAbsolutePath()
+        val pp = getPath(private, token?.user, p).toAbsolutePath()
         val file = virtualFileService.get(pp)
             ?: throw ErrorCode.NO_SUCH_FILE.data(path)
 
@@ -95,14 +103,16 @@ class PubFileController(
 
     @GetMapping("files")
     fun getFiles(
+        token: Token?,
         @NotBlank(message = "path 不能为空") path: String,
+        @RequestParam(required = false) private: Boolean = false,
         type: String?
     ): List<FileInfo> = withCatch {
         if (path.isBlank())
             throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
-        val pp = getPubPath(p).toAbsolutePath()
+        val pp = getPath(private, token?.user, p)
         val files = virtualFileService.getByParent(pp, type)
 
         files.map {
@@ -112,10 +122,11 @@ class PubFileController(
 
     @PostMapping("folder")
     fun createFolder(
-        @RequestParam("path") path: String,
+        @RequestParam path: String,
         @ShouldLogin user: Token,
+        @RequestParam(required = false) private: Boolean = false,
     ): Unit = withCatch {
-        val p = getPubPath(path)
+        val p = getPath(private, user.user, path)
         Files.createDirectory(p, FileOwnerAttribute(user.user))
     }
 
@@ -126,9 +137,10 @@ class PubFileController(
         @RequestHeader("Content-ID") pathBase64: String,
         @RequestHeader("Hash") sha256Base64: String,
         @RequestHeader("Content-Range") range: String,
+        @RequestParam(required = false) private: Boolean = false,
         rawIn: ServletInputStream
     ): Boolean = withCatch {
-        val path = getPubPath(pathBase64.unBase64Url)
+        val path = getPath(private, token.user, pathBase64.unBase64Url)
         val hash = sha256Base64.reBase64Url
 
         val mr = RangeRegex.matchEntire(range)
@@ -154,24 +166,12 @@ class PubFileController(
     @DeleteMapping
     fun deleteFile(
         @ShouldLogin token: Token,
-        path: String,
+        @RequestParam path: String,
+        @RequestParam(required = false) private: Boolean = false,
     ) = withCatch {
-        val pp = getPubPath(path)
+        val pp = getPath(private, token.user, path)
         if (!Files.deleteIfExists(pp))
             throw ErrorCode.NO_SUCH_FILE.data(path)
-    }
-
-    @GetMapping("video/stream/{path}/{rate}/{file}")
-    @ResponseEmpty
-    fun getVideoStream(
-        @PathVariable path: String,
-        @PathVariable rate: String,
-        @PathVariable file: String,
-    ): File = withCatch {
-        val pp = getPubPath(URLDecoder.decode(path, Charsets.UTF_8))
-        val vf = virtualFileService.get(pp)
-            ?: throw ErrorCode.NO_SUCH_FILE.error
-        DataHelper.tsFile((vf.hash ?: throw ErrorCode.NO_SUCH_FILE.error).pathSafe, rate, file)
     }
 
     fun downloadDir(path: VirtualPath, rootVF: VirtualFile, resp: HttpServletResponse) = try {
@@ -213,12 +213,14 @@ class PubFileController(
     @GetMapping
     @ResponseEmpty
     fun getPublicFile(
+        token: Token?,
         path: String,
         @RequestHeader(HttpHeaders.RANGE) rangeStr: String?,
         @DefaultValue("false") download: Boolean,
+        @RequestParam(required = false) private: Boolean = false,
         resp: HttpServletResponse
     ) {
-        val pp = getPubPath(path)
+        val pp = getPath(private, token?.user, path)
         val vf = virtualFileService.get(pp) as VirtualFile?
             ?: throw ErrorCode.NO_SUCH_FILE.error
         val map = fileMappingService.getMapping(
@@ -284,10 +286,11 @@ class PubFileController(
     @PostMapping("rename")
     fun rename(
         @ShouldLogin token: Token,
-        path: String,
-        name: String
+        @RequestParam path: String,
+        @RequestParam name: String,
+        @RequestParam(required = false) private: Boolean = false,
     ) = withCatch {
-        val src = getPubPath(path)
+        val src = getPath(private, token.user, path)
         val dts = src.parent.resolve(name)
         if (src.name == dts.name)
             return@withCatch

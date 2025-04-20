@@ -215,7 +215,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   }
 
   Widget _cover() {
-    final path = player.nowPlay.value?.audioInfo?.path;
+    final nowPlay = player.nowPlay.value;
+    final path = nowPlay?.audioInfo?.path;
     return Hero(
       tag: 'audio_cover',
       child:
@@ -224,7 +225,10 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
               : CoverView(
                 rotate: player.playing,
                 child: CachedNetworkImage(
-                  imageUrl: FileAPIURL.publicAudioCover(path),
+                  imageUrl: FileAPIURL.audioCover(
+                    path,
+                    private: nowPlay!.private,
+                  ),
                   fit: BoxFit.cover,
                   errorWidget: (context, error, stackTrace) {
                     return Icon(Icons.broken_image);
@@ -500,7 +504,10 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       context: context,
       constraints: BoxConstraints(minWidth: 100),
       builder: (context) {
-        return MoreSheet(info: player.nowPlay.value?.audioInfo);
+        return MoreSheet(
+          info: player.nowPlay.value?.audioInfo,
+          private: player.nowPlay.value?.private ?? false,
+        );
       },
     );
   }
@@ -537,6 +544,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   @override
   Widget build(BuildContext context) {
     final player = Global.player;
+    final nowPlay = player.nowPlay.value!;
 
     return Scaffold(
       backgroundColor:
@@ -558,8 +566,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
             CachedNetworkImage(
               imageUrl:
                   player.nowPlay.value?.audioInfo != null
-                      ? FileAPIURL.publicAudioCover(
-                        player.nowPlay.value!.audioInfo!.path,
+                      ? FileAPIURL.audioCover(
+                        nowPlay.audioInfo!.path,
+                        private: nowPlay.private,
                       )
                       : '',
               fit: BoxFit.cover,

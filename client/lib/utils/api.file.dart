@@ -1,24 +1,30 @@
 part of 'api.dart';
 
 extension FileAPI on API {
-  static Future<List<FileInfo>> getPublicFiles(String path) {
-    return API._get<List<dynamic>>('/file/public/files', {'path': path}).then((
-      data,
-    ) {
-      if (data == null) return [];
-      List<FileInfo> list = [];
+  static Future<List<FileInfo>> getFiles(String path, {required bool private}) {
+    return API
+        ._get<List<dynamic>>('/file/files', {
+          'path': path,
+          'private': private,
+        }, options: Options(headers: {...API.tokenHeader()}))
+        .then((data) {
+          if (data == null) return [];
+          List<FileInfo> list = [];
 
-      for (var item in data) {
-        list.add(FileInfo.fromJson(item as Map<String, dynamic>));
-      }
+          for (var item in data) {
+            list.add(FileInfo.fromJson(item as Map<String, dynamic>));
+          }
 
-      return list;
-    });
+          return list;
+        });
   }
 
-  static Future<FileInfo?> getPublicFile(String path) {
+  static Future<FileInfo?> getFile(String path, {required bool private}) {
     return API
-        ._get<Map<String, dynamic>>('/file/public/file/info', {'path': path})
+        ._get<Map<String, dynamic>>('/file/info', {
+          'path': path,
+          'private': private,
+        }, options: Options(headers: {...API.tokenHeader()}))
         .then((data) {
           if (data == null) return null;
 
@@ -26,52 +32,64 @@ extension FileAPI on API {
         });
   }
 
-  static Future<FilePreview?> getPublicFilePreviewInfo(String path) {
+  static Future<FilePreview?> getFilePreviewInfo(
+    String path, {
+    required bool private,
+  }) {
     return API
-        ._get<Map<String, dynamic>>('/file/public/preview/info', {'path': path})
+        ._get<Map<String, dynamic>>('/file/preview/info', {
+          'path': path,
+          'private': private,
+        }, options: Options(headers: {...API.tokenHeader()}))
         .then((data) {
           return data == null ? null : FilePreview.fromJson(data);
         });
   }
 
-  static Future<FolderChildrenCount?> getPublicFolderChildrenCount(
-    String path,
-  ) {
+  static Future<FolderChildrenCount?> getFolderChildrenCount(
+    String path, {
+    required bool private,
+  }) {
     return API
-        ._get<Map<String, dynamic>>('/file/public/folder/count', {'path': path})
+        ._get<Map<String, dynamic>>('/file/folder/count', {
+          'path': path,
+          'private': private,
+        }, options: Options(headers: {...API.tokenHeader()}))
         .then((data) {
           return data == null ? null : FolderChildrenCount.fromJson(data);
         });
   }
 
-  static Future<AudioFileInfo?> getPublicAudioInfo(String path) {
+  static Future<AudioFileInfo?> getAudioInfo(
+    String path, {
+    required bool private,
+  }) {
     return API
-        ._get<Map<String, dynamic>>('/file/public/audio/info', {'path': path})
+        ._get<Map<String, dynamic>>('/file/audio/info', {
+          'path': path,
+          'private': private,
+        }, options: Options(headers: {...API.tokenHeader()}))
         .then((data) {
           return data == null ? null : AudioFileInfo.fromJson(data);
         });
   }
 
-  static Future<bool?> newPublicFolder(String path) {
-    return API._post<bool>(
-      '/file/public/folder',
-      {'path': path},
-      options: Options(
-        contentType: Headers.formUrlEncodedContentType,
-        headers: {ExtraHeaders.authorization: Prefs.token},
-      ),
-    );
+  static Future<bool?> newFolder(String path, {required bool private}) {
+    return API._post<bool>('/file/folder', {
+      'path': path,
+      'private': private,
+    }, options: Options(headers: {...API.tokenHeader()}));
   }
 
-  static Future<bool?> renamePublicFolder(String path, String name) {
-    return API._post<bool>(
-      '/file/public/rename',
-      {'path': path, 'name': name},
-      options: Options(
-        contentType: Headers.formUrlEncodedContentType,
-        headers: {ExtraHeaders.authorization: Prefs.token},
-      ),
-    );
+  static Future<bool?> renameFolder(
+    String path,
+    String name, {
+    required bool private,
+  }) {
+    return API._post<bool>('/file/rename', {
+      'path': path,
+      'name': name,
+    }, options: Options(headers: {...API.tokenHeader()}));
   }
 
   static Future<bool> upload(
@@ -81,14 +99,16 @@ extension FileAPI on API {
     required int end,
     required int size,
     required String hash,
+    required bool private,
   }) {
     return API
         ._post(
-          '/file/public/upload',
+          '/file/upload',
           bytes,
+          parms: {'private': private},
           options: Options(
             headers: {
-              ExtraHeaders.authorization: Prefs.token,
+              ...API.tokenHeader(),
               ExtraHeaders.contentID: base64Url.encode(utf8.encode(path)),
               ExtraHeaders.contentRange: '$start-$end/$size',
               ExtraHeaders.hash: hash,
@@ -99,21 +119,23 @@ extension FileAPI on API {
         .then((res) => res ?? false);
   }
 
-  static Future downloadPublic(
+  static Future download(
     String path,
     String dst,
-    ProgressCallback onProgress,
-  ) {
+    ProgressCallback onProgress, {
+    required bool private,
+  }) {
     return API._download(
-      '/file/public?path=${Uri.encodeQueryComponent(path)}',
+      '/file',
       dst,
       onProgress,
+      parms: {'path': path, 'private': private},
     );
   }
 
-  static Future<bool?> deletePublic(String path) {
+  static Future<bool?> delete(String path, {required bool private}) {
     return API._delete<bool>(
-      '/file/public',
+      '/file',
       {'path': path},
       options: Options(
         contentType: Headers.formUrlEncodedContentType,

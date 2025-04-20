@@ -1,17 +1,22 @@
 part of 'api.dart';
 
 extension FileAPIURL on API {
-  static String _withPath(String path, String pathArg) =>
-      "${API.API_ROOT}/file/public$path?path=${Uri.encodeQueryComponent(pathArg)}";
+  static String _withPath(String path, String pathArg, bool private) =>
+      "${API.API_ROOT}/file$path?path=${Uri.encodeQueryComponent(pathArg)}&private=$private";
 
-  static String publicFile(String path, {bool download = false}) =>
-      "${API.API_ROOT}/file/public?path=${Uri.encodeQueryComponent(path)}&download=$download";
+  static String file(
+    String path, {
+    bool download = false,
+    required bool private,
+  }) =>
+      "${API.API_ROOT}/file?path=${Uri.encodeQueryComponent(path)}&download=$download&private=$private";
 
-  static String publicFileThumbnail(String path) =>
-      _withPath('/thumbnail', path);
+  static String fileThumbnail(String path, {required bool private}) =>
+      _withPath('/thumbnail', path, private);
 
-  static String publicFilePreview(String path) => _withPath('/preview', path);
+  static String filePreview(String path, {required bool private}) =>
+      _withPath('/preview', path, private);
 
-  static String publicAudioCover(String path) =>
-      _withPath('/audio/cover', path);
+  static String audioCover(String path, {required bool private}) =>
+      _withPath('/audio/cover', path, private);
 }

@@ -6,7 +6,7 @@ package com.yjl.hnas.controller
  */
 object API {
 
-    const val PUBLIC_FILE = "/api/file/public"
+    const val FILE = "/api/file"
     const val USER = "/api/user"
 
 }

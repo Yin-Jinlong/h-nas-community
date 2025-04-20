@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
@@ -127,7 +126,9 @@ class MediaPlayer {
     NotificationsPlugin.showPlayerNotification(
       info?.userTitle ?? '?',
       info?.userArtist ?? '?',
-      cover == null ? null : FileAPIURL.publicAudioCover(cover),
+      cover == null
+          ? null
+          : FileAPIURL.audioCover(cover, private: nowPlay.value!.private),
       playing,
     );
   }
@@ -166,12 +167,17 @@ class MediaPlayer {
     }
   }
 
-  Future<void> open(FileInfo file) async {
-    await _player.open(MediaFile(file: file));
+  Future<void> open(FileInfo file, {required bool private}) async {
+    await _player.open(MediaFile(file: file, private: private));
   }
 
-  Future<void> openList(Iterable<FileInfo> files, {int index = 0}) async {
-    final list = files.map((e) => MediaFile(file: e)).toList();
+  Future<void> openList(
+    Iterable<FileInfo> files, {
+    int index = 0,
+    required bool private,
+  }) async {
+    final list =
+        files.map((e) => MediaFile(file: e, private: private)).toList();
     await _player.open(Playlist(list, index: index));
   }
 

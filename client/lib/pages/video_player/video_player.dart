@@ -23,6 +23,7 @@ class VideoPlayerPage extends StatefulWidget {
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late final VideoController _controller;
   FileInfo? file;
+  bool private = false;
 
   @override
   void initState() {
@@ -32,7 +33,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   _load() {
-    Global.player.open(file!);
+    Global.player.open(file!, private: private);
   }
 
   @override
@@ -44,7 +45,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     if (file == null) {
-      file = ModalRoute.of(context)?.settings.arguments as FileInfo;
+      final args = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+      file = args[0];
+      private = args[1];
       _load();
     }
 

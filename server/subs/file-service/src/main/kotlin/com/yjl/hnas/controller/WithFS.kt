@@ -18,17 +18,16 @@ abstract class WithFS(
 ) {
     val fs = fsp.virtualFilesystem
 
-    fun getPubPath(path: String) = try {
-        fs.getPubPath(path)
+    fun getPath(private: Boolean, user: Uid?, path: String) = try {
+        if (private && user == null)
+            throw ErrorCode.BAD_ARGUMENTS.error
+        if (private)
+            fs.getUserPath(user!!, path)
+        else
+            fs.getPubPath(path)
     } catch (e: BadPathException) {
         throw ErrorCode.BAD_ARGUMENTS.data(path)
-    }
-
-    fun getUserPath(uid: Uid, path: String) = try {
-        fs.getUserPath(uid, path).toAbsolutePath()
-    } catch (e: BadPathException) {
-        throw ErrorCode.BAD_ARGUMENTS.data(path)
-    }
+    }.toAbsolutePath()
 
     fun <R> withCatch(block: () -> R) = try {
         block()

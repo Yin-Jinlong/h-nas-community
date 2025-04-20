@@ -143,7 +143,10 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
                               blurStyle: BlurStyle.outer,
                             ),
                             child: CachedNetworkImage(
-                              imageUrl: FileAPIURL.publicAudioCover(info.path),
+                              imageUrl: FileAPIURL.audioCover(
+                                info.path,
+                                private: player.nowPlay.value!.private,
+                              ),
                               fit: BoxFit.cover,
                               errorWidget: (context, error, stackTrace) {
                                 return Icon(Icons.broken_image);

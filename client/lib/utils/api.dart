@@ -15,14 +15,19 @@ part 'api.user.dart';
 part 'type.g.dart';
 
 typedef OnResp = Function(Response);
+typedef QueryParameters = Map<String, dynamic>;
 
 abstract class API {
   static String API_ROOT = '';
   static Dio dio = Dio();
 
+  static Map<String, String> tokenHeader() => {
+    if (Prefs.token != null) ExtraHeaders.authorization: Prefs.token!,
+  };
+
   static Future<T?> _get<T>(
     String path,
-    Map<String, dynamic>? queryParameters, {
+    QueryParameters? queryParameters, {
     Options? options,
     OnResp? onResp,
   }) {
@@ -39,6 +44,7 @@ abstract class API {
   static Future<T?> _post<T>(
     String path,
     Object? data, {
+    QueryParameters? parms,
     Options? options,
     OnResp? onResp,
   }) {
@@ -51,13 +57,15 @@ abstract class API {
   static Future<Response?> _download(
     String path,
     String dst,
-    ProgressCallback onProgress,
-  ) {
+    ProgressCallback onProgress, {
+    QueryParameters? parms,
+  }) {
     return dio
         .download(
           '$API_ROOT$path',
           dst,
           onReceiveProgress: onProgress,
+          queryParameters: parms,
           options: Options(responseType: ResponseType.stream),
         )
         .catchError(_catchError);
@@ -68,9 +76,15 @@ abstract class API {
     Object? data, {
     Options? options,
     OnResp? onResp,
+    QueryParameters? parms,
   }) {
     return dio
-        .delete<String>('$API_ROOT$path', data: data, options: options)
+        .delete<String>(
+          '$API_ROOT$path',
+          data: data,
+          options: options,
+          queryParameters: parms,
+        )
         .then((res) => _then<T>(res, onResp))
         .catchError(_catchError<T>);
   }

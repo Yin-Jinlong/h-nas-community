@@ -18,12 +18,12 @@ class _UserManagementPageState extends State<ServerInfoPage> {
   @override
   void initState() {
     super.initState();
-    FileAPI.getPublicFile('/').then((value) {
+    FileAPI.getFile('/', private: false).then((value) {
       setState(() {
         rootInfo = value;
       });
     });
-    FileAPI.getPublicFolderChildrenCount('/').then((value) {
+    FileAPI.getFolderChildrenCount('/', private: false).then((value) {
       setState(() {
         rootCount = value;
       });

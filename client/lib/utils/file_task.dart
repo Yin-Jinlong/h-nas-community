@@ -50,13 +50,20 @@ abstract class FileTask {
   /// 状态
   FileTaskStatus status = FileTaskStatus.pending;
 
+  bool private;
+
   Object? error;
 
   bool selected = false;
 
   Function()? onDone;
 
-  FileTask({required this.name, required this.size, required this.createTime});
+  FileTask({
+    required this.name,
+    required this.size,
+    required this.createTime,
+    required this.private,
+  });
 
   /// 是否已完成
   bool get isDone => status == FileTaskStatus.done;
@@ -90,6 +97,7 @@ class UploadFileTask extends FileTask {
     required super.name,
     required super.size,
     required super.createTime,
+    required super.private,
   });
 
   @override
@@ -139,6 +147,7 @@ class UploadFileTask extends FileTask {
               end: end,
               size: size,
               hash: hash,
+              private: private,
             );
             if (r) {
               uploaded = end;
@@ -158,6 +167,7 @@ class UploadFileTask extends FileTask {
           end: start,
           size: size,
           hash: hash,
+          private: private,
         );
       } finally {
         reader.cancel();
@@ -191,6 +201,7 @@ class DownloadFileTask extends FileTask {
     required super.name,
     required super.size,
     required super.createTime,
+    required super.private,
   });
 
   /// 进度[0-1]
@@ -203,7 +214,10 @@ class DownloadFileTask extends FileTask {
   start() {
     if (_started) return;
     _started = true;
-    FileAPI.downloadPublic(file.fullPath, dst, (count, total) {
+    FileAPI.download(file.fullPath, dst, private: private, (
+      count,
+      total,
+    ) {
       downloaded = count;
       size = total;
       if (count == total) {

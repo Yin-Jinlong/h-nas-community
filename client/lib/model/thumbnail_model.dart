@@ -6,6 +6,9 @@ import 'package:h_nas/utils/file_utils.dart';
 
 class ThumbnailModel with ChangeNotifier {
   final Map<FileInfo, FilePreview> _cache = {};
+  bool private;
+
+  ThumbnailModel({required this.private});
 
   get(
     FileInfo info,
@@ -21,7 +24,7 @@ class ThumbnailModel with ChangeNotifier {
     await Future.delayed(Duration(milliseconds: Random().nextInt(500) + 500));
     FilePreview? fp;
     do {
-      fp = await FileAPI.getPublicFilePreviewInfo(info.fullPath);
+      fp = await FileAPI.getFilePreviewInfo(info.fullPath, private: private);
       if (fp?.thumbnail == '') {
         await Future.delayed(Duration(milliseconds: 500));
       } else {

@@ -61,7 +61,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final _openFloatingMenu = ValueNotifier(false);
   SortType sortType = SortType.name;
   bool sortAsc = true;
-  final thumbnailCache = ThumbnailModel();
+  bool private = false;
+  final thumbnailCache = ThumbnailModel(private: false);
 
   /// 正在拖拽
   bool _dragging = false;
@@ -91,7 +92,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       images.clear();
       audios.clear();
     });
-    final values = await FileAPI.getPublicFiles('/${dirs.join('/')}');
+    final values = await FileAPI.getFiles(
+      '/${dirs.join('/')}',
+      private: private,
+    );
     setState(() {
       files = values;
       _sort();
@@ -130,6 +134,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           files: images,
           route: route,
           thumbnailCache: thumbnailCache,
+          private: private,
           onClose: () {
             entry?.remove();
           },
@@ -143,13 +148,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     setState(() {
       final index = audios.indexOf(file);
       if (index < 0) return;
-      Global.player.openList(audios, index: index);
+      Global.player.openList(audios, index: index, private: private);
     });
   }
 
   _playVideo(FileInfo file) {
     setState(() {});
-    navigatorKey.currentState?.pushNamed(Routes.videoPlayer, arguments: file);
+    navigatorKey.currentState?.pushNamed(
+      Routes.videoPlayer,
+      arguments: [file, private],
+    );
   }
 
   TableRow _infoRow(String label, Widget value) {
@@ -173,7 +181,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     showDialog(
       context: context,
       builder: (context) {
-        return InfoDialog(file: file, infoRow: _infoRow);
+        return InfoDialog(file: file, infoRow: _infoRow, private: private);
       },
     );
   }
@@ -184,12 +192,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       builder: (context) {
         return NewFolderDialog(
           onCreate: (name) {
-            FileAPI.newPublicFolder('${dirs.join('/')}/$name').then((v) {
-              if (v == true) {
-                navigatorKey.currentState?.pop();
-                updateFiles();
-              }
-            });
+            FileAPI.newFolder('${dirs.join('/')}/$name', private: private).then(
+              (v) {
+                if (v == true) {
+                  navigatorKey.currentState?.pop();
+                  updateFiles();
+                }
+              },
+            );
           },
         );
       },
@@ -245,11 +255,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return RenameDialog(
           file: file,
           onRename: (newName) {
-            FileAPI.renamePublicFolder(file.fullPath, newName).then((v) {
-              if (v != true) return;
-              navigatorKey.currentState?.pop();
-              updateFiles();
-            });
+            FileAPI.renameFolder(file.fullPath, newName, private: private).then(
+              (v) {
+                if (v != true) return;
+                navigatorKey.currentState?.pop();
+                updateFiles();
+              },
+            );
           },
         );
       },
@@ -259,7 +271,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   _download(FileInfo file) {
     if (UniversalPlatform.isWeb) {
       web.window.open(
-        FileAPIURL.publicFile(file.fullPath, download: true),
+        FileAPIURL.file(file.fullPath, download: true, private: private),
         '_blank',
       );
       return;
@@ -270,6 +282,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       size: file.size,
       createTime: DateTime.now(),
       file: file,
+      private: private,
     );
     Global.downloadTasks.add(task);
     task.start();
@@ -277,7 +290,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   _delete(FileInfo file) {
-    FileAPI.deletePublic(file.fullPath).then((v) {
+    FileAPI.delete(file.fullPath, private: private).then((v) {
       if (v == true) {
         updateFiles();
       }
@@ -299,6 +312,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       name: name,
       size: file.lengthSync(),
       createTime: DateTime.now(),
+      private: private,
     );
     task.onDone = () {
       updateFiles();
@@ -382,6 +396,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: _fileListItem(
                     context,
                     file,
+                    private: private,
                     onTap: () {
                       if (file.isFolder) {
                         enterFolder(file.name);
@@ -424,6 +439,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           name: name,
           size: file.lengthSync(),
           createTime: DateTime.now(),
+          private: private,
         );
         task.onDone = () {
           updateFiles();

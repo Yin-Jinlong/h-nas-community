@@ -8,9 +8,10 @@ import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../../global.dart';
 
 class MoreSheet extends StatefulWidget {
+  final bool private;
   final AudioFileInfo? info;
 
-  const MoreSheet({super.key, required this.info});
+  const MoreSheet({super.key, required this.private, required this.info});
 
   @override
   State createState() => _MoreSheetState();
@@ -54,7 +55,10 @@ class _MoreSheetState extends State<MoreSheet> {
             ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               child: CachedNetworkImage(
-                imageUrl: FileAPIURL.publicAudioCover(info.path),
+                imageUrl: FileAPIURL.audioCover(
+                  info.path,
+                  private: widget.private,
+                ),
                 fit: BoxFit.cover,
                 width: 80,
                 height: 80,

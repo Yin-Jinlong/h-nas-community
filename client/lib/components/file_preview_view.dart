@@ -10,9 +10,14 @@ import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import '../model/thumbnail_model.dart';
 
 class FilePreviewView extends StatefulWidget {
+  final bool private;
   final FileInfo fileInfo;
 
-  const FilePreviewView({super.key, required this.fileInfo});
+  const FilePreviewView({
+    super.key,
+    required this.private,
+    required this.fileInfo,
+  });
 
   @override
   State createState() {
@@ -70,7 +75,10 @@ class _FilePreviewViewState extends State<FilePreviewView> {
       );
     }
     return CachedNetworkImage(
-      imageUrl: FileAPIURL.publicFileThumbnail(filePreview!.thumbnail!),
+      imageUrl: FileAPIURL.fileThumbnail(
+        filePreview!.thumbnail!,
+        private: widget.private,
+      ),
       width: 50,
       height: 50,
       fit: BoxFit.cover,

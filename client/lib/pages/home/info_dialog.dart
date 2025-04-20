@@ -9,10 +9,16 @@ import '../../generated/l10n.dart';
 
 class InfoDialog extends StatefulWidget {
   final FileInfo file;
+  final bool private;
 
   final TableRow Function(String label, Widget value) infoRow;
 
-  const InfoDialog({super.key, required this.file, required this.infoRow});
+  const InfoDialog({
+    super.key,
+    required this.file,
+    required this.infoRow,
+    required this.private,
+  });
 
   @override
   State createState() => _InfoDialogState();
@@ -33,7 +39,10 @@ class _InfoDialogState extends State<InfoDialog> {
     fileMediaType = file.fileMediaType;
 
     if (file.isFolder) {
-      FileAPI.getPublicFolderChildrenCount(file.fullPath).then((v) {
+      FileAPI.getFolderChildrenCount(
+        file.fullPath,
+        private: widget.private,
+      ).then((v) {
         if (v != null) {
           setState(() {
             count = v;
@@ -41,7 +50,7 @@ class _InfoDialogState extends State<InfoDialog> {
         }
       });
     } else if (fileMediaType?.isAudio == true) {
-      FileAPI.getPublicAudioInfo(file.fullPath).then((v) {
+      FileAPI.getAudioInfo(file.fullPath, private: widget.private).then((v) {
         if (v != null) {
           setState(() {
             audioFileInfo = v;
