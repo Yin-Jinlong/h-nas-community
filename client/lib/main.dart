@@ -79,6 +79,7 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     Global.dispose();
     ThemeS.dispose();
+    UserS.dispose();
     super.dispose();
   }
 
