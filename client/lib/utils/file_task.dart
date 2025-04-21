@@ -56,7 +56,7 @@ abstract class FileTask {
 
   bool selected = false;
 
-  Function()? onDone;
+  VoidCallback? onDone;
 
   FileTask({
     required this.name,
@@ -214,10 +214,7 @@ class DownloadFileTask extends FileTask {
   start() {
     if (_started) return;
     _started = true;
-    FileAPI.download(file.fullPath, dst, private: private, (
-      count,
-      total,
-    ) {
+    FileAPI.download(file.fullPath, dst, private: private, (count, total) {
       downloaded = count;
       size = total;
       if (count == total) {

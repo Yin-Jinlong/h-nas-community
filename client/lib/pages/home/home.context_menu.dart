@@ -2,11 +2,11 @@ part of 'home.dart';
 
 List<ContextMenuButtonConfig> _fileContextMenuButtons(
   FileInfo file, {
-  required Function() onPlay,
-  required Function() onRename,
-  required Function() onDownload,
-  required Function() onInfo,
-  required Function() onDelete,
+  required VoidCallback onPlay,
+  required VoidCallback onRename,
+  required VoidCallback onDownload,
+  required VoidCallback onInfo,
+  required VoidCallback onDelete,
 }) {
   return [
     if (file.canPlay)

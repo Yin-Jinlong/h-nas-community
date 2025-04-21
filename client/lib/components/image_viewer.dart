@@ -18,7 +18,7 @@ part 'image_viewer.mobile.dart';
 class ImageViewer extends StatelessWidget {
   final List<Future<String> Function()> urls;
   final int index;
-  final Function() onLastImage, onNextImage;
+  final VoidCallback onLastImage, onNextImage;
   final Widget? loadingWidget;
 
   const ImageViewer({

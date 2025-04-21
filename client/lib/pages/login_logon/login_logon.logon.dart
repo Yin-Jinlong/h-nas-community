@@ -1,7 +1,7 @@
 part of 'login_logon.dart';
 
 class _LogonWidget extends StatefulWidget {
-  final Function() onGotoLogin;
+  final VoidCallback onGotoLogin;
 
   const _LogonWidget({required this.onGotoLogin});
 

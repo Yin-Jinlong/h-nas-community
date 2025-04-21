@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 extension EditFieldUtils on State {
   static Widget? clearButton(
     TextEditingController controller,
-    Function()? afterClear,
+    VoidCallback? afterClear,
   ) {
     if (controller.text.isEmpty) return null;
     return IconButton(

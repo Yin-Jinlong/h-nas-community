@@ -57,9 +57,9 @@ class _TransmissionPageState extends State<TransmissionPage>
   List<DataCell> _tableDataCells(
     FileTask task, {
     required Function(bool? value) onSelectedChanged,
-    Function()? onStart,
-    Function()? onPause,
-    required Function() onRemove,
+    VoidCallback? onStart,
+    VoidCallback? onPause,
+    required VoidCallback onRemove,
     List<DataCell> extras = const [],
   }) {
     return [

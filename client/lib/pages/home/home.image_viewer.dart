@@ -2,7 +2,7 @@ part of 'home.dart';
 
 class _ImageViewerOverlayWidget extends StatefulWidget {
   final int index;
-  final Function() onClose;
+  final VoidCallback onClose;
   final ModalRoute route;
   final List<FileInfo> files;
   final ThumbnailModel thumbnailCache;

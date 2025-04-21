@@ -3,7 +3,7 @@ part of 'image_viewer.dart';
 class _DesktopImageViewer extends StatefulWidget {
   final List<Future<String> Function()> urls;
   final int index;
-  final Function() onLastImage, onNextImage;
+  final VoidCallback onLastImage, onNextImage;
   final Widget? loadingWidget;
 
   const _DesktopImageViewer({
@@ -332,7 +332,7 @@ class _ImageViewerPainter extends CustomPainter {
 }
 
 class _ImageViewerController extends StatefulWidget {
-  final Function() onFlip,
+  final VoidCallback onFlip,
       onLeftRotate,
       onLastImage,
       onNextImage,

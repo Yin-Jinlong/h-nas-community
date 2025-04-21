@@ -4,7 +4,7 @@ Widget _fileListItem(
   BuildContext context,
   FileInfo file, {
   required bool private,
-  required Function() onTap,
+  required VoidCallback onTap,
 }) {
   return ListTile(
     key: ValueKey(file.fullPath),
