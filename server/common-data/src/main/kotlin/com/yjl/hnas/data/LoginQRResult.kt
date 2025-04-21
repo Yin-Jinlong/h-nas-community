@@ -5,7 +5,7 @@ package com.yjl.hnas.data
  * @author YJL
  */
 data class LoginQRResult(
-    val state: String,
+    val status: LoginQRInfoStatus,
     val user: UserInfo? = null,
     val token: String? = null,
 )

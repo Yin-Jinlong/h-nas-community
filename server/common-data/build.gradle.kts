@@ -1,3 +1,5 @@
+import task.kt2.Kotlin2Dart
+
 plugins {
     alias(libs.plugins.kotlin)
 }
@@ -24,6 +26,7 @@ afterEvaluate {
             )
         )
         sourceDirs.add(project.layout.projectDirectory.asFile.resolve("src/main/kotlin"))
+        link2common += "IVirtualFile.Type"
     }
 
     // 每次编译时都生成dts

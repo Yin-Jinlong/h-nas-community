@@ -11,7 +11,7 @@ class PropertyNode(
 ) : BaseNode(name) {
 
     companion object : Parser<KtProperty, PropertyNode> {
-        override fun parse(psi: KtProperty): PropertyNode {
+        override fun parse(pre: String, psi: KtProperty): PropertyNode {
             TODO("Not yet implemented")
         }
 

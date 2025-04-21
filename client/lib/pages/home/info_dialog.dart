@@ -110,7 +110,7 @@ class _InfoDialogState extends State<InfoDialog> {
               S.current.file_info_path,
               Text('${file.dir}${file.dir == '/' ? '' : '/'}${file.name}'),
             ),
-            _infoRow(S.current.file_info_file_type, Text(file.fileType)),
+            _infoRow(S.current.file_info_file_type, Text(file.fileType.name)),
             if (file.isFile)
               _infoRow(
                 S.current.file_info_media_type,

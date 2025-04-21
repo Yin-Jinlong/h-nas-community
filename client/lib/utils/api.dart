@@ -135,13 +135,3 @@ Future<T?> _catchError<T>(error) async {
   }
   return null;
 }
-
-extension _JSonUtil on Map<String, dynamic>? {
-  T? _to<T>(T Function(Map<String, dynamic> json) fn) {
-    if (this == null) {
-      return null;
-    } else {
-      return fn(this!);
-    }
-  }
-}

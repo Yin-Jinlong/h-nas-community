@@ -2,13 +2,9 @@ import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/media_type.dart';
 
 extension FileInfoExt on FileInfo {
-  bool get isFolder {
-    return fileType == 'FOLDER';
-  }
+  bool get isFolder => fileType == IVirtualFile$Type.folder;
 
-  bool get isFile {
-    return fileType == 'FILE';
-  }
+  bool get isFile => fileType == IVirtualFile$Type.file;
 
   String get fullPath => dir == '/' ? '/$name' : '$dir/$name';
 

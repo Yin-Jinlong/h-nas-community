@@ -1,22 +1,28 @@
 package psi
 
 import org.jetbrains.kotlin.psi.KtClass
+import utils.dartClassName
 
 /**
  * @author YJL
  */
 open class ClassNode(
+    pre: String,
     name: String,
 ) : BaseNode(name) {
 
     val properties = mutableListOf<PropertyNode>()
 
+    val fullName = if (pre.isEmpty()) name else "$pre$name"
+
+    val dartName = fullName.dartClassName
+
     fun getProperty(name: String) = properties.find { it.name == name }
 
     companion object : Parser<KtClass, ClassNode> {
-        override fun parse(psi: KtClass) = ClassNode(psi.name!!).apply {
+        override fun parse(pre: String, psi: KtClass) = ClassNode(pre, psi.name!!).apply {
             psi.primaryConstructorParameters.forEach {
-                val parm = ParameterNode.parse(it)
+                val parm = ParameterNode.parse(pre, it)
                 if (parm.isProperty)
                     properties.add(PropertyNode.of(parm))
             }

@@ -14,7 +14,7 @@ interface Parser<Psi : PsiElement, R> {
     /**
      * 解析
      */
-    fun parse(psi: Psi): R
+    fun parse(pre: String, psi: Psi): R
 
     companion object {
 

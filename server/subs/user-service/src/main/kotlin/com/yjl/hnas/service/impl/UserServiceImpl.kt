@@ -2,6 +2,7 @@ package com.yjl.hnas.service.impl
 
 import com.google.gson.Gson
 import com.yjl.hnas.data.LoginQRInfo
+import com.yjl.hnas.data.LoginQRInfoStatus
 import com.yjl.hnas.data.LoginQRResult
 import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.IUser
@@ -73,7 +74,7 @@ class UserServiceImpl(
         return id.sha256Hex.also {
             setInfo(
                 it,
-                LoginQRInfo(LoginQRInfo.Status.WAITING, user = null, ip = ip),
+                LoginQRInfo(LoginQRInfoStatus.WAITING, user = null, ip = ip),
                 Duration.ofMinutes(2)
             )
         }
@@ -82,16 +83,16 @@ class UserServiceImpl(
     override fun loginQR(id: String): LoginQRResult {
         val info = info(id)
         return if (info == null)
-            LoginQRResult(LoginQRInfo.Status.INVALID.name)
+            LoginQRResult(LoginQRInfoStatus.INVALID)
         else
-            LoginQRResult(info.status.name, info.user, token = info.token?.token)
+            LoginQRResult(info.status, info.user, token = info.token?.token)
     }
 
     override fun getLoginQRInfo(user: Uid, id: String): LoginQRInfo? {
         return info(id)?.let { info ->
-            if (info.status == LoginQRInfo.Status.WAITING && info.scannedUser == null) {
+            if (info.status == LoginQRInfoStatus.WAITING && info.scannedUser == null) {
                 val token = Auth.login(user)
-                info.copy(status = LoginQRInfo.Status.SCANNED, scannedUser = user, token = token).also {
+                info.copy(status = LoginQRInfoStatus.SCANNED, scannedUser = user, token = token).also {
                     setInfo(id, it)
                 }
             } else info
@@ -103,7 +104,7 @@ class UserServiceImpl(
             setInfo(
                 id,
                 it.copy(
-                    status = LoginQRInfo.Status.SUCCESS,
+                    status = LoginQRInfoStatus.SUCCESS,
                     user = UserInfo.of(
                         it.scannedUser?.let { uid -> mapper.selectByUid(uid) }
                             ?: throw IllegalStateException("用户id不存在：${it.scannedUser}")
@@ -138,7 +139,7 @@ class UserServiceImpl(
         info(id)?.let {
             setInfo(
                 id,
-                it.copy(status = LoginQRInfo.Status.FAILED)
+                it.copy(status = LoginQRInfoStatus.FAILED)
             )
         }
     }

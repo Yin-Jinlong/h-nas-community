@@ -7,11 +7,8 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtEnumEntry
 import psi.ClassNode
 import psi.EnumNode
-import psi.Node
 
 /**
  * @author YJL
@@ -37,13 +34,13 @@ private fun PsiElement.forEachPsi(block: PsiElement.() -> Unit) {
     }
 }
 
-private fun PsiElement.parseNode(pre: String = "", onAdd: Node.(key: String) -> Unit = {}) {
+private fun PsiElement.parseNode(pre: String = "", onAdd: ClassNode.(key: String) -> Unit = {}) {
     val node = when (this) {
         is KtClass -> {
             if (isEnum())
-                EnumNode.parse(this)
+                EnumNode.parse(pre, this)
             else {
-                ClassNode.parse(this).apply {
+                ClassNode.parse(pre, this).apply {
                     body?.children?.forEach {
                         it.parseNode("$pre$name.", onAdd)
                     }
@@ -59,7 +56,7 @@ private fun PsiElement.parseNode(pre: String = "", onAdd: Node.(key: String) -> 
 }
 
 
-fun KotlinCoreEnvironment.parseNodes(onAdd: Node.(key: String) -> Unit = {}) {
+fun KotlinCoreEnvironment.parseNodes(onAdd: ClassNode.(key: String) -> Unit = {}) {
     val psi = PsiManager.getInstance(project)
     getSourceFiles().forEach {
         psi.findFile(it.virtualFile)?.apply {

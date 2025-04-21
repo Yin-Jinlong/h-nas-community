@@ -8,8 +8,11 @@ import java.io.Writer
  * @author YJL
  */
 class IndentWriter(
-    writer: Writer
+    writer: Writer,
+    indent: Int,
 ) : BufferedWriter(writer) {
+
+    private val indentStr = " ".repeat(indent)
 
     private var indent: Int = 0
 
@@ -33,7 +36,7 @@ class IndentWriter(
     override fun write(s: String, off: Int, len: Int) {
         if (isNewLine) {
             for (i in 0 until indent)
-                su("    ")
+                su(indentStr)
         }
         super.write(s, off, len)
         isNewLine = s.last() == '\n'
@@ -53,4 +56,4 @@ class IndentWriter(
 
 }
 
-fun File.intentWriter(): IndentWriter = IndentWriter(writer())
+fun File.intentWriter(indent: Int): IndentWriter = IndentWriter(writer(), indent)

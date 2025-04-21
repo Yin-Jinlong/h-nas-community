@@ -12,7 +12,7 @@ class ParameterNode(
 ) : BaseNode(name) {
 
     companion object : Parser<KtParameter, ParameterNode> {
-        override fun parse(psi: KtParameter) = ParameterNode(
+        override fun parse(pre: String, psi: KtParameter) = ParameterNode(
             psi.name!!,
             TypeNode.of(psi.typeReference!!),
             psi.hasValOrVar()

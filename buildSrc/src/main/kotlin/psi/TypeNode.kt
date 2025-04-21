@@ -12,8 +12,6 @@ class TypeNode(
     val nullable: Boolean = false
 ) : BaseNode(name) {
 
-    val isSub = name.contains(".")
-
     companion object {
         fun of(type: KtTypeReference): TypeNode {
             var t = type.text
@@ -27,9 +25,7 @@ class TypeNode(
             val types = mutableListOf<String>().apply {
                 if (!t.matches(".*<.*>".toRegex()))
                     return@apply
-                val str = t.substringAfter("<").let {
-                    it.substringBeforeLast(">")
-                }
+                val str = t.substringAfter("<").substringBeforeLast(">")
                 val list = str.split(",")
                 for (s in list) {
                     add(s.trim())

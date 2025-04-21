@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
@@ -16,41 +15,9 @@ class LoginQR extends StatefulWidget {
   State createState() => _LoginQRState();
 }
 
-enum _Status {
-  /// 等待扫码
-  waiting,
-
-  /// 已扫码
-  scanned,
-
-  /// 成功
-  success,
-
-  /// 失败
-  failed,
-
-  /// 无效
-  invalid;
-
-  static _Status? of(String? state) {
-    if (kDebugMode) {
-      print(state);
-    }
-    return switch (state) {
-      'WAITING' => _Status.waiting,
-      'SCANNED' => _Status.scanned,
-      'SUCCESS' => _Status.success,
-      'FAILED' => _Status.failed,
-      'INVALID' => _Status.invalid,
-      null => null,
-      String() => null,
-    };
-  }
-}
-
 class _LoginQRState extends DisposeFlagState<LoginQR> {
   String? _qrData;
-  _Status? _status;
+  LoginQRInfoStatus? _status;
 
   @override
   void initState() {
@@ -79,11 +46,11 @@ class _LoginQRState extends DisposeFlagState<LoginQR> {
     await Future.delayed(Duration(seconds: 1));
     if (disposed) return;
     final r = await UserAPI.loginQR(_qrData!);
-    _status = _Status.of(r?.state);
-    if (_status == _Status.invalid) {
-    } else if (_status != _Status.success) {
+    _status = r?.status;
+    if (_status == LoginQRInfoStatus.invalid) {
+    } else if (_status != LoginQRInfoStatus.success) {
       _loopQuery();
-    } else if (_status == _Status.success && r?.user != null) {
+    } else if (_status == LoginQRInfoStatus.success && r?.user != null) {
       Prefs.token = r?.token;
       UserS.user = r?.user;
       navigatorKey.currentState?.pop();
@@ -112,7 +79,7 @@ class _LoginQRState extends DisposeFlagState<LoginQR> {
           ),
           if (_qrData == null)
             _layer(0.9, Center(child: CircularProgressIndicator())),
-          if (_status == _Status.scanned)
+          if (_status == LoginQRInfoStatus.scanned)
             _layer(
               0.95,
               Center(
@@ -129,7 +96,8 @@ class _LoginQRState extends DisposeFlagState<LoginQR> {
                 ),
               ),
             ),
-          if (_status == _Status.invalid || _status == _Status.failed)
+          if (_status == LoginQRInfoStatus.invalid ||
+              _status == LoginQRInfoStatus.failed)
             _layer(
               0.95,
               Center(
