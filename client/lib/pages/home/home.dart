@@ -85,10 +85,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> updateFiles() async {
+    // 没有配置服务器
     if (API.API_ROOT.isEmpty) {
       Toast.showError(S.current.error_set_server_addr);
       return;
     }
+    // 先清空数据
     setState(() {
       thumbnailCache.clear();
       files.clear();
@@ -98,9 +100,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final values = await FileAPI.getFiles(nowDir, private: private);
     setState(() {
       files = values;
-      _sort();
-      images = [];
-      audios = [];
+      _sort(); // 按照当前分类排序，后端返回默认文件名升序
+      // 把图片和音频进行缓存
       for (var file in values) {
         final type = file.fileMediaType?.type;
         if (type == MediaType.typeImage) {
