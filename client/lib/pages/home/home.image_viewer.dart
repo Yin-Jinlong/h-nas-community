@@ -134,7 +134,7 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                 Align(
                   alignment: Alignment.topRight,
                   child: Tooltip(
-                    message: '关闭',
+                    message: S.current.close,
                     child: InkWell(
                       onTap: () {},
                       onHover: (isHover) {
