@@ -50,7 +50,8 @@ class Marquee extends StatefulWidget {
   State createState() => _MarqueeState();
 }
 
-class _MarqueeState extends DisposeFlagState<Marquee> with SingleTickerProviderStateMixin {
+class _MarqueeState extends DisposeFlagState<Marquee>
+    with SingleTickerProviderStateMixin {
   late double contentWidth, contentHeight;
   late final AnimationController _controller;
 
@@ -95,9 +96,8 @@ class _MarqueeState extends DisposeFlagState<Marquee> with SingleTickerProviderS
 
   _wait() {
     Future.delayed(widget.turnDur, () {
-      if (disposed) {
-        _controller.repeat(count: widget.count);
-      }
+      if (disposed) return;
+      _controller.repeat(count: widget.count);
     });
   }
 
