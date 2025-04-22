@@ -13,7 +13,7 @@ import com.yjl.hnas.hls.HLSGenerator
 import com.yjl.hnas.mapper.FileMappingMapper
 import com.yjl.hnas.option.PreviewOption
 import com.yjl.hnas.preview.PreviewException
-import com.yjl.hnas.preview.PreviewGeneratorFactory
+import com.yjl.hnas.preview.PreviewGeneratorHelper
 import com.yjl.hnas.service.FileMappingService
 import com.yjl.hnas.service.VirtualFileService
 import com.yjl.hnas.task.BackgroundTasks
@@ -37,7 +37,7 @@ private typealias CacheFileFn = (String) -> File
 @Service
 class FileMappingServiceImpl(
     val fileMappingMapper: FileMappingMapper,
-    val previewGeneratorFactory: PreviewGeneratorFactory,
+    val previewGenerators: PreviewGeneratorHelper,
     val previewOption: PreviewOption,
     val transactionManager: PlatformTransactionManager,
     val virtualFileService: VirtualFileService,
@@ -99,7 +99,7 @@ class FileMappingServiceImpl(
         val file = DataHelper.dataFile(dataPath)
         try {
             val data =
-                previewGeneratorFactory.getPreview(file, mediaType, maxSize, quality) ?: return
+                previewGenerators.getPreview(file, mediaType, maxSize, quality) ?: return
             cache.parentFile.apply {
                 if (!exists())
                     mkdirs()
@@ -125,7 +125,7 @@ class FileMappingServiceImpl(
 
     override fun getPreviewFile(mapping: IFileMapping): File? = with(mapping) {
         val mediaType = type()
-        if (!previewGeneratorFactory.canPreview(mediaType))
+        if (!previewGenerators.canPreview(mediaType))
             return null
         val cache = DataHelper.previewFile(dataPath)
         if (cache.exists())
@@ -142,7 +142,7 @@ class FileMappingServiceImpl(
         quality: Float
     ): String? = with(mapping) {
         val mediaType = type()
-        if (!previewGeneratorFactory.canPreview(mediaType))
+        if (!previewGenerators.canPreview(mediaType))
             return null
         val cache = fn(dataPath)
         if (cache.exists())

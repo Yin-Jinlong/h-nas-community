@@ -12,7 +12,7 @@ import javax.imageio.plugins.jpeg.JPEGImageWriteParam
 /**
  * @author YJL
  */
-class PreviewGeneratorFactory {
+class PreviewGeneratorHelper {
 
     private val generators = HashMap<MediaType, PreviewGenerator>()
 

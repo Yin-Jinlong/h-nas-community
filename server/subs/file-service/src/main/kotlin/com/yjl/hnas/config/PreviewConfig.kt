@@ -23,9 +23,9 @@ class PreviewConfig {
     )
 
     @Bean
-    fun previewGeneratorFactory(
+    fun previewGeneratorHelper(
         generators: ObjectProvider<FilePreviewGenerator>
-    ) = PreviewGeneratorFactory().apply {
+    ) = PreviewGeneratorHelper().apply {
         generators.forEach {
             it.types.forEach { t ->
                 registerGenerator(t, it)
