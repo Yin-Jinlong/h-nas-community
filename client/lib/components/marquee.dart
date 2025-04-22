@@ -66,18 +66,10 @@ class _MarqueeState extends DisposeFlagState<Marquee>
   void initState() {
     super.initState();
 
-    // 计算文本尺寸
-    final painter = _MarqueePainter(widget.text);
-    contentWidth = painter.contentSize.width;
-    contentHeight = painter.contentSize.height;
+    shouldMarquee.addListener(_onChange);
 
     _controller =
-        AnimationController(
-            vsync: this,
-            duration: Duration(
-              milliseconds: (contentWidth * 1000) ~/ widget.speed,
-            ),
-          )
+        AnimationController(vsync: this)
           ..addListener(() {
             setState(() {});
           })
@@ -87,7 +79,20 @@ class _MarqueeState extends DisposeFlagState<Marquee>
             }
           });
 
-    shouldMarquee.addListener(_onChange);
+    _update();
+  }
+
+  void _update() {
+    // 计算文本尺寸
+    final painter = _MarqueePainter(widget.text);
+    contentWidth = painter.contentSize.width;
+    contentHeight = painter.contentSize.height;
+
+    _controller.duration = Duration(
+      milliseconds: (contentWidth * 1000) ~/ widget.speed,
+    );
+
+    shouldMarquee.value = contentWidth > widget.maxWidth;
   }
 
   void _onChange() {
@@ -106,17 +111,7 @@ class _MarqueeState extends DisposeFlagState<Marquee>
 
   @override
   void didUpdateWidget(covariant Marquee oldWidget) {
-    // 计算文本尺寸
-    final painter = _MarqueePainter(widget.text);
-    contentWidth = painter.contentSize.width;
-    contentHeight = painter.contentSize.height;
-
-    _controller.duration = Duration(
-      milliseconds: (contentWidth * 1000) ~/ widget.speed,
-    );
-
-    shouldMarquee.value = contentWidth > widget.maxWidth;
-
+    _update();
     super.didUpdateWidget(oldWidget);
   }
 
