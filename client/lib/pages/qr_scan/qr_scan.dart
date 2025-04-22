@@ -56,7 +56,7 @@ class _QRScanPageState extends DisposeFlagState<QRScanPage> {
 
   void _grant(bool grant) async {
     setState(() {
-      _requesting = grant;
+      _requesting = true;
     });
     final r = await UserAPI.grant(_result!, grant);
     if (disposed) return;
