@@ -98,7 +98,6 @@ class VirtualFileServiceImpl(
         size: Long,
         dataFile: File,
         dataPath: String,
-        sis: Long
     ) {
         if (size != dataFile.length())
             throw IllegalArgumentException("文件大小不匹配: $path")
@@ -158,7 +157,7 @@ class VirtualFileServiceImpl(
             val type = FileDetector.detect(ins, path.name)
             val dataFile = dataFile(type, hash)
             if (dataFile.exists()) {
-                insertFile(owner, user, path, hash, fileSize, dataFile, dataPath(type, hash), dataFile.length())
+                insertFile(owner, user, path, hash, fileSize, dataFile, dataPath(type, hash))
                 return true
             }
         }
@@ -173,7 +172,7 @@ class VirtualFileServiceImpl(
                 throw IllegalArgumentException("文件不存在: $path")
             val type = tmpFile.inputStream().buffered().use { FileDetector.detect(it, path.name) }
             val dataFile = dataFile(type, hash)
-            insertFile(owner, user, path, hash, fileSize, tmpFile, dataPath(type, hash), dataFile.length())
+            insertFile(owner, user, path, hash, fileSize, tmpFile, dataPath(type, hash))
             dataFile.mkParent()
             Files.move(tmpFile.toPath(), dataFile.toPath())
             return true
