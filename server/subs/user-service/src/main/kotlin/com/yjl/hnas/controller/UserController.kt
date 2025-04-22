@@ -1,7 +1,10 @@
 package com.yjl.hnas.controller
 
 import com.yjl.hnas.annotation.ShouldLogin
-import com.yjl.hnas.data.*
+import com.yjl.hnas.data.LoginQRInfoStatus
+import com.yjl.hnas.data.LoginQRResult
+import com.yjl.hnas.data.QRGrantInfo
+import com.yjl.hnas.data.UserInfo
 import com.yjl.hnas.entity.Uid
 import com.yjl.hnas.error.ErrorCode
 import com.yjl.hnas.service.UserService
@@ -88,7 +91,7 @@ class UserController(
         @RequestParam grant: Boolean
     ) {
         val info = userService.getLoginQRInfo(token.user, id)
-        if (info?.status != LoginQRInfoStatus.SCANNED)
+        if (info?.status != LoginQRInfoStatus.SCANNED || info.scannedUser != token.user)
             throw ErrorCode.BAD_REQUEST.error
         if (grant)
             userService.grant(id)
