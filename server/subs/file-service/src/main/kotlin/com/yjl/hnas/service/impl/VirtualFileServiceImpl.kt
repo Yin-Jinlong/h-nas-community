@@ -20,6 +20,7 @@ import com.yjl.hnas.tika.FileDetector
 import com.yjl.hnas.utils.del
 import com.yjl.hnas.utils.isAudioMediaType
 import com.yjl.hnas.utils.isVideoMediaType
+import com.yjl.hnas.utils.mimeType
 import com.yjl.hnas.utils.mkParent
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
@@ -170,7 +171,7 @@ class VirtualFileServiceImpl(
                 tmpFile.createNewFile()
             } else if (!tmpFile.exists())
                 throw IllegalArgumentException("文件不存在: $path")
-            val type = tmpFile.inputStream().buffered().use { FileDetector.detect(it, path.name) }
+            val type = tmpFile.mimeType(path.name)
             val dataFile = dataFile(type, hash)
             insertFile(owner, user, path, hash, fileSize, tmpFile, dataPath(type, hash))
             dataFile.mkParent()

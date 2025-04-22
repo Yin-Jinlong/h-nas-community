@@ -164,6 +164,12 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
   }
 
   @override
+  void didUpdateWidget(covariant _DesktopImageViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    load();
+  }
+
+  @override
   void dispose() {
     _scaleAnimController.dispose();
     _flipXAnimController.dispose();
@@ -175,7 +181,6 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
   @override
   Widget build(BuildContext context) {
     _screenSize = MediaQuery.of(context).size;
-    load();
     return Stack(
       children: [
         GestureDetector(
