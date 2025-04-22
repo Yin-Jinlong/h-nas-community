@@ -4,6 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:h_nas/components/dispose.dart';
 
 class Marquee extends StatefulWidget {
+  static const defaultCount = 3;
+  static const defaultSpeed = 60.0;
+  static const defaultTurnDuration = Duration(seconds: 2);
+
   final double maxWidth, space, speed;
 
   /// 每轮滚动次数
@@ -22,9 +26,9 @@ class Marquee extends StatefulWidget {
     super.key,
     required this.maxWidth,
     this.space = 0,
-    this.speed = 80,
-    this.count = 3,
-    this.turnDur = const Duration(seconds: 1),
+    this.speed = defaultSpeed,
+    this.count = defaultCount,
+    this.turnDur = defaultTurnDuration,
   });
 
   factory Marquee.text({
@@ -33,9 +37,9 @@ class Marquee extends StatefulWidget {
     TextStyle? style,
     required double maxWidth,
     double space = 0,
-    double speed = 80,
-    int count = 3,
-    Duration turnDur = const Duration(seconds: 1),
+    double speed = defaultSpeed,
+    int count = defaultCount,
+    Duration turnDur = defaultTurnDuration,
   }) => Marquee(
     key: key,
     TextSpan(text: text, style: style),
@@ -86,7 +90,7 @@ class _MarqueeState extends DisposeFlagState<Marquee>
     shouldMarquee.addListener(_onChange);
   }
 
-  _onChange() {
+  void _onChange() {
     if (shouldMarquee.value) {
       _wait();
     } else {
@@ -94,11 +98,10 @@ class _MarqueeState extends DisposeFlagState<Marquee>
     }
   }
 
-  _wait() {
-    Future.delayed(widget.turnDur, () {
-      if (disposed) return;
-      _controller.repeat(count: widget.count);
-    });
+  void _wait() async {
+    await Future.delayed(widget.turnDur);
+    if (disposed) return;
+    _controller.repeat(count: widget.count);
   }
 
   @override
