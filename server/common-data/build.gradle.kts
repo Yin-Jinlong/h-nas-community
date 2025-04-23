@@ -16,7 +16,7 @@ tasks.withType<Test> {
 }
 
 afterEvaluate {
-    tasks.create("genTypes", Kotlin2Dart::class) {
+    tasks.register<Kotlin2Dart>("genTypes") {
         group = "build"
         outputFile = rootProject.layout.projectDirectory.asFile.resolve("client/lib/utils/type.g.dart")
 
