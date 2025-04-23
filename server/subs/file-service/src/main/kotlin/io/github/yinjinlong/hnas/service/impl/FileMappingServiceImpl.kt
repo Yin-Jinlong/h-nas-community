@@ -1,15 +1,18 @@
 package io.github.yinjinlong.hnas.service.impl
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.github.yinjinlong.hnas.data.ChapterInfo
+import io.github.yinjinlong.hnas.data.DataHelper
 import io.github.yinjinlong.hnas.data.HLSStream
 import io.github.yinjinlong.hnas.data.HLSStreamInfo
-import io.github.yinjinlong.hnas.entity.IFileMapping
-import io.github.yinjinlong.hnas.data.DataHelper
 import io.github.yinjinlong.hnas.entity.Hash
+import io.github.yinjinlong.hnas.entity.IFileMapping
 import io.github.yinjinlong.hnas.entity.VirtualFile
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.fs.VirtualPath
 import io.github.yinjinlong.hnas.hls.HLSGenerator
+import io.github.yinjinlong.hnas.hls.VideoChapterHelper
 import io.github.yinjinlong.hnas.mapper.FileMappingMapper
 import io.github.yinjinlong.hnas.option.PreviewOption
 import io.github.yinjinlong.hnas.preview.PreviewException
@@ -18,6 +21,8 @@ import io.github.yinjinlong.hnas.service.FileMappingService
 import io.github.yinjinlong.hnas.service.VirtualFileService
 import io.github.yinjinlong.hnas.task.BackgroundTasks
 import io.github.yinjinlong.hnas.utils.del
+import io.github.yinjinlong.hnas.utils.isVideoMediaType
+import io.github.yinjinlong.hnas.utils.mkParent
 import io.github.yinjinlong.spring.boot.util.getLogger
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
@@ -41,6 +46,7 @@ class FileMappingServiceImpl(
     val previewOption: PreviewOption,
     val transactionManager: PlatformTransactionManager,
     val virtualFileService: VirtualFileService,
+    val gson: Gson,
 ) : FileMappingService {
 
     private val logger = getLogger()
@@ -206,26 +212,27 @@ class FileMappingServiceImpl(
     }
 
     override fun getVideoChapters(path: VirtualPath): List<ChapterInfo> {
-//        val vf = virtualFileService.get(path) ?: throw ErrorCode.NO_SUCH_FILE.error
-//        if (!vf.mediaType.startsWith("video"))
-//            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
-//        val chapterFile = DataHelper.hlsSubFile(vf.hash!!.pathSafe, "chapter")
-//        return if (!chapterFile.exists()) {
-//            val fm = getMapping(vf.hash!!)
-//                ?: throw IllegalStateException("no mapping: ${vf.hash}")
-//            val chapters = VideoChapterHelper.getChapter(DataHelper.dataFile(fm.dataPath))
-//            chapters.map {
-//                ChapterInfo(it.start_time, it.tags?.title ?: "")
-//            }.also {
-//                chapterFile.mkParent()
-//                chapterFile.writeText(gson.toJson(it))
-//            }
-//        } else {
-//            gson.fromJson(
-//                chapterFile.readText(),
-//                TypeToken.getParameterized(List::class.java, ChapterInfo::class.java)
-//            ) as List<ChapterInfo>
-//        }
-        return listOf()
+        val vf = virtualFileService.get(path) ?: throw ErrorCode.NO_SUCH_FILE.error
+        val fm = getMapping(vf.hash ?: throw ErrorCode.BAD_REQUEST.error)
+            ?: throw IllegalStateException("no mapping: ${vf.hash}")
+        if (!fm.type.isVideoMediaType)
+            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
+        val chapterFile = DataHelper.hlsSubFile(vf.hash!!.pathSafe, "chapter")
+        return if (!chapterFile.exists()) {
+            val fm = getMapping(vf.hash!!)
+                ?: throw IllegalStateException("no mapping: ${vf.hash}")
+            val chapters = VideoChapterHelper.getChapter(DataHelper.dataFile(fm.dataPath))
+            chapters.map {
+                ChapterInfo(it.start_time, it.tags?.title ?: "")
+            }.also {
+                chapterFile.mkParent()
+                chapterFile.writeText(gson.toJson(it))
+            }
+        } else {
+            gson.fromJson(
+                chapterFile.readText(),
+                TypeToken.getParameterized(List::class.java, ChapterInfo::class.java)
+            ) as List<ChapterInfo>
+        }
     }
 }
