@@ -12,6 +12,7 @@ HELP.md
 .kotlin/
 /logs/
 /temp/
+/build/
 
 /data/
 /cache/
