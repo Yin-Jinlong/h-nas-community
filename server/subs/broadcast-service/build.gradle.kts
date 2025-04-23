@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation("com.google.code.gson:gson:2.13.0")
+    implementation(libs.gson)
     implementation(commomData())
 
     testImplementation(libs.kotlin.test.junit5)

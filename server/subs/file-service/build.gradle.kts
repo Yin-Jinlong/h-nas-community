@@ -7,8 +7,6 @@ plugins {
 }
 
 repositories {
-//    maven("https://maven.aliyun.com/repository/public")
-//    maven("https://maven.aliyun.com/repository/central")
     mavenCentral()
     maven("https://jitpack.io")
 }
@@ -22,9 +20,9 @@ dependencies {
     implementation(libs.bytedeco.javacv.platform)
     implementation(libs.bytedeco.opencv.platform.gpu)
     implementation(libs.bytedeco.ffmpeg.platform.gpl)
-    implementation("com.github.Adonai:jaudiotagger:2.3.14")
-    implementation("org.apache.commons:commons-compress:1.27.1")
-    implementation("org.apache.pdfbox:pdfbox:3.0.3")
+    implementation(libs.jaudiotagger)
+    implementation(libs.commons.compress)
+    implementation(libs.pdfbox)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)

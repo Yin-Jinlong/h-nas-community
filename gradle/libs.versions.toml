@@ -1,19 +1,24 @@
 [versions]
-agp = "8.7.0"
+apache-commons-ccompress = "1.27.1"
 ffmpeg-gpl = "7.1-1.5.11"
+gson = "2.13.0"
+hibernate = "7.0.1.Final"
+jaudiotagger = "2.3.14"
 javacv = "1.5.11"
 javacv-gpu = "4.9.0-1.5.10"
-junitJupiter = "5.10.3"
-kotlin = "2.1.10"
+jbossLogging = "3.6.1.Final"
+jedis = "5.2.0"
+junitJupiter = "5.12.2"
+kotlin = "2.1.20"
+kotlinx-coroutines-core = "1.10.1"
 license = "0.9.8"
-mybatis-spring-boot = "3.0.3"
-spring = "3.3.4"
+mybatis-spring-boot = "3.0.4"
+pdfbox = "3.0.3"
+spring = "3.4.4"
 spring-boot-apiStarter = "0.4.2"
-spring-core = "6.1.13"
-spring-dependency-management = "1.1.6"
-spring-starter-data-jpa = "3.3.5"
-tika = "3.0.0"
-tikaCore = "3.0.0"
+spring-core = "6.2.5"
+spring-dependency-management = "1.1.7"
+tika = "3.1.0"
 webpImageio = "0.1.6"
 
 [libraries]
@@ -21,24 +26,31 @@ bytedeco-javacv = { module = "org.bytedeco:javacv", version.ref = "javacv" }
 bytedeco-javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
 bytedeco-opencv-platform-gpu = { module = "org.bytedeco:opencv-platform-gpu", version.ref = "javacv-gpu" }
 bytedeco-ffmpeg-platform-gpl = { module = "org.bytedeco:ffmpeg-platform-gpl", version.ref = "ffmpeg-gpl" }
+commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "apache-commons-ccompress" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+hibernate-commons-annotations = { module = "org.hibernate.common:hibernate-commons-annotations", version.ref = "hibernate" }
+jaudiotagger = { module = "com.github.Adonai:jaudiotagger", version.ref = "jaudiotagger" }
+jboss-logging = { module = "org.jboss.logging:jboss-logging", version.ref = "jbossLogging" }
+jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
 mybatis-spring-boot-starter-test = { module = "org.mybatis.spring.boot:mybatis-spring-boot-starter-test", version.ref = "mybatis-spring-boot" }
+pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 spring-boot-api-starter = { module = "io.github.yin-jinlong:spring-boot-api-starter", version.ref = "spring-boot-apiStarter" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
-spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-starter-data-jpa" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring" }
 spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-core = { module = "org.springframework:spring-core", version.ref = "spring-core" }
 tika = { module = "org.apache.tika:tika", version.ref = "tika" }
-tika-core = { module = "org.apache.tika:tika-core", version.ref = "tikaCore" }
+tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika" }
 webp-imageio = { module = "org.sejda.imageio:webp-imageio", version.ref = "webpImageio" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring" }

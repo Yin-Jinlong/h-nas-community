@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.1.20"
 }
 
 repositories {
@@ -9,5 +9,5 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.1.10")
+    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.1.20")
 }

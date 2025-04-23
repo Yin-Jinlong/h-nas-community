@@ -5,5 +5,5 @@ plugins {
 dependencies {
     compileOnly(libs.spring.core)
 
-    api("org.hibernate.common:hibernate-commons-annotations:7.0.1.Final")
+    api(libs.hibernate.commons.annotations)
 }

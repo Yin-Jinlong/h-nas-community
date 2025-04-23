@@ -18,10 +18,10 @@ dependencies {
     api(libs.spring.boot.starter.data.redis) {
         exclude("io.lettuce", "lettuce-core")
     }
-    api("redis.clients:jedis:5.2.0")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.9.0")
-    implementation("org.jboss.logging:jboss-logging:3.6.1.Final")
+    api(libs.jedis)
+    api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.coroutines.core.jvm)
+    implementation(libs.jboss.logging)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
