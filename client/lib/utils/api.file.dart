@@ -17,19 +17,13 @@ abstract class FileAPI extends API {
         )
         .then((data) {
           if (data == null) return [];
-          List<FileInfo> list = [];
-
-          for (var item in data) {
-            list.add(FileInfo.fromJson(item as Map<String, dynamic>));
-          }
-
-          return list;
+          return data.map((e) => FileInfo.fromJson(e as JsonObject)).toList();
         });
   }
 
   static Future<FileInfo?> getFile(String path, {required bool private}) {
     return API
-        ._get<Map<String, dynamic>>(
+        ._get<JsonObject>(
           '$root/info',
           _base(path, private),
           options: Options(headers: {...API.tokenHeader()}),
@@ -46,7 +40,7 @@ abstract class FileAPI extends API {
     required bool private,
   }) {
     return API
-        ._get<Map<String, dynamic>>(
+        ._get<JsonObject>(
           '$root/preview/info',
           _base(path, private),
           options: Options(headers: {...API.tokenHeader()}),
@@ -61,7 +55,7 @@ abstract class FileAPI extends API {
     required bool private,
   }) {
     return API
-        ._get<Map<String, dynamic>>(
+        ._get<JsonObject>(
           '$root/folder/count',
           _base(path, private),
           options: Options(headers: {...API.tokenHeader()}),
@@ -76,7 +70,7 @@ abstract class FileAPI extends API {
     required bool private,
   }) {
     return API
-        ._get<Map<String, dynamic>>(
+        ._get<JsonObject>(
           '$root/audio/info',
           _base(path, private),
           options: Options(headers: {...API.tokenHeader()}),
