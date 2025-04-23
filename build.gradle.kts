@@ -10,10 +10,8 @@ group = "com.yjl"
 version = "0.0.1-SNAPSHOT"
 
 allprojects {
-    repositories{
+    repositories {
         google()
-         maven("https://maven.aliyun.com/repository/public")
-        maven("https://maven.aliyun.com/repository/central")
         mavenCentral()
     }
 }
