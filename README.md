@@ -59,6 +59,10 @@ cd client && flutter pub get
 
 ## License
 
-`Apache 2.0`
+- 主体 `Apache 2.0`
+
+- `FFmpeg` 主体 `LGPL v2.1+`
+
+- `FFmpeg` 部分 `GPL v2+`
 
 Copyright (c) 2024-PRESENT Yin-Jinlong@github
