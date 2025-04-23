@@ -52,5 +52,5 @@ interface FileMappingService {
     /**
      * 获取视频流信息
      */
-    fun getVideoLiveStream(path: VirtualPath): HLSStreamInfo?
+    fun getVideoLiveStream(path: VirtualPath): List<HLSStreamInfo>
 }

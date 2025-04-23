@@ -35,7 +35,7 @@ class CacheFileVideoController(
         token: Token?,
         @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false
-    ): HLSStreamInfo? {
+    ): List<HLSStreamInfo> {
         val p = getPath(private, token?.user, path)
         return fileMappingService.getVideoLiveStream(p)
     }

@@ -4,14 +4,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.yinjinlong.hnas.data.ChapterInfo
 import io.github.yinjinlong.hnas.data.DataHelper
-import io.github.yinjinlong.hnas.data.HLSStream
 import io.github.yinjinlong.hnas.data.HLSStreamInfo
 import io.github.yinjinlong.hnas.entity.Hash
 import io.github.yinjinlong.hnas.entity.IFileMapping
-import io.github.yinjinlong.hnas.entity.VirtualFile
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.fs.VirtualPath
-import io.github.yinjinlong.hnas.hls.HLSGenerator
 import io.github.yinjinlong.hnas.hls.VideoChapterHelper
 import io.github.yinjinlong.hnas.mapper.FileMappingMapper
 import io.github.yinjinlong.hnas.option.PreviewOption
@@ -32,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import java.io.File
 import java.io.FileNotFoundException
-import java.net.URLEncoder
 
 private typealias CacheFileFn = (String) -> File
 
@@ -182,33 +178,8 @@ class FileMappingServiceImpl(
         previewOption.previewQuality
     ) else null
 
-    override fun getVideoLiveStream(path: VirtualPath): HLSStreamInfo? {
-        val vf = virtualFileService.get(path) as VirtualFile?
-            ?: throw ErrorCode.NO_SUCH_FILE.error
-        if (vf.hash == null)
-            return null
-        val fm = getMapping(vf.hash!!)
-            ?: throw IllegalStateException("no mapping: ${vf.hash}")
-        if (fm.type != "video")
-            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
-        val hash = fm.hash.pathSafe
-        val index = DataHelper.hlsIndexFile(hash)
-        val prefix = URLEncoder.encode(path.path, "UTF-8")
-        if (index.exists()) {
-            return HLSStreamInfo("", index.useLines {
-                it.mapNotNull { line ->
-                    if (line.isBlank()) null
-                    else HLSStream(line.toInt(), "$prefix/$line/index.m3u8")
-                }.toList()
-            })
-        }
-        val t = BackgroundTasks.run(hash, extra = 0) { task ->
-            val videoFile = DataHelper.dataFile(fm.dataPath)
-            HLSGenerator.generate(videoFile, 5.0, hash) {
-                task.extra = it
-            }
-        }
-        return HLSStreamInfo("~${t.extra}", listOf())
+    override fun getVideoLiveStream(path: VirtualPath): List<HLSStreamInfo> {
+        return listOf()
     }
 
     override fun getVideoChapters(path: VirtualPath): List<ChapterInfo> {
