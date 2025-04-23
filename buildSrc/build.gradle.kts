@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.20"
+    alias(libs.plugins.kotlin)
 }
 
 repositories {
@@ -9,5 +9,5 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.1.20")
+    implementation(libs.kotlin.compiler.embeddable)
 }
