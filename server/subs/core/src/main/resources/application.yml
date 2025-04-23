@@ -16,7 +16,7 @@ spring:
     lazy-initialization: true
 server:
   resp:
-    factory: com.yjl.hnas.resp.RespFactory
+    factory: io.github.yinjinlong.hnas.resp.RespFactory
   compression:
     enabled: true
     mime-types:
@@ -28,4 +28,4 @@ server:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-  type-handlers-package: com.yjl.hnas.typehandler
+  type-handlers-package: io.github.yinjinlong.hnas.typehandler

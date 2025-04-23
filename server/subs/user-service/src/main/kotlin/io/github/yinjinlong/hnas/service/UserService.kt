@@ -1,0 +1,60 @@
+package io.github.yinjinlong.hnas.service
+
+import io.github.yinjinlong.hnas.data.LoginQRInfo
+import io.github.yinjinlong.hnas.data.LoginQRResult
+import io.github.yinjinlong.hnas.data.UserInfo
+import io.github.yinjinlong.hnas.entity.IUser
+import io.github.yinjinlong.hnas.entity.Uid
+import io.github.yinjinlong.hnas.token.Token
+import java.net.InetAddress
+
+/**
+ * @author YJL
+ */
+interface UserService {
+
+    /**
+     *
+     * @param password 原始密码
+     */
+    fun genPassword(password: String): String
+
+    /**
+     *
+     * @param password 原始密码
+     */
+    fun login(uid: Uid, password: String): LogResult
+
+    /**
+     *
+     * @param password 原始密码
+     */
+    fun login(username: String, password: String): LogResult
+
+    fun genQRLoginRequestID(id: String, ip: InetAddress): String
+
+    fun loginQR(id: String): LoginQRResult
+
+    fun getLoginQRInfo(user: Uid, id: String): LoginQRInfo?
+
+    fun grant(id: String)
+
+    fun getUserCount(uid: Uid): Int
+
+    fun getUsers(user: Uid, startId: Uid, count: Int): List<UserInfo>
+
+    fun cancelRequest(id: String)
+
+    fun logout(token: Token)
+
+    /**
+     *
+     * @param password 原始密码
+     */
+    fun register(username: String, password: String): IUser
+
+    data class LogResult(
+        val user: UserInfo,
+        val token: Token
+    )
+}

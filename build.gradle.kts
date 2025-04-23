@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.license) apply false
 }
 
-group = "com.yjl"
+group = "io.github.yinjinlong"
 version = "0.0.1-SNAPSHOT"
 
 allprojects {

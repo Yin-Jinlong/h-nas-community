@@ -1,7 +1,7 @@
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
-val pkg = "com.yjl.hnas"
+val pkg = "io.github.yinjinlong.hnas"
 
 
 fun DependencyHandler.server(path: String) = project(mapOf("path" to ":server:$path"))
