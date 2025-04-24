@@ -128,7 +128,7 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage> {
           Video(
             controller: _controller,
             controls:
-                (state) => _VideoControls(
+                (state) => _VideoControlsScaffold(
                   file: file!,
                   state: this,
                   info: info,
@@ -142,13 +142,54 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage> {
   }
 }
 
-class _VideoControls extends StatefulWidget {
+class _VideoControlsScaffold extends StatefulWidget {
   final _VideoPlayerPageState state;
   final FileInfo file;
   final HLSStreamInfo? info;
   final void Function(int) onBitrateIndex;
 
-  const _VideoControls({
+  const _VideoControlsScaffold({
+    required this.file,
+    required this.state,
+    required this.info,
+    required this.onBitrateIndex,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _VideoControlsScaffoldState();
+}
+
+class _VideoControlsScaffoldState
+    extends DisposeFlagState<_VideoControlsScaffold>
+    with TickerProviderStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: DefaultTextStyle(
+        style: TextStyle(fontSize: 16, color: Colors.white),
+        child: IconTheme(
+          data: IconThemeData(size: 30, color: Colors.white),
+          child: _VideoControlsContent(
+            file: widget.file,
+            state: widget.state,
+            info: widget.info,
+            onBitrateIndex: widget.onBitrateIndex,
+          ),
+        ),
+      ),
+      endDrawer: MoreDrawer(),
+    );
+  }
+}
+
+class _VideoControlsContent extends StatefulWidget {
+  final _VideoPlayerPageState state;
+  final FileInfo file;
+  final HLSStreamInfo? info;
+  final void Function(int) onBitrateIndex;
+
+  const _VideoControlsContent({
     required this.file,
     required this.state,
     required this.info,
@@ -159,7 +200,7 @@ class _VideoControls extends StatefulWidget {
   State<StatefulWidget> createState() => _VideoControlsState();
 }
 
-class _VideoControlsState extends DisposeFlagState<_VideoControls>
+class _VideoControlsState extends DisposeFlagState<_VideoControlsContent>
     with TickerProviderStateMixin {
   late _VideoPlayerPageState _state;
   late final AnimationController _playPauseController;
@@ -289,7 +330,19 @@ class _VideoControlsState extends DisposeFlagState<_VideoControls>
 
   Widget _topControls() {
     return IntrinsicHeight(
-      child: Row(children: [BackButton(), Text(widget.file.name)]),
+      child: Row(
+        children: [
+          BackButton(),
+          Text(widget.file.name),
+          Expanded(child: Container()),
+          IconButton(
+            onPressed: () {
+              Scaffold.of(context).openEndDrawer();
+            },
+            icon: Icon(Icons.more_vert),
+          ),
+        ],
+      ),
     );
   }
 
@@ -334,143 +387,138 @@ class _VideoControlsState extends DisposeFlagState<_VideoControls>
     );
   }
 
+  Widget _loading() {
+    return Align(
+      alignment: Alignment.center,
+      child: IntrinsicHeight(
+        child: Column(
+          children: [
+            CircularProgressIndicator(),
+            Text(
+              widget.info == null
+                  ? S.current.loading
+                  : '${((int.tryParse(widget.info!.data) ?? 0) / 10).toStringAsFixed(1)}%',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      style: TextStyle(fontSize: 16, color: Colors.white),
-      child: IconTheme(
-        data: IconThemeData(size: 30, color: Colors.white),
-        child: MouseRegion(
-          onHover: (event) {
-            _show();
-          },
-          child: InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onTap: () {
-              if (UniversalPlatform.isDesktopOrWeb) {
-                player.playPause();
-              } else {
-                if (_showControls) {
-                  _showControlsOperation?.cancel();
-                  setState(() {
-                    _showControls = false;
-                  });
-                } else {
-                  _show();
-                }
-              }
-            },
-            onDoubleTap: () {
-              if (!UniversalPlatform.isDesktopOrWeb) {
-                player.playPause();
-              } else {
-                _toggleFullscreen(context);
-              }
-            },
-            child: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: _miniProgressBar(context, player.progress ?? 0),
-                ),
-                if (_showControls && _isFullscreen(context))
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.6),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          bottom: 20,
-                          left: 8,
-                          right: 8,
-                          top: 8,
-                        ),
-                        child: _topControls(),
-                      ),
-                    ),
-                  ),
-                if (widget.info == null ||
-                    widget.info?.status != HLSStreamStatus.done)
-                  Align(
-                    alignment: Alignment.center,
-                    child: IntrinsicHeight(
-                      child: Column(
-                        children: [
-                          CircularProgressIndicator(),
-                          Text(
-                            widget.info == null
-                                ? S.current.loading
-                                : '${((int.tryParse(widget.info!.data) ?? 0) / 10).toStringAsFixed(1)}%',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                if (_showControls)
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.6),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: 30,
-                          left: 8,
-                          right: 8,
-                          bottom: 8,
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: IntrinsicHeight(
-                            child: Column(
-                              children: [
-                                _progressBar(),
-                                _bottomControls(context),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 20, bottom: 80),
-                    child: ScaleAnimatedSwitcher(
-                      child:
-                          player.playing
-                              ? null
-                              : Icon(
-                                TDTxNFIcons.nf_md_presentation_play,
-                                size: 50,
-                                color: Colors.white.withValues(alpha: 0.7),
-                              ),
-                    ),
-                  ),
-                ),
-              ],
+    return MouseRegion(
+      onHover: (event) {
+        _show();
+      },
+      child: InkWell(
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        onTap: () {
+          if (UniversalPlatform.isDesktopOrWeb) {
+            player.playPause();
+          } else {
+            if (_showControls) {
+              _showControlsOperation?.cancel();
+              setState(() {
+                _showControls = false;
+              });
+            } else {
+              _show();
+            }
+          }
+        },
+        onDoubleTap: () {
+          if (!UniversalPlatform.isDesktopOrWeb) {
+            player.playPause();
+          } else {
+            _toggleFullscreen(context);
+          }
+        },
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: _miniProgressBar(context, player.progress ?? 0),
             ),
-          ),
+            if (_showControls && _isFullscreen(context))
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.6),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: 20,
+                      left: 8,
+                      right: 8,
+                      top: 8,
+                    ),
+                    child: _topControls(),
+                  ),
+                ),
+              ),
+            if (widget.info == null ||
+                widget.info?.status != HLSStreamStatus.done)
+              _loading(),
+            if (_showControls)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.6),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: 30,
+                      left: 8,
+                      right: 8,
+                      bottom: 8,
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: IntrinsicHeight(
+                        child: Column(
+                          children: [_progressBar(), _bottomControls(context)],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: EdgeInsets.only(right: 20, bottom: 80),
+                child: ScaleAnimatedSwitcher(
+                  child:
+                      player.playing
+                          ? null
+                          : Icon(
+                            TDTxNFIcons.nf_md_presentation_play,
+                            size: 50,
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

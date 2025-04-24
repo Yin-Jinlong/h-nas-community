@@ -188,7 +188,7 @@ class MediaPlayer {
   }
 
   Future<void> openVideo(FileInfo file, {required bool private}) async {
-    if (codec.value.isEmpty) return;
+    if (codec.value.isEmpty || bitrate.value == 0) return;
     _private = private;
     await _player.open(
       VideoMediaFile(
