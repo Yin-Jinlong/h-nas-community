@@ -133,5 +133,6 @@
   "username": "username",
   "value_transmission": "transmission",
   "value_upload_file": "upload file",
+  "video_codec": "Video Codec",
   "web_not_support": "Web platform does not support {action}"
 }

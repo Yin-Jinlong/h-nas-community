@@ -47,6 +47,7 @@ class MediaPlayer {
   final ValueNotifier<MediaFile?> nowPlay = ValueNotifier(null);
   final ValueNotifier<double> speed = ValueNotifier(1);
 
+  final ValueNotifier<List<String>> codecs = ValueNotifier([]);
   final ValueNotifier<String> codec = ValueNotifier('');
   final ValueNotifier<int> bitrate = ValueNotifier(0);
 
@@ -107,6 +108,12 @@ class MediaPlayer {
     playMode.addListener(() {
       _updatePlayListMode();
       Prefs.playerPlayMode = playMode.value;
+    });
+
+    codecs.addListener(() {
+      if (codecs.value.isNotEmpty) {
+        codec.value = codecs.value.first;
+      }
     });
 
     _updatePlayListMode();
@@ -181,6 +188,7 @@ class MediaPlayer {
   }
 
   Future<void> openVideo(FileInfo file, {required bool private}) async {
+    if (codec.value.isEmpty) return;
     _private = private;
     await _player.open(
       VideoMediaFile(

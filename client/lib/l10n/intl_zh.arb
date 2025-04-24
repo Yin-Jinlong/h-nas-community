@@ -133,5 +133,6 @@
   "username": "用户名",
   "value_transmission": "传输",
   "value_upload_file": "上传文件",
+  "video_codec": "编码器",
   "web_not_support": "Web端暂不支持{action}"
 }

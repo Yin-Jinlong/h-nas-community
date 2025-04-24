@@ -5,6 +5,7 @@ import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
+import 'package:h_nas/pages/video_player/more_drawer.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/time_utils.dart';
@@ -28,9 +29,7 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage> {
   bool private = false;
   HLSStreamInfo? info;
   List<HLSStreamList> _streamList = [];
-  int _streamListIndex = 0, _streamIndex = 0;
-
-  List<String> codecs = [];
+  int _streamIndex = 0;
 
   List<int> bitrates = [];
 
@@ -69,15 +68,16 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage> {
     FileAPI.getVideoStreams(file!.fullPath, private: private).then((value) {
       if (value.isNotEmpty) {
         _streamList = value;
-        _streamListIndex = 0;
-        codecs = _streamList.map((e) => e.codec).toList();
+        player.codecs.value = _streamList.map((e) => e.codec).toList();
+
         bitrates =
-            _streamList[_streamListIndex].streams
+            _streamList
+                .firstWhere((e) => e.codec == player.codec.value)
+                .streams
                 .map((e) => e.bitrate)
                 .toList();
         _streamIndex = bitrates.length - 1;
 
-        player.codec.value = codecs[_streamListIndex];
         player.bitrate.value = bitrates[_streamIndex];
 
         _updateInfo();
@@ -137,6 +137,7 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage> {
           ),
         ],
       ),
+      endDrawer: MoreDrawer(),
     );
   }
 }
