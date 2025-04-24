@@ -16,15 +16,16 @@ import java.nio.file.Files
 class HLSRecorder(
     grabber: FFmpegFrameGrabber,
     val path: String,
+    val codec: String,
     /**
      * 码率kBit/s
      */
     val bitrate: Int,
     val time: Double
 ) : Recorder {
-    val cachePath = "$path/$bitrate"
-    val tmp = File(path, "$bitrate/index")
-    val m3u8 = File(path, "$bitrate/index.m3u8")
+    val cachePath = "$path/$codec/$bitrate"
+    val tmp = File(path, "$codec/$bitrate/index")
+    val m3u8 = File(path, "$codec/$bitrate/index.m3u8")
 
     val recorder = FFmpegFrameRecorder(
         tmp,
@@ -45,11 +46,7 @@ class HLSRecorder(
         frameRate = grabber.frameRate
         if (grabber.hasVideo()) {
             videoBitrate = bitrate * 1000
-            val encoder = NVEncoder
-            if (encoder == null)
-                videoCodec = avcodec.AV_CODEC_ID_H264
-            else
-                videoCodecName = encoder.name().string
+            videoCodecName = codec
         }
 
         if (grabber.hasAudio()) {
@@ -88,13 +85,6 @@ class HLSRecorder(
             128_000,
             Int.MAX_VALUE,
         )
-
-        private val NVEncoder by lazy {
-            kotlin.runCatching {
-                // avcodec.avcodec_find_encoder_by_name("hevc_nvenc") ?:
-                avcodec.avcodec_find_encoder_by_name("h264_nvenc")
-            }.getOrNull()
-        }
 
         private fun getAudioBitrate(rate: Int): Int {
             if (rate == 0)

@@ -2,6 +2,7 @@ package io.github.yinjinlong.hnas.service
 
 import io.github.yinjinlong.hnas.data.ChapterInfo
 import io.github.yinjinlong.hnas.data.HLSStreamInfo
+import io.github.yinjinlong.hnas.data.HLSStreamList
 import io.github.yinjinlong.hnas.entity.Hash
 import io.github.yinjinlong.hnas.entity.IFileMapping
 import io.github.yinjinlong.hnas.fs.VirtualPath
@@ -52,5 +53,20 @@ interface FileMappingService {
     /**
      * 获取视频流信息
      */
-    fun getVideoLiveStream(path: VirtualPath): List<HLSStreamInfo>
+    fun getVideoLiveStreams(path: VirtualPath): List<HLSStreamList>
+
+    /**
+     * 获取视频流信息
+     */
+    fun getVideoLiveStreamInfo(path: VirtualPath, codec: String, bitrate: Int): HLSStreamInfo
+
+    /**
+     * 获取视频流信息
+     */
+    fun getVideoLiveStreamM3u8(path: VirtualPath, codec: String, bitrate: Int,private: Boolean): StringBuilder
+
+    /**
+     * 获取视频流信息
+     */
+    fun getVideoLiveStreamFile(path: VirtualPath, codec: String, bitrate: Int,index: String): File
 }

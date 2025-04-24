@@ -152,4 +152,39 @@ abstract class FileAPI extends API {
       ),
     );
   }
+
+  static Future<List<HLSStreamList>> getVideoStreams(
+    String path, {
+    required bool private,
+  }) {
+    return API
+        ._get<List<dynamic>>(
+          '$root/video/streams',
+          _base(path, private),
+          options: Options(headers: {...API.tokenHeader()}),
+        )
+        .then((res) {
+          if (res == null) return [];
+          return res
+              .map((e) => HLSStreamList.fromJson(e as Map<String, dynamic>))
+              .toList();
+        });
+  }
+
+  static Future<HLSStreamInfo?> getVideoStreamInfo(
+    String path, {
+    required String codec,
+    required int bitrate,
+    required bool private,
+  }) {
+    return API
+        ._get<JsonObject>(
+          '$root/video/stream/info',
+          {..._base(path, private), 'codec': codec, 'bitrate': bitrate},
+          options: Options(headers: {...API.tokenHeader()}),
+        )
+        .then((res) {
+          return res == null ? null : HLSStreamInfo.fromJson(res);
+        });
+  }
 }

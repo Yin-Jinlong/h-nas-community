@@ -6,6 +6,7 @@ import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:media_kit_video/media_kit_video_controls/media_kit_video_controls.dart'
@@ -20,51 +21,138 @@ class VideoPlayerPage extends StatefulWidget {
   State createState() => _VideoPlayerPageState();
 }
 
-class _VideoPlayerPageState extends State<VideoPlayerPage> {
+class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage> {
   late final VideoController _controller;
+  late final MediaPlayer player;
   FileInfo? file;
   bool private = false;
+  HLSStreamInfo? info;
+  List<HLSStreamList> _streamList = [];
+  int _streamListIndex = 0, _streamIndex = 0;
+
+  List<String> codecs = [];
+
+  List<int> bitrates = [];
+
+  int pos = 0;
 
   @override
   void initState() {
     super.initState();
-    Global.player.stop();
+    player = Global.player;
     _controller = VideoController(Global.player.nativePlayer);
+    player.codec.addListener(_onCodec);
   }
 
-  _load() {
-    Global.player.open(file!, private: private);
+  void _load() {
+    player.openVideo(file!, private: private).then((value) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        player.seek(Duration(milliseconds: pos));
+      });
+    });
+  }
+
+  void _onCodec() {
+    pos = player.position.value;
+    player.stop();
+    _updateInfo();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    final argFile = args[0] as FileInfo;
+    if (argFile == file) return;
+    file = argFile;
+    private = args[1];
+    FileAPI.getVideoStreams(file!.fullPath, private: private).then((value) {
+      if (value.isNotEmpty) {
+        _streamList = value;
+        _streamListIndex = 0;
+        codecs = _streamList.map((e) => e.codec).toList();
+        bitrates =
+            _streamList[_streamListIndex].streams
+                .map((e) => e.bitrate)
+                .toList();
+        _streamIndex = bitrates.length - 1;
+
+        player.codec.value = codecs[_streamListIndex];
+        player.bitrate.value = bitrates[_streamIndex];
+
+        _updateInfo();
+      }
+    });
+  }
+
+  void _updateInfo() async {
+    final value = await FileAPI.getVideoStreamInfo(
+      file!.fullPath,
+      private: private,
+      codec: player.codec.value,
+      bitrate: player.bitrate.value,
+    );
+    info = value;
+    if (!disposed) setState(() {});
+    if (value?.status != HLSStreamStatus.done) {
+      await Future.delayed(const Duration(seconds: 1));
+      _updateInfo();
+    } else {
+      _load();
+    }
+  }
+
+  void _onBitrateIndex(int index) {
+    setState(() {
+      _streamIndex = index;
+      player.bitrate.value = bitrates[_streamIndex];
+      pos = player.position.value;
+      player.stop();
+      _updateInfo();
+    });
   }
 
   @override
   void dispose() {
-    Global.player.stop();
+    player.stop();
+    player.codec.removeListener(_onCodec);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (file == null) {
-      final args = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-      file = args[0];
-      private = args[1];
-      _load();
-    }
-
     return Scaffold(
-      appBar: AppBar(title: Text(file?.name ?? '')),
-      body: Video(
-        controller: _controller,
-        controls: (state) => _VideoControls(file: file!),
+      appBar: AppBar(title: Text(file!.name)),
+      body: Stack(
+        children: [
+          Video(
+            controller: _controller,
+            controls:
+                (state) => _VideoControls(
+                  file: file!,
+                  state: this,
+                  info: info,
+                  onBitrateIndex: _onBitrateIndex,
+                ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _VideoControls extends StatefulWidget {
+  final _VideoPlayerPageState state;
   final FileInfo file;
+  final HLSStreamInfo? info;
+  final void Function(int) onBitrateIndex;
 
-  const _VideoControls({required this.file});
+  const _VideoControls({
+    required this.file,
+    required this.state,
+    required this.info,
+    required this.onBitrateIndex,
+  });
 
   @override
   State<StatefulWidget> createState() => _VideoControlsState();
@@ -72,6 +160,7 @@ class _VideoControls extends StatefulWidget {
 
 class _VideoControlsState extends DisposeFlagState<_VideoControls>
     with TickerProviderStateMixin {
+  late _VideoPlayerPageState _state;
   late final AnimationController _playPauseController;
   final MediaPlayer player = Global.player;
   bool _showControls = false;
@@ -80,6 +169,7 @@ class _VideoControlsState extends DisposeFlagState<_VideoControls>
   @override
   void initState() {
     super.initState();
+    _state = widget.state;
     _playPauseController = AnimationController(
       value: player.playing ? 1 : 0,
       vsync: this,
@@ -150,6 +240,34 @@ class _VideoControlsState extends DisposeFlagState<_VideoControls>
           '${(player.position.value / 1000).shortTimeStr}/${(player.duration.value / 1000).shortTimeStr}',
         ),
         Expanded(child: Container()),
+        if (_state.bitrates.isNotEmpty)
+          DropdownButton(
+            value: _state._streamIndex,
+            onTap: () {
+              _show(duration: const Duration(seconds: 3));
+            },
+            selectedItemBuilder: (context) {
+              return [
+                for (var i = 0; i < _state.bitrates.length; i++)
+                  Text(
+                    '${_state.bitrates[i] ~/ 1000} Mbps',
+                    style: TextStyle(color: Colors.white),
+                  ),
+              ];
+            },
+            items: [
+              for (var i = 0; i < _state.bitrates.length; i++)
+                DropdownMenuItem(
+                  value: i,
+                  child: Text('${_state.bitrates[i] ~/ 1000} Mbps'),
+                ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                widget.onBitrateIndex(value as int);
+              });
+            },
+          ),
         IconButton(
           tooltip:
               _isFullscreen(context)
@@ -175,6 +293,12 @@ class _VideoControlsState extends DisposeFlagState<_VideoControls>
   }
 
   @override
+  void didChangeDependencies() {
+    _state = widget.state;
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     _playPauseController.dispose();
     player.playState.removeListener(_onPlay);
@@ -182,14 +306,14 @@ class _VideoControlsState extends DisposeFlagState<_VideoControls>
     super.dispose();
   }
 
-  void _show() {
+  void _show({Duration duration = const Duration(seconds: 2)}) {
     setState(() {
       _showControls = true;
     });
 
     _showControlsOperation?.cancel();
     _showControlsOperation = CancelableOperation.fromFuture(
-      Future.delayed(const Duration(seconds: 2)),
+      Future.delayed(duration),
     ).then((v) {
       if (disposed) return;
       setState(() {
@@ -271,6 +395,24 @@ class _VideoControlsState extends DisposeFlagState<_VideoControls>
                           top: 8,
                         ),
                         child: _topControls(),
+                      ),
+                    ),
+                  ),
+                if (widget.info == null ||
+                    widget.info?.status != HLSStreamStatus.done)
+                  Align(
+                    alignment: Alignment.center,
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          CircularProgressIndicator(),
+                          Text(
+                            widget.info == null
+                                ? S.current.loading
+                                : '${((int.tryParse(widget.info!.data) ?? 0) / 10).toStringAsFixed(1)}%',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
                     ),
                   ),

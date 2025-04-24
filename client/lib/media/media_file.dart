@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
@@ -10,12 +11,15 @@ class MediaFile extends Media with ChangeNotifier {
   AudioFileInfo? audioInfo;
   final bool private;
 
-  MediaFile({required this.file, required this.private})
+  MediaFile({required this.file, required this.private, String? url})
     : super(
-        FileAPIURL.file(file.fullPath, private: private),
+        url ?? FileAPIURL.file(file.fullPath, private: private),
         httpHeaders: private ? API.tokenHeader() : null,
       ) {
     type = file.fileMediaType;
+    if (kDebugMode) {
+      print(url);
+    }
   }
 
   Future<AudioFileInfo?> loadInfo() async {

@@ -68,14 +68,18 @@ object DataHelper {
     /**
      * 流媒体：cache/hls/...
      */
-    fun hlsIndexFile(hash: String): File = HLSPath.file(hash, "/index")
+    fun hlsIndexFile(hash: String): File = HLSPath.file(hash, "/index.json")
+
+    fun hlsM3u8File(hash: String, codec: String, bitrate: Int): File =
+        HLSPath.file(hash, "/", codec, "/", bitrate.toString(), "/index.m3u8")
 
     fun hlsSubFile(hash: String, path: String): File = HLSPath.file(hash, "/", path)
 
     /**
      * 流媒体：cache/hls/...
      */
-    fun tsFile(hash: String, rate: String, i: String): File = HLSPath.file(hash, "/", rate, "/", i)
+    fun tsFile(hash: String, codec: String, rate: String, i: String): File =
+        HLSPath.file(hash, "/", codec, "/", rate, "/", i, ".ts")
 
     fun coverFile(hash: String): File = CoverPath.file(hash)
 

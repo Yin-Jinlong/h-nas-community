@@ -21,4 +21,12 @@ abstract class FileAPIURL extends FileAPI {
 
   static String audioCover(String path, {required bool private}) =>
       _withPath('/audio/cover', path, private);
+
+  static String videoStringM3u8(
+    String path, {
+    required bool private,
+    required String codec,
+    required int bitrate,
+  }) =>
+      '$root/video/stream/${Uri.encodeComponent(path)}/$codec/$bitrate/index.m3u8?private=$private';
 }

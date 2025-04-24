@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_file.dart';
+import 'package:h_nas/media/video_media_file.dart';
 import 'package:h_nas/plugin/notifications_plugin.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/api.dart';
@@ -45,6 +46,9 @@ class MediaPlayer {
   final ValueNotifier<PlayMode> playMode = ValueNotifier(Prefs.playerPlayMode);
   final ValueNotifier<MediaFile?> nowPlay = ValueNotifier(null);
   final ValueNotifier<double> speed = ValueNotifier(1);
+
+  final ValueNotifier<String> codec = ValueNotifier('');
+  final ValueNotifier<int> bitrate = ValueNotifier(0);
 
   bool _shuffle = false;
 
@@ -174,6 +178,18 @@ class MediaPlayer {
   Future<void> open(FileInfo file, {required bool private}) async {
     _private = private;
     await _player.open(MediaFile(file: file, private: private));
+  }
+
+  Future<void> openVideo(FileInfo file, {required bool private}) async {
+    _private = private;
+    await _player.open(
+      VideoMediaFile(
+        file: file,
+        private: private,
+        codec: codec.value,
+        bitrate: bitrate.value,
+      ),
+    );
   }
 
   Future<void> openList(

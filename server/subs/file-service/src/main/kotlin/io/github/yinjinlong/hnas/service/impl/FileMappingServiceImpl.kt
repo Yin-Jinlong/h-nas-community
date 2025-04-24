@@ -2,13 +2,14 @@ package io.github.yinjinlong.hnas.service.impl
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.github.yinjinlong.hnas.data.ChapterInfo
-import io.github.yinjinlong.hnas.data.DataHelper
-import io.github.yinjinlong.hnas.data.HLSStreamInfo
+import io.github.yinjinlong.hnas.data.*
+import io.github.yinjinlong.hnas.entity.FileMapping
 import io.github.yinjinlong.hnas.entity.Hash
 import io.github.yinjinlong.hnas.entity.IFileMapping
+import io.github.yinjinlong.hnas.entity.IVirtualFile
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.fs.VirtualPath
+import io.github.yinjinlong.hnas.hls.HLSHelper
 import io.github.yinjinlong.hnas.hls.VideoChapterHelper
 import io.github.yinjinlong.hnas.mapper.FileMappingMapper
 import io.github.yinjinlong.hnas.option.PreviewOption
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import java.io.File
 import java.io.FileNotFoundException
+import java.net.URLEncoder
 
 private typealias CacheFileFn = (String) -> File
 
@@ -178,16 +180,97 @@ class FileMappingServiceImpl(
         previewOption.previewQuality
     ) else null
 
-    override fun getVideoLiveStream(path: VirtualPath): List<HLSStreamInfo> {
-        return listOf()
+    fun checkVideo(vf: IVirtualFile): FileMapping {
+        val fm = fileMappingMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_REQUEST.error)
+            ?: throw IllegalStateException("no mapping: ${vf.hash}")
+        if (!fm.type.isVideoMediaType)
+            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
+        return fm
+    }
+
+    override fun getVideoLiveStreams(path: VirtualPath): List<HLSStreamList> {
+        val vf = virtualFileService.get(path) ?: throw ErrorCode.NO_SUCH_FILE.error
+        val fm = checkVideo(vf)
+
+        val index = DataHelper.hlsIndexFile(vf.hash!!.pathSafe)
+        if (index.exists())
+            return gson.fromJson(
+                index.readText(),
+                TypeToken.getParameterized(List::class.java, HLSStreamList::class.java)
+            ) as List<HLSStreamList>
+
+        val file = DataHelper.dataFile(fm.dataPath)
+        return HLSHelper.getHLSStreamInfoList(file).also {
+            index.mkParent()
+            index.writeText(gson.toJson(it))
+        }
+    }
+
+    fun checkVideo(path: VirtualPath, codec: String, bitrate: Int): IVirtualFile {
+        getVideoLiveStreams(path).find { s ->
+            s.codec == codec && s.streams.any { it.bitrate == bitrate }
+        } ?: throw ErrorCode.BAD_REQUEST.error
+        return virtualFileService.get(path)!!
+    }
+
+    override fun getVideoLiveStreamInfo(
+        path: VirtualPath,
+        codec: String,
+        bitrate: Int
+    ): HLSStreamInfo {
+        val vf = checkVideo(path, codec, bitrate)
+        val fm = checkVideo(vf)
+        val index = DataHelper.hlsM3u8File(vf.hash!!.pathSafe, codec, bitrate)
+        if (index.exists())
+            return HLSStreamInfo(HLSStreamStatus.DONE, "")
+
+        val t = BackgroundTasks.run(vf.hash!!, extra = 0) { task ->
+            val videoFile = DataHelper.dataFile(fm.dataPath)
+            HLSHelper.generate(videoFile, vf.hash!!, codec, bitrate, 5.0) {
+                task.extra = it
+            }
+        }
+
+        return HLSStreamInfo(HLSStreamStatus.ENCODING, t.extra.toString())
+    }
+
+    override fun getVideoLiveStreamM3u8(
+        path: VirtualPath,
+        codec: String,
+        bitrate: Int,
+        private: Boolean
+    ): StringBuilder {
+        val vf = checkVideo(path, codec, bitrate)
+        return StringBuilder().apply {
+            val pathStr = URLEncoder.encode(path.path, Charsets.UTF_8)
+            DataHelper.hlsM3u8File(vf.hash!!.pathSafe, codec, bitrate).apply {
+                if (!exists())
+                    mkParent()
+            }.forEachLine {
+                if (it.startsWith("#")) {
+                    append(it)
+                } else {
+                    append("/api/file/video/stream/${pathStr}/$codec/$bitrate/$it")
+                    append("?private=$private")
+                }
+                append("\n")
+            }
+        }
+    }
+
+    override fun getVideoLiveStreamFile(
+        path: VirtualPath,
+        codec: String,
+        bitrate: Int,
+        index: String
+    ): File {
+        val vf = checkVideo(path, codec, bitrate)
+        return DataHelper.tsFile(vf.hash!!.pathSafe, codec, bitrate.toString(), index)
     }
 
     override fun getVideoChapters(path: VirtualPath): List<ChapterInfo> {
         val vf = virtualFileService.get(path) ?: throw ErrorCode.NO_SUCH_FILE.error
-        val fm = getMapping(vf.hash ?: throw ErrorCode.BAD_REQUEST.error)
-            ?: throw IllegalStateException("no mapping: ${vf.hash}")
-        if (!fm.type.isVideoMediaType)
-            throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
+        checkVideo(vf)
         val chapterFile = DataHelper.hlsSubFile(vf.hash!!.pathSafe, "chapter")
         return if (!chapterFile.exists()) {
             val fm = getMapping(vf.hash!!)
