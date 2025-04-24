@@ -545,7 +545,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   @override
   Widget build(BuildContext context) {
     final player = Global.player;
-    final nowPlay = player.nowPlay.value!;
+    final nowPlay = player.nowPlay.value;
 
     return Scaffold(
       backgroundColor:
@@ -566,9 +566,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
           children: [
             CachedNetworkImage(
               imageUrl:
-                  player.nowPlay.value?.audioInfo != null
+                  nowPlay?.audioInfo != null
                       ? FileAPIURL.audioCover(
-                        nowPlay.audioInfo!.path,
+                        nowPlay!.audioInfo!.path,
                         private: nowPlay.private,
                       )
                       : '',
