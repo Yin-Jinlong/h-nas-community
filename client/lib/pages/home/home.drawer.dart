@@ -163,7 +163,10 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
               children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [UserAvatar(user: UserS.user), Text(user.nick)],
+                  children: [
+                    UserAvatar(user: UserS.user, withHero: true),
+                    Text(user.nick),
+                  ],
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,

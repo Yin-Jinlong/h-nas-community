@@ -39,7 +39,7 @@ class _MyPageState extends State<MyPage> {
             child: Column(
               spacing: 12,
               children: [
-                UserAvatar(user: UserS.user),
+                UserAvatar(user: UserS.user, withHero: true),
                 Text(user.username),
                 Text(user.nick),
                 Row(

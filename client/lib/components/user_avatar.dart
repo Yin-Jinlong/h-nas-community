@@ -19,7 +19,7 @@ class UserAvatar extends StatefulWidget {
 
 class _UserAvatarState extends State<UserAvatar> {
   Widget _avatar() {
-    return Icon(Icons.person, size: widget.size * 0.6);
+    return Icon(Icons.person, size: widget.size * 0.6, color: Colors.white);
   }
 
   @override
