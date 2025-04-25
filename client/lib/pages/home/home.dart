@@ -360,61 +360,68 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child: Empty(
         isEmpty: files.isEmpty,
         child: ContextMenuOverlay(
-          child: ListView(
-            children: [
-              for (var file in files)
-                ContextMenuRegion(
-                  contextMenu: GenericContextMenu(
-                    buttonConfigs: _fileContextMenuButtons(
-                      file,
-                      onPlay: () {
-                        switch (file.fileMediaType?.type) {
-                          case MediaType.typeAudio:
-                            _playAudio(file);
-                            break;
-                          case MediaType.typeVideo:
-                            _playVideo(file);
-                            break;
-                        }
-                      },
-                      onRename: () {
-                        _showRenameDialog(context, file);
-                      },
-                      onDownload: () {
-                        _download(file);
-                      },
-                      onInfo: () {
-                        _showFileInfo(file);
-                      },
-                      onDelete: () {
-                        _delete(file);
-                      },
-                    ),
-                  ),
-                  child: _fileListItem(
-                    context,
+          child: ListView.separated(
+            itemCount: files.length,
+            itemBuilder: (context, index) {
+              final file = files[index];
+              return ContextMenuRegion(
+                contextMenu: GenericContextMenu(
+                  buttonConfigs: _fileContextMenuButtons(
                     file,
-                    private: private,
-                    onTap: () {
-                      if (file.isFolder) {
-                        enterFolder(file.name);
-                      } else {
-                        switch (MediaType.parse(file.mediaType ?? '').type) {
-                          case MediaType.typeImage:
-                            _showImage(thumbnailCache, file);
-                            break;
-                          case MediaType.typeAudio:
-                            _playAudio(file);
-                            break;
-                          case MediaType.typeVideo:
-                            _playVideo(file);
-                            break;
-                        }
+                    onPlay: () {
+                      switch (file.fileMediaType?.type) {
+                        case MediaType.typeAudio:
+                          _playAudio(file);
+                          break;
+                        case MediaType.typeVideo:
+                          _playVideo(file);
+                          break;
                       }
+                    },
+                    onRename: () {
+                      _showRenameDialog(context, file);
+                    },
+                    onDownload: () {
+                      _download(file);
+                    },
+                    onInfo: () {
+                      _showFileInfo(file);
+                    },
+                    onDelete: () {
+                      _delete(file);
                     },
                   ),
                 ),
-            ],
+                child: _fileListItem(
+                  context,
+                  file,
+                  private: private,
+                  onTap: () {
+                    if (file.isFolder) {
+                      enterFolder(file.name);
+                    } else {
+                      switch (MediaType.parse(file.mediaType ?? '').type) {
+                        case MediaType.typeImage:
+                          _showImage(thumbnailCache, file);
+                          break;
+                        case MediaType.typeAudio:
+                          _playAudio(file);
+                          break;
+                        case MediaType.typeVideo:
+                          _playVideo(file);
+                          break;
+                      }
+                    }
+                  },
+                ),
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return Divider(
+                height: 0,
+                color: Colors.grey.withValues(alpha: 0.5),
+              );
+            },
           ),
         ),
       ),
