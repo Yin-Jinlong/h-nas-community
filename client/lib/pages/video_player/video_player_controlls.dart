@@ -25,6 +25,8 @@ class VideoControlsScaffold extends StatefulWidget {
   final FileInfo file;
   final HLSStreamInfo? info;
   final void Function(int) onBitrateIndex;
+  final void Function(BoxFit) onFit;
+  final BoxFit fit;
 
   const VideoControlsScaffold({
     super.key,
@@ -32,6 +34,8 @@ class VideoControlsScaffold extends StatefulWidget {
     required this.state,
     required this.info,
     required this.onBitrateIndex,
+    required this.fit,
+    required this.onFit,
   });
 
   @override
@@ -56,7 +60,7 @@ class _VideoControlsScaffoldState
           ),
         ),
       ),
-      endDrawer: MoreDrawer(),
+      endDrawer: MoreDrawer(fit: widget.fit, onFit: widget.onFit),
     );
   }
 }

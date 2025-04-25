@@ -4,7 +4,10 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 
 class MoreDrawer extends StatefulWidget {
-  const MoreDrawer({super.key});
+  final BoxFit fit;
+  final void Function(BoxFit) onFit;
+
+  const MoreDrawer({super.key, required this.fit, required this.onFit});
 
   @override
   State createState() => _MoreDrawerState();
@@ -24,6 +27,22 @@ class _MoreDrawerState extends State<MoreDrawer> {
     setState(() {});
   }
 
+  Widget _fitButton(BoxFit fit, String text) {
+    return fit == widget.fit
+        ? FilledButton(
+          onPressed: () {
+            widget.onFit(fit);
+          },
+          child: Text(text),
+        )
+        : ElevatedButton(
+          onPressed: () {
+            widget.onFit(fit);
+          },
+          child: Text(text),
+        );
+  }
+
   @override
   void dispose() {
     player.codec.removeListener(_render);
@@ -34,24 +53,34 @@ class _MoreDrawerState extends State<MoreDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: SafeArea(
-        child: Column(
-          children: [
-            Text(S.current.video_codec),
-            for (var codec in player.codecs.value)
-              Row(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Text(S.current.video_codec),
+              for (var codec in player.codecs.value)
+                Row(
+                  children: [
+                    Radio(
+                      value: codec,
+                      groupValue: player.codec.value,
+                      onChanged: (value) {
+                        player.codec.value = value as String;
+                      },
+                    ),
+                    Text(codec),
+                  ],
+                ),
+              Divider(color: Colors.grey),
+              Text(S.current.video_fit),
+              Wrap(
                 children: [
-                  Radio(
-                    value: codec,
-                    groupValue: player.codec.value,
-                    onChanged: (value) {
-                      player.codec.value = value as String;
-                    },
-                  ),
-                  Text(codec),
+                  _fitButton(BoxFit.contain, S.current.video_contain),
+                  _fitButton(BoxFit.fill, S.current.video_fill),
+                  _fitButton(BoxFit.cover, S.current.video_cover),
                 ],
               ),
-            Divider(),
-          ],
+            ],
+          ),
         ),
       ),
     );

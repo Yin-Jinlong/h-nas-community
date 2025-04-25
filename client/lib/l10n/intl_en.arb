@@ -136,5 +136,9 @@
   "value_transmission": "transmission",
   "value_upload_file": "upload file",
   "video_codec": "Video Codec",
+  "video_contain": "Contain",
+  "video_cover": "Cover",
+  "video_fill": "Fill",
+  "video_fit": "Video Fit",
   "web_not_support": "Web platform does not support {action}"
 }

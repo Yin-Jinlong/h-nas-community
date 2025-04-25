@@ -135,5 +135,9 @@
   "value_transmission": "传输",
   "value_upload_file": "上传文件",
   "video_codec": "编码器",
+  "video_contain": "包含",
+  "video_cover": "覆盖",
+  "video_fill": "拉伸",
+  "video_fit": "画面比例",
   "web_not_support": "Web端暂不支持{action}"
 }

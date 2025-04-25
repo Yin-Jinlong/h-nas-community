@@ -24,6 +24,7 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
   HLSStreamInfo? info;
   List<HLSStreamList> _streamList = [];
   int _streamIndex = 0;
+  BoxFit fit = BoxFit.contain;
 
   @override
   List<int> bitrates = [];
@@ -110,6 +111,12 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
     });
   }
 
+  void _onFit(BoxFit fit) {
+    setState(() {
+      this.fit = fit;
+    });
+  }
+
   @override
   void dispose() {
     player.stop();
@@ -125,17 +132,20 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
         children: [
           Video(
             controller: _controller,
+            fit: fit,
             controls:
                 (state) => VideoControlsScaffold(
                   file: file!,
                   state: this,
                   info: info,
                   onBitrateIndex: _onBitrateIndex,
+                  fit: fit,
+                  onFit: _onFit,
                 ),
           ),
         ],
       ),
-      endDrawer: MoreDrawer(),
+      endDrawer: MoreDrawer(fit: fit, onFit: _onFit),
     );
   }
 }
