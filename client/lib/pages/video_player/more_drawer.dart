@@ -33,24 +33,26 @@ class _MoreDrawerState extends State<MoreDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
-        children: [
-          Text(S.current.video_codec),
-          for (var codec in player.codecs.value)
-            Row(
-              children: [
-                Radio(
-                  value: codec,
-                  groupValue: player.codec.value,
-                  onChanged: (value) {
-                    player.codec.value = value as String;
-                  },
-                ),
-                Text(codec),
-              ],
-            ),
-          Divider(),
-        ],
+      child: SafeArea(
+        child: Column(
+          children: [
+            Text(S.current.video_codec),
+            for (var codec in player.codecs.value)
+              Row(
+                children: [
+                  Radio(
+                    value: codec,
+                    groupValue: player.codec.value,
+                    onChanged: (value) {
+                      player.codec.value = value as String;
+                    },
+                  ),
+                  Text(codec),
+                ],
+              ),
+            Divider(),
+          ],
+        ),
       ),
     );
   }
