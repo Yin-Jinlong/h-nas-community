@@ -503,35 +503,44 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       });
                     },
                   ),
-                  BreadCrumb(
-                    divider: Icon(Icons.chevron_right),
-                    items: [
-                      BreadCrumbItem(
-                        content: Text(
-                          S.current.folder_root,
-                          style: Theme.of(context).textTheme.titleMedium,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 6),
+                        child: BreadCrumb(
+                          divider: Icon(Icons.chevron_right),
+                          items: [
+                            BreadCrumbItem(
+                              content: Text(
+                                S.current.folder_root,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  dirs.clear();
+                                  updateFiles();
+                                });
+                              },
+                            ),
+                            for (var i = 0; i < dirs.length; i++)
+                              BreadCrumbItem(
+                                content: Text(
+                                  dirs[i],
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    dirs.removeRange(i + 1, dirs.length);
+                                    updateFiles();
+                                  });
+                                },
+                              ),
+                          ],
                         ),
-                        onTap: () {
-                          setState(() {
-                            dirs.clear();
-                            updateFiles();
-                          });
-                        },
                       ),
-                      for (var i = 0; i < dirs.length; i++)
-                        BreadCrumbItem(
-                          content: Text(
-                            dirs[i],
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          onTap: () {
-                            setState(() {
-                              dirs.removeRange(i + 1, dirs.length);
-                              updateFiles();
-                            });
-                          },
-                        ),
-                    ],
+                    ),
                   ),
                 ],
               ),
