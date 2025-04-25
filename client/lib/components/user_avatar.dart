@@ -19,20 +19,31 @@ class UserAvatar extends StatefulWidget {
 
 class _UserAvatarState extends State<UserAvatar> {
   Widget _avatar() {
-    return Icon(Icons.person, size: widget.size * 0.6, color: Colors.white);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = constraints.biggest.shortestSide * 0.8;
+        return Icon(Icons.person, size: size, color: Colors.white);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: widget.size,
-      child: CircleAvatar(
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child:
-              widget.withHero
-                  ? Hero(tag: 'avatar', child: _avatar())
-                  : _avatar(),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: widget.size,
+        maxHeight: widget.size,
+      ),
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: CircleAvatar(
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            child:
+                widget.withHero
+                    ? Hero(tag: 'avatar', child: _avatar())
+                    : _avatar(),
+          ),
         ),
       ),
     );
