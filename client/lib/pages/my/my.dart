@@ -20,35 +20,66 @@ class _MyPageState extends State<MyPage> {
       return Container();
     }
 
+    Widget trailing(Widget child) {
+      return IntrinsicWidth(
+        child: Row(children: [child, Icon(Icons.keyboard_arrow_right)]),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(S.current.my),
-        actions: [
-          IconButton(
-            tooltip: S.current.edit,
-            onPressed: () {},
-            icon: Icon(Icons.edit_note),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.only(top: 12),
-            child: Column(
-              spacing: 12,
-              children: [
-                UserAvatar(user: UserS.user, withHero: true),
-                Text(user.username),
-                Text(user.nick),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text('ID:'), Text(user.uid.toString())],
-                ),
-              ],
-            ),
-          ),
+      appBar: AppBar(title: Text(S.current.my)),
+      body: Padding(
+        padding: EdgeInsets.only(top: 12),
+        child: ListView(
+          children:
+              ListTile.divideTiles(
+                context: context,
+                color: Colors.grey,
+                tiles: [
+                  InkWell(
+                    onTap: () {},
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      child: Row(
+                        children: [
+                          Text(S.current.avatar),
+                          Expanded(child: Container()),
+                          trailing(
+                            UserAvatar(user: UserS.user, withHero: true),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    title: Text('ID'),
+                    trailing: Text(
+                      user.uid.toString(),
+                      style: TextTheme.of(context).bodyLarge,
+                    ),
+                  ),
+                  ListTile(
+                    title: Text(S.current.info_username),
+                    trailing: trailing(
+                      Text(
+                        user.username,
+                        style: TextTheme.of(context).bodyLarge,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    title: Text(S.current.info_nick),
+                    trailing: trailing(
+                      Text(user.nick, style: TextTheme.of(context).bodyLarge),
+                    ),
+                    onTap: () {},
+                  ),
+                ],
+              ).toList(),
         ),
       ),
     );
