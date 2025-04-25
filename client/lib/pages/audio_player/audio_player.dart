@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
+import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/components/marquee.dart';
 import 'package:h_nas/components/tag.dart';
@@ -397,7 +398,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                   top: 30,
                   bottom: 20,
                 ),
-                child: InkWell(
+                child: Clickable(
                   onTap: () {
                     setState(() {
                       _showLrcView = !_showLrcView;

@@ -154,9 +154,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
       children: [
         Align(
           alignment: Alignment.centerLeft,
-          child: InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
+          child: Clickable(
             onTap: () {
               navigatorKey.currentState?.pushNamed(Routes.my);
             },

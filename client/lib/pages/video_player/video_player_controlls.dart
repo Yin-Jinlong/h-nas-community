@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
+import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
@@ -289,9 +290,7 @@ class _VideoControlsState extends DisposeFlagState<_VideoControlsContent>
       onHover: (event) {
         _show();
       },
-      child: InkWell(
-        highlightColor: Colors.transparent,
-        splashColor: Colors.transparent,
+      child: Clickable(
         onTap: () {
           if (UniversalPlatform.isDesktopOrWeb) {
             player.playPause();

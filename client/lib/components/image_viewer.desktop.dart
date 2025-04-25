@@ -367,13 +367,16 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
+    return Clickable(
       onTap: () {},
-      onHover: (v) {
+      onEnter: (event) {
         setState(() {
-          _mouseIn = v;
+          _mouseIn = true;
+        });
+      },
+      onExit: (event) {
+        setState(() {
+          _mouseIn = false;
         });
       },
       child: Padding(

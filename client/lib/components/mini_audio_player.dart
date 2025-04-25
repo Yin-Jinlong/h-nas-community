@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/components/spring_draggable_container.dart';
 import 'package:h_nas/generated/l10n.dart';
@@ -232,10 +233,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
       },
       child: Card(
         elevation: 5,
-        child: InkWell(
-          hoverColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
+        child: Clickable(
           onTap: () {
             navigatorKey.currentState?.pushNamed(Routes.audioPlayer);
           },
