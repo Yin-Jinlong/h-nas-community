@@ -295,6 +295,8 @@ class _VideoControlsState extends DisposeFlagState<_VideoControlsContent>
         _show();
       },
       child: Clickable(
+        cursor:
+            _showControls ? SystemMouseCursors.click : SystemMouseCursors.none,
         onTap: () {
           if (UniversalPlatform.isDesktopOrWeb) {
             player.playPause();
