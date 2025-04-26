@@ -24,6 +24,14 @@ abstract class UserAPI extends API {
         });
   }
 
+  static Future<bool?> logon(String username, String password) {
+    return API._post<bool>(
+      '$root/logon',
+      {'username': username, 'password': password},
+      options: Options(contentType: Headers.formUrlEncodedContentType),
+    );
+  }
+
   static Future<String?> requestLoginQR() {
     return API._post<String>('$root/login/qr/request', {}).then((data) {
       return data;

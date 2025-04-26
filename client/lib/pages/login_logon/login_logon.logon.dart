@@ -16,7 +16,14 @@ class _LogonState extends _BaseState<_LogonWidget> {
       password = TextEditingController(),
       password2 = TextEditingController();
 
-  _logon() {}
+  void _logon() {
+    UserAPI.logon(logid.text, password.text).then((res) {
+      if (res == true) {
+        Toast.showSuccess(S.current.action_success(S.current.logon));
+        widget.onGotoLogin();
+      }
+    });
+  }
 
   @override
   void dispose() {
