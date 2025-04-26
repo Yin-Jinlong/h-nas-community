@@ -119,6 +119,8 @@ class UserController(
 
     @PostMapping("logon")
     fun register(@NotBlank(message = "用户名不能为空") username: String, @Password password: String) {
+        if (username.matches("\\d+".toRegex()))
+            throw ErrorCode.BAD_ARGUMENTS.data("username")
         userService.register(username, password)
     }
 
