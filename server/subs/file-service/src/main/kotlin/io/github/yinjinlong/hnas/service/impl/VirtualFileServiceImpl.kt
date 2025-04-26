@@ -1,7 +1,7 @@
 package io.github.yinjinlong.hnas.service.impl
 
-import io.github.yinjinlong.hnas.data.AudioFileInfo
 import io.github.yinjinlong.hnas.audio.AudioInfoHelper
+import io.github.yinjinlong.hnas.data.AudioFileInfo
 import io.github.yinjinlong.hnas.data.DataHelper
 import io.github.yinjinlong.hnas.data.FileRange
 import io.github.yinjinlong.hnas.entity.*
@@ -232,6 +232,13 @@ class VirtualFileServiceImpl(
                 ?: throw IllegalStateException("数据库没有文件: ${dir.fullPath}")
         )
         updateCount(p, 1)
+    }
+
+    override fun getUserStorageUsage(user: Uid?): Long {
+        return if (user == null) virtualFileMapper.countUserStorageUsage()
+        else getRootId(user).let {
+            virtualFileMapper.selectById(it)?.size
+        } ?: throw ErrorCode.NO_SUCH_USER.data(user)
     }
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)

@@ -73,6 +73,9 @@ order by hash is not null,name
     @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
     fun countHash(hash: Hash): Int
 
+    @Select("select sum(size) from virtual_file where parent =convert('\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0',binary ) and user!=0")
+    fun countUserStorageUsage(): Long
+
     //******//
     //  增  //
     //******//

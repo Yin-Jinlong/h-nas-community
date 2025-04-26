@@ -60,6 +60,7 @@
   "info_root_sub": "公开目录文件数",
   "info_root_subs": "公开目录所有文件数",
   "info_user_count": "用户数量",
+  "info_user_storage_usage": "用户空间使用",
   "info_username": "用户名",
   "info_value": "值",
   "language": "语言",

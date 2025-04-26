@@ -14,6 +14,7 @@ class _UserManagementPageState extends State<ServerInfoPage> {
   FolderChildrenCount? rootCount;
   FileInfo? rootInfo;
   int? userCount;
+  int? userUsage;
 
   @override
   void initState() {
@@ -31,6 +32,11 @@ class _UserManagementPageState extends State<ServerInfoPage> {
     UserAPI.getUserCount().then((value) {
       setState(() {
         userCount = value;
+      });
+    });
+    FileAPI.getUserStorageUsage().then((value) {
+      setState(() {
+        userUsage = value;
       });
     });
   }
@@ -74,6 +80,12 @@ class _UserManagementPageState extends State<ServerInfoPage> {
               cells: [
                 DataCell(Text(S.current.info_user_count)),
                 DataCell(Text(userCount?.toString() ?? S.current.loading)),
+              ],
+            ),
+            DataRow(
+              cells: [
+                DataCell(Text(S.current.info_user_storage_usage)),
+                DataCell(Text(userUsage?.storageSizeStr ?? S.current.loading)),
               ],
             ),
           ],

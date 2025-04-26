@@ -2,13 +2,9 @@ package io.github.yinjinlong.hnas.service
 
 import io.github.yinjinlong.hnas.data.AudioFileInfo
 import io.github.yinjinlong.hnas.data.FileRange
-import io.github.yinjinlong.hnas.entity.ChildrenCount
+import io.github.yinjinlong.hnas.entity.*
 import io.github.yinjinlong.hnas.fs.VirtualFileManager
 import io.github.yinjinlong.hnas.fs.VirtualPath
-import io.github.yinjinlong.hnas.entity.FileId
-import io.github.yinjinlong.hnas.entity.Hash
-import io.github.yinjinlong.hnas.entity.IVirtualFile
-import io.github.yinjinlong.hnas.entity.Uid
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.IOException
@@ -46,6 +42,8 @@ interface VirtualFileService : VirtualFileManager {
      */
     @Throws(NoSuchFileException::class)
     fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile>
+
+    fun getUserStorageUsage(user: Uid?): Long
 
     /**
      * 上传文件

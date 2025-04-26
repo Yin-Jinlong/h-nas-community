@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/storage_size.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class UserManagementPage extends StatefulWidget {
@@ -43,6 +44,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     columnName: _UserData.nickName,
                     label: Center(child: Text(S.current.info_nick)),
                   ),
+                  GridColumn(
+                    columnName: _UserData.usageName,
+                    label: Center(
+                      child: Text(S.current.info_user_storage_usage),
+                    ),
+                  ),
                 ],
                 source: _userDatSource,
               ),
@@ -73,6 +80,9 @@ class _UserData extends UserInfo {
   static const String nickName = 'nick';
   static const String avatarName = 'avatar';
   static const String adminName = 'admin';
+  static const String usageName = 'usage';
+
+  int? usage;
 
   _UserData({
     required super.uid,
@@ -97,6 +107,27 @@ class _UserDatSource extends DataGridSource {
 
   List<_UserData> data = [];
 
+  void _updateRows() {
+    rows =
+        data.map((e) {
+          return DataGridRow(
+            cells: [
+              DataGridCell(columnName: _UserData.idName, value: e.uid),
+              DataGridCell(
+                columnName: _UserData.usernameName,
+                value: e.username,
+              ),
+              DataGridCell(columnName: _UserData.nickName, value: e.nick),
+              DataGridCell(
+                columnName: _UserData.usageName,
+                value: e.usage?.storageSizeStr ?? S.current.loading,
+              ),
+            ],
+          );
+        }).toList();
+    notifyListeners();
+  }
+
   void load() {
     UserAPI.getUserCount().then((value) {
       count = value ?? 0;
@@ -104,22 +135,13 @@ class _UserDatSource extends DataGridSource {
     });
     UserAPI.getUsers(0, 10).then((value) {
       data = value.map(_UserData.of).toList();
-      rows =
-          data
-              .map(
-                (e) => DataGridRow(
-                  cells: [
-                    DataGridCell(columnName: _UserData.idName, value: e.uid),
-                    DataGridCell(
-                      columnName: _UserData.usernameName,
-                      value: e.username,
-                    ),
-                    DataGridCell(columnName: _UserData.nickName, value: e.nick),
-                  ],
-                ),
-              )
-              .toList();
-      notifyListeners();
+      _updateRows();
+      for (var e in data) {
+        FileAPI.getUserStorageUsage(uid: e.uid).then((value) {
+          e.usage = value;
+          _updateRows();
+        });
+      }
     });
   }
 

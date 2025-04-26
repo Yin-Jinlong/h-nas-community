@@ -1,12 +1,10 @@
 package io.github.yinjinlong.hnas.controller
 
-import io.github.yinjinlong.hnas.data.FileInfo
-import io.github.yinjinlong.hnas.data.FilePreview
-import io.github.yinjinlong.hnas.data.FileRange
-import io.github.yinjinlong.hnas.data.FolderChildrenCount
 import io.github.yinjinlong.hnas.annotation.ShouldLogin
-import io.github.yinjinlong.hnas.data.DataHelper
+import io.github.yinjinlong.hnas.data.*
 import io.github.yinjinlong.hnas.entity.Hash
+import io.github.yinjinlong.hnas.entity.IUser
+import io.github.yinjinlong.hnas.entity.Uid
 import io.github.yinjinlong.hnas.entity.VirtualFile
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
@@ -86,6 +84,16 @@ class FileController(
             cc.subCount,
             cc.subsCount
         )
+    }
+
+    @GetMapping("storage/user/usage")
+    fun getUserStorageUsage(
+        @ShouldLogin token: Token,
+        @RequestParam uid: Uid?
+    ): Long {
+        if (token.role != IUser.ROLE_ADMIN)
+            throw ErrorCode.NO_PERMISSION.error
+        return virtualFileService.getUserStorageUsage(uid)
     }
 
     @GetMapping("info")

@@ -8,6 +8,18 @@ abstract class FileAPI extends API {
     'path': path,
   };
 
+  static Future<int> getUserStorageUsage({int? uid}) {
+    return API
+        ._get<int>(
+          '$root/storage/user/usage',
+          {if (uid != null) 'uid': uid},
+          options: Options(headers: {...API.tokenHeader()}),
+        )
+        .then((data) {
+          return data ?? 0;
+        });
+  }
+
   static Future<List<FileInfo>> getFiles(String path, {required bool private}) {
     return API
         ._get<List<dynamic>>(

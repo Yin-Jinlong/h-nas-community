@@ -44,7 +44,7 @@ class UserServiceImpl(
         return (mapper.selectByUidPassword(uid, genPassword(password))?.let {
             UserService.LogResult(
                 UserInfo.of(it),
-                Auth.login(it.uid)
+                Auth.login(it.uid, it.role)
             )
         } ?: throw ErrorCode.USER_LOGIN_ERROR.data(uid))
     }
@@ -53,7 +53,7 @@ class UserServiceImpl(
         return (mapper.selectByUsernamePassword(username, genPassword(password))?.let {
             UserService.LogResult(
                 UserInfo.of(it),
-                Auth.login(it.uid)
+                Auth.login(it.uid, it.role)
             )
         } ?: throw ErrorCode.USER_LOGIN_ERROR.data(username))
     }
@@ -91,7 +91,8 @@ class UserServiceImpl(
     override fun getLoginQRInfo(user: Uid, id: String): LoginQRInfo? {
         return info(id)?.let { info ->
             if (info.status == LoginQRInfoStatus.WAITING && info.scannedUser == null) {
-                val token = Auth.login(user)
+                val u = mapper.selectByUid(user) ?: throw ErrorCode.NO_SUCH_USER.error
+                val token = Auth.login(u.uid, u.role)
                 info.copy(status = LoginQRInfoStatus.SCANNED, scannedUser = user, token = token).also {
                     setInfo(id, it)
                 }

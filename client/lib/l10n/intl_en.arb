@@ -60,6 +60,7 @@
   "info_root_sub": "Public Root Child",
   "info_root_subs": "Public Root All Children",
   "info_user_count": "User Count",
+  "info_user_storage_usage": "User Storage Usage",
   "info_username": "User Name",
   "info_value": "Value",
   "language": "Language",
