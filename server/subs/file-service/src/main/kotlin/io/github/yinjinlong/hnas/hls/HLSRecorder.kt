@@ -22,7 +22,7 @@ class HLSRecorder(
     val bitrate: Int,
     val time: Double
 ) : Recorder {
-    val cachePath = "$path/$codec/$bitrate"
+    val cachePath = File("$path/$codec/$bitrate").absolutePath
     val tmp = File(path, "$codec/$bitrate/index")
     val m3u8 = File(path, "$codec/$bitrate/index.m3u8")
 
