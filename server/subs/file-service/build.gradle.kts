@@ -1,3 +1,7 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+import utils.buildImageTask
+import utils.configBootJar
+
 plugins {
     alias(libs.plugins.license)
     alias(libs.plugins.kotlin)
@@ -40,6 +44,12 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.withType<BootJar>{
+    configBootJar(this)
+}
+
+buildImageTask()
 
 licenseReport {
     showVersions = true

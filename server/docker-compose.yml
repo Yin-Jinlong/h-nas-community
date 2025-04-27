@@ -1,0 +1,47 @@
+name: h-nas
+services:
+  redis:
+    container_name: dragonfly-1
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+  mysql:
+    container_name: mysql-1
+    image: mysql:9.2
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: h_nas
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "--silent" ]
+  user:
+    image: h-nas/user-service:1.0.0
+    environment:
+      REDIS_HOST: dragonfly-1
+      JDBC_URL: jdbc:mysql://mysql-1:3306/h_nas
+    ports:
+      - "12001:12001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+  file:
+    image: h-nas/file-service:1.0.0
+    environment:
+      NVIDIA_DRIVER_CAPABILITIES: all
+      REDIS_HOST: dragonfly-1
+      JDBC_URL: jdbc:mysql://mysql-1:3306/h_nas
+    ports:
+      - "12002:12002"
+    runtime: nvidia
+    volumes:
+      - /usr/h-nas/data
+      - /usr/h-nas/cache
+    depends_on:
+      mysql:
+        condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

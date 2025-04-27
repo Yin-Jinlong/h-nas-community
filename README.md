@@ -57,6 +57,25 @@ cd client && flutter pub get
           - user-service      # 用户服务
 ```
 
+## 部署
+
+### Docker
+
+- 构建镜像
+
+```shell
+gradle :server:subs:user-service:image
+gradle :server:subs:file-service:image
+```
+
+- [docker-compose.yml](server/docker-compose.yml)
+
+默认使用`nivdia_cuda`加速。
+
+- `nginx`
+
+[nginx.conf](server/nginx.conf)
+
 ## License
 
 - 主体 `Apache 2.0`
