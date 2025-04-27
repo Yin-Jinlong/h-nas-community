@@ -85,6 +85,7 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
   }
 
   void _updateInfo() async {
+    if(disposed) return;
     final value = await FileAPI.getVideoStreamInfo(
       file!.fullPath,
       private: private,
@@ -92,7 +93,9 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
       bitrate: player.bitrate.value,
     );
     info = value;
-    if (!disposed) setState(() {});
+    if (disposed) return;
+
+      setState(() {});
     if (value?.status != HLSStreamStatus.done) {
       await Future.delayed(const Duration(seconds: 1));
       _updateInfo();
