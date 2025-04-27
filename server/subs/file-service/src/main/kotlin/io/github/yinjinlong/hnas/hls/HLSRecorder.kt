@@ -5,7 +5,6 @@ import org.bytedeco.ffmpeg.global.avcodec
 import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
-import org.bytedeco.javacv.FFmpegLogCallback
 import org.bytedeco.javacv.Frame
 import java.io.File
 import java.nio.file.Files
@@ -33,8 +32,6 @@ class HLSRecorder(
         grabber.imageHeight,
         grabber.audioChannels
     ).apply {
-        avutil.av_log_set_level(avutil.AV_LOG_INFO)
-        FFmpegLogCallback.set()
         format = "hls"
         setOption("hls_time", "$time")
         setOption("hls_list_size", "0")

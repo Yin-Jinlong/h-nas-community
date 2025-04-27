@@ -7,7 +7,9 @@ import io.github.yinjinlong.hnas.entity.Hash
 import io.github.yinjinlong.hnas.ffmpeg.FFProbeRunner
 import org.bytedeco.ffmpeg.avcodec.AVPacket
 import org.bytedeco.ffmpeg.global.avcodec
+import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameGrabber
+import org.bytedeco.javacv.FFmpegLogCallback
 import org.bytedeco.javacv.Frame
 import java.io.File
 
@@ -15,6 +17,12 @@ import java.io.File
  * @author YJL
  */
 object HLSHelper {
+
+    init {
+        avutil.av_log_set_level(avutil.AV_LOG_INFO)
+        FFmpegLogCallback.set()
+    }
+
     private fun nvidia(name: String) = "${name}_nvenc"
     private fun amd(name: String) = "${name}_amf"
     private fun vulkan(name: String) = "${name}_vulkan"
