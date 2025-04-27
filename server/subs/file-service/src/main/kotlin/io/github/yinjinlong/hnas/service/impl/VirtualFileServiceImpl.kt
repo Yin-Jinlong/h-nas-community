@@ -167,7 +167,9 @@ class VirtualFileServiceImpl(
                 tmpFile.createNewFile()
             } else if (!tmpFile.exists())
                 throw IllegalArgumentException("文件不存在: $path")
-            val type = tmpFile.mimeType(path.name)
+            val type = tmpFile.inputStream().buffered().use {
+                FileDetector.detect(it, path.name)
+            }
             val dataFile = dataFile(type, hash)
             insertFile(owner, user, path, hash, fileSize, tmpFile, dataPath(type, hash))
             dataFile.mkParent()
