@@ -1,5 +1,6 @@
 package io.github.yinjinlong.hnas.entity
 
+import io.github.yinjinlong.hnas.annotation.FulltextIndex
 import io.github.yinjinlong.hnas.converter.HashConverter
 import io.github.yinjinlong.hnas.usertype.HashUserType
 import jakarta.persistence.*
@@ -14,7 +15,6 @@ import java.sql.Timestamp
 @Table(
     indexes = [
         Index(name = "parent", columnList = "parent"),
-        Index(name = "name", columnList = "name"),
         Index(name = "hash", columnList = "hash"),
         Index(name = "owner", columnList = "owner"),
         Index(name = "user", columnList = "user"),
@@ -35,6 +35,7 @@ data class VirtualFile(
     @Comment("UUID")
     override var fid: FileId = Hash(),
 
+    @FulltextIndex
     @Column(length = IVirtualFile.NAME_LENGTH, nullable = false)
     @Comment("文件名")
     override var name: String = "",
