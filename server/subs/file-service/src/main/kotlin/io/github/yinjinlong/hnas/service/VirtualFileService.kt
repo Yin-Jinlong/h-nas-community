@@ -72,6 +72,8 @@ interface VirtualFileService : VirtualFileManager {
     )
     fun rename(path: VirtualPath, name: String)
 
+    fun search(user: Uid, name: String, lastPath: VirtualPath?): List<Pair<VirtualFile, VirtualPath>>
+
     /**
      * 获取目录下文件数量
      */

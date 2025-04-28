@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/model/list_model.dart';
+import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/directory_utils.dart';
 import 'package:h_nas/utils/file_task.dart';
@@ -32,6 +33,8 @@ abstract class Global {
   );
   static Locale locale = Prefs.locale;
   static ValueNotifier<bool> isDark = ValueNotifier(false);
+
+  static final thumbnailCache = ThumbnailModel(private: false);
 
   static ListModel<UploadFileTask> uploadTasks = ListModel();
   static ListModel<DownloadFileTask> downloadTasks = ListModel();

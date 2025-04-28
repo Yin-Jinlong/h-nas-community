@@ -20,7 +20,6 @@ import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
-import 'package:h_nas/model/thumbnail_model.dart';
 import 'package:h_nas/pages/home/info_dialog.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/pages/home/rename_dialog.dart';
@@ -34,7 +33,6 @@ import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:h_nas/utils/toast.dart';
-import 'package:provider/provider.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_html/html.dart' as web;
 import 'package:universal_platform/universal_platform.dart';
@@ -64,7 +62,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   SortType sortType = SortType.name;
   bool sortAsc = true;
   bool private = false;
-  final thumbnailCache = ThumbnailModel(private: false);
 
   /// 正在拖拽
   bool _dragging = false;
@@ -93,7 +90,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
     // 先清空数据
     setState(() {
-      thumbnailCache.clear();
+      Global.thumbnailCache.clear();
       files.clear();
       images.clear();
       audios.clear();
@@ -124,7 +121,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var hover = false;
   var index = 0;
 
-  _showImage(ThumbnailModel thumbnailCache, FileInfo file) {
+  _showImage(FileInfo file) {
     final overlay = navigatorKey.currentState?.overlay;
     if (overlay == null) return;
     OverlayEntry? entry;
@@ -135,7 +132,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           index: index,
           files: images,
           route: route,
-          thumbnailCache: thumbnailCache,
           private: private,
           onClose: () {
             entry?.remove();
@@ -354,7 +350,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _dropContent(ThumbnailModel thumbnailCache) {
+  Widget _dropContent() {
     return RefreshIndicator(
       displacement: 20,
       child: Empty(
@@ -402,7 +398,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     } else {
                       switch (MediaType.parse(file.mediaType ?? '').type) {
                         case MediaType.typeImage:
-                          _showImage(thumbnailCache, file);
+                          _showImage(file);
                           break;
                         case MediaType.typeAudio:
                           _playAudio(file);
@@ -474,6 +470,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       appBar: AppBar(
         actions: [
           IconButton(
+            tooltip: S.current.search,
+            onPressed: () {
+              navigatorKey.currentState?.pushNamed(
+                Routes.search,
+                arguments: private,
+              );
+            },
+            icon: Hero(tag: 'search', child: const Icon(Icons.search)),
+          ),
+          IconButton(
             tooltip: S.current.sort,
             onPressed: () {
               _showSortDialog(context);
@@ -504,7 +510,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     onChanged: (value) {
                       setState(() {
                         private = value!;
-                        thumbnailCache.private = private;
+                        Global.thumbnailCache.private = private;
                         dirs.clear();
                         updateFiles();
                       });
@@ -571,16 +577,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     );
                   });
                 },
-                child: ChangeNotifierProvider.value(
-                  value: thumbnailCache,
-                  child: Expanded(
-                    child: Stack(
-                      children: [
-                        _dropContent(thumbnailCache),
-                        _dropTip(context),
-                      ],
-                    ),
-                  ),
+                child: Expanded(
+                  child: Stack(children: [_dropContent(), _dropTip(context)]),
                 ),
               ),
             ],

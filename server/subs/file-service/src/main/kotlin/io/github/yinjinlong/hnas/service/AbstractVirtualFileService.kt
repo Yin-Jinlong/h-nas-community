@@ -1,12 +1,6 @@
 package io.github.yinjinlong.hnas.service
 
-import io.github.yinjinlong.hnas.entity.AudioInfo
-import io.github.yinjinlong.hnas.entity.ChildrenCount
-import io.github.yinjinlong.hnas.entity.Hash
-import io.github.yinjinlong.hnas.entity.FileId
-import io.github.yinjinlong.hnas.entity.IVirtualFile
-import io.github.yinjinlong.hnas.entity.Uid
-import io.github.yinjinlong.hnas.entity.VirtualFile
+import io.github.yinjinlong.hnas.entity.*
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.fs.VirtualFilesystem
@@ -16,6 +10,7 @@ import io.github.yinjinlong.hnas.mapper.ChildrenCountMapper
 import io.github.yinjinlong.hnas.mapper.VirtualFileMapper
 import java.nio.file.NoSuchFileException
 import java.nio.file.NotDirectoryException
+import java.util.*
 
 
 /**
@@ -32,6 +27,24 @@ abstract class AbstractVirtualFileService(
 
     protected val VirtualPath.id: Hash
         get() = pathIdOrThrow(this)
+
+    protected val VirtualFile.path: VirtualPath
+        get() {
+            val names = LinkedList<String>()
+            names.add(name)
+            var f = this
+            while (!f.parent.isZero) {
+                val vf = virtualFileMapper.selectById(f.parent)
+                    ?: throw IllegalStateException("Parent id not found : ${f.parent}")
+                if (vf.name.isNotEmpty())
+                    names.add(0, vf.name)
+                f = vf
+            }
+            return if (user == 0L)
+                fs.getPubPath(*names.toTypedArray())
+            else
+                fs.getUserPath(user, *names.toTypedArray())
+        }
 
     override fun exists(path: VirtualPath): Boolean {
         return pathId(path) != null

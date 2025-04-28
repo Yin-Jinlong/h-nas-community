@@ -5,14 +5,12 @@ class _ImageViewerOverlayWidget extends StatefulWidget {
   final VoidCallback onClose;
   final ModalRoute route;
   final List<FileInfo> files;
-  final ThumbnailModel thumbnailCache;
   final bool private;
 
   const _ImageViewerOverlayWidget({
     required this.index,
     required this.files,
     required this.route,
-    required this.thumbnailCache,
     required this.private,
     required this.onClose,
   });
@@ -116,7 +114,7 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                       for (var file in widget.files)
                         () async {
                           final c = Completer<String>();
-                          widget.thumbnailCache.get(file, (f) {
+                          Global.thumbnailCache.get(file, (f) {
                             c.complete(
                               FileAPIURL.filePreview(
                                 f.preview!,

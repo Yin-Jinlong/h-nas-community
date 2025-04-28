@@ -9,6 +9,7 @@ class Routes {
   static const String loginOn = '/login_on';
   static const String my = '/my';
   static const String qrScan = '/qr_scan';
+  static const String search = '/search';
   static const String serverInfo = '/server_info';
   static const String settings = '/settings';
   static const String theme = '/theme';
@@ -28,6 +29,7 @@ class Routes {
       loginOn => const LogInOnPage(),
       my => const MyPage(),
       qrScan => const QRScanPage(),
+      search => const SearchPage(),
       serverInfo => const ServerInfoPage(),
       settings => const SettingsPage(),
       theme => const ThemePage(),

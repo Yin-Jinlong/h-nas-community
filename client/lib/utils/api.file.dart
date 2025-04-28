@@ -33,6 +33,23 @@ abstract class FileAPI extends API {
         });
   }
 
+  static Future<List<FileInfo>> searchFiles(
+    String name, {
+    String? lastPath,
+    required bool private,
+  }) {
+    return API
+        ._get<List<dynamic>>('$root/search', {
+          'private': private,
+          'name': name,
+          if (lastPath != null) 'lastPath': lastPath,
+        }, options: Options(headers: {...API.tokenHeader()}))
+        .then((data) {
+          if (data == null) return [];
+          return data.map((e) => FileInfo.fromJson(e as JsonObject)).toList();
+        });
+  }
+
   static Future<FileInfo?> getFile(String path, {required bool private}) {
     return API
         ._get<JsonObject>(

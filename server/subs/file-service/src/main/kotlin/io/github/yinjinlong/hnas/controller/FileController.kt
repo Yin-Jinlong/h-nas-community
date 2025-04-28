@@ -309,6 +309,22 @@ class FileController(
         virtualFileService.rename(src, dts.name)
     }
 
+    @GetMapping("search")
+    fun search(
+        token: Token?,
+        @RequestParam name: String,
+        @RequestParam(required = false) lastPath: String? = null,
+        @RequestParam(required = false) private: Boolean = false,
+    ): List<FileInfo> {
+        return virtualFileService.search(
+            if (private) token?.user ?: throw ErrorCode.BAD_ARGUMENTS.error else 0,
+            name,
+            lastPath?.let { getPath(private, token?.user, it) }
+        ).map { (vf, path) ->
+            vf.toFileInfo(path.parent, fileMappingService)
+        }
+    }
+
     companion object {
         val RangeRegex = Regex("^(\\d+)-(\\d+)/(\\d+)$")
 

@@ -17,7 +17,10 @@ import io.github.yinjinlong.hnas.mapper.VirtualFileMapper
 import io.github.yinjinlong.hnas.service.AbstractVirtualFileService
 import io.github.yinjinlong.hnas.service.TooManyChildrenException
 import io.github.yinjinlong.hnas.tika.FileDetector
-import io.github.yinjinlong.hnas.utils.*
+import io.github.yinjinlong.hnas.utils.del
+import io.github.yinjinlong.hnas.utils.isAudioMediaType
+import io.github.yinjinlong.hnas.utils.isVideoMediaType
+import io.github.yinjinlong.hnas.utils.mkParent
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
@@ -253,6 +256,13 @@ class VirtualFileServiceImpl(
             path.parent,
             virtualFileMapper.selectUpdateTimeById(id) ?: throw IllegalStateException()
         )
+    }
+
+    override fun search(user: Uid, name: String, lastPath: VirtualPath?): List<Pair<VirtualFile, VirtualPath>> {
+        val lastID = lastPath?.let { virtualFileMapper.selectById(lastPath.id)?.fid } ?: Hash(IVirtualFile.ID_LENGTH)
+        return virtualFileMapper.selectListByName(user, name, lastID, 10).map {
+            it to it.path
+        }
     }
 
     @Transactional(rollbackFor = [Exception::class])

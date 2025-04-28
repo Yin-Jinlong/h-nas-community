@@ -28,6 +28,8 @@ data class Hash(val bytes: ByteArray = byteArrayOf()) {
     val size: Int
         get() = bytes.size
 
+    val isZero = bytes.all { it == 0.toByte() }
+
     fun inputStream() = bytes.inputStream()
 
     fun byteBuffer() = ByteBuffer.wrap(bytes)

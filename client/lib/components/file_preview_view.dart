@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/toast.dart';
-import 'package:provider/provider.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
-
-import '../model/thumbnail_model.dart';
 
 class FilePreviewView extends StatefulWidget {
   final bool private;
@@ -55,7 +53,7 @@ class _FilePreviewViewState extends State<FilePreviewView> {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<ThumbnailModel>(context).get(widget.fileInfo, (v) {
+    Global.thumbnailCache.get(widget.fileInfo, (v) {
       if (mounted) {
         setState(() {
           filePreview = v;

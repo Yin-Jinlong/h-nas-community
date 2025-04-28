@@ -70,6 +70,17 @@ order by hash is not null,name
     )
     fun selectListByParent(parent: FileId): List<VirtualFile>
 
+    @Select(
+        """
+select fid, name, parent, hash, owner,user, create_time, update_time, size
+from virtual_file
+where user=#{uid} and fid>#{last} and match(name) against(#{name})
+order by fid
+limit #{limit}
+    """
+    )
+    fun selectListByName(uid: Uid, name: String, last: FileId, limit: Int): List<VirtualFile>
+
     @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
     fun countHash(hash: Hash): Int
 

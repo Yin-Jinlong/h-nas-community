@@ -4,6 +4,7 @@ export 'languages/languages.dart';
 export 'login_logon/login_logon.dart';
 export 'my/my.dart';
 export 'qr_scan/qr_scan.dart';
+export 'search/search.dart';
 export 'server_info/server_info.dart';
 export 'settings/settings.dart';
 export 'theme/theme.dart';
