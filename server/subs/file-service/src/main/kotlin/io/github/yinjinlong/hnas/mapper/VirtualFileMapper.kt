@@ -68,7 +68,7 @@ where parent = #{parent}
 order by hash is not null,name
 """
     )
-    fun selectsByParent(parent: FileId): List<VirtualFile>
+    fun selectListByParent(parent: FileId): List<VirtualFile>
 
     @Select("select count(*) from virtual_file where hash = #{hash} limit 2")
     fun countHash(hash: Hash): Int

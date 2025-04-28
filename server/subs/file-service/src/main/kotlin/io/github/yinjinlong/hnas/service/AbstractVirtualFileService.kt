@@ -96,7 +96,7 @@ abstract class AbstractVirtualFileService(
 
     override fun getByParent(parent: VirtualPath, type: String?): List<IVirtualFile> {
         val id = pathIdOrThrow(parent.toAbsolutePath())
-        return virtualFileMapper.selectsByParent(id)
+        return virtualFileMapper.selectListByParent(id)
     }
 
     override fun getFolderChildrenCount(path: VirtualPath): ChildrenCount {
