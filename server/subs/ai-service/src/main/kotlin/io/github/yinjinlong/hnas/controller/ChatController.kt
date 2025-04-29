@@ -6,6 +6,7 @@ import io.github.yinjinlong.hnas.entity.Uid
 import io.github.yinjinlong.hnas.token.Token
 import io.github.yinjinlong.hnas.tools.NumTool
 import io.github.yinjinlong.hnas.tools.TimeTool
+import io.github.yinjinlong.hnas.tools.WeatherTool
 import io.github.yinjinlong.spring.boot.annotations.SkipHandle
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.ai.chat.client.ChatClient
@@ -27,6 +28,7 @@ class ChatController(
     model: OllamaChatModel,
     timeTool: TimeTool,
     numTool: NumTool,
+    weatherTool: WeatherTool,
     context: ApplicationContext,
 ) {
     val chatMemory = MessageWindowChatMemory.builder().build()
@@ -34,7 +36,7 @@ class ChatController(
     val chatClient = ChatClient.builder(model)
         .defaultAdvisors {
             it.advisors(MessageChatMemoryAdvisor(chatMemory))
-        }.defaultTools(timeTool, numTool)
+        }.defaultTools(timeTool, numTool, weatherTool)
         .defaultSystem(context.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "ai-system.md"))
         .build()
 
