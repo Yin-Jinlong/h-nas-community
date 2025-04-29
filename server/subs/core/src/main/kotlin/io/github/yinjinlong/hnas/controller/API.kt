@@ -6,6 +6,7 @@ package io.github.yinjinlong.hnas.controller
  */
 object API {
 
+    const val AI = "/api/ai"
     const val FILE = "/api/file"
     const val USER = "/api/user"
 

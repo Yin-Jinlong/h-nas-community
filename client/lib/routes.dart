@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:h_nas/pages/ai/ai.dart';
 
 import 'pages/pages.dart';
 
 class Routes {
   static const String home = '/';
+  static const String ai = '/ai';
   static const String audioPlayer = '/audio_player';
   static const String languages = '/languages';
   static const String loginOn = '/login_on';
@@ -24,6 +26,7 @@ class Routes {
   }) {
     return switch (routeSettings.name) {
       home => const HomePage(),
+      ai => const AIPage(),
       audioPlayer => const AudioPlayerPage(),
       languages => LanguagesPage(onLocaleChanged: onLocaleChanged),
       loginOn => const LogInOnPage(),

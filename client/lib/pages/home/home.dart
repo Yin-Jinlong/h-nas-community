@@ -480,6 +480,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             icon: Hero(tag: 'search', child: const Icon(Icons.search)),
           ),
           IconButton(
+            onPressed: () {
+              navigatorKey.currentState?.pushNamed(Routes.ai);
+            },
+            icon: Icon(TDTxNFIcons.nf_md_robot),
+          ),
+          IconButton(
             tooltip: S.current.sort,
             onPressed: () {
               _showSortDialog(context);

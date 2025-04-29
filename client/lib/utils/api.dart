@@ -9,6 +9,8 @@ import 'package:h_nas/utils/toast.dart';
 import '../generated/l10n.dart';
 import 'api_response.dart';
 
+part 'api.ai.dart';
+part 'api.ai.url.dart';
 part 'api.file.dart';
 part 'api.file.url.dart';
 part 'api.user.dart';
@@ -121,13 +123,17 @@ Future<T?> _catchError<T>(error) async {
     case DioException e when e.type == DioExceptionType.badResponse:
       final data = e.response?.data;
       if (data != null) {
-        final resp = APIResponse.fromJson(jsonDecode(data!));
-        if (Prefs.token != null && resp.code == 100) {
-          Future.delayed(Duration(seconds: 1), () {
-            Toast.showError(S.current.please_login);
-          });
+        try{
+          final resp = APIResponse.fromJson(jsonDecode(data!));
+          if (Prefs.token != null && resp.code == 100) {
+            Future.delayed(Duration(seconds: 1), () {
+              Toast.showError(S.current.please_login);
+            });
+          }
+          Toast.showError(resp.msg + (resp.data != null ? ': ${resp.data}' : ''));
+        }catch(e){
+          Toast.showError(data);
         }
-        Toast.showError(resp.msg + (resp.data != null ? ': ${resp.data}' : ''));
         break;
       }
     default:

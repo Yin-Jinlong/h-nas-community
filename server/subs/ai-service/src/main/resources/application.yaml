@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ai-service
+  ai:
+    ollama:
+      chat:
+        model: qwen3
+server:
+  port: 12999
+  jetty:
+    connection-idle-timeout: 10s
+

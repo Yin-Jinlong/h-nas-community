@@ -18,6 +18,7 @@ spring = "3.4.4"
 spring-boot-apiStarter = "0.4.2"
 spring-core = "6.2.5"
 spring-dependency-management = "1.1.7"
+spring-ai = "1.0.0-SNAPSHOT"
 tika = "3.1.0"
 webpImageio = "0.1.6"
 
@@ -40,6 +41,9 @@ kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
 mybatis-spring-boot-starter-test = { module = "org.mybatis.spring.boot:mybatis-spring-boot-starter-test", version.ref = "mybatis-spring-boot" }
 pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
+spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai" }
+spring-ai-ollama-spring-boot-starter = { module = "org.springframework.ai:spring-ai-ollama-spring-boot-starter", version.ref = "spring-ai" }
+spring-ai-spring-boot-autoconfigure = { module = "org.springframework.ai:spring-ai-spring-boot-autoconfigure", version.ref = "spring-ai" }
 spring-boot-api-starter = { module = "io.github.yin-jinlong:spring-boot-api-starter", version.ref = "spring-boot-apiStarter" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring" }
