@@ -33,7 +33,9 @@ class SSEClient {
           request.body = jsonEncode(body);
         }
 
-        Future<http.StreamedResponse> response = _client.send(request);
+        Future<http.StreamedResponse> response = _client
+            .send(request)
+            .timeout(Duration(minutes: 2));
 
         response.asStream().listen(
           (data) {
