@@ -52,3 +52,17 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+  ai:
+    image: h-nas/ai-service:1.0.0
+    environment:
+      REDIS_HOST: dragonfly-1
+      JDBC_URL: jdbc:mysql://mysql-1:3306/h_nas
+      QWEATHER_HOST:
+      QWEATHER_JWT_PRIVATEKEY:
+      QWEATHER_JWT_KEYID:
+      QWEATHER_JWT_PROJECTID:
+    ports:
+      - "12999:12999"
+    depends_on:
+      mysql:
+        condition: service_healthy
