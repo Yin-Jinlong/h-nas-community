@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/switch_button.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
@@ -28,19 +29,13 @@ class _MoreDrawerState extends State<MoreDrawer> {
   }
 
   Widget _fitButton(BoxFit fit, String text) {
-    return fit == widget.fit
-        ? FilledButton(
-          onPressed: () {
-            widget.onFit(fit);
-          },
-          child: Text(text),
-        )
-        : ElevatedButton(
-          onPressed: () {
-            widget.onFit(fit);
-          },
-          child: Text(text),
-        );
+    return SwitchButton(
+      selected: fit == widget.fit,
+      onPressed: () {
+        widget.onFit(fit);
+      },
+      child: Text(text),
+    );
   }
 
   @override
