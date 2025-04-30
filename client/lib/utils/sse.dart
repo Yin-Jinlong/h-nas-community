@@ -35,7 +35,7 @@ class SSEClient {
 
         Future<http.StreamedResponse> response = _client
             .send(request)
-            .timeout(Duration(minutes: 2));
+            .timeout(Duration(minutes: 5));
 
         response.asStream().listen(
           (data) {
