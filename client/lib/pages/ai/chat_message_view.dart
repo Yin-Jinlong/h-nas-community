@@ -78,13 +78,14 @@ class _ChatMessageViewState extends State<ChatMessageView> {
                         ),
                       ),
                     ),
-                    if (message.showThink) MarkdownBody(data: message.think),
+                    if (message.showThink)
+                      MarkdownBody(data: message.think, selectable: true),
                   ],
                 ),
               ),
             ),
           ),
-        MarkdownBody(data: message.content),
+        MarkdownBody(data: message.content, selectable: true),
       ],
     );
   }
