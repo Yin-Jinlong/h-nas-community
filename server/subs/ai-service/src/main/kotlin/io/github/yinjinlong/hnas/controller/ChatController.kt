@@ -4,6 +4,7 @@ import io.github.yinjinlong.hnas.annotation.ShouldLogin
 import io.github.yinjinlong.hnas.data.ChatMessageItem
 import io.github.yinjinlong.hnas.entity.Uid
 import io.github.yinjinlong.hnas.token.Token
+import io.github.yinjinlong.hnas.tools.FileTool
 import io.github.yinjinlong.spring.boot.annotations.SkipHandle
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotEmpty
@@ -11,8 +12,12 @@ import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor
 import org.springframework.ai.chat.memory.ChatMemory
+import org.springframework.ai.ollama.OllamaChatModel
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.core.io.ResourceLoader
+import org.springframework.util.ResourceUtils
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.RestTemplate
 import reactor.core.publisher.Flux
 
 
@@ -22,17 +27,21 @@ import reactor.core.publisher.Flux
 @RestController
 @RequestMapping(API.AI)
 class ChatController(
+    private val resourceLoader: ResourceLoader,
+    private val restTemplate: RestTemplate,
+    private val model: OllamaChatModel,
     private val chatClient: ChatClient,
     private val chatMemory: ChatMemory,
     @Qualifier("tools")
     private val tools: Array<Any>,
 ) {
 
-    private fun chatClientWithToolsBuilder(): ChatClient.Builder {
-        return chatClient.mutate().defaultAdvisors {
+    private fun chatClientWithCommonToolsBuilder(): ChatClient.Builder = ChatClient.builder(model)
+        .defaultAdvisors {
             it.advisors(MessageChatMemoryAdvisor(chatMemory))
-        }.defaultTools(*tools)
-    }
+        }
+        .defaultSystem(resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "ai-system.md"))
+        .defaultTools(*tools)
 
     fun chatId(uid: Uid) = "chat-${uid}"
 
@@ -61,7 +70,8 @@ class ChatController(
     ): Flux<String> {
         return chatClient.let {
             if (param.tool)
-                chatClientWithToolsBuilder()
+                chatClientWithCommonToolsBuilder()
+                    .defaultTools(FileTool(restTemplate, token))
                     .build()
             else
                 it
