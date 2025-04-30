@@ -99,11 +99,9 @@ class FileController(
     @GetMapping("info")
     fun getFileInfo(
         token: Token?,
-        @NotBlank(message = "path 不能为空") path: String,
+        @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false,
     ): FileInfo = withCatch {
-        if (path.isBlank())
-            throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
         val pp = getPath(private, token?.user, p).toAbsolutePath()
@@ -116,12 +114,10 @@ class FileController(
     @GetMapping("files")
     fun getFiles(
         token: Token?,
-        @NotBlank(message = "path 不能为空") path: String,
+        @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false,
         type: String?
     ): List<FileInfo> = withCatch {
-        if (path.isBlank())
-            throw ErrorCode.BAD_ARGUMENTS.error
         val p = path.trim().ifEmpty { "/" }
 
         val pp = getPath(private, token?.user, p)
