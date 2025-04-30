@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:h_nas/pages/ai/ai.dart';
 
 import 'pages/pages.dart';
 
@@ -14,6 +13,7 @@ class Routes {
   static const String search = '/search';
   static const String serverInfo = '/server_info';
   static const String settings = '/settings';
+  static const String textReader = '/text_reader';
   static const String theme = '/theme';
   static const String transmission = '/transmission';
   static const String userManagement = '/user_management';
@@ -35,6 +35,7 @@ class Routes {
       search => const SearchPage(),
       serverInfo => const ServerInfoPage(),
       settings => const SettingsPage(),
+      textReader => const TextReaderPage(),
       theme => const ThemePage(),
       transmission => const TransmissionPage(),
       userManagement => const UserManagementPage(),

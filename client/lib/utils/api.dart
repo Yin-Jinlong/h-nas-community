@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -41,15 +42,15 @@ abstract class API {
     QueryParameters? queryParameters, {
     Options? options,
     OnResp? onResp,
+    Future<T?> Function(Response)? then,
   }) {
     return dio
-        .get<String>(
+        .get(
           '$API_ROOT$path',
           queryParameters: queryParameters,
           options: options,
         )
-        .then((res) => _then<T>(res, onResp))
-        .catchError(_catchError<T>);
+        .then(then ?? (res) async => await _then(res, onResp) as T?);
   }
 
   static Future<T?> _post<T>(
@@ -60,13 +61,13 @@ abstract class API {
     OnResp? onResp,
   }) {
     return dio
-        .post<String>(
+        .post(
           '$API_ROOT$path',
           data: data,
           options: options,
           queryParameters: parms,
         )
-        .then((res) => _then<T>(res, onResp))
+        .then((res) async => await _then(res, onResp) as T?)
         .catchError(_catchError<T>);
   }
 
@@ -101,13 +102,13 @@ abstract class API {
           options: options,
           queryParameters: parms,
         )
-        .then((res) => _then<T>(res, onResp))
+        .then((res) async => await _then(res, onResp) as T?)
         .catchError(_catchError<T>);
   }
 }
 
-Future<T?> _then<T>(Response res, OnResp? onResp) async {
-  final data = APIResponse.fromJson(jsonDecode(res.data ?? '{}'));
+Future _then(Response res, OnResp? onResp) async {
+  final data = APIResponse.fromJson(res.data);
 
   if (data.code != 0) {
     Toast.showError(data.msg);
@@ -115,7 +116,7 @@ Future<T?> _then<T>(Response res, OnResp? onResp) async {
   }
 
   onResp?.call(res);
-  return (data.data ?? true) as T;
+  return (data.data ?? true);
 }
 
 Future<T?> _catchError<T>(error) async {
@@ -123,15 +124,17 @@ Future<T?> _catchError<T>(error) async {
     case DioException e when e.type == DioExceptionType.badResponse:
       final data = e.response?.data;
       if (data != null) {
-        try{
+        try {
           final resp = APIResponse.fromJson(jsonDecode(data!));
           if (Prefs.token != null && resp.code == 100) {
             Future.delayed(Duration(seconds: 1), () {
               Toast.showError(S.current.please_login);
             });
           }
-          Toast.showError(resp.msg + (resp.data != null ? ': ${resp.data}' : ''));
-        }catch(e){
+          Toast.showError(
+            resp.msg + (resp.data != null ? ': ${resp.data}' : ''),
+          );
+        } catch (e) {
           Toast.showError(data);
         }
         break;

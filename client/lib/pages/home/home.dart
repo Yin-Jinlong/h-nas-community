@@ -121,6 +121,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var hover = false;
   var index = 0;
 
+  void _showTextReader(FileInfo file) {
+    navigatorKey.currentState?.pushNamed(
+      Routes.textReader,
+      arguments: [file, private],
+    );
+  }
+
   _showImage(FileInfo file) {
     final overlay = navigatorKey.currentState?.overlay;
     if (overlay == null) return;
@@ -397,6 +404,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       enterFolder(file.name);
                     } else {
                       switch (MediaType.parse(file.mediaType ?? '').type) {
+                        case MediaType.typeText:
+                          _showTextReader(file);
+                          break;
                         case MediaType.typeImage:
                           _showImage(file);
                           break;

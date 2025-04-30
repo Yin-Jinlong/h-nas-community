@@ -64,6 +64,24 @@ abstract class FileAPI extends API {
         });
   }
 
+  static Future<Stream<Uint8List>?> getFileData(
+    String path, {
+    required bool private,
+    required ResponseType contentType,
+  }) {
+    return API._get<Stream<Uint8List>>(
+      root,
+      _base(path, private),
+      options: Options(
+        headers: {...API.tokenHeader()},
+        responseType: contentType,
+      ),
+      then: (res) async {
+        return (res.data as ResponseBody).stream;
+      },
+    );
+  }
+
   static Future<FilePreview?> getFilePreviewInfo(
     String path, {
     required bool private,

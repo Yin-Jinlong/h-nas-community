@@ -1,3 +1,4 @@
+export 'ai/ai.dart';
 export 'audio_player/audio_player.dart';
 export 'home/home.dart';
 export 'languages/languages.dart';
@@ -7,6 +8,7 @@ export 'qr_scan/qr_scan.dart';
 export 'search/search.dart';
 export 'server_info/server_info.dart';
 export 'settings/settings.dart';
+export 'text_reader/text_reader.dart';
 export 'theme/theme.dart';
 export 'transmission/transmission.dart';
 export 'user_management/user_management.dart';
