@@ -28,6 +28,10 @@ class _AIPageState extends DisposeFlagState<AIPage> {
     '系统是干什么的',
     '系统介绍',
     '项目链接',
+    '讲个笑话',
+    '来玩成语接龙吧',
+    '帮我翻译',
+    '写篇小小说',
   ];
   static const List<String> hintsWithTool = [
     ...hintsWithoutTool,
