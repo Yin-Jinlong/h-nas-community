@@ -38,17 +38,24 @@ class _FilePreviewViewState extends State<FilePreviewView> {
       return Icon(Icons.question_mark, size: size);
     }
     final mt = MediaType.parse(fi.mediaType!);
-    return switch (mt.type) {
-      MediaType.typeImage => Icon(Icons.image, size: size),
-      MediaType.typeVideo => Icon(Icons.video_camera_back, size: size),
-      MediaType.typeAudio => Icon(Icons.audiotrack, size: size),
-      MediaType.typeText => Icon(Icons.text_snippet, size: size),
-      MediaType.typeApplication => Icon(
-        TDTxNFIcons.nf_cod_file_binary,
-        size: size,
-      ),
-      _ => Icon(Icons.question_mark, size: size),
-    };
+    return Icon(switch (mt.type) {
+      MediaType.typeImage => switch (mt.subType) {
+        MediaType.subTypeJpeg => TDTxNFIcons.nf_md_file_jpg_box,
+        MediaType.subTypePng => TDTxNFIcons.nf_md_file_png_box,
+        _ => Icons.image,
+      },
+      MediaType.typeVideo => Icons.video_camera_back,
+      MediaType.typeAudio => Icons.audiotrack,
+      MediaType.typeText => switch (mt.subType) {
+        MediaType.subTypeMarkdown => TDTxNFIcons.nf_fa_markdown,
+        _ => TDTxNFIcons.nf_md_file_document,
+      },
+      MediaType.typeApplication => switch (mt.subType) {
+        MediaType.subTypeWordDocument => TDTxNFIcons.nf_seti_word,
+        _ => Icons.question_mark,
+      },
+      _ => Icons.question_mark,
+    }, size: size);
   }
 
   @override

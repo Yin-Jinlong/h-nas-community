@@ -5,6 +5,15 @@ class MediaType {
   static const typeText = 'text';
   static const typeApplication = 'application';
 
+  static const subTypeJpeg = 'jpeg';
+  static const subTypePng = 'png';
+
+  static const subTypePlainText = 'plain';
+  static const subTypeMarkdown = 'x-web-markdown';
+
+  static const subTypeWordDocument =
+      'vnd.openxmlformats-officedocument.wordprocessingml.document';
+
   final String type;
   final String subType;
 

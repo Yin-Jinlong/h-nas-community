@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
+import 'package:h_nas/utils/media_type.dart';
 
 class TextReaderPage extends StatefulWidget {
   const TextReaderPage({super.key});
@@ -57,7 +58,7 @@ class _TextReaderPageState extends State<TextReaderPage> {
 
   @override
   Widget build(BuildContext context) {
-    final markdown = file?.fileMediaType?.subType == 'x-web-markdown';
+    final markdown = file?.fileMediaType?.subType == MediaType.subTypeMarkdown;
     return Scaffold(
       appBar: AppBar(title: Text(file?.name ?? '')),
       body: Padding(
