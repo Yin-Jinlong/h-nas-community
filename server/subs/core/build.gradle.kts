@@ -21,6 +21,10 @@ dependencies {
     api(libs.jedis)
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.coroutines.core.jvm)
+    api(libs.spring.cloud.starter.bootstrap)
+    api(libs.spring.cloud.starter.loadbalancer)
+    api(libs.spring.cloud.starter.alibaba.nacos.config)
+    api(libs.spring.cloud.starter.alibaba.nacos.discovery)
     implementation(libs.jboss.logging)
 
     testImplementation(libs.spring.boot.starter.test)

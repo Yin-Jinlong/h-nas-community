@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 
+
 /**
  * @author YJL
  */
@@ -25,12 +26,6 @@ class ChatController(
     @Qualifier("tools")
     private val tools: Array<Any>,
 ) {
-
-    data class ChatParam(
-        @NotEmpty
-        var message: String = "",
-        val tool: Boolean = false,
-    )
 
     private val chatClientWithToolsBuilder: ChatClient.Builder = chatClient.mutate()
         .defaultTools(*tools)
@@ -78,3 +73,9 @@ class ChatController(
     }
 
 }
+
+data class ChatParam(
+    @NotEmpty
+    var message: String = "",
+    val tool: Boolean = false,
+)

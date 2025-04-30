@@ -10,6 +10,7 @@
 - `cmake` `3.1.4+`
 - `nignx` `1.27.4+`
 - `dragonfly` or  `redis`
+- `nacos3`
 
 `mysql`
 

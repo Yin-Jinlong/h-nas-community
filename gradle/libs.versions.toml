@@ -13,12 +13,14 @@ kotlin = "2.1.20"
 kotlinx-coroutines-core = "1.10.1"
 license = "0.9.8"
 mybatis-spring-boot = "3.0.4"
+nacos-spring-cloud = "2023.0.3.2"
 pdfbox = "3.0.3"
 spring = "3.4.4"
+spring-ai = "1.0.0-SNAPSHOT"
 spring-boot-apiStarter = "0.4.2"
 spring-core = "6.2.5"
 spring-dependency-management = "1.1.7"
-spring-ai = "1.0.0-SNAPSHOT"
+spring-cloud = "4.2.1"
 tika = "3.1.0"
 webpImageio = "0.1.6"
 
@@ -49,6 +51,10 @@ spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring" }
 spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-cloud-starter-alibaba-nacos-discovery = { module = "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery", version.ref = "nacos-spring-cloud" }
+spring-cloud-starter-alibaba-nacos-config = { module = "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config", version.ref = "nacos-spring-cloud" }
+spring-cloud-starter-bootstrap = { module = "org.springframework.cloud:spring-cloud-starter-bootstrap", version.ref = "spring-cloud" }
+spring-cloud-starter-loadbalancer = { module = "org.springframework.cloud:spring-cloud-starter-loadbalancer", version.ref = "spring-cloud" }
 spring-core = { module = "org.springframework:spring-core", version.ref = "spring-core" }
 tika = { module = "org.apache.tika:tika", version.ref = "tika" }
 tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika" }
