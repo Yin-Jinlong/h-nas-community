@@ -14,7 +14,7 @@ class Llm with ChangeNotifier {
 
   Iterable<ChatMessage> get history => _history;
 
-  Stream<String> send(String prompt) async* {
+  Stream<String> send(String prompt, {required bool enableTool}) async* {
     final userMessage = ChatMessage.user(prompt);
     final llmMessage = ChatMessage.llm();
     _history.addAll([userMessage, llmMessage]);
@@ -28,10 +28,11 @@ class Llm with ChangeNotifier {
         ...API.tokenHeader(),
         Headers.contentTypeHeader: Headers.jsonContentType,
       },
-      body: {'message': prompt},
+      body: {'message': prompt, 'tool': enableTool},
     );
 
     yield* res.map((event) {
+      print(event);
       llmMessage.append(event);
       return event;
     });
