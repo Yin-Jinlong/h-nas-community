@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/components/switch_button.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/pages/ai/chat_message_view.dart';
@@ -14,18 +17,36 @@ class AIPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AIPageState();
 }
 
-class _AIPageState extends State<AIPage> {
+class _AIPageState extends DisposeFlagState<AIPage> {
   final textController = TextEditingController();
   final provider = Llm();
   bool enableTool = false;
+  late int hintIndex;
+  static const List<String> hintsWithoutTool = [
+    '你是谁',
+    '你能做什么',
+    '系统是干什么的',
+    '系统介绍',
+    '项目链接',
+  ];
+  static const List<String> hintsWithTool = [
+    ...hintsWithoutTool,
+    '现在几点了',
+    '信阳市天气怎么样',
+  ];
+  final random = Random();
+
+  List<String> get hints => enableTool ? hintsWithTool : hintsWithoutTool;
 
   @override
   void initState() {
     super.initState();
+    hintIndex = random.nextInt(hints.length);
     provider.addListener(_render);
     final llm = ChatMessage.llm(content: '有什么问题欢迎向我提问。');
     provider.history = [llm];
     _loadHistory();
+    _changeHint();
   }
 
   void _render() {
@@ -42,6 +63,15 @@ class _AIPageState extends State<AIPage> {
         });
       }
     });
+  }
+
+  void _changeHint() async {
+    await Future.delayed(Duration(seconds: 5));
+    if (disposed) return;
+    setState(() {
+      hintIndex = random.nextInt(hints.length);
+    });
+    _changeHint();
   }
 
   @override
@@ -75,13 +105,21 @@ class _AIPageState extends State<AIPage> {
                 Expanded(
                   child: TextField(
                     controller: textController,
-                    decoration: InputDecoration(border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                      hintText: hints[hintIndex],
+                      hintStyle: TextStyle(color: Colors.grey),
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
                 IconButton(
                   onPressed: () {
+                    var text = textController.text;
+                    if (text.isEmpty) {
+                      text = hints[hintIndex];
+                    }
                     provider
-                        .send(textController.text, enableTool: enableTool)
+                        .send(text, enableTool: enableTool)
                         .listen((event) {});
                     textController.clear();
                   },
@@ -98,6 +136,7 @@ class _AIPageState extends State<AIPage> {
                     onPressed: () {
                       setState(() {
                         enableTool = !enableTool;
+                        hintIndex = random.nextInt(hints.length);
                       });
                     },
                     child: Text(
