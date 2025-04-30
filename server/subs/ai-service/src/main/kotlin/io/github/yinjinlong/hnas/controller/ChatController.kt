@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotEmpty
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor
 import org.springframework.ai.chat.memory.ChatMemory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.web.bind.annotation.*
@@ -27,8 +28,11 @@ class ChatController(
     private val tools: Array<Any>,
 ) {
 
-    private val chatClientWithToolsBuilder: ChatClient.Builder = chatClient.mutate()
-        .defaultTools(*tools)
+    private fun chatClientWithToolsBuilder(): ChatClient.Builder {
+        return chatClient.mutate().defaultAdvisors {
+            it.advisors(MessageChatMemoryAdvisor(chatMemory))
+        }.defaultTools(*tools)
+    }
 
     fun chatId(uid: Uid) = "chat-${uid}"
 
@@ -57,7 +61,8 @@ class ChatController(
     ): Flux<String> {
         return chatClient.let {
             if (param.tool)
-                chatClientWithToolsBuilder.build()
+                chatClientWithToolsBuilder()
+                    .build()
             else
                 it
         }.prompt()
