@@ -32,7 +32,6 @@ class Llm with ChangeNotifier {
     );
 
     yield* res.map((event) {
-      print(event);
       llmMessage.append(event);
       return event;
     });

@@ -64,7 +64,7 @@ class _ChatMessageViewState extends State<ChatMessageView> {
                             Text(message.thinking ? '正在思考' : '思考完成'),
                             if (message.thinking)
                               SizedBox.square(
-                                dimension: 16,
+                                dimension: 14,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                 ),
@@ -85,18 +85,18 @@ class _ChatMessageViewState extends State<ChatMessageView> {
               ),
             ),
           ),
-        MarkdownBody(data: message.content, selectable: true),
+        if (widget.message.content.isEmpty)
+          SizedBox.square(
+            dimension: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        else
+          MarkdownBody(data: message.content, selectable: true),
       ],
     );
   }
 
   Widget _chatContent() {
-    if (widget.message.content.isEmpty) {
-      return SizedBox.square(
-        dimension: 16,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      );
-    }
     return isUser
         ? MarkdownBody(data: widget.message.content)
         : _llmContent(widget.message as LlmChatMessage);
