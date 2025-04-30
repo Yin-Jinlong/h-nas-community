@@ -17,7 +17,6 @@ import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
 import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletResponse
-import jakarta.validation.constraints.NotBlank
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
