@@ -50,7 +50,8 @@ abstract class API {
           queryParameters: queryParameters,
           options: options,
         )
-        .then(then ?? (res) async => await _then(res, onResp) as T?);
+        .then(then ?? (res) async => await _then(res, onResp) as T?)
+        .catchError(_catchError<T>);
   }
 
   static Future<T?> _post<T>(
@@ -96,7 +97,7 @@ abstract class API {
     QueryParameters? parms,
   }) {
     return dio
-        .delete<String>(
+        .delete(
           '$API_ROOT$path',
           data: data,
           options: options,
@@ -125,7 +126,7 @@ Future<T?> _catchError<T>(error) async {
       final data = e.response?.data;
       if (data != null) {
         try {
-          final resp = APIResponse.fromJson(jsonDecode(data!));
+          final resp = APIResponse.fromJson(data);
           if (Prefs.token != null && resp.code == 100) {
             Future.delayed(Duration(seconds: 1), () {
               Toast.showError(S.current.please_login);
@@ -135,7 +136,7 @@ Future<T?> _catchError<T>(error) async {
             resp.msg + (resp.data != null ? ': ${resp.data}' : ''),
           );
         } catch (e) {
-          Toast.showError(data);
+          Toast.showError(data.toString());
         }
         break;
       }
