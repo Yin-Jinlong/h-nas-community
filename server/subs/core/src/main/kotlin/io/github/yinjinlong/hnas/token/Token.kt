@@ -2,7 +2,6 @@ package io.github.yinjinlong.hnas.token
 
 import com.google.gson.Gson
 import io.github.yinjinlong.hnas.entity.Uid
-import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.utils.base64Url
 import org.springframework.data.redis.core.StringRedisTemplate
 import java.time.Duration
@@ -35,8 +34,8 @@ data class Token(
          */
         private fun genKey() = Random.nextBytes(32).base64Url
 
-        operator fun get(token: String): Token {
-            val json = redis.opsForValue().get("$TOKEN_PREFIX$token") ?: throw ErrorCode.BAD_TOKEN.error
+        operator fun get(token: String): Token? {
+            val json = redis.opsForValue().get("$TOKEN_PREFIX$token") ?: return null
             return gson.fromJson(json, Token::class.java)
         }
     }

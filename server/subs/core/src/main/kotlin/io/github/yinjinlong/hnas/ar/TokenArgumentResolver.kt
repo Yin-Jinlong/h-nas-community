@@ -31,11 +31,12 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
     ): Token? {
+        val shouldLogin = shouldLogin(parameter)
         val auth = webRequest.getHeader(HttpHeaders.AUTHORIZATION)
-            ?: if (shouldLogin(parameter))
+            ?: if (shouldLogin)
                 throw ErrorCode.BAD_TOKEN.error
             else return null
 
-        return Token[auth]
+        return Token[auth] ?: if (shouldLogin) throw ErrorCode.BAD_TOKEN.error else null
     }
 }
