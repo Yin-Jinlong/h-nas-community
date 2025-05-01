@@ -1,8 +1,8 @@
 package io.github.yinjinlong.hnas.tools
 
+import io.github.yinjinlong.spring.boot.util.getLogger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
-import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -10,8 +10,8 @@ import java.math.RoundingMode
 /**
  * @author YJL
  */
-@Service
-class NumTool {
+@ToolService
+class NumTool : CommonTool(NumTool::class.getLogger()) {
 
     enum class OP {
         ADD {
@@ -39,6 +39,7 @@ class NumTool {
         @ToolParam(description = "十进制小数") a: String,
         @ToolParam(description = "精度") precision: Int,
     ): String {
+        logCall(a, precision)
         return BigDecimal(a).sqrt(MathContext(precision, RoundingMode.HALF_DOWN)).toPlainString()
     }
 
@@ -49,6 +50,7 @@ class NumTool {
         @ToolParam(description = "操作，包括加减乘除") op: OP,
         @ToolParam(required = false, description = "精度，默认为2，在进行除法时用到，其它操作时忽略") precision: Int = 2,
     ): String {
+        logCall(a, b, op.name, precision)
         return op.calc(BigDecimal(a), BigDecimal(b), precision).toPlainString()
     }
 

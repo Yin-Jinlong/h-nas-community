@@ -1,20 +1,18 @@
 package io.github.yinjinlong.hnas.test.tools
 
-import io.github.yinjinlong.hnas.token.Token
-import io.github.yinjinlong.hnas.tools.FileTool
+import io.github.yinjinlong.hnas.tools.UnitTool
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.springframework.web.client.RestTemplate
 import kotlin.test.Test
 
 
 /**
  * @author YJL
  */
-class FileToolTest {
+class UnitToolTest {
 
     @Test
     fun testFileSizeToHumanStr() {
-        val tool = FileTool(RestTemplate(), Token(0, ""))
+        val tool = UnitTool()
         assertEquals("0.00B", tool.fileSizeToHumanStr("0"))
         assertEquals("1.00KB", tool.fileSizeToHumanStr("1024"))
         assertEquals("0.95KB", tool.fileSizeToHumanStr("973"))

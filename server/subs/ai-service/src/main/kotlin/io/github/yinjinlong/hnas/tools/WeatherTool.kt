@@ -1,10 +1,10 @@
 package io.github.yinjinlong.hnas.tools
 
 import com.google.gson.Gson
+import io.github.yinjinlong.spring.boot.util.getLogger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Service
 import java.net.URI
 import java.net.URLEncoder
 import java.security.KeyFactory
@@ -22,7 +22,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 /**
  * @author YJL
  */
-@Service
+@ToolService
 class WeatherTool(
     @Value("\${qweather.host}")
     private val qweatherHost: String,
@@ -33,7 +33,7 @@ class WeatherTool(
     @Value("\${qweather.jwt.keyId}")
     private val jwtKeyId: String,
     val gson: Gson
-) {
+) : CommonTool(WeatherTool::class.getLogger()) {
     data class GeoResponse(
         val code: Int,
         val location: List<Location>,
@@ -133,7 +133,7 @@ class WeatherTool(
         val responseCode = conn.responseCode
         if (responseCode != 200)
             throw IllegalStateException("请求失败：${conn.content}")
-        val gzipInputStream=GZIPInputStream(conn.inputStream)
+        val gzipInputStream = GZIPInputStream(conn.inputStream)
         return gzipInputStream.use { it.reader().readText() }
     }
 
@@ -143,6 +143,7 @@ class WeatherTool(
         @ToolParam(description = "城市的上级行政区划", required = false) adm: String? = null,
         @ToolParam(description = "返回结果的数量，取值范围1-20，默认返回10个结果。", required = false) number: Int? = null,
     ): List<Location> {
+        logCall(name, adm, number)
         val res = get(
             "geo/v2/city/lookup", mapOf(
                 "location" to name,
@@ -160,6 +161,7 @@ class WeatherTool(
         @ToolParam(description = "locationID或者英文逗号分隔的经纬度（小数点后有效2位）")
         location: String,
     ): Weather {
+        logCall(location)
         val res = get(
             "v7/weather/now", mapOf(
                 "location" to location,

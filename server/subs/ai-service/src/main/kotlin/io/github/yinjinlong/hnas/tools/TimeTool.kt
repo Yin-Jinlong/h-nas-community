@@ -1,16 +1,16 @@
 package io.github.yinjinlong.hnas.tools
 
+import io.github.yinjinlong.spring.boot.util.getLogger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
-import org.springframework.stereotype.Service
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * @author YJL
  */
-@Service
-class TimeTool {
+@ToolService
+class TimeTool : CommonTool(TimeTool::class.getLogger()) {
 
     companion object {
         /**
@@ -29,6 +29,7 @@ class TimeTool {
         @ToolParam(description = "是否带毫秒")
         withMillisecond: Boolean,
     ): String {
+        logCall(withMillisecond)
         return if (withMillisecond) {
             dateTimeWithMillisecondFormat.format(Date())
         } else {

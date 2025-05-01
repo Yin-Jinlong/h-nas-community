@@ -1,9 +1,5 @@
 package io.github.yinjinlong.hnas.config
 
-import io.github.yinjinlong.hnas.tools.DateTool
-import io.github.yinjinlong.hnas.tools.NumTool
-import io.github.yinjinlong.hnas.tools.TimeTool
-import io.github.yinjinlong.hnas.tools.WeatherTool
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor
 import org.springframework.ai.chat.memory.ChatMemory
@@ -35,19 +31,4 @@ class OllamaConfig {
         .defaultSystem(context.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "ai-system.md"))
         .build()
 
-    /**
-     * 通用工具
-     */
-    @Bean
-    fun tools(
-        dateTool: DateTool,
-        numTool: NumTool,
-        timeTool: TimeTool,
-        weatherTool: WeatherTool,
-    ): Array<Any> = arrayOf(
-        dateTool,
-        numTool,
-        timeTool,
-        weatherTool,
-    )
 }

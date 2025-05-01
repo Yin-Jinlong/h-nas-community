@@ -4,13 +4,12 @@ import com.nlf.calendar.Lunar
 import io.github.yinjinlong.spring.boot.util.getLogger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
-import org.springframework.stereotype.Service
 
 /**
  * @author YJL
  */
-@Service
-class DateTool {
+@ToolService
+class DateTool : CommonTool(DateTool::class.getLogger()) {
 
     companion object {
         val weekNames = arrayOf("Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat.")
@@ -28,8 +27,6 @@ class DateTool {
             get() = dateStr(yearShengXiao, monthShengXiao, dayShengXiao)
     }
 
-    val logger = getLogger()
-
     @Tool(description = "获取当前日期字符串，格式： 公历(年月日) 中国农历(年月日) 农历额外信息")
     fun getCurrentDate(
         @ToolParam(description = "添加干支表示，默认是", required = false)
@@ -37,7 +34,7 @@ class DateTool {
         @ToolParam(description = "添加生肖表示，默认是", required = false)
         withShengXiao: Boolean = true,
     ): String {
-        logger.info("call getCurrentDate $withGanZhi $withShengXiao")
+        logCall(withGanZhi, withShengXiao)
         val lunar = Lunar()
         val solar = lunar.solar
         val solarStr = "${solar.year}/${solar.month}/${solar.day} ${weekNames[solar.week]}"
@@ -64,7 +61,7 @@ class DateTool {
 
     @Tool(description = "获取当前农历时间全部信息，包括日期，节气，黄历等")
     fun getCurrentLunarTimeFullInfo(): String {
-        logger.info("call getCurrentLunarTimeFullInfo")
+        logCall()
         return Lunar().toFullString()
     }
 }
