@@ -1,5 +1,6 @@
 package io.github.yinjinlong.hnas.config
 
+import io.github.yinjinlong.hnas.tools.DateTool
 import io.github.yinjinlong.hnas.tools.NumTool
 import io.github.yinjinlong.hnas.tools.TimeTool
 import io.github.yinjinlong.hnas.tools.WeatherTool
@@ -39,10 +40,12 @@ class OllamaConfig {
      */
     @Bean
     fun tools(
+        dateTool: DateTool,
         numTool: NumTool,
         timeTool: TimeTool,
-        weatherTool: WeatherTool
+        weatherTool: WeatherTool,
     ): Array<Any> = arrayOf(
+        dateTool,
         numTool,
         timeTool,
         weatherTool,

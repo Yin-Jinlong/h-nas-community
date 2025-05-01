@@ -25,6 +25,7 @@ dependencies {
     implementation(platform(libs.spring.ai.bom))
     implementation(libs.spring.ai.spring.boot.autoconfigure)
     implementation(libs.spring.ai.ollama.spring.boot.starter)
+    implementation(libs.lunar)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)

@@ -37,6 +37,10 @@ class _AIPageState extends DisposeFlagState<AIPage> {
     ...hintsWithoutTool,
     '现在几点了',
     '信阳市天气怎么样',
+    "今日黄历",
+    "今天多少号",
+    "今天的宜忌",
+    "今年是什么年",
   ];
   final random = Random();
 
