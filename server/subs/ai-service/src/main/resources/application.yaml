@@ -5,6 +5,9 @@ spring:
     ollama:
       chat:
         model: qwen3
+        options:
+          temperature: 0.65
+          num-ctx: 4096
 server:
   port: 12999
   jetty:
