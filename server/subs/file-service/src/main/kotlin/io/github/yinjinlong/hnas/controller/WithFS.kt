@@ -39,5 +39,7 @@ abstract class WithFS(
         throw ErrorCode.BAD_ARGUMENTS.data("非法文件名")
     } catch (e: NotDirectoryException) {
         throw ErrorCode.NOT_FOLDER.data(e.file)
+    } catch (e: AccessDeniedException) {
+        throw ErrorCode.NO_PERMISSION.data(e.file)
     }
 }

@@ -334,10 +334,25 @@ class VirtualFileServiceImpl(
         mkdirs(owner.value() as Uid, dir.toAbsolutePath())
     }
 
+    fun isOwn(file: IVirtualFile, user: Uid): Boolean {
+        var vf = file
+        while (!vf.parent.isZero) {
+            if (vf.owner == user)
+                return true
+            vf = virtualFileMapper.selectById(vf.parent) ?: break
+        }
+        return false
+    }
+
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun delete(path: VirtualPath) {
-        val parent = path.parent
+        val owner = path.bundledAttributes[FileAttributes.OWNER] as Uid?
+            ?: throw IllegalArgumentException("owner is null: $path")
+        val role = path.bundledAttributes[FileAttributes.ROLE] as String?
         val vf = getOrThrow(path)
+        if (role != IUser.ROLE_ADMIN && !isOwn(vf, owner))
+            throw AccessDeniedException(path.path)
+        val parent = path.parent
         val hash = vf.hash
         if (hash == null) {
             val counts = childrenCountMapper.selectByFid(vf.fid)

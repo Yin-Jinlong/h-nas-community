@@ -9,6 +9,7 @@ import io.github.yinjinlong.hnas.entity.VirtualFile
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.fs.VirtualPath
+import io.github.yinjinlong.hnas.fs.attr.FileAttributes
 import io.github.yinjinlong.hnas.service.FileMappingService
 import io.github.yinjinlong.hnas.service.VirtualFileService
 import io.github.yinjinlong.hnas.token.Token
@@ -178,6 +179,8 @@ class FileController(
         @RequestParam(required = false) private: Boolean = false,
     ) = withCatch {
         val pp = getPath(private, token.user, path)
+        pp.bundledAttributes[FileAttributes.OWNER] = token.user
+        pp.bundledAttributes[FileAttributes.ROLE] = token.role
         if (!Files.deleteIfExists(pp))
             throw ErrorCode.NO_SUCH_FILE.data(path)
     }

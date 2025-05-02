@@ -65,6 +65,11 @@ class VirtualPath private constructor(
     val isRoot: Boolean
         get() = absolute && paths.isEmpty()
 
+    /**
+     * 当前路径附加的属性
+     */
+    val bundledAttributes = mutableMapOf<String, Any>()
+
     internal constructor(
         fs: VirtualFilesystem,
         access: Long?,

@@ -18,6 +18,5 @@ open class FileAttribute<T>(
 
 object FileAttributes {
     const val OWNER = "owner"
-    const val HASH = "hash"
-    const val TYPE = "type"
+    const val ROLE = "role"
 }
