@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/utils/api.dart';
@@ -52,6 +53,8 @@ abstract class FileTask {
 
   bool private;
 
+  abstract final CancelToken? cancelToken;
+
   Object? error;
 
   bool selected = false;
@@ -79,6 +82,10 @@ abstract class FileTask {
   double? get progress;
 
   String get progressStr;
+
+  void cancel([Object? reason]) {
+    cancelToken?.cancel(reason);
+  }
 }
 
 /// 上传文件任务
@@ -90,6 +97,9 @@ class UploadFileTask extends FileTask {
   String path;
 
   int uploaded = 0;
+
+  @override
+  final CancelToken? cancelToken = CancelToken();
 
   UploadFileTask({
     required this.file,
@@ -201,6 +211,9 @@ class DownloadFileTask extends FileTask {
 
   bool _started = false;
 
+  @override
+  final CancelToken? cancelToken = CancelToken();
+
   DownloadFileTask({
     required this.file,
     required this.dst,
@@ -227,10 +240,16 @@ class DownloadFileTask extends FileTask {
     if (_started) return;
     _started = true;
     status = FileTaskStatus.processing;
-    FileAPI.download(file.fullPath, dst, private: private, (count, total) {
-          downloaded = count;
-          size = downloaded + 1;
-        })
+    FileAPI.download(
+          file.fullPath,
+          dst,
+          private: private,
+          cancelToken: cancelToken,
+          (count, total) {
+            downloaded = count;
+            size = downloaded + 1;
+          },
+        )
         .then((value) {
           status = FileTaskStatus.done;
           doneTime = DateTime.now();

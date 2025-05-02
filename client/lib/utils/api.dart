@@ -59,6 +59,7 @@ abstract class API {
     Object? data, {
     QueryParameters? parms,
     Options? options,
+    CancelToken? cancelToken,
     OnResp? onResp,
   }) {
     return dio
@@ -67,6 +68,7 @@ abstract class API {
           data: data,
           options: options,
           queryParameters: parms,
+          cancelToken: cancelToken,
         )
         .then((res) async => await _then(res, onResp) as T?)
         .catchError(_catchError);
@@ -77,6 +79,7 @@ abstract class API {
     String dst,
     ProgressCallback onProgress, {
     QueryParameters? parms,
+    CancelToken? cancelToken,
   }) {
     return dio
         .download(
@@ -84,6 +87,7 @@ abstract class API {
           dst,
           onReceiveProgress: onProgress,
           queryParameters: parms,
+          cancelToken: cancelToken,
           options: Options(responseType: ResponseType.stream),
         )
         .then((res) => res.data)

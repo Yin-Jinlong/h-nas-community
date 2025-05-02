@@ -45,6 +45,16 @@ class _TransmissionPageState extends State<TransmissionPage>
     }
   }
 
+  void _removeUpload(UploadFileTask task) {
+    task.cancel();
+    Global.uploadTasks.remove(task);
+  }
+
+  void _removeDownload(DownloadFileTask task) {
+    task.cancel();
+    Global.downloadTasks.remove(task);
+  }
+
   List<DataColumn> _tableColumns({List<DataColumn> extras = const []}) {
     return [
       DataColumn(label: Text(S.current.file_name)),
@@ -200,21 +210,11 @@ class _TransmissionPageState extends State<TransmissionPage>
     return TransmissionView(
       progressingPage: Empty(
         isEmpty: progressing.isEmpty,
-        child: _progressDataTable(
-          progressing,
-          onRemove: (task) {
-            Global.uploadTasks.remove(task);
-          },
-        ),
+        child: _progressDataTable(progressing, onRemove: _removeUpload),
       ),
       donePage: Empty(
         isEmpty: done.isEmpty,
-        child: _doneDataTable(
-          done,
-          onRemove: (task) {
-            Global.uploadTasks.remove(task);
-          },
-        ),
+        child: _doneDataTable(done, onRemove: _removeUpload),
       ),
     );
   }
@@ -226,21 +226,11 @@ class _TransmissionPageState extends State<TransmissionPage>
     return TransmissionView(
       progressingPage: Empty(
         isEmpty: progressing.isEmpty,
-        child: _progressDataTable(
-          progressing,
-          onRemove: (task) {
-            Global.downloadTasks.remove(task);
-          },
-        ),
+        child: _progressDataTable(progressing, onRemove: _removeDownload),
       ),
       donePage: Empty(
         isEmpty: done.isEmpty,
-        child: _doneDataTable(
-          done,
-          onRemove: (task) {
-            Global.downloadTasks.remove(task);
-          },
-        ),
+        child: _doneDataTable(done, onRemove: _removeDownload),
       ),
     );
   }

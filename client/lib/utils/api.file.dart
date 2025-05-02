@@ -161,12 +161,14 @@ abstract class FileAPI extends API {
     required int size,
     required String hash,
     required bool private,
+    CancelToken? cancelToken,
   }) {
     return API
         ._post(
           '$root/upload',
           bytes,
           parms: {'private': private},
+          cancelToken: cancelToken,
           options: Options(
             headers: {
               ...API.tokenHeader(),
@@ -185,11 +187,13 @@ abstract class FileAPI extends API {
     String dst,
     ProgressCallback onProgress, {
     required bool private,
+    CancelToken? cancelToken,
   }) {
     return API._download(
       root,
       dst,
       onProgress,
+      cancelToken: cancelToken,
       parms: {..._base(path, private), 'download': true},
     );
   }
