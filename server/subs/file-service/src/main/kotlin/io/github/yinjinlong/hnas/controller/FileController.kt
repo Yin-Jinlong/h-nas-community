@@ -305,6 +305,8 @@ class FileController(
         val dts = src.parent.resolve(name)
         if (src.name == dts.name)
             return@withCatch
+        src.bundledAttributes[FileAttributes.OWNER] = token.user
+        src.bundledAttributes[FileAttributes.ROLE] = token.role
         virtualFileService.rename(src, dts.name)
     }
 

@@ -248,13 +248,15 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun rename(path: VirtualPath, name: String) {
-        val id = path.id
-        virtualFileMapper.selectByIdLock(id)
-            ?: throw NoSuchFileException(path.fullPath)
-        virtualFileMapper.updateName(id, name)
+        val owner = path.getOwner()
+        val role = path.getRole()
+        val vf = getOrThrow(path)
+        if (role != IUser.ROLE_ADMIN && !isOwn(vf, owner))
+            throw ErrorCode.NO_PERMISSION.data(path.path)
+        virtualFileMapper.updateName(vf.fid, name)
         updateParentUpdateTime(
             path.parent,
-            virtualFileMapper.selectUpdateTimeById(id) ?: throw IllegalStateException()
+            virtualFileMapper.selectUpdateTimeById(vf.fid) ?: throw IllegalStateException()
         )
     }
 
@@ -346,9 +348,8 @@ class VirtualFileServiceImpl(
 
     @Transactional(rollbackFor = [Exception::class], propagation = Propagation.REQUIRES_NEW)
     override fun delete(path: VirtualPath) {
-        val owner = path.bundledAttributes[FileAttributes.OWNER] as Uid?
-            ?: throw IllegalArgumentException("owner is null: $path")
-        val role = path.bundledAttributes[FileAttributes.ROLE] as String?
+        val owner = path.getOwner()
+        val role = path.getRole()
         val vf = getOrThrow(path)
         if (role != IUser.ROLE_ADMIN && !isOwn(vf, owner))
             throw AccessDeniedException(path.path)
@@ -463,5 +464,16 @@ class VirtualFileServiceImpl(
 
     override fun setAttribute(path: VirtualPath, attribute: String, value: Any?, options: Set<LinkOption>) {
         throw UnsupportedOperationException()
+    }
+
+    private fun VirtualPath.getOwner(): Uid {
+        val owner = bundledAttributes[FileAttributes.OWNER] as Uid?
+            ?: throw IllegalArgumentException("owner is null: $path")
+        return owner
+    }
+
+    private fun VirtualPath.getRole(): String {
+        val role = bundledAttributes[FileAttributes.ROLE] as String?
+        return role ?: IUser.ROLE_USER
     }
 }
