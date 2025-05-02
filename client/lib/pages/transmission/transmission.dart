@@ -107,100 +107,104 @@ class _TransmissionPageState extends State<TransmissionPage>
     ];
   }
 
-  DataTable _progressDataTable<T extends FileTask>(
+  Widget _progressDataTable<T extends FileTask>(
     Iterable<T> progressing, {
     required Function(T task) onRemove,
   }) {
-    return DataTable(
-      dividerThickness: 0,
-      columns: _tableColumns(
-        extras: [
-          DataColumn(
-            label: Text(S.current.progress),
-            numeric: true,
-            tooltip: S.current.progress,
-          ),
-        ],
-      ),
-      rows: [
-        for (var task in progressing)
-          DataRow(
-            selected: task.selected,
-            onSelectChanged: (value) {
-              setState(() {
-                task.selected = value ?? false;
-              });
-            },
-            cells: _tableDataCells(
-              task,
-              extras: [
-                DataCell(
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: CircularProgressIndicator(
-                            value: task.progress,
+    return SingleChildScrollView(
+      child: DataTable(
+        dividerThickness: 0,
+        columns: _tableColumns(
+          extras: [
+            DataColumn(
+              label: Text(S.current.progress),
+              numeric: true,
+              tooltip: S.current.progress,
+            ),
+          ],
+        ),
+        rows: [
+          for (var task in progressing)
+            DataRow(
+              selected: task.selected,
+              onSelectChanged: (value) {
+                setState(() {
+                  task.selected = value ?? false;
+                });
+              },
+              cells: _tableDataCells(
+                task,
+                extras: [
+                  DataCell(
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: CircularProgressIndicator(
+                              value: task.progress,
+                            ),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            task.progressStr,
-                            style: TextStyle(fontSize: 12),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              task.progressStr,
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-              onSelectedChanged: (value) {
-                task.selected = value ?? false;
-                setState(() {});
-              },
-              onRemove: () {
-                onRemove(task);
-                setState(() {});
-              },
+                ],
+                onSelectedChanged: (value) {
+                  task.selected = value ?? false;
+                  setState(() {});
+                },
+                onRemove: () {
+                  onRemove(task);
+                  setState(() {});
+                },
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
-  DataTable _doneDataTable<T extends FileTask>(
+  Widget _doneDataTable<T extends FileTask>(
     Iterable<T> done, {
     required Function(T task) onRemove,
   }) {
-    return DataTable(
-      dividerThickness: 0,
-      columns: _tableColumns(),
-      rows: [
-        for (var task in done)
-          DataRow(
-            selected: task.selected,
-            onSelectChanged: (value) {
-              setState(() {
-                task.selected = value ?? false;
-              });
-            },
-            cells: _tableDataCells(
-              task,
-              onSelectedChanged: (value) {
-                task.selected = value ?? false;
-                setState(() {});
+    return SingleChildScrollView(
+      child: DataTable(
+        dividerThickness: 0,
+        columns: _tableColumns(),
+        rows: [
+          for (var task in done)
+            DataRow(
+              selected: task.selected,
+              onSelectChanged: (value) {
+                setState(() {
+                  task.selected = value ?? false;
+                });
               },
-              onRemove: () {
-                onRemove(task);
-                setState(() {});
-              },
+              cells: _tableDataCells(
+                task,
+                onSelectedChanged: (value) {
+                  task.selected = value ?? false;
+                  setState(() {});
+                },
+                onRemove: () {
+                  onRemove(task);
+                  setState(() {});
+                },
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

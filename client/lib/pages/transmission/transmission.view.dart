@@ -87,7 +87,10 @@ class _TransmissionViewState extends State<TransmissionView>
         Expanded(
           child: TabBarView(
             controller: _tabController,
-            children: [widget.progressingPage, widget.donePage],
+            children: [
+              widget.progressingPage,
+              widget.donePage,
+            ],
           ),
         ),
       ],
