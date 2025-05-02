@@ -76,7 +76,7 @@ abstract class FileTask {
 
   bool get canOp => status != FileTaskStatus.done;
 
-  double get progress;
+  double? get progress;
 
   String get progressStr;
 }
@@ -212,25 +212,33 @@ class DownloadFileTask extends FileTask {
 
   /// 进度[0-1]
   @override
-  double get progress => downloaded.toDouble() / size;
+  double? get progress =>
+      file.isFolder
+          ? downloaded == size
+              ? 1
+              : null
+          : downloaded.toDouble() / size;
 
   @override
-  String get progressStr => (progress * 100).toStringAsFixed(1);
+  String get progressStr =>
+      file.isFolder ? '' : (progress! * 100).toStringAsFixed(1);
 
   start() {
     if (_started) return;
     _started = true;
     status = FileTaskStatus.processing;
     FileAPI.download(file.fullPath, dst, private: private, (count, total) {
-      downloaded = count;
-      size = total;
-      if (count == total) {
-        status = FileTaskStatus.done;
-        doneTime = DateTime.now();
-        onDone?.call();
-      }
-    }).catchError((e) {
-      status = FileTaskStatus.error;
-    });
+          downloaded = count;
+          size = downloaded + 1;
+        })
+        .then((value) {
+          status = FileTaskStatus.done;
+          doneTime = DateTime.now();
+          size = downloaded;
+          onDone?.call();
+        })
+        .catchError((e) {
+          status = FileTaskStatus.error;
+        });
   }
 }
