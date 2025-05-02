@@ -3,8 +3,8 @@ package io.github.yinjinlong.hnas.ar
 import io.github.yinjinlong.hnas.annotation.ShouldLogin
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.token.Token
-import io.github.yinjinlong.hnas.utils.hasAnno
 import org.springframework.core.MethodParameter
+import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
@@ -22,7 +22,7 @@ class TokenArgumentResolver : HandlerMethodArgumentResolver {
     }
 
     private fun shouldLogin(parameter: MethodParameter): Boolean {
-        return parameter.hasAnno(ShouldLogin::class)
+        return AnnotationUtils.findAnnotation(parameter.method!!, ShouldLogin::class.java) != null
     }
 
     override fun resolveArgument(

@@ -81,8 +81,10 @@ gradle :server:subs:file-service:image
 gradle :server:subs:ai-service:image
 ```
 
-- [docker-compose.yml](server/docker-compose.yml)
-- 配置添加环境变量在[docker-compose.yml](server/docker-compose.yml)的`ai-service`
+[docker-compose.yml](server/docker-compose.yml)
+
+- 配置所有留空的环境变量
+- 按需修改或添加配置
 
 默认使用`nivdia_cuda`加速。
 

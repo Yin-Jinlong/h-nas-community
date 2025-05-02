@@ -6,6 +6,16 @@ services:
   redis:
     container_name: dragonfly-1
     image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+  nacos:
+    container_name: nacos-1
+    image: nacos/nacos-server:v3.0.0
+    environment:
+      MODE: standalone
+      NACOS_AUTH_TOKEN: # nacos jwt token
+      NACOS_AUTH_IDENTITY_KEY: nacos_key
+      NACOS_AUTH_IDENTITY_VALUE: nacos
+    ports:
+      - "12888:8080"
   mysql:
     container_name: mysql-1
     image: mysql:9.2
@@ -23,8 +33,9 @@ services:
   user:
     image: h-nas/user-service:1.0.0
     environment:
-      REDIS_HOST: dragonfly-1
-      JDBC_URL: jdbc:mysql://mysql-1:3306/h_nas
+      SPRING_DATA_REDIS_HOST: dragonfly-1
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-1:3306/h_nas
+      SPRING_CLOUD_NACOS_SERVER_ADDR: nacos-1:8848
     ports:
       - "12001:12001"
     depends_on:
@@ -34,8 +45,9 @@ services:
     image: h-nas/file-service:1.0.0
     environment:
       NVIDIA_DRIVER_CAPABILITIES: all
-      REDIS_HOST: dragonfly-1
-      JDBC_URL: jdbc:mysql://mysql-1:3306/h_nas
+      SPRING_DATA_REDIS_HOST: dragonfly-1
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-1:3306/h_nas
+      SPRING_CLOUD_NACOS_SERVER_ADDR: nacos-1:8848
     ports:
       - "12002:12002"
     runtime: nvidia
@@ -51,16 +63,18 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]
   ai:
     image: h-nas/ai-service:1.0.0
     environment:
-      REDIS_HOST: dragonfly-1
-      JDBC_URL: jdbc:mysql://mysql-1:3306/h_nas
-      QWEATHER_HOST:
-      QWEATHER_JWT_PRIVATEKEY:
-      QWEATHER_JWT_KEYID:
-      QWEATHER_JWT_PROJECTID:
+      SPRING_DATA_REDIS_HOST: dragonfly-1
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-1:3306/h_nas
+      SPRING_CLOUD_NACOS_SERVER_ADDR: nacos-1:8848
+      SPRING_AI_OLLAMA_BASE_URL: http://host.docker.internal:11434
+      QWEATHER_HOST: # **.qweatherapi.com
+      QWEATHER_JWT_PRIVATEKEY: # qweather jwt private key
+      QWEATHER_JWT_KEYID: # qweather project key id
+      QWEATHER_JWT_PROJECTID: # qweather project id
     ports:
       - "12999:12999"
     depends_on:
