@@ -11,6 +11,7 @@
 - `nignx` `1.27.4+`
 - `dragonfly` or  `redis`
 - `nacos3`
+- `ollama`
 
 `mysql`
 
@@ -63,6 +64,7 @@ cd client && flutter pub get
       - fs                  # 虚拟文件系统
       - utils               # 通用工具类
       - subs:
+          - ai-service        # AI服务
           - broadcast-service # （总）服务广播
           - core              # 服务核心（非服务）
           - file-service      # 文件服务
@@ -73,7 +75,12 @@ cd client && flutter pub get
 
 ### Docker
 
-- 构建镜像
+#### Ollama
+
+1. 安装[Ollama](https://ollama.com/download)
+2. 启动服务
+
+#### 构建镜像
 
 ```shell
 gradle :server:subs:user-service:image
@@ -81,14 +88,14 @@ gradle :server:subs:file-service:image
 gradle :server:subs:ai-service:image
 ```
 
-[docker-compose.yml](server/docker-compose.yml)
+#### [docker-compose.yml](server/docker-compose.yml)
 
 - 配置所有留空的环境变量
 - 按需修改或添加配置
 
 默认使用`nivdia_cuda`加速。
 
-- `nginx`
+#### `nginx`
 
 [nginx.conf](server/nginx.conf)
 
