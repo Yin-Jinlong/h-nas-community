@@ -50,13 +50,13 @@ class VirtualFilesystem(
         TODO("Not yet implemented")
     }
 
-    @Throws(BadPathException::class)
+    @Throws(InvalidPathException::class)
     fun getPubPath(vararg paths: String) = getPath("", paths)
 
-    @Throws(BadPathException::class)
+    @Throws(InvalidPathException::class)
     fun getUserPath(uid: Long, vararg paths: String) = getPath("$uid:", paths)
 
-    @Throws(BadPathException::class)
+    @Throws(InvalidPathException::class)
     fun getPath(first: String) = getPath(first, arrayOf())
 
     override fun getPath(first: String, more: Array<out String>): VirtualPath {
@@ -82,9 +82,9 @@ class VirtualFilesystem(
         more.joinTo(sb, SEPARATOR) { part ->
             part.replaceSeparator().also {
                 if (it.isEmpty())
-                    throw BadPathException("Empty path name")
+                    throw InvalidPathException(more.joinToString(SEPARATOR), "Empty path name")
                 if (VirtualPath.BAD_PATH_REGEX.containsMatchIn(it))
-                    throw BadPathException("Invalid path name: $it")
+                    throw InvalidPathException(more.joinToString(SEPARATOR), "Invalid path name: $it")
             }
         }
         if (sb.startsWith(SEPARATOR))

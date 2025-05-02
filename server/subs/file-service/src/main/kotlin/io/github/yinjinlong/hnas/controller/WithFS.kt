@@ -2,13 +2,9 @@ package io.github.yinjinlong.hnas.controller
 
 import io.github.yinjinlong.hnas.entity.Uid
 import io.github.yinjinlong.hnas.error.ErrorCode
-import io.github.yinjinlong.hnas.fs.BadPathException
 import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.service.TooManyChildrenException
-import java.nio.file.DirectoryNotEmptyException
-import java.nio.file.FileAlreadyExistsException
-import java.nio.file.NoSuchFileException
-import java.nio.file.NotDirectoryException
+import java.nio.file.*
 
 /**
  * @author YJL
@@ -25,7 +21,7 @@ abstract class WithFS(
             fs.getUserPath(user!!, path)
         else
             fs.getPubPath(path)
-    } catch (e: BadPathException) {
+    } catch (e: InvalidPathException) {
         throw ErrorCode.BAD_ARGUMENTS.data(path)
     }.toAbsolutePath()
 
@@ -39,7 +35,7 @@ abstract class WithFS(
         throw ErrorCode.TOO_MANY_CHILDREN.data(e.file)
     } catch (e: DirectoryNotEmptyException) {
         throw ErrorCode.FOLDER_NOT_EMPTY.data(e.file)
-    } catch (e: BadPathException) {
+    } catch (e: InvalidPathException) {
         throw ErrorCode.BAD_ARGUMENTS.data("非法文件名")
     } catch (e: NotDirectoryException) {
         throw ErrorCode.NOT_FOLDER.data(e.file)
