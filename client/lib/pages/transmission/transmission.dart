@@ -273,8 +273,8 @@ class _TransmissionPageState extends State<TransmissionPage>
           ),
         ],
         bottom: TabBar(
-          labelColor: ColorScheme.of(context).tertiary,
-          dividerColor: ColorScheme.of(context).tertiary,
+          labelColor: ColorScheme.of(context).onTertiary,
+          dividerColor: ColorScheme.of(context).onPrimary,
           dividerHeight: 1,
           controller: _tabController,
           tabs: [
