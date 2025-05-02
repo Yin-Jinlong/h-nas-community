@@ -278,7 +278,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return;
     }
     final task = DownloadFileTask(
-      dst: '${Global.downloadDir}${file.fullPath}',
+      dst:
+          '${Global.downloadDir}${file.fullPath}${file.isFolder ? '.tar.gz' : ''}',
       name: file.name,
       size: file.size,
       createTime: DateTime.now(),

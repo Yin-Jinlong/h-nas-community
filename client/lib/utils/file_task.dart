@@ -220,6 +220,7 @@ class DownloadFileTask extends FileTask {
   start() {
     if (_started) return;
     _started = true;
+    status = FileTaskStatus.processing;
     FileAPI.download(file.fullPath, dst, private: private, (count, total) {
       downloaded = count;
       size = total;
@@ -228,6 +229,8 @@ class DownloadFileTask extends FileTask {
         doneTime = DateTime.now();
         onDone?.call();
       }
+    }).catchError((e) {
+      status = FileTaskStatus.error;
     });
   }
 }

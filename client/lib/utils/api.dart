@@ -51,7 +51,7 @@ abstract class API {
           options: options,
         )
         .then(then ?? (res) async => await _then(res, onResp) as T?)
-        .catchError(_catchError<T>);
+        .catchError(_catchError);
   }
 
   static Future<T?> _post<T>(
@@ -69,10 +69,10 @@ abstract class API {
           queryParameters: parms,
         )
         .then((res) async => await _then(res, onResp) as T?)
-        .catchError(_catchError<T>);
+        .catchError(_catchError);
   }
 
-  static Future<Response?> _download(
+  static Future _download(
     String path,
     String dst,
     ProgressCallback onProgress, {
@@ -86,6 +86,7 @@ abstract class API {
           queryParameters: parms,
           options: Options(responseType: ResponseType.stream),
         )
+        .then((res) => res.data)
         .catchError(_catchError);
   }
 
@@ -104,7 +105,7 @@ abstract class API {
           queryParameters: parms,
         )
         .then((res) async => await _then(res, onResp) as T?)
-        .catchError(_catchError<T>);
+        .catchError(_catchError);
   }
 }
 
@@ -120,7 +121,7 @@ Future _then(Response res, OnResp? onResp) async {
   return (data.data ?? true);
 }
 
-Future<T?> _catchError<T>(error) async {
+Future<Never> _catchError(error) async {
   switch (error) {
     case DioException e when e.type == DioExceptionType.badResponse:
       final data = e.response?.data;
@@ -143,5 +144,5 @@ Future<T?> _catchError<T>(error) async {
     default:
       Toast.showError(error.toString());
   }
-  return null;
+  throw error;
 }

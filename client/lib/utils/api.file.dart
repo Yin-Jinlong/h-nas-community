@@ -186,7 +186,12 @@ abstract class FileAPI extends API {
     ProgressCallback onProgress, {
     required bool private,
   }) {
-    return API._download(root, dst, onProgress, parms: _base(path, private));
+    return API._download(
+      root,
+      dst,
+      onProgress,
+      parms: {..._base(path, private), 'download': true},
+    );
   }
 
   static Future<bool?> delete(String path, {required bool private}) {

@@ -35,6 +35,7 @@ class _TransmissionPageState extends State<TransmissionPage>
   }
 
   _render() {
+    if (!mounted) return;
     setState(() {});
     if (Global.downloadTasks.where((e) => !e.isDone).isNotEmpty ||
         Global.uploadTasks.where((e) => !e.isDone).isNotEmpty) {
