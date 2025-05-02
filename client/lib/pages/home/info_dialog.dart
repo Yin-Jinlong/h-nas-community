@@ -129,6 +129,7 @@ class _InfoDialogState extends State<InfoDialog> {
               ),
             ),
             _infoRow(S.current.file_size, Text(file.size.storageSizeStr)),
+            _infoRow(S.current.file_info_owner, Text(file.owner.toString())),
             ...(file.isFolder ? _folderInfo() : const []),
             ...(fileMediaType?.isAudio == true ? _audioInfo() : const []),
           ],

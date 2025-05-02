@@ -47,6 +47,7 @@
   "exit_fullscreen": "退出全屏",
   "file_info_file_type": "文件类型",
   "file_info_media_type": "媒体类型",
+  "file_info_owner": "文件所属",
   "file_info_path": "文件路径",
   "file_name": "文件名",
   "file_size": "文件大小",

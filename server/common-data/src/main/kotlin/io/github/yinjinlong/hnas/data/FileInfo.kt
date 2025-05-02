@@ -12,6 +12,7 @@ import io.github.yinjinlong.hnas.entity.IVirtualFile
  * @property createTime 创建时间
  * @property updateTime 更新时间
  * @property size 文件大小
+ * @property owner 文件拥有者
  *
  * @author YJL
  */
@@ -22,7 +23,8 @@ data class FileInfo(
     val mediaType: String?,
     val createTime: Long,
     val updateTime: Long,
-    val size: Long
+    val size: Long,
+    val owner: Long,
 ) : Comparable<FileInfo> {
     override fun compareTo(other: FileInfo): Int {
         val tr = fileType.compareTo(other.fileType)

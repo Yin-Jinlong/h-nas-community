@@ -26,6 +26,7 @@ fun IVirtualFile.toFileInfo(
                 fileMappingService.getSize(hash!!)
             } else
                 it
-        }
+        },
+        owner = owner
     )
 }
