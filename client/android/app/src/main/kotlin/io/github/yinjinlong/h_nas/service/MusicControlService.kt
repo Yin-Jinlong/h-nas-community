@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import java.net.URI
 import kotlin.math.min
 import kotlin.math.roundToInt
+import androidx.core.graphics.createBitmap
 
 class MusicControlService : Service() {
 
@@ -124,8 +125,8 @@ class MusicControlService : Service() {
         )
     }
 
-    fun getCoverPix() = (resources.displayMetrics.density * 60).roundToInt()
-    fun getCoverCornerPix() = resources.displayMetrics.density * 12
+    private fun getCoverPix() = (resources.displayMetrics.density * 60).roundToInt()
+    private fun getCoverCornerPix() = resources.displayMetrics.density * 12
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun postNotification(title: String, artists: String, cover: String?, playing: Boolean) {
@@ -149,11 +150,7 @@ class MusicControlService : Service() {
                         paint.isAntiAlias = true
                         cornerRadius = getCoverCornerPix()
                     }
-                    coverBitmap = Bitmap.createBitmap(
-                        min(size, drawable.intrinsicWidth),
-                        min(size, drawable.intrinsicHeight),
-                        Bitmap.Config.ARGB_8888
-                    ).applyCanvas {
+                    coverBitmap = createBitmap(min(size, drawable.intrinsicWidth), min(size, drawable.intrinsicHeight)).applyCanvas {
                         drawable.bounds = Rect(0, 0, size, size)
                         drawable.draw(this)
                     }

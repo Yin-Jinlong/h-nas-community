@@ -139,6 +139,7 @@ class FileController(
 
     @Async
     @PostMapping("upload")
+    @Suppress("UastIncorrectHttpHeaderInspection")
     fun uploadFile(
         @ShouldLogin token: Token,
         @RequestHeader("Content-ID") pathBase64: String,

@@ -61,7 +61,7 @@ class MainActivity : FlutterActivity() {
         notificationsPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
     }
 
-    fun initNotifications() {
+    private fun initNotifications() {
         notificationsManager = NotificationManagerCompat.from(this)
         notificationsManager.deleteUnlistedNotificationChannels(listOf(Notifications.CHANNEL_MUSIC_PLAYER))
 

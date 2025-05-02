@@ -21,7 +21,7 @@ object Broadcast {
         return count
     }
 
-    fun NetworkInterface.isIPv4(): Boolean {
+    private fun NetworkInterface.isIPv4(): Boolean {
         return interfaceAddresses.any { it.address is Inet4Address }
     }
 

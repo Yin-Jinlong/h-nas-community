@@ -53,6 +53,7 @@ class UserController(
     }
 
     @PostMapping("login/qr/request")
+    @Suppress("UastIncorrectHttpHeaderInspection")
     fun requestLoginQR(
         session: HttpSession,
         @RequestHeader("X-Real-IP") ip: String
