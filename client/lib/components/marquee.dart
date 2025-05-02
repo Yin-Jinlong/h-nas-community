@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:h_nas/components/dispose.dart';
+import 'package:h_nas/utils/dispose.dart';
 
 class Marquee extends StatefulWidget {
   static const defaultCount = 3;
@@ -54,8 +54,7 @@ class Marquee extends StatefulWidget {
   State createState() => _MarqueeState();
 }
 
-class _MarqueeState extends DisposeFlagState<Marquee>
-    with SingleTickerProviderStateMixin {
+class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   late double contentWidth, contentHeight;
   late final AnimationController _controller;
 

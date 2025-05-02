@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/dispose.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class LoginQR extends StatefulWidget {
@@ -15,7 +15,7 @@ class LoginQR extends StatefulWidget {
   State createState() => _LoginQRState();
 }
 
-class _LoginQRState extends DisposeFlagState<LoginQR> {
+class _LoginQRState extends State<LoginQR> {
   String? _qrData;
   LoginQRInfoStatus? _status;
 

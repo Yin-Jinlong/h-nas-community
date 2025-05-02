@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/plugin/broadcast_plugin.dart';
+import 'package:h_nas/utils/dispose.dart';
 
 class ScanDialog extends StatefulWidget {
   const ScanDialog({super.key});
@@ -11,7 +11,7 @@ class ScanDialog extends StatefulWidget {
   State createState() => _ScanDialogState();
 }
 
-class _ScanDialogState extends DisposeFlagState<ScanDialog> {
+class _ScanDialogState extends State<ScanDialog> {
   final Set<String> _apiList = {};
 
   @override

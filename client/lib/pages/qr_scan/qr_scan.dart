@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_scankit/flutter_scankit.dart';
-import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/dispose.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -13,7 +13,7 @@ class QRScanPage extends StatefulWidget {
   State createState() => _QRScanPageState();
 }
 
-class _QRScanPageState extends DisposeFlagState<QRScanPage> {
+class _QRScanPageState extends State<QRScanPage> {
   late final ScanKitController _controller;
   String? _result;
   QRGrantInfo? _info;

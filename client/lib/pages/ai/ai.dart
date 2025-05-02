@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/components/switch_button.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/pages/ai/chat_message_view.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/dispose.dart';
 
 import 'Llm.dart';
 import 'chat_message.dart';
@@ -17,7 +17,7 @@ class AIPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AIPageState();
 }
 
-class _AIPageState extends DisposeFlagState<AIPage> {
+class _AIPageState extends State<AIPage> {
   final textController = TextEditingController();
   final provider = Llm();
   bool enableTool = false;

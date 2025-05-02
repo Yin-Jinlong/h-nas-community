@@ -2,12 +2,12 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
 import 'package:h_nas/components/clickable.dart';
-import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/video_player/more_drawer.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:media_kit_video/media_kit_video_controls/media_kit_video_controls.dart'
     as media_kit_video_controls;
@@ -42,8 +42,7 @@ class VideoControlsScaffold extends StatefulWidget {
   State<StatefulWidget> createState() => _VideoControlsScaffoldState();
 }
 
-class _VideoControlsScaffoldState
-    extends DisposeFlagState<VideoControlsScaffold> {
+class _VideoControlsScaffoldState extends State<VideoControlsScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +81,7 @@ class _VideoControlsContent extends StatefulWidget {
   State<StatefulWidget> createState() => _VideoControlsState();
 }
 
-class _VideoControlsState extends DisposeFlagState<_VideoControlsContent>
+class _VideoControlsState extends State<_VideoControlsContent>
     with TickerProviderStateMixin {
   late VideoControlState _state;
   late final AnimationController _playPauseController;

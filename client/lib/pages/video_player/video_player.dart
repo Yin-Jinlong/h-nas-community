@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/components/dispose.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/video_player/more_drawer.dart';
 import 'package:h_nas/pages/video_player/video_player_controlls.dart';
 import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -15,7 +15,7 @@ class VideoPlayerPage extends StatefulWidget {
   State createState() => _VideoPlayerPageState();
 }
 
-class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
+class _VideoPlayerPageState extends State<VideoPlayerPage>
     with VideoControlState {
   late final VideoController _controller;
   late final MediaPlayer player;
@@ -85,7 +85,7 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
   }
 
   void _updateInfo() async {
-    if(disposed) return;
+    if (disposed) return;
     final value = await FileAPI.getVideoStreamInfo(
       file!.fullPath,
       private: private,
@@ -95,7 +95,7 @@ class _VideoPlayerPageState extends DisposeFlagState<VideoPlayerPage>
     info = value;
     if (disposed) return;
 
-      setState(() {});
+    setState(() {});
     if (value?.status != HLSStreamStatus.done) {
       await Future.delayed(const Duration(seconds: 1));
       _updateInfo();
