@@ -129,6 +129,10 @@ class UserServiceImpl(
         return mapper.selectUserCount()
     }
 
+    override fun getUser(uid: Uid): UserInfo? {
+        return mapper.selectByUid(uid)?.let { UserInfo.of(it) }
+    }
+
     override fun getUsers(user: Uid, startId: Uid, count: Int): List<UserInfo> {
         checkAdmin(user)
         return mapper.selectUsers(startId, count).map {

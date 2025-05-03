@@ -3,6 +3,7 @@ import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/settings/user.dart';
+import 'package:h_nas/utils/dispose.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -12,6 +13,15 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  @override
+  void initState() {
+    super.initState();
+    UserS.update().then((value) {
+      if (disposed) return;
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = UserS.user;

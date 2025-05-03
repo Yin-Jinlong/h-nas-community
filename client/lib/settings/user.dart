@@ -39,6 +39,11 @@ abstract class UserS {
     _adminMode.value = false;
   }
 
+  static Future update() async {
+    final res = await UserAPI.getUserInfo();
+    if (res != null) UserS.user = res;
+  }
+
   static bool enableAdminMode() {
     if (_adminMode.value) return true;
     if (_user.value?.admin != true) {

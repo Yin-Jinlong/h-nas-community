@@ -85,6 +85,13 @@ class UserController(
         } ?: throw ErrorCode.BAD_REQUEST.error
     }
 
+    @GetMapping("info")
+    fun getUserInfo(
+        @ShouldLogin token: Token
+    ): UserInfo {
+        return userService.getUser(token.user) ?: throw ErrorCode.BAD_ARGUMENTS.error
+    }
+
     @PostMapping("grant/qr")
     fun grantQRLogin(
         @ShouldLogin token: Token,

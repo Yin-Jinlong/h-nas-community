@@ -32,6 +32,18 @@ abstract class UserAPI extends API {
     );
   }
 
+  static Future<UserInfo?> getUserInfo() {
+    return API
+        ._get(
+          '$root/info',
+          {},
+          options: Options(headers: {...API.tokenHeader()}),
+        )
+        .then((data) {
+          return data == null ? null : UserInfo.fromJson(data);
+        });
+  }
+
   static Future<String?> requestLoginQR() {
     return API._post<String>('$root/login/qr/request', {}).then((data) {
       return data;

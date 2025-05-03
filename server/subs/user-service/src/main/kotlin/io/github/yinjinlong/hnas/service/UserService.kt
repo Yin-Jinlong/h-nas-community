@@ -41,6 +41,8 @@ interface UserService {
 
     fun getUserCount(uid: Uid): Int
 
+    fun getUser(uid: Uid): UserInfo?
+
     fun getUsers(user: Uid, startId: Uid, count: Int): List<UserInfo>
 
     fun cancelRequest(id: String)
