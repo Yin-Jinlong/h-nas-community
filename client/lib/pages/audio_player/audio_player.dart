@@ -232,6 +232,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
                   ),
                   httpHeaders: {...API.tokenHeader()},
                   fit: BoxFit.cover,
+                  fadeInDuration: durationFast,
                   errorWidget: (context, error, stackTrace) {
                     return Icon(Icons.broken_image);
                   },

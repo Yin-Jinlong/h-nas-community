@@ -61,6 +61,7 @@ class _MoreSheetState extends State<MoreSheet> {
                 ),
                 httpHeaders: {...API.tokenHeader()},
                 fit: BoxFit.cover,
+                fadeInDuration: durationFast,
                 width: 80,
                 height: 80,
               ),

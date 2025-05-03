@@ -88,6 +88,7 @@ class _FilePreviewViewState extends State<FilePreviewView> {
       width: 50,
       height: 50,
       fit: BoxFit.cover,
+      fadeInDuration: durationFast,
       errorWidget: (context, error, stackTrace) {
         Toast.showError(error.toString());
         return Icon(Icons.broken_image, size: 50);
