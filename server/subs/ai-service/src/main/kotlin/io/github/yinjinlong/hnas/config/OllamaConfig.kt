@@ -5,9 +5,9 @@ import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor
 import org.springframework.ai.chat.memory.ChatMemory
 import org.springframework.ai.chat.memory.MessageWindowChatMemory
 import org.springframework.ai.ollama.OllamaChatModel
-import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.ResourceLoader
 import org.springframework.util.ResourceUtils
 
 /**
@@ -21,14 +21,14 @@ class OllamaConfig {
 
     @Bean
     fun chatClient(
-        context: ApplicationContext,
+        resourceLoader: ResourceLoader,
         model: OllamaChatModel,
         chatMemory: ChatMemory
     ): ChatClient = ChatClient.builder(model)
         .defaultAdvisors {
             it.advisors(MessageChatMemoryAdvisor(chatMemory))
         }
-        .defaultSystem(context.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "ai-system.md"))
+        .defaultSystem(resourceLoader.getResource(ResourceUtils.CLASSPATH_URL_PREFIX + "ai-system.md"))
         .build()
 
 }
