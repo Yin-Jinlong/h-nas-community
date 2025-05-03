@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/generated/l10n.dart';
@@ -7,6 +10,7 @@ import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/toast.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -16,6 +20,8 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  var _avatarKey = UniqueKey();
+
   @override
   void initState() {
     super.initState();
@@ -50,6 +56,28 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
+  void _setAvatar(File file) {
+    FileAPI.setAvatar(file).then((value) {
+      if (value == null || disposed) return;
+      final user = UserS.user;
+      if (user != null) {
+        UserS.user = UserInfo(
+          uid: user.uid,
+          username: user.username,
+          nick: user.nick,
+          admin: user.admin,
+        );
+        CachedNetworkImage.evictFromCache(FileAPIURL.userAvatar(user.uid)).then(
+          (value) {
+            if (disposed) return;
+            _avatarKey = UniqueKey();
+            setState(() {});
+          },
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = UserS.user;
@@ -75,7 +103,15 @@ class _MyPageState extends State<MyPage> {
                 color: Colors.grey,
                 tiles: [
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      ImagePicker().pickImage(source: ImageSource.gallery).then(
+                        (value) {
+                          if (value == null) return;
+                          final file = File(value.path);
+                          _setAvatar(file);
+                        },
+                      );
+                    },
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 16,
@@ -86,7 +122,11 @@ class _MyPageState extends State<MyPage> {
                           Text(S.current.avatar),
                           Expanded(child: Container()),
                           trailing(
-                            UserAvatar(user: UserS.user, withHero: true),
+                            UserAvatar(
+                              key: _avatarKey,
+                              user: user,
+                              withHero: true,
+                            ),
                           ),
                         ],
                       ),

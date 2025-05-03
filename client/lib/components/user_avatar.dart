@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/utils/api.dart';
 
@@ -19,10 +20,21 @@ class UserAvatar extends StatefulWidget {
 
 class _UserAvatarState extends State<UserAvatar> {
   Widget _avatar() {
+    final user = widget.user;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final size = constraints.biggest.shortestSide * 0.8;
-        return Icon(Icons.person, size: size, color: Colors.white);
+        return ClipOval(
+          child: CachedNetworkImage(
+            imageUrl:user != null ? FileAPIURL.userAvatar(user.uid) : '',
+            width: constraints.biggest.width,
+            height: constraints.biggest.height,
+            fit: BoxFit.cover,
+            errorWidget: (context, url, error) {
+              final size = constraints.biggest.shortestSide * 0.8;
+              return Icon(Icons.person, size: size, color: Colors.white);
+            },
+          ),
+        );
       },
     );
   }
@@ -37,13 +49,10 @@ class _UserAvatarState extends State<UserAvatar> {
       child: SizedBox.square(
         dimension: widget.size,
         child: CircleAvatar(
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            child:
-                widget.withHero
-                    ? Hero(tag: 'avatar', child: _avatar())
-                    : _avatar(),
-          ),
+          child:
+              widget.withHero
+                  ? Hero(tag: 'avatar', child: _avatar())
+                  : _avatar(),
         ),
       ),
     );

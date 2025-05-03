@@ -13,8 +13,6 @@ interface IUser {
 
     var nick: String
 
-    var avatar: String?
-
     var password: String
 
     var passwordType: PasswordType

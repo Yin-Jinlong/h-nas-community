@@ -243,4 +243,16 @@ abstract class FileAPI extends API {
           return res == null ? null : HLSStreamInfo.fromJson(res);
         });
   }
+
+  static Future setAvatar(File file) async {
+    final bytes = await file.readAsBytes();
+    return API._post(
+      '$root/user/avatar',
+      bytes,
+      options: Options(
+        headers: API.tokenHeader(),
+        contentType: ExtraHeaders.contentTypeOctetStream,
+      ),
+    );
+  }
 }

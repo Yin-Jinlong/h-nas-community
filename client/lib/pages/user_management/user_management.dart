@@ -78,7 +78,6 @@ class _UserData extends UserInfo {
   static const String idName = 'id';
   static const String usernameName = 'user_name';
   static const String nickName = 'nick';
-  static const String avatarName = 'avatar';
   static const String adminName = 'admin';
   static const String usageName = 'usage';
 
@@ -88,7 +87,6 @@ class _UserData extends UserInfo {
     required super.uid,
     required super.username,
     required super.nick,
-    super.avatar,
     required super.admin,
   });
 
@@ -96,7 +94,6 @@ class _UserData extends UserInfo {
     uid: e.uid,
     username: e.username,
     nick: e.nick,
-    avatar: e.avatar,
     admin: e.admin,
   );
 }

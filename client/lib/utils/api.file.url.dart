@@ -29,4 +29,6 @@ abstract class FileAPIURL extends FileAPI {
     required int bitrate,
   }) =>
       '$root/video/stream/${Uri.encodeComponent(path)}/$codec/$bitrate/index.m3u8?private=$private';
+
+  static String userAvatar(int uid) => '$root/user/avatar?uid=$uid';
 }
