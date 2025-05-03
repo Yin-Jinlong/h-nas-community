@@ -167,4 +167,10 @@ class UserServiceImpl(
             mapper.insert(this)
         }
     }
+
+    @Transactional
+    override fun setNick(uid: Uid, nick: String) {
+        val user = User(uid = uid, nick = nick)
+        mapper.updateNickNameByUid(user)
+    }
 }

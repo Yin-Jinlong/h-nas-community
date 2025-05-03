@@ -55,6 +55,8 @@ interface UserService {
      */
     fun register(username: String, password: String): IUser
 
+    fun setNick(uid: Uid, nick: String)
+
     data class LogResult(
         val user: UserInfo,
         val token: Token

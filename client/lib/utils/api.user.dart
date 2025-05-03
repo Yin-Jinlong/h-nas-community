@@ -122,4 +122,16 @@ abstract class UserAPI extends API {
           return r;
         });
   }
+
+  static Future<bool> setNick(String nick) {
+    return API
+        ._patch(
+          '$root/nick',
+          null,
+          parms: {'nick': nick},
+          options: Options(headers: {...API.tokenHeader()}),
+        )
+        .then((value) => value == true)
+        .catchError(_catchError);
+  }
 }

@@ -132,4 +132,11 @@ class UserController(
         userService.register(username, password)
     }
 
+    @PatchMapping("nick")
+    fun setNick(
+        @ShouldLogin token: Token,
+        @RequestParam nick: String
+    ) {
+        userService.setNick(token.user, nick)
+    }
 }

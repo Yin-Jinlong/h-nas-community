@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
+import 'package:h_nas/pages/my/nick_dialog.dart';
 import 'package:h_nas/settings/user.dart';
+import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/dispose.dart';
+import 'package:h_nas/utils/toast.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -20,6 +23,31 @@ class _MyPageState extends State<MyPage> {
       if (disposed) return;
       setState(() {});
     });
+  }
+
+  void _showNickDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return NickDialog(
+          onNick: (nick) {
+            if (nick.isEmpty) {
+              Toast.showError(S.current.error_empty(S.current.info_nick));
+            } else {
+              UserAPI.setNick(nick).then((value) {
+                if (value) {
+                  navigatorKey.currentState?.pop();
+                  UserS.update().then((value) {
+                    if (disposed) return;
+                    setState(() {});
+                  });
+                }
+              });
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -86,7 +114,9 @@ class _MyPageState extends State<MyPage> {
                     trailing: trailing(
                       Text(user.nick, style: TextTheme.of(context).bodyLarge),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      _showNickDialog(context);
+                    },
                   ),
                 ],
               ).toList(),

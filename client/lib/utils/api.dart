@@ -74,6 +74,24 @@ abstract class API {
         .catchError(_catchError);
   }
 
+  static Future<T?> _patch<T>(
+    String path,
+    Object? data, {
+    QueryParameters? parms,
+    Options? options,
+    OnResp? onResp,
+  }) {
+    return dio
+        .patch(
+          '$API_ROOT$path',
+          data: data,
+          options: options,
+          queryParameters: parms,
+        )
+        .then((res) async => await _then(res, onResp) as T?)
+        .catchError(_catchError);
+  }
+
   static Future _download(
     String path,
     String dst,

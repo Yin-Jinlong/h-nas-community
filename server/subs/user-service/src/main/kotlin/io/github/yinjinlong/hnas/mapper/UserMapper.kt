@@ -60,7 +60,7 @@ limit #{count}
     @Update("update user set username = #{username} where uid = #{uid}")
     fun updateUserNameByUid(user: User): Int
 
-    @Update("update user set nick = #{nickName} where uid = #{uid}")
+    @Update("update user set nick = #{nick} where uid = #{uid}")
     fun updateNickNameByUid(user: User): Int
 
     @Update("update user set password = #{password} where uid = #{uid}")
