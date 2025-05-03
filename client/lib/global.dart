@@ -17,7 +17,7 @@ const Duration durationSlow = Duration(milliseconds: 500);
 abstract class Global {
   static const String appName = 'H-NAS';
   static const String copyright =
-      'Copyright © 2023 yin-jinlong@github. All rights reserved.';
+      'Copyright © 2024-2025 yin-jinlong@github. All rights reserved.';
 
   static late String downloadDir;
 
