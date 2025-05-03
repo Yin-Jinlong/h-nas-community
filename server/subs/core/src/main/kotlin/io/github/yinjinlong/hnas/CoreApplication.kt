@@ -1,7 +1,7 @@
 package io.github.yinjinlong.hnas
 
-import com.google.gson.Gson
 import io.github.yinjinlong.hnas.error.ErrorCode
+import io.github.yinjinlong.hnas.redis.ObjectRedisTemplate
 import io.github.yinjinlong.hnas.resp.RespFactory
 import io.github.yinjinlong.hnas.token.Token
 import io.github.yinjinlong.spring.boot.annotations.UseWrappedReturnValue
@@ -9,7 +9,6 @@ import jakarta.annotation.PostConstruct
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient
 import org.springframework.context.annotation.Lazy
-import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -21,13 +20,12 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @EnableDiscoveryClient
 abstract class CoreApplication(
-    val redisTemplate: StringRedisTemplate,
-    val gson: Gson
+    val redisTemplate: ObjectRedisTemplate,
 ) {
 
     @PostConstruct
     fun init() {
-        Token.init(redisTemplate, gson)
+        Token.init(redisTemplate)
     }
 
     @RequestMapping("/**")

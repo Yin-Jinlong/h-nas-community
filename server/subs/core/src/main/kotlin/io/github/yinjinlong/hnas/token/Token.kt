@@ -1,9 +1,9 @@
 package io.github.yinjinlong.hnas.token
 
-import com.google.gson.Gson
 import io.github.yinjinlong.hnas.entity.Uid
+import io.github.yinjinlong.hnas.redis.ObjectRedisTemplate
+import io.github.yinjinlong.hnas.redis.RedisKey
 import io.github.yinjinlong.hnas.utils.base64Url
-import org.springframework.data.redis.core.StringRedisTemplate
 import java.time.Duration
 import kotlin.random.Random
 
@@ -15,18 +15,15 @@ data class Token(
     val role: String,
     val token: String = genKey(),
 ) {
-    private val key = "$TOKEN_PREFIX$token"
+    private val redisUserKey = RedisKey.userTokens(user)
+    private val redisKey = RedisKey.token(token)
 
     companion object {
+        private lateinit var redis: ObjectRedisTemplate
 
-        const val TOKEN_PREFIX = "token:"
-
-        private lateinit var gson: Gson
-        private lateinit var redis: StringRedisTemplate
-
-        fun init(redis: StringRedisTemplate, gson: Gson) {
+        fun init(redis: ObjectRedisTemplate) {
             this.redis = redis
-            this.gson = gson
+            Auth.redis = redis
         }
 
         /**
@@ -35,26 +32,29 @@ data class Token(
         private fun genKey() = Random.nextBytes(32).base64Url
 
         operator fun get(token: String): Token? {
-            val json = redis.opsForValue().get("$TOKEN_PREFIX$token") ?: return null
-            return gson.fromJson(json, Token::class.java)
+            val key = RedisKey.token(token)
+            val value = redis.opsForValue().get(key) as Token? ?: return null
+            val has = redis.opsForSet().isMember(RedisKey.userTokens(value.user), token)
+            return if (has == true) value else {
+                redis.delete(key)
+                null
+            }
         }
     }
 
     /**
      * 注册token
      */
-    fun register(timeout: Duration? = null) {
-        val json = gson.toJson(this)
-        if (timeout == null)
-            redis.opsForValue().set(key, json)
-        else
-            redis.opsForValue().set(key, json, timeout)
+    fun register(timeout: Duration) {
+        redis.opsForValue().set(redisKey, this, timeout)
+        redis.opsForSet().add(redisUserKey, token)
     }
 
     /**
      * 注销token
      */
     fun unregister() {
-        redis.delete(key)
+        redis.delete(redisKey)
+        redis.opsForSet().remove(redisUserKey, token)
     }
 }
