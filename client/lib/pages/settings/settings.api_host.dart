@@ -83,10 +83,8 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
                 keyboardType: TextInputType.url,
                 decoration: InputDecoration(
                   helperText: 'http://127.0.0.1:8888/api',
-                  border: OutlineInputBorder(),
                   labelText: S.current.server_addr,
                   hintText: _oldURL.isEmpty ? '' : _oldURL,
-                  hintStyle: TextStyle(color: Colors.grey),
                   errorText: _apiHostErrorText,
                 ),
                 onChanged: (value) {

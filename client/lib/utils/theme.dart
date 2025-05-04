@@ -9,6 +9,38 @@ extension ThemeUtils on ThemeData {
     return fromColor(defaultColor, Brightness.light);
   }
 
+  static Color _getStateColor(ColorScheme colorScheme, WidgetState state) {
+    return switch (state) {
+      WidgetState.hovered => colorScheme.tertiary,
+      WidgetState.focused => colorScheme.primary,
+      WidgetState.pressed => colorScheme.primary,
+      WidgetState.dragged => colorScheme.primary,
+      WidgetState.selected => colorScheme.primary,
+      WidgetState.scrolledUnder => colorScheme.primary,
+      WidgetState.disabled => colorScheme.onSurface.withValues(alpha: 0.5),
+      WidgetState.error => colorScheme.error,
+    };
+  }
+
+  static Color getFromState(ColorScheme colorScheme, Set<WidgetState> states) {
+    if (states.isEmpty) return colorScheme.onSurface;
+    if (states.length != 1) {
+      if (states.contains(WidgetState.error)) {
+        return _getStateColor(colorScheme, WidgetState.error);
+      }
+      if (states.contains(WidgetState.focused)) {
+        return _getStateColor(colorScheme, WidgetState.focused);
+      }
+      if (states.contains(WidgetState.pressed)) {
+        return _getStateColor(colorScheme, WidgetState.pressed);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return _getStateColor(colorScheme, WidgetState.hovered);
+      }
+    }
+    return _getStateColor(colorScheme, states.first);
+  }
+
   static ThemeData _fromColorScheme(ColorScheme colorScheme) => ThemeData(
     appBarTheme: AppBarTheme(
       backgroundColor: colorScheme.primary,
@@ -27,6 +59,17 @@ extension ThemeUtils on ThemeData {
             ? colorScheme.onPrimary
             : colorScheme.primary;
       }),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: WidgetStateInputBorder.resolveWith((states) {
+        return OutlineInputBorder(
+          borderSide: BorderSide(color: getFromState(colorScheme, states)),
+        );
+      }),
+      labelStyle: WidgetStateTextStyle.resolveWith((states) {
+        return TextStyle(color: getFromState(colorScheme, states));
+      }),
+      hintStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5)),
     ),
     colorScheme: colorScheme,
   );

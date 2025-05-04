@@ -43,8 +43,6 @@ class _LogonState extends _BaseState<_LogonWidget> {
           decoration: InputDecoration(
             labelText: S.current.username,
             hintText: S.current.username,
-            hintStyle: TextStyle(color: Colors.grey),
-            border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.person),
           ),
           validator: (value) {
@@ -66,7 +64,6 @@ class _LogonState extends _BaseState<_LogonWidget> {
           controller: password,
           decoration: InputDecoration(
             labelText: S.current.password,
-            border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.lock),
             suffixIcon: EditFieldUtils.clearButton(password, () {
               validate();
@@ -91,7 +88,6 @@ class _LogonState extends _BaseState<_LogonWidget> {
           controller: password2,
           decoration: InputDecoration(
             labelText: S.current.password2,
-            border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.lock),
             suffixIcon: EditFieldUtils.clearButton(password2, () {
               validate();

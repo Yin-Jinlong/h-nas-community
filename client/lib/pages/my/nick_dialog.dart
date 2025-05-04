@@ -21,7 +21,6 @@ class _NickDialogState extends State<NickDialog> {
       content: TextField(
         controller: _controller,
         decoration: InputDecoration(
-          border: OutlineInputBorder(),
           labelText: S.current.info_nick,
           hintText: UserS.user?.nick,
         ),

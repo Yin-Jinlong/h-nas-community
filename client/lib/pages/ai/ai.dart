@@ -115,8 +115,6 @@ class _AIPageState extends State<AIPage> {
                     controller: textController,
                     decoration: InputDecoration(
                       hintText: hints[hintIndex],
-                      hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),

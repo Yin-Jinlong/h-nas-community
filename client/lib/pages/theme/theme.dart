@@ -112,8 +112,6 @@ class _ThemePageState extends State<ThemePage> {
               decoration: InputDecoration(
                 labelText: S.current.title,
                 hintText: S.current.title,
-                hintStyle: TextStyle(color: Colors.grey.shade400),
-                border: OutlineInputBorder(),
               ),
             ),
             SliderTheme(

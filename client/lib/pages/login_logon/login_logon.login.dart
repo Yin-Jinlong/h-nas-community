@@ -55,8 +55,6 @@ class _LoginState extends _BaseState<_LoginWidget> {
           decoration: InputDecoration(
             labelText: S.current.username,
             hintText: '${S.current.username}/id',
-            hintStyle: TextStyle(color: Colors.grey),
-            border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.person),
           ),
           validator: (value) {
@@ -79,8 +77,6 @@ class _LoginState extends _BaseState<_LoginWidget> {
           decoration: InputDecoration(
             labelText: S.current.password,
             hintText: S.current.password,
-            hintStyle: TextStyle(color: Colors.grey),
-            border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.lock),
             suffixIcon: EditFieldUtils.clearButton(password, () {
               validate();

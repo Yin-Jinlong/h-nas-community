@@ -39,8 +39,6 @@ class _RenameDialogState extends State<RenameDialog> {
                 decoration: InputDecoration(
                   labelText: S.current.new_name,
                   hintText: widget.file.name,
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  border: OutlineInputBorder(),
                   suffix: EditFieldUtils.clearButton(_controller, () {
                     setState(() {});
                   }),
