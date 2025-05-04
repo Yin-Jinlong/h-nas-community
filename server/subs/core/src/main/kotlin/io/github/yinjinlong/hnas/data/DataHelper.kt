@@ -86,5 +86,10 @@ object DataHelper {
     /**
      * 头像：data/avatar/...
      */
-    fun avatarFile(uid: Uid): File = AvatarPath.file(uid.toString(), ".jpg")
+    fun avatarFile(uid: Uid): File = AvatarPath.file(uid.toString(), ".png")
+
+    /**
+     * 头像：data/avatar/...
+     */
+    fun avatarSmallFile(uid: Uid): File = AvatarPath.file(uid.toString(), "-small.png")
 }

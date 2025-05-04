@@ -28,10 +28,11 @@ class UserController(
     @ContentType("image/jpeg")
     @GetMapping("user/avatar")
     fun getUserAvatar(
-        @RequestParam uid: Uid
+        @RequestParam uid: Uid,
+        @RequestParam(required = false) raw: Boolean = false,
     ): ByteArray {
         logger.info("get user avatar, uid: $uid")
-        return userService.getAvatar(uid)?.readBytes() ?: byteArrayOf()
+        return userService.getAvatar(uid, raw)?.readBytes() ?: byteArrayOf()
     }
 
     @PostMapping("user/avatar")

@@ -17,20 +17,23 @@ import javax.imageio.ImageWriteParam
 @Service
 class UserServiceImpl : UserService {
 
-    override fun getAvatar(uid: Uid): File? {
-        return DataHelper.avatarFile(uid).let {
+    override fun getAvatar(uid: Uid, raw: Boolean): File? {
+        return (if (raw) DataHelper.avatarFile(uid) else DataHelper.avatarSmallFile(uid)).let {
             if (it.exists()) it
             else null
         }
     }
 
-    override fun setAvatar(uid: Uid, image: BufferedImage) {
-        val size = minOf(400, image.width, image.height)
-        val avatar = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-        avatar.graphics.apply {
-            drawImage(image.getCenterImage(), 0, 0, size, size, null)
+    fun genAvatar(image: BufferedImage, size: Int): BufferedImage {
+        val imgSize = minOf(size, image.width, image.height)
+        return BufferedImage(imgSize, imgSize, BufferedImage.TYPE_INT_ARGB).apply {
+            graphics.apply {
+                drawImage(image.getCenterImage(), 0, 0, imgSize, imgSize, null)
+            }
         }
-        val avatarFile = DataHelper.avatarFile(uid)
+    }
+
+    fun BufferedImage.saveAvatar(file: File) {
         ImageIO.getImageWritersBySuffix("png").next().apply {
             val out = ByteArrayOutputStream()
             output = ImageIO.createImageOutputStream(out)
@@ -38,10 +41,15 @@ class UserServiceImpl : UserService {
                 compressionMode = ImageWriteParam.MODE_EXPLICIT
                 compressionQuality = 1f
             }
-            write(avatar)
-            avatarFile.mkParent()
-            avatarFile.writeBytes(out.toByteArray())
+            write(this@saveAvatar)
+            file.mkParent()
+            file.writeBytes(out.toByteArray())
         }
+    }
+
+    override fun setAvatar(uid: Uid, image: BufferedImage) {
+        genAvatar(image, 400).saveAvatar(DataHelper.avatarFile(uid))
+        genAvatar(image, 120).saveAvatar(DataHelper.avatarSmallFile(uid))
     }
 
     fun BufferedImage.getCenterImage(): BufferedImage {

@@ -71,11 +71,101 @@ class _MyPageState extends State<MyPage> {
           (value) {
             if (disposed) return;
             _avatarKey = UniqueKey();
+            navigatorKey.currentState?.pop();
             setState(() {});
           },
         );
       }
     });
+  }
+
+  Widget _dialogItem(List<Widget> children, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: children,
+        ),
+      ),
+    );
+  }
+
+  void _showAvatarPreviewDialog(BuildContext context) {
+    final uid = UserS.user?.uid;
+    if (uid == null) return;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Center(
+                  child: SizedBox.expand(
+                    child: CachedNetworkImage(
+                      imageUrl: FileAPIURL.userAvatar(uid, raw: true),
+                      fit: BoxFit.contain,
+                      errorWidget: (context, url, error) {
+                        return Icon(Icons.person);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: () {
+                    navigatorKey.currentState?.pop();
+                  },
+                  icon: Icon(Icons.close, color: Colors.white70),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAvatarDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: IntrinsicHeight(
+            child: DefaultTextStyle(
+              style: TextTheme.of(context).bodyLarge ?? TextStyle(),
+              child: Column(
+                children: [
+                  _dialogItem([Text(S.current.avatar_show)], () {
+                    navigatorKey.currentState?.pop();
+                    _showAvatarPreviewDialog(context);
+                  }),
+                  _dialogItem([Text(S.current.avatar_change)], () {
+                    ImagePicker().pickImage(source: ImageSource.gallery).then((
+                      value,
+                    ) {
+                      if (value == null) return;
+                      final file = File(value.path);
+                      _setAvatar(file);
+                    });
+                  }),
+                  _dialogItem([Text(S.current.avatar_delete)], () {}),
+                  Divider(color: Colors.grey),
+                  _dialogItem([Text(S.current.cancel)], () {
+                    navigatorKey.currentState?.pop();
+                  }),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -104,13 +194,7 @@ class _MyPageState extends State<MyPage> {
                 tiles: [
                   InkWell(
                     onTap: () {
-                      ImagePicker().pickImage(source: ImageSource.gallery).then(
-                        (value) {
-                          if (value == null) return;
-                          final file = File(value.path);
-                          _setAvatar(file);
-                        },
-                      );
+                      _showAvatarDialog(context);
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(
