@@ -6,7 +6,10 @@ import 'dart:typed_data';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:h_nas/main.dart';
 import 'package:h_nas/prefs.dart';
+import 'package:h_nas/routes.dart';
+import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/headers.dart';
 import 'package:h_nas/utils/toast.dart';
 
@@ -153,9 +156,12 @@ Future<Never> _catchError(error) async {
       if (data != null) {
         try {
           final resp = APIResponse.fromJson(data);
-          if (Prefs.token != null && resp.code == 100) {
-            Future.delayed(Duration(seconds: 1), () {
+          if (resp.code == 100) {
+            Future.delayed(const Duration(milliseconds: 600), () {
+              UserS.user = null;
+              Prefs.token = null;
               Toast.showError(S.current.please_login);
+              navigatorKey.currentState?.popAndPushNamed(Routes.loginOn);
             });
           }
           Toast.showError(
