@@ -1,7 +1,7 @@
 package io.github.yinjinlong.hnas.tools
 
 import com.google.gson.Gson
-import io.github.yinjinlong.spring.boot.util.getLogger
+import io.github.yinjinlong.hnas.utils.logger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
 import org.springframework.beans.factory.annotation.Value
@@ -33,7 +33,7 @@ class WeatherTool(
     @Value("\${qweather.jwt.keyId}")
     private val jwtKeyId: String,
     val gson: Gson
-) : CommonTool(WeatherTool::class.getLogger()) {
+) : CommonTool(WeatherTool::class.logger()) {
     data class GeoResponse(
         val code: Int,
         val location: List<Location>,

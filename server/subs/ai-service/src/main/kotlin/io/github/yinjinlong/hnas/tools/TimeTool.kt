@@ -1,6 +1,6 @@
 package io.github.yinjinlong.hnas.tools
 
-import io.github.yinjinlong.spring.boot.util.getLogger
+import io.github.yinjinlong.hnas.utils.logger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
 import java.text.SimpleDateFormat
@@ -10,7 +10,7 @@ import java.util.*
  * @author YJL
  */
 @ToolService
-class TimeTool : CommonTool(TimeTool::class.getLogger()) {
+class TimeTool : CommonTool(TimeTool::class.logger()) {
 
     companion object {
         /**

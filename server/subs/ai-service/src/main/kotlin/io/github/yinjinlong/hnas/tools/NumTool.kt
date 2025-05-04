@@ -1,6 +1,6 @@
 package io.github.yinjinlong.hnas.tools
 
-import io.github.yinjinlong.spring.boot.util.getLogger
+import io.github.yinjinlong.hnas.utils.logger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
 import java.math.BigDecimal
@@ -10,8 +10,9 @@ import java.math.RoundingMode
 /**
  * @author YJL
  */
+@Suppress("unused")
 @ToolService
-class NumTool : CommonTool(NumTool::class.getLogger()) {
+class NumTool : CommonTool(NumTool::class.logger()) {
 
     enum class OP {
         ADD {

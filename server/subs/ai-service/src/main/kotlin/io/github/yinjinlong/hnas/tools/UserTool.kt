@@ -1,8 +1,8 @@
 package io.github.yinjinlong.hnas.tools
 
 import io.github.yinjinlong.hnas.token.Token
+import org.slf4j.Logger
 import org.springframework.web.client.RestTemplate
-import java.util.logging.Logger
 
 /**
  * @author YJL

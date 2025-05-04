@@ -6,6 +6,7 @@ import io.github.yinjinlong.hnas.data.HLSStreamList
 import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.service.FileMappingService
 import io.github.yinjinlong.hnas.token.Token
+import io.github.yinjinlong.hnas.utils.logger
 import io.github.yinjinlong.spring.boot.annotations.ContentType
 import io.github.yinjinlong.spring.boot.annotations.ResponseRaw
 import org.springframework.stereotype.Controller
@@ -26,12 +27,15 @@ class CacheFileVideoController(
     val fileMappingService: FileMappingService,
 ) : WithFS(virtualFileSystemProvider) {
 
+    val logger=  CacheFileVideoController::class.logger()
+
     @GetMapping("video/chapter")
     fun getVideoChapter(
         token: Token?,
         @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false
     ): List<ChapterInfo> {
+        logger.info("getVideoChapter: ${token?.user} $path $private")
         val p = getPath(private, token?.user, path)
         return fileMappingService.getVideoChapters(p)
     }
@@ -42,6 +46,7 @@ class CacheFileVideoController(
         @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false
     ): List<HLSStreamList> {
+        logger.info("getVideoStreams: ${token?.user} $path $private")
         val p = getPath(private, token?.user, path)
         return fileMappingService.getVideoLiveStreams(p)
     }
@@ -54,6 +59,7 @@ class CacheFileVideoController(
         @RequestParam codec: String,
         @RequestParam bitrate: Int
     ): HLSStreamInfo {
+        logger.info("getVideoStreamInfo: ${token?.user} $path $private")
         val p = getPath(private, token?.user, path)
         return fileMappingService.getVideoLiveStreamInfo(p, codec, bitrate)
     }
@@ -68,6 +74,7 @@ class CacheFileVideoController(
         @PathVariable("codec") codec: String,
         @PathVariable("bitrate") bitrate: Int,
     ): String {
+        logger.info("getVideoStreamM3u8: ${token?.user} $path $private")
         val p = getPath(private, token?.user, path)
         return fileMappingService.getVideoLiveStreamM3u8(p, codec, bitrate, private).toString()
     }
@@ -81,6 +88,7 @@ class CacheFileVideoController(
         @PathVariable("bitrate") bitrate: Int,
         @PathVariable("index") index: String,
     ): File {
+        logger.info("getVideoStream: ${token?.user} $path $private")
         val p = getPath(private, token?.user, URLDecoder.decode(path, Charsets.UTF_8))
         return fileMappingService.getVideoLiveStreamFile(p, codec, bitrate, index)
     }

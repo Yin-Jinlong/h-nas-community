@@ -15,7 +15,6 @@ import io.github.yinjinlong.hnas.service.VirtualFileService
 import io.github.yinjinlong.hnas.token.Token
 import io.github.yinjinlong.hnas.utils.*
 import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
-import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletResponse
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
@@ -44,7 +43,7 @@ class FileController(
     val virtualFileService: VirtualFileService
 ) : WithFS(virtualFileSystemProvider) {
 
-    val logger = getLogger()
+    val logger = FileController::class.logger()
 
     @GetMapping("preview/info")
     fun getFilePreview(
@@ -52,6 +51,7 @@ class FileController(
         @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false,
     ): FilePreview {
+        logger.info("getFilePreview: ${token?.user} $path $private")
         val pp = getPath(private, token?.user, path)
         val vf = virtualFileService.get(pp)
             ?: throw ErrorCode.NO_SUCH_FILE.data(path)
@@ -77,6 +77,7 @@ class FileController(
         @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false,
     ): FolderChildrenCount = withCatch {
+        logger.info("folderChildrenCount: ${token?.user} $path $private")
         val pp = getPath(private, token?.user, path)
         val cc = virtualFileService.getFolderChildrenCount(pp)
         FolderChildrenCount(
@@ -102,6 +103,7 @@ class FileController(
         @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false,
     ): FileInfo = withCatch {
+        logger.info("getFileInfo: ${token?.user} $path $private")
         val p = path.trim().ifEmpty { "/" }
 
         val pp = getPath(private, token?.user, p).toAbsolutePath()
@@ -118,6 +120,7 @@ class FileController(
         @RequestParam(required = false) private: Boolean = false,
         type: String?
     ): List<FileInfo> = withCatch {
+        logger.info("getFiles: ${token?.user} $path $private")
         val p = path.trim().ifEmpty { "/" }
 
         val pp = getPath(private, token?.user, p)
@@ -134,6 +137,7 @@ class FileController(
         @ShouldLogin user: Token,
         @RequestParam(required = false) private: Boolean = false,
     ): Unit = withCatch {
+        logger.info("createFolder: ${user.user} $path $private")
         val p = getPath(private, user.user, path)
         Files.createDirectory(p, FileOwnerAttribute(user.user))
     }
@@ -178,6 +182,7 @@ class FileController(
         @RequestParam path: String,
         @RequestParam(required = false) private: Boolean = false,
     ) = withCatch {
+        logger.info("deleteFile: ${token.user} $path $private")
         val pp = getPath(private, token.user, path)
         pp.bundledAttributes[FileAttributes.OWNER] = token.user
         pp.bundledAttributes[FileAttributes.ROLE] = token.role
@@ -217,7 +222,7 @@ class FileController(
             out.finish()
         }
     } catch (e: IOException) {
-        logger.warning(e.message)
+        logger.warn(e.message)
     }
 
     @Async
@@ -231,6 +236,7 @@ class FileController(
         @RequestParam(required = false) private: Boolean = false,
         resp: HttpServletResponse
     ) {
+        logger.info("getFile: ${token?.user} $path $private")
         val pp = getPath(private, token?.user, path)
         val vf = virtualFileService.get(pp) as VirtualFile?
             ?: throw ErrorCode.NO_SUCH_FILE.error
@@ -290,7 +296,7 @@ class FileController(
                 }
             }
         } catch (ioe: IOException) {
-            logger.warning(ioe.message)
+            logger.warn(ioe.message)
         }
     }
 
@@ -317,6 +323,7 @@ class FileController(
         @RequestParam(required = false) lastPath: String? = null,
         @RequestParam(required = false) private: Boolean = false,
     ): List<FileInfo> {
+        logger.info("search: ${token?.user} $name $lastPath $private")
         return virtualFileService.search(
             if (private) token?.user ?: throw ErrorCode.BAD_ARGUMENTS.error else 0,
             name,

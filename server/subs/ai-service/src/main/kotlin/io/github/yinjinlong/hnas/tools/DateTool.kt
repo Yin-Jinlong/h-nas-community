@@ -1,7 +1,7 @@
 package io.github.yinjinlong.hnas.tools
 
 import com.nlf.calendar.Lunar
-import io.github.yinjinlong.spring.boot.util.getLogger
+import io.github.yinjinlong.hnas.utils.logger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
 
@@ -9,7 +9,7 @@ import org.springframework.ai.tool.annotation.ToolParam
  * @author YJL
  */
 @ToolService
-class DateTool : CommonTool(DateTool::class.getLogger()) {
+class DateTool : CommonTool(DateTool::class.logger()) {
 
     companion object {
         val weekNames = arrayOf("Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat.")

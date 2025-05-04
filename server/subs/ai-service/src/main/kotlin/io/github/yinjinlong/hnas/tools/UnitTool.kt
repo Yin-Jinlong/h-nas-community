@@ -2,7 +2,7 @@ package io.github.yinjinlong.hnas.tools
 
 import io.github.yinjinlong.hnas.tools.FileTool.Companion.NUM_1024
 import io.github.yinjinlong.hnas.tools.FileTool.Companion.SIZE_UNITS
-import io.github.yinjinlong.spring.boot.util.getLogger
+import io.github.yinjinlong.hnas.utils.logger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
 import java.math.BigDecimal
@@ -12,7 +12,7 @@ import java.math.RoundingMode
  * @author YJL
  */
 @ToolService
-class UnitTool : CommonTool(UnitTool::class.getLogger()) {
+class UnitTool : CommonTool(UnitTool::class.logger()) {
 
     @Tool(description = "文件大小转换成人性化字符串")
     fun fileSizeToHumanStr(

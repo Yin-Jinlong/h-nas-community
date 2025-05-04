@@ -20,8 +20,8 @@ import io.github.yinjinlong.hnas.service.VirtualFileService
 import io.github.yinjinlong.hnas.task.BackgroundTasks
 import io.github.yinjinlong.hnas.utils.del
 import io.github.yinjinlong.hnas.utils.isVideoMediaType
+import io.github.yinjinlong.hnas.utils.logger
 import io.github.yinjinlong.hnas.utils.mkParent
-import io.github.yinjinlong.spring.boot.util.getLogger
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
@@ -47,7 +47,7 @@ class FileMappingServiceImpl(
     val gson: Gson,
 ) : FileMappingService {
 
-    private val logger = getLogger()
+    private val logger = FileMappingServiceImpl::class.logger()
 
     private val previewTypeSet = setOf("image", "video")
 
@@ -119,7 +119,7 @@ class FileMappingServiceImpl(
         } catch (e: PreviewException) {
             updatePreview(hash, false)
         } catch (e: FileNotFoundException) {
-            logger.warning("File not found :" + e.message)
+            logger.warn("File not found :" + e.message)
         } catch (e: Exception) {
             e.printStackTrace()
         }

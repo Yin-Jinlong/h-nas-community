@@ -1,7 +1,7 @@
 package io.github.yinjinlong.hnas.test.tools
 
 import io.github.yinjinlong.hnas.tools.AbstractTool
-import io.github.yinjinlong.spring.boot.util.getLogger
+import io.github.yinjinlong.hnas.utils.logger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
  */
 class ToolTest {
 
-    class Tool : AbstractTool(Tool::class.getLogger()) {
+    class Tool : AbstractTool(Tool::class.logger()) {
 
         fun test(): String {
             return callerMethod

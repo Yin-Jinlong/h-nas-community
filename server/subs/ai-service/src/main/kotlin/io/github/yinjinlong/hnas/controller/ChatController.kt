@@ -6,8 +6,8 @@ import io.github.yinjinlong.hnas.entity.Uid
 import io.github.yinjinlong.hnas.token.Token
 import io.github.yinjinlong.hnas.tools.CommonTool
 import io.github.yinjinlong.hnas.tools.FileTool
+import io.github.yinjinlong.hnas.utils.logger
 import io.github.yinjinlong.spring.boot.annotations.SkipHandle
-import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.NotEmpty
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor
@@ -35,6 +35,8 @@ class ChatController(
     private val tools: Array<CommonTool>,
 ) {
 
+    val logger = ChatController::class.logger()
+
     private fun chatClientWithCommonToolsBuilder(): ChatClient.Builder = ChatClient.builder(model)
         .defaultAdvisors {
             it.advisors(MessageChatMemoryAdvisor(chatMemory))
@@ -48,6 +50,7 @@ class ChatController(
     fun getHistory(
         @ShouldLogin token: Token,
     ): List<ChatMessageItem> {
+        logger.info("getHistory ${token.user}")
         return chatMemory.get(chatId(token.user)).map {
             ChatMessageItem(it.messageType.name.lowercase(), it.text)
         }
@@ -57,6 +60,7 @@ class ChatController(
     fun clearHistory(
         @ShouldLogin token: Token,
     ) {
+        logger.info("clearHistory ${token.user}")
         chatMemory.clear(chatId(token.user))
     }
 
@@ -65,8 +69,8 @@ class ChatController(
     fun chat(
         @ShouldLogin token: Token,
         @RequestBody param: ChatParam,
-        resp: HttpServletResponse
     ): Flux<String> {
+        logger.info("chat ${token.user} ${param.message}")
         return chatClient.let {
             if (param.tool)
                 chatClientWithCommonToolsBuilder()

@@ -9,8 +9,8 @@ import io.github.yinjinlong.hnas.entity.Uid
 import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.service.UserService
 import io.github.yinjinlong.hnas.token.Token
+import io.github.yinjinlong.hnas.utils.logger
 import io.github.yinjinlong.hnas.validator.Password
-import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.constraints.NotBlank
@@ -27,7 +27,7 @@ import java.net.InetAddress
 class UserController(
     val userService: UserService
 ) {
-    val logger = getLogger()
+    val logger = UserController::class.logger()
 
     fun login(logId: String?, password: String?): UserService.LogResult {
         if (logId.isNullOrBlank())

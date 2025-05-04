@@ -3,7 +3,7 @@ package io.github.yinjinlong.hnas.tools
 import io.github.yinjinlong.hnas.controller.API
 import io.github.yinjinlong.hnas.token.Token
 import io.github.yinjinlong.hnas.utils.get
-import io.github.yinjinlong.spring.boot.util.getLogger
+import io.github.yinjinlong.hnas.utils.logger
 import org.springframework.ai.tool.annotation.Tool
 import org.springframework.ai.tool.annotation.ToolParam
 import org.springframework.http.HttpHeaders
@@ -16,7 +16,7 @@ import java.math.BigDecimal
 class FileTool(
     restTemplate: RestTemplate,
     token: Token,
-) : UserTool(FileTool::class.getLogger(), restTemplate, token) {
+) : UserTool(FileTool::class.logger(), restTemplate, token) {
 
     companion object {
         const val HOST = "file-service"
