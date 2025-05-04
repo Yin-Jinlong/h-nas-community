@@ -13,8 +13,8 @@ import io.github.yinjinlong.hnas.mapper.UserMapper
 import io.github.yinjinlong.hnas.service.UserService
 import io.github.yinjinlong.hnas.token.Auth
 import io.github.yinjinlong.hnas.token.Token
+import io.github.yinjinlong.hnas.utils.base64Url
 import io.github.yinjinlong.md.sha256
-import io.github.yinjinlong.md.sha256Hex
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,6 +22,7 @@ import java.net.InetAddress
 import java.time.Duration
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.random.Random
 
 /**
  * @author YJL
@@ -32,6 +33,8 @@ class UserServiceImpl(
     val redis: StringRedisTemplate,
     val gson: Gson,
 ) : UserService {
+
+    fun genQRID() = Random.nextBytes(12).base64Url
 
     fun qrIdKey(id: String) = "qr_id:$id"
 
@@ -71,7 +74,7 @@ class UserServiceImpl(
     }
 
     override fun genQRLoginRequestID(sessionID: String, ip: InetAddress): String {
-        return sessionID.sha256Hex.also {
+        return genQRID().also {
             setInfo(
                 it,
                 LoginQRInfo(LoginQRInfoStatus.WAITING, user = null, id = sessionID, ip = ip),
