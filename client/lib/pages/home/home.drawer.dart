@@ -135,7 +135,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
     return Column(
       spacing: 8,
       children: [
-        UserAvatar(user: UserS.user, withHero: true),
+        UserAvatar(user: UserS.user?.uid, withHero: true),
         ElevatedButton(onPressed: widget.onLogin, child: Text(S.current.login)),
       ],
     );
@@ -164,7 +164,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    UserAvatar(user: UserS.user, withHero: true),
+                    UserAvatar(user: UserS.user?.uid, withHero: true),
                     Text(user.nick),
                   ],
                 ),

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/tab_page.dart';
+import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/pages/login_logon/login_qr.dart';
 import 'package:h_nas/settings/user.dart';
@@ -29,6 +30,7 @@ class LogInOnPage extends StatefulWidget {
 class _LogInOnPageState extends State<LogInOnPage> {
   var pageIndex = 0;
   bool _qr = false;
+  int? loginUid;
   final List<_BackgroundItem> _bgItems = [];
 
   @override
@@ -85,15 +87,22 @@ class _LogInOnPageState extends State<LogInOnPage> {
                   ],
                 ),
                 if (!_qr)
-                  Hero(
-                    tag: 'avatar',
-                    child: const Icon(Icons.person, size: 50),
+                  UserAvatar(
+                    user: pageIndex == 0 ? loginUid : null,
+                    withHero: true,
+                    backgroundColor: Colors.transparent,
+                    iconColor: ColorScheme.of(context).primary,
                   ),
                 if (!_qr)
                   TabPage(
                     index: pageIndex,
                     children: [
                       _LoginWidget(
+                        onMaybeUid: (uid) {
+                          setState(() {
+                            loginUid = uid;
+                          });
+                        },
                         onGotoLogon: () {
                           setState(() {
                             pageIndex = 1;

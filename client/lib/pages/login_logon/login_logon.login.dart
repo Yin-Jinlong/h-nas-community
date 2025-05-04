@@ -1,9 +1,10 @@
 part of 'login_logon.dart';
 
 class _LoginWidget extends StatefulWidget {
+  final void Function(int? uid) onMaybeUid;
   final VoidCallback onGotoLogon;
 
-  const _LoginWidget({required this.onGotoLogon});
+  const _LoginWidget({required this.onMaybeUid, required this.onGotoLogon});
 
   @override
   State createState() {
@@ -12,6 +13,7 @@ class _LoginWidget extends StatefulWidget {
 }
 
 class _LoginState extends _BaseState<_LoginWidget> {
+  final RegExp uidRex = RegExp(r'^[0-9]{12}$');
   final logid = TextEditingController(), password = TextEditingController();
 
   _login() {
@@ -20,6 +22,18 @@ class _LoginState extends _BaseState<_LoginWidget> {
         Toast.showSuccess('Hi ${v.nick}!');
         UserS.user = v;
         navigatorKey.currentState?.pop();
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    logid.addListener(() {
+      if (uidRex.hasMatch(logid.text)) {
+        widget.onMaybeUid(int.parse(logid.text));
+      } else {
+        widget.onMaybeUid(null);
       }
     });
   }

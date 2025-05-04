@@ -124,7 +124,7 @@ class _MyPageState extends State<MyPage> {
                           trailing(
                             UserAvatar(
                               key: _avatarKey,
-                              user: user,
+                              user: user.uid,
                               withHero: true,
                             ),
                           ),

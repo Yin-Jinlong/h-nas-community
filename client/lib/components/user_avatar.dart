@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:h_nas/utils/api.dart';
 
 class UserAvatar extends StatefulWidget {
-  final UserInfo? user;
+  final int? user;
+  final Color? backgroundColor, iconColor;
   final double size;
   final bool withHero;
 
@@ -12,6 +13,8 @@ class UserAvatar extends StatefulWidget {
     required this.user,
     this.size = 80,
     this.withHero = false,
+    this.backgroundColor,
+    this.iconColor,
   });
 
   @override
@@ -25,13 +28,17 @@ class _UserAvatarState extends State<UserAvatar> {
       builder: (context, constraints) {
         return ClipOval(
           child: CachedNetworkImage(
-            imageUrl:user != null ? FileAPIURL.userAvatar(user.uid) : '',
+            imageUrl: user != null ? FileAPIURL.userAvatar(user) : '',
             width: constraints.biggest.width,
             height: constraints.biggest.height,
             fit: BoxFit.cover,
             errorWidget: (context, url, error) {
               final size = constraints.biggest.shortestSide * 0.8;
-              return Icon(Icons.person, size: size, color: Colors.white);
+              return Icon(
+                Icons.person,
+                size: size,
+                color: widget.iconColor ?? ColorScheme.of(context).onPrimary,
+              );
             },
           ),
         );
@@ -49,6 +56,7 @@ class _UserAvatarState extends State<UserAvatar> {
       child: SizedBox.square(
         dimension: widget.size,
         child: CircleAvatar(
+          backgroundColor: widget.backgroundColor,
           child:
               widget.withHero
                   ? Hero(tag: 'avatar', child: _avatar())
