@@ -322,7 +322,7 @@ packages:
     source: hosted
     version: "2.1.4"
   file:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: file
       sha256: a3b4f84adafef897088c160faf7dfffb7696046cb13ae90b508c2cbc95d3b8d4
@@ -391,7 +391,7 @@ packages:
     source: hosted
     version: "1.0.1"
   flutter_cache_manager:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_cache_manager
       sha256: "400b6592f16a4409a7f2bb929a9a7e38c72cceb8ffb99ee57bbf2cb2cecf8386"
@@ -830,7 +830,7 @@ packages:
     source: hosted
     version: "3.2.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
@@ -1218,6 +1218,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.1"
+  storage_info:
+    dependency: "direct main"
+    description:
+      name: storage_info
+      sha256: adbf5fd1a7c2ca977dd828573820db0a0a16f4aa317e0ab72e9b3282eb5bbe42
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  storage_utility:
+    dependency: "direct main"
+    description:
+      name: storage_utility
+      sha256: e5255514784d184a5b963d631356c438667112c0587c83a231ea8706769c833b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  storage_utility_android:
+    dependency: transitive
+    description:
+      name: storage_utility_android
+      sha256: "89b9ec436200b5a815db814122759db4b209b4b4e411bc10aa6c87a9c88fc8ad"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  storage_utility_foundation:
+    dependency: transitive
+    description:
+      name: storage_utility_foundation
+      sha256: "69c7bcb1458d5898aeecb0a6034d15179e3197846d074d50b5d7e3704b565ffb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  storage_utility_platform_interface:
+    dependency: transitive
+    description:
+      name: storage_utility_platform_interface
+      sha256: ac515f83283b1fc14430872445f5465010682568dc9d0776c1ed7333a4ce4c4e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  storage_utility_windows:
+    dependency: transitive
+    description:
+      name: storage_utility_windows
+      sha256: aba5f9f3b13cd50ca7f1ac0939135bdde4f88a8f4aeb43cf9c3f21b2075daa2c
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   stream_channel:
     dependency: transitive
     description:

@@ -76,6 +76,11 @@ dependencies:
   image_picker: ^1.1.2
   dio_cookie_manager: ^3.2.0
   cookie_jar: ^4.0.8
+  flutter_cache_manager: ^3.4.1
+  path: ^1.9.1
+  file: ^7.0.1
+  storage_utility: ^1.0.0
+  storage_info: ^1.0.0
 
 dev_dependencies:
   flutter_test:

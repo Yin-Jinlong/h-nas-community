@@ -11,6 +11,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.github.yinjinlong.h_nas.plugin.BroadcastPlugin
 import io.github.yinjinlong.h_nas.plugin.NotificationsPlugin
+import io.github.yinjinlong.h_nas.plugin.StoragePlugin
 import io.github.yinjinlong.h_nas.service.MusicControlService
 
 class MainActivity : FlutterActivity() {
@@ -33,11 +34,12 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, BroadcastPlugin.NAME)
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+        MethodChannel(messenger, BroadcastPlugin.NAME)
             .setMethodCallHandler(
                 BroadcastPlugin()
             )
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NotificationsPlugin.NAME).apply {
+        MethodChannel(messenger, NotificationsPlugin.NAME).apply {
             setMethodCallHandler(
                 NotificationsPlugin(
                     this,
@@ -48,6 +50,13 @@ class MainActivity : FlutterActivity() {
                 ).apply {
                     notificationsPlugin = this
                 })
+        }
+        MethodChannel(messenger, StoragePlugin.NAME).apply {
+            setMethodCallHandler(
+                StoragePlugin(
+                    this@MainActivity
+                )
+            )
         }
     }
 

@@ -50,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ListTile(
             leading: const Icon(Icons.language),
-            trailing: const Icon(Icons.arrow_forward_ios),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             title: Text(S.current.language),
             subtitle: Text(
               LanguageTagName.fromLanguageTag(
@@ -64,6 +64,15 @@ class _SettingsPageState extends State<SettingsPage> {
               });
             },
           ),
+          if (!UniversalPlatform.isWeb)
+            ListTile(
+              title: Text(S.current.storage),
+              leading: const Icon(Icons.storage),
+              onTap: () {
+                Navigator.of(context).pushNamed(Routes.storage);
+              },
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
           ListTile(
             title: Text(S.current.server_addr),
             subtitle: Text('${S.current.now}${API.API_ROOT}'),

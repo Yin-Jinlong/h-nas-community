@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/cache/cache_manager.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/model/list_model.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
@@ -53,6 +55,8 @@ abstract class Global {
     } else {
       downloadDir = '';
     }
+
+    CachedNetworkImageProvider.defaultCacheManager = DefaultCacheManager();
   }
 
   static void dispose() {

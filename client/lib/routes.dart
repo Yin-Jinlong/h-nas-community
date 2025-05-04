@@ -13,6 +13,7 @@ class Routes {
   static const String search = '/search';
   static const String serverInfo = '/server_info';
   static const String settings = '/settings';
+  static const String storage = '/storage';
   static const String textReader = '/text_reader';
   static const String theme = '/theme';
   static const String transmission = '/transmission';
@@ -35,6 +36,7 @@ class Routes {
       search => const SearchPage(),
       serverInfo => const ServerInfoPage(),
       settings => const SettingsPage(),
+      storage => const StoragePage(),
       textReader => const TextReaderPage(),
       theme => const ThemePage(),
       transmission => const TransmissionPage(),
