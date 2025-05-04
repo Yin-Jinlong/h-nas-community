@@ -142,4 +142,5 @@ flutter:
         - asset: assets/fonts/JetBrainsMonoNerdFont-Medium.ttf
 
 flutter_intl:
+  main_locale: zh
   enabled: true
