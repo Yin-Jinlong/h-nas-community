@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/headers.dart';
 import 'package:h_nas/utils/toast.dart';
@@ -23,7 +25,7 @@ typedef QueryParameters = Map<String, dynamic>;
 
 abstract class API {
   static String API_ROOT = '';
-  static Dio dio = Dio();
+  static Dio dio = Dio()..interceptors.add(CookieManager(CookieJar()));
 
   static Map<String, String> tokenHeader() => {
     if (Prefs.token != null) ExtraHeaders.authorization: Prefs.token!,

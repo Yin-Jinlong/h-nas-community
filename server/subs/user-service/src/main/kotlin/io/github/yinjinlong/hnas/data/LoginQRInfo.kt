@@ -11,6 +11,7 @@ import java.net.InetAddress
 data class LoginQRInfo(
     val status: LoginQRInfoStatus,
     val user: UserInfo?,
+    val id: String,
     val ip: InetAddress,
     val scannedUser: Uid? = null,
     val token: Token? = null,

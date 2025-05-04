@@ -31,9 +31,9 @@ interface UserService {
      */
     fun login(username: String, password: String): LogResult
 
-    fun genQRLoginRequestID(id: String, ip: InetAddress): String
+    fun genQRLoginRequestID(sessionID: String, ip: InetAddress): String
 
-    fun loginQR(id: String): LoginQRResult
+    fun loginQR(sessionID: String, id: String): LoginQRResult
 
     fun getLoginQRInfo(user: Uid, id: String): LoginQRInfo?
 

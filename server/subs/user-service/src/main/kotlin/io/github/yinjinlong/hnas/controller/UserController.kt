@@ -10,6 +10,7 @@ import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.service.UserService
 import io.github.yinjinlong.hnas.token.Token
 import io.github.yinjinlong.hnas.validator.Password
+import io.github.yinjinlong.spring.boot.util.getLogger
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.constraints.NotBlank
@@ -26,6 +27,7 @@ import java.net.InetAddress
 class UserController(
     val userService: UserService
 ) {
+    val logger = getLogger()
 
     fun login(logId: String?, password: String?): UserService.LogResult {
         if (logId.isNullOrBlank())
@@ -46,6 +48,7 @@ class UserController(
         @Password password: String?,
         resp: HttpServletResponse
     ): UserInfo {
+        logger.info("login $logId => '$password'")
         return login(logId, password).let {
             resp.addHeader(HttpHeaders.AUTHORIZATION, it.token.token)
             it.user
@@ -58,6 +61,7 @@ class UserController(
         session: HttpSession,
         @RequestHeader("X-Real-IP") ip: String
     ): String {
+        logger.info("requestLoginQR ${session.id} $ip")
         return userService.genQRLoginRequestID(
             session.id, InetAddress.getByName(
                 ip
@@ -68,8 +72,10 @@ class UserController(
     @PostMapping("login/qr")
     fun loginQR(
         @RequestParam id: String,
+        session: HttpSession
     ): LoginQRResult {
-        return userService.loginQR(id)
+        logger.info("loginQR ${session.id} $id")
+        return userService.loginQR(session.id, id)
     }
 
     @PostMapping("grant/qr/info")
@@ -77,6 +83,7 @@ class UserController(
         @ShouldLogin token: Token,
         @RequestParam id: String,
     ): QRGrantInfo {
+        logger.info("getLoginQRInfo ${token.user} $id")
         return userService.getLoginQRInfo(token.user, id)?.let {
             if (it.scannedUser != token.user)
                 null
@@ -89,6 +96,7 @@ class UserController(
     fun getUserInfo(
         @ShouldLogin token: Token
     ): UserInfo {
+        logger.info("getUserInfo ${token.user}")
         return userService.getUser(token.user) ?: throw ErrorCode.BAD_ARGUMENTS.error
     }
 
@@ -98,6 +106,7 @@ class UserController(
         @RequestParam id: String,
         @RequestParam grant: Boolean
     ) {
+        logger.info("grantQRLogin ${token.user} $id $grant")
         val info = userService.getLoginQRInfo(token.user, id)
         if (info?.status != LoginQRInfoStatus.SCANNED || info.scannedUser != token.user)
             throw ErrorCode.BAD_REQUEST.error
@@ -111,6 +120,7 @@ class UserController(
     fun getUserCount(
         @ShouldLogin token: Token
     ): Int {
+        logger.info("getUserCount ${token.user}")
         return userService.getUserCount(token.user)
     }
 
@@ -122,11 +132,13 @@ class UserController(
         @Range(min = 1, max = 100)
         count: Int
     ): List<UserInfo> {
+        logger.info("getUsers ${token.user} $startId $count")
         return userService.getUsers(token.user, startId, count)
     }
 
     @PostMapping("logon")
     fun register(@NotBlank(message = "用户名不能为空") username: String, @Password password: String) {
+        logger.info("register $username => $password")
         if (username.matches("\\d+".toRegex()))
             throw ErrorCode.BAD_ARGUMENTS.data("username")
         userService.register(username, password)
@@ -135,8 +147,11 @@ class UserController(
     @PatchMapping("nick")
     fun setNick(
         @ShouldLogin token: Token,
-        @RequestParam nick: String
+        @RequestParam
+        @NotBlank
+        nick: String
     ) {
+        logger.info("setNick ${token.user} $nick")
         userService.setNick(token.user, nick)
     }
 }

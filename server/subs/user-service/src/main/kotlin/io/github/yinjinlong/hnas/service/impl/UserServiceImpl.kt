@@ -70,20 +70,22 @@ class UserServiceImpl(
         )
     }
 
-    override fun genQRLoginRequestID(id: String, ip: InetAddress): String {
-        return id.sha256Hex.also {
+    override fun genQRLoginRequestID(sessionID: String, ip: InetAddress): String {
+        return sessionID.sha256Hex.also {
             setInfo(
                 it,
-                LoginQRInfo(LoginQRInfoStatus.WAITING, user = null, ip = ip),
+                LoginQRInfo(LoginQRInfoStatus.WAITING, user = null, id = sessionID, ip = ip),
                 Duration.ofMinutes(2)
             )
         }
     }
 
-    override fun loginQR(id: String): LoginQRResult {
+    override fun loginQR(sessionID: String, id: String): LoginQRResult {
         val info = info(id)
         return if (info == null)
             LoginQRResult(LoginQRInfoStatus.INVALID)
+        else if (info.id != sessionID)
+            throw ErrorCode.BAD_REQUEST.error
         else
             LoginQRResult(info.status, info.user, token = info.token?.token)
     }
