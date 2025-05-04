@@ -161,7 +161,10 @@ Future<Never> _catchError(error) async {
               UserS.user = null;
               Prefs.token = null;
               Toast.showError(S.current.please_login);
-              navigatorKey.currentState?.popAndPushNamed(Routes.loginOn);
+              if (navigatorKey.currentState?.canPop() ?? false) {
+                navigatorKey.currentState?.pop();
+              }
+              navigatorKey.currentState?.pushNamed(Routes.loginOn);
             });
           }
           Toast.showError(
