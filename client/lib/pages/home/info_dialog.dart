@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
@@ -129,7 +130,15 @@ class _InfoDialogState extends State<InfoDialog> {
               ),
             ),
             _infoRow(S.current.file_size, Text(file.size.storageSizeStr)),
-            _infoRow(S.current.file_info_owner, Text(file.owner.toString())),
+            _infoRow(
+              S.current.file_info_owner,
+              Row(
+                children: [
+                  UserAvatar(user: file.owner, size: 30),
+                  Text(file.owner.toString()),
+                ],
+              ),
+            ),
             ...(file.isFolder ? _folderInfo() : const []),
             ...(fileMediaType?.isAudio == true ? _audioInfo() : const []),
           ],
