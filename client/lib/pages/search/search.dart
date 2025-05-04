@@ -173,6 +173,7 @@ class _SearchPageState extends State<SearchPage> {
               isEmpty: files.isEmpty,
               child: ListView.separated(
                 controller: _scrollController,
+                padding: EdgeInsets.zero,
                 itemCount: files.length + (hasMore ? 0 : 1),
                 itemBuilder: (context, index) {
                   if (index == files.length) {
