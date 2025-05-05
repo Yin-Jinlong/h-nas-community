@@ -377,7 +377,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   Widget _lrcView({required VoidCallback onTap}) {
     return lrc != null
         ? LrcView(lrc: lrc!, onTap: onTap)
-        : Center(child: Text(S.current.no_lrc));
+        : Clickable(onTap: onTap, child: Center(child: Text(S.current.no_lrc)));
   }
 
   Widget _narrowModeMain() {
