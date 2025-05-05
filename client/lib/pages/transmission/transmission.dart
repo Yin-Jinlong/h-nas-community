@@ -59,7 +59,6 @@ class _TransmissionPageState extends State<TransmissionPage>
     return [
       DataColumn(label: Text(S.current.file_name)),
       DataColumn(label: Text(S.current.file_size)),
-      DataColumn(label: Text(S.current.status)),
       ...extras,
       DataColumn(label: Text(S.current.operation)),
     ];
@@ -76,7 +75,6 @@ class _TransmissionPageState extends State<TransmissionPage>
     return [
       DataCell(Text(task.name)),
       DataCell(Text(task.size.storageSizeStr)),
-      DataCell(Text(task.status.text)),
       ...extras,
       DataCell(
         Row(
@@ -116,6 +114,7 @@ class _TransmissionPageState extends State<TransmissionPage>
         dividerThickness: 0,
         columns: _tableColumns(
           extras: [
+            DataColumn(label: Text(S.current.status)),
             DataColumn(
               label: Text(S.current.progress),
               numeric: true,
@@ -135,6 +134,7 @@ class _TransmissionPageState extends State<TransmissionPage>
               cells: _tableDataCells(
                 task,
                 extras: [
+                  DataCell(Text(task.status.text)),
                   DataCell(
                     SizedBox(
                       width: 40,
