@@ -206,16 +206,13 @@ abstract class FileAPI extends API {
     required bool private,
   }) {
     return API
-        ._get(
+        ._get<List>(
           '$root/video/streams',
           query: _base(path, private),
           headers: {...API.tokenHeader()},
         )
         .then((res) {
-          if (res == null) return [];
-          return (jsonDecode(res) as List)
-              .map((e) => HLSStreamList.fromJson(e))
-              .toList();
+          return res.map((e) => HLSStreamList.fromJson(e)).toList();
         });
   }
 
@@ -226,13 +223,13 @@ abstract class FileAPI extends API {
     required bool private,
   }) {
     return API
-        ._get(
+        ._get<JsonObject>(
           '$root/video/stream/info',
           query: {..._base(path, private), 'codec': codec, 'bitrate': bitrate},
           headers: {...API.tokenHeader()},
         )
         .then((res) {
-          return res == null ? null : HLSStreamInfo.fromJson(jsonDecode(res));
+          return HLSStreamInfo.fromJson(res);
         });
   }
 
