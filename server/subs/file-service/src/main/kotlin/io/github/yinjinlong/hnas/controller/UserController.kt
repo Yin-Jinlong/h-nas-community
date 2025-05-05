@@ -50,4 +50,13 @@ class UserController(
         }
     }
 
+    @DeleteMapping("user/avatar")
+    fun deleteUserAvatar(
+        @ShouldLogin
+        token: Token,
+    ) {
+        logger.info("delete user avatar, uid: ${token.user}")
+        return userService.deleteAvatar(token.user)
+    }
+
 }

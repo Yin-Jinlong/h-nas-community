@@ -233,13 +233,21 @@ abstract class FileAPI extends API {
         });
   }
 
-  static Future setAvatar(File file) async {
+  static Future<bool> setAvatar(File file) async {
     final bytes = await file.readAsBytes();
-    return API._post(
-      '$root/user/avatar',
-      data: bytes,
-      headers: API.tokenHeader(),
-      contentType: ExtraHeaders.contentTypeOctetStream,
-    );
+    return API
+        ._post(
+          '$root/user/avatar',
+          data: bytes,
+          headers: API.tokenHeader(),
+          contentType: ExtraHeaders.contentTypeOctetStream,
+        )
+        .then(API._boolThen);
+  }
+
+  static Future<bool> deleteAvatar() async {
+    return API
+        ._delete('$root/user/avatar', headers: API.tokenHeader())
+        .then(API._boolThen);
   }
 }

@@ -56,27 +56,29 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
+  void _updateAvatar() async {
+    final user = UserS.user;
+    if (user != null) {
+      await CachedNetworkImage.evictFromCache(FileAPIURL.userAvatar(user.uid));
+      await CachedNetworkImage.evictFromCache(
+        FileAPIURL.userAvatar(user.uid, raw: true),
+      );
+      if (disposed) return;
+      _avatarKey = UniqueKey();
+      navigatorKey.currentState?.pop();
+      setState(() {});
+    }
+  }
+
   void _setAvatar(File file) {
     FileAPI.setAvatar(file).then((value) {
-      if (value == null || disposed) return;
-      final user = UserS.user;
-      if (user != null) {
-        UserS.user = UserInfo(
-          uid: user.uid,
-          username: user.username,
-          nick: user.nick,
-          admin: user.admin,
-        );
-        CachedNetworkImage.evictFromCache(FileAPIURL.userAvatar(user.uid)).then(
-          (value) {
-            if (disposed) return;
-            _avatarKey = UniqueKey();
-            navigatorKey.currentState?.pop();
-            setState(() {});
-          },
-        );
-      }
+      if (disposed) return;
+      _updateAvatar();
     });
+  }
+
+  Future<bool> _deleteAvatar() async {
+    return await FileAPI.deleteAvatar();
   }
 
   Widget _dialogItem(List<Widget> children, VoidCallback onTap) {
@@ -154,7 +156,13 @@ class _MyPageState extends State<MyPage> {
                       _setAvatar(file);
                     });
                   }),
-                  _dialogItem([Text(S.current.avatar_delete)], () {}),
+                  _dialogItem([Text(S.current.avatar_delete)], () {
+                    _deleteAvatar().then((value) {
+                      if (value) {
+                        _updateAvatar();
+                      }
+                    });
+                  }),
                   Divider(color: Colors.grey),
                   _dialogItem([Text(S.current.cancel)], () {
                     navigatorKey.currentState?.pop();

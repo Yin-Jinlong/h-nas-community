@@ -9,8 +9,9 @@ import java.io.File
  */
 interface UserService {
 
-    fun getAvatar(uid: Uid,raw:  Boolean): File?
+    fun getAvatar(uid: Uid, raw: Boolean): File?
 
     fun setAvatar(uid: Uid, image: BufferedImage)
 
+    fun deleteAvatar(uid: Uid)
 }

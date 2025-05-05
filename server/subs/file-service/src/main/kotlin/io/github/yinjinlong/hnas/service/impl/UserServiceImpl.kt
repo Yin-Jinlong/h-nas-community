@@ -52,6 +52,11 @@ class UserServiceImpl : UserService {
         genAvatar(image, 120).saveAvatar(DataHelper.avatarSmallFile(uid))
     }
 
+    override fun deleteAvatar(uid: Uid) {
+        DataHelper.avatarFile(uid).delete()
+        DataHelper.avatarSmallFile(uid).delete()
+    }
+
     fun BufferedImage.getCenterImage(): BufferedImage {
         val size = minOf(width, height)
         return if (size == width) {
