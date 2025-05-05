@@ -85,8 +85,16 @@ class _CacheCleanPageState extends State<StoragePage> {
         setState(() {});
       },
     );
+    _calcDataSize();
+  }
+
+  void _calcDataSize() async {
+    var dirInner = await getApplicationSupportDirectory();
+    if (UniversalPlatform.isAndroid) {
+      dirInner = dirInner.parent;
+    }
     _calcSize(
-      await getApplicationSupportDirectory(),
+      dirInner,
       (size) {
         if (disposed) return;
         setState(() {
@@ -100,15 +108,18 @@ class _CacheCleanPageState extends State<StoragePage> {
           setState(() {});
           return;
         }
-        var dir = await getExternalStorageDirectory();
-        if (dir == null) {
+        var dirExternal = await getExternalStorageDirectory();
+        if (dirExternal == null) {
           if (disposed) return;
           _dataDone = true;
           setState(() {});
           return;
         }
+        if (UniversalPlatform.isAndroid) {
+          dirExternal = dirExternal.parent;
+        }
         _calcSize(
-          dir,
+          dirExternal,
           (size) {
             if (disposed) return;
             setState(() {
@@ -139,7 +150,9 @@ class _CacheCleanPageState extends State<StoragePage> {
       if (event is Directory) {
         _calcSize(event, onSize);
       } else if (event is File) {
-        onSize(event.statSync().size);
+        if (onDone == null || !event.path.endsWith("/cache")) {
+          onSize(event.statSync().size);
+        }
       }
     }, onDone: onDone);
   }
