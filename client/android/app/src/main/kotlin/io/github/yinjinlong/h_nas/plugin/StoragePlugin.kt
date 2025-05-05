@@ -1,6 +1,7 @@
 package io.github.yinjinlong.h_nas.plugin
 
 import android.app.Activity
+import android.os.Environment
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
@@ -18,6 +19,8 @@ class StoragePlugin(
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "getAppSize" -> result.success(getAppSize())
+
+            "getExternalDownloadDir" -> result.success(getExternalDownloadDir())
         }
     }
 
@@ -26,5 +29,9 @@ class StoragePlugin(
         val info = pm.getPackageInfo(activity.packageName, 0)
         val path = info.applicationInfo?.sourceDir ?: return 1
         return File(path).length()
+    }
+
+    private fun getExternalDownloadDir(): String {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
     }
 }

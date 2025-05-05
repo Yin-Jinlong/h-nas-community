@@ -7,4 +7,7 @@ abstract class StoragePlugin {
     return await _channel.invokeMethod('getAppSize');
   }
 
+  static Future<String> getExternalDownloadDir() async {
+    return await _channel.invokeMethod('getExternalDownloadDir');
+  }
 }

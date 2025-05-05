@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/cache/cache_manager.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/model/list_model.dart';
 import 'package:h_nas/model/thumbnail_model.dart';
+import 'package:h_nas/plugin/storage_plugin.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/utils/directory_utils.dart';
 import 'package:h_nas/utils/file_task.dart';
@@ -47,7 +50,10 @@ abstract class Global {
     player = MediaPlayer(player: Player());
 
     if (!UniversalPlatform.isWeb) {
-      final dir = await getDownloadsDirectory();
+      final dir =
+          UniversalPlatform.isWindows
+              ? await getDownloadsDirectory()
+              : Directory(await StoragePlugin.getExternalDownloadDir());
       if (dir == null) {
         throw Exception('Downloads directory not found');
       }
