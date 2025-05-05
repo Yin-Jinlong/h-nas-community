@@ -193,7 +193,7 @@ abstract class API {
   }
 
   static Future<bool> _boolThen(dynamic value) async {
-    return true;
+    return value != false;
   }
 }
 
