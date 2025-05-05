@@ -154,6 +154,7 @@ class FileController(
         @RequestParam(required = false) private: Boolean = false,
         rawIn: ServletInputStream
     ): Boolean = withCatch {
+        logger.info("uploadFile: ${token.user} $pathBase64 $sha256Base64 $range $private")
         val path = getPath(private, token.user, pathBase64.unBase64Url)
         val hash = sha256Base64.reBase64Url
 
