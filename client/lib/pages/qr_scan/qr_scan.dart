@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_scankit/flutter_scankit.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -46,9 +46,7 @@ class _QRScanPageState extends State<QRScanPage> {
 
   void _getInfo() async {
     final r = await UserAPI.getQRGrantInfo(_result!);
-    if (r == null) {
-      return;
-    }
+    if (disposed) return;
     setState(() {
       _info = r;
     });
@@ -58,11 +56,9 @@ class _QRScanPageState extends State<QRScanPage> {
     setState(() {
       _requesting = true;
     });
-    final r = await UserAPI.grant(_result!, grant);
+    await UserAPI.grant(_result!, grant);
     if (disposed) return;
-    if (r != null) {
-      navigatorKey.currentState?.pop();
-    }
+    navigatorKey.currentState?.pop();
     setState(() {
       _requesting = false;
     });

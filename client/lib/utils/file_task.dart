@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:h_nas/api/api.dart';
+import 'package:h_nas/api/http_provider.dart';
 import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 
 enum FileTaskStatus {
@@ -83,8 +83,8 @@ abstract class FileTask {
 
   String get progressStr;
 
-  void cancel([Object? reason]) {
-    cancelToken?.cancel(reason);
+  void cancel() {
+    cancelToken?.cancel();
   }
 }
 
@@ -99,7 +99,7 @@ class UploadFileTask extends FileTask {
   int uploaded = 0;
 
   @override
-  final CancelToken? cancelToken = CancelToken();
+  final CancelToken? cancelToken = API.cancelToken();
 
   UploadFileTask({
     required this.file,
@@ -212,7 +212,7 @@ class DownloadFileTask extends FileTask {
   bool _started = false;
 
   @override
-  final CancelToken? cancelToken = CancelToken();
+  final CancelToken? cancelToken = API.cancelToken();
 
   DownloadFileTask({
     required this.file,
@@ -242,7 +242,6 @@ class DownloadFileTask extends FileTask {
     status = FileTaskStatus.processing;
     FileAPI.download(
           file.fullPath,
-          dst,
           private: private,
           cancelToken: cancelToken,
           (count, total) {
@@ -251,12 +250,28 @@ class DownloadFileTask extends FileTask {
           },
         )
         .then((value) {
-          status = FileTaskStatus.done;
-          doneTime = DateTime.now();
-          size = downloaded;
-          onDone?.call();
+          final file = File(dst);
+          if (!file.existsSync()) {
+            file.createSync(recursive: true);
+          }
+          final out = file.openWrite(mode: FileMode.write);
+          out
+              .addStream(value)
+              .then((event) {
+                status = FileTaskStatus.done;
+                doneTime = DateTime.now();
+                size = downloaded;
+                onDone?.call();
+                out.close();
+              })
+              .catchError((err) {
+                out.close();
+              });
         })
         .catchError((e) {
+          if (kDebugMode) {
+            print(e);
+          }
           status = FileTaskStatus.error;
         });
   }

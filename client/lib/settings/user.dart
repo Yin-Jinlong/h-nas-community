@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/prefs.dart';
-import 'package:h_nas/utils/api.dart';
 
 abstract class UserS {
   static const String keyUser = 'user';
@@ -41,7 +41,7 @@ abstract class UserS {
 
   static Future update() async {
     final res = await UserAPI.getUserInfo();
-    if (res != null) UserS.user = res;
+    UserS.user = res;
   }
 
   static bool enableAdminMode() {

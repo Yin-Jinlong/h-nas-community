@@ -18,7 +18,7 @@ tasks.withType<Test> {
 afterEvaluate {
     tasks.register<Kotlin2Dart>("genTypes") {
         group = "build"
-        outputFile = rootProject.layout.projectDirectory.asFile.resolve("client/lib/utils/type.g.dart")
+        outputFile = rootProject.layout.projectDirectory.asFile.resolve("client/lib/type.g.dart")
 
         links.addAll(
             listOf(

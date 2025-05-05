@@ -21,7 +21,6 @@ abstract class Kotlin2Dart : AbstractKotlin2TypeTask() {
         writer.writeln(
             "// generated at ",
             dateFormat.format(Date()),
-            "\npart of 'api.dart';\n"
         )
 
         writer.writeln("typedef JsonObject = Map<String, dynamic>;")

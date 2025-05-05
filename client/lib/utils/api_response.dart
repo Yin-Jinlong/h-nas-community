@@ -1,9 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'api_response.g.dart';
-
-
-@JsonSerializable()
 class APIResponse {
   final int code;
   final String msg;
@@ -11,6 +5,9 @@ class APIResponse {
 
   APIResponse({required this.code, required this.msg, required this.data});
 
-  factory APIResponse.fromJson(Map<String, dynamic> json) =>
-      _$APIResponseFromJson(json);
+  factory APIResponse.fromJson(Map<String, dynamic> json) =>APIResponse(
+    code: (json['code'] as num).toInt(),
+    msg: json['msg'] as String,
+    data: json['data'],
+  );
 }

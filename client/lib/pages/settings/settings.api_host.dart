@@ -16,7 +16,7 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
   String? _apiHostErrorText;
   late TextEditingController controller;
   final RegExp _urlRegExp = RegExp(
-    r'^http(s)?://(\w+)(\.\w+)+(:\d{1,5})?(/.+)?$',
+    r'^http(s)?://(\w+)(\.\w+)+(:\d{1,5})?(/.+)?[^/]$',
   );
 
   @override

@@ -45,4 +45,4 @@ app.*.map.json
 /android/app/release
 
 
-/lib/utils/*.g.dart
+/lib/*.g.dart

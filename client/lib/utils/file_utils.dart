@@ -1,4 +1,4 @@
-import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/type.g.dart';
 import 'package:h_nas/utils/media_type.dart';
 
 extension FileInfoExt on FileInfo {

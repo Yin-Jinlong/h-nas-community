@@ -1,4 +1,4 @@
-import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/type.g.dart';
 
 extension AudioInfoExt on AudioFileInfo {
   /// 展示给用户的标题

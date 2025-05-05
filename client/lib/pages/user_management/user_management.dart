@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -90,12 +90,8 @@ class _UserData extends UserInfo {
     required super.admin,
   });
 
-  factory _UserData.of(UserInfo e) => _UserData(
-    uid: e.uid,
-    username: e.username,
-    nick: e.nick,
-    admin: e.admin,
-  );
+  factory _UserData.of(UserInfo e) =>
+      _UserData(uid: e.uid, username: e.username, nick: e.nick, admin: e.admin);
 }
 
 class _UserDatSource extends DataGridSource {
@@ -127,7 +123,7 @@ class _UserDatSource extends DataGridSource {
 
   void load() {
     UserAPI.getUserCount().then((value) {
-      count = value ?? 0;
+      count = value;
       notifyListeners();
     });
     UserAPI.getUsers(0, 10).then((value) {

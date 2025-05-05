@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/media/media_player.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class Prefs {

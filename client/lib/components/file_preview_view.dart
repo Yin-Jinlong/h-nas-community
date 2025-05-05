@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/toast.dart';

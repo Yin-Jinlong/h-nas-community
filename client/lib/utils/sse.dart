@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/type.g.dart';
 import 'package:http/http.dart' as http;
 
 class SSEClient {

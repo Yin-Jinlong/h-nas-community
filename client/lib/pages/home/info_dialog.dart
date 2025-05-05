@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/user_avatar.dart';
-import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
@@ -44,19 +45,17 @@ class _InfoDialogState extends State<InfoDialog> {
         file.fullPath,
         private: widget.private,
       ).then((v) {
-        if (v != null) {
-          setState(() {
-            count = v;
-          });
-        }
+        if (disposed) return;
+        setState(() {
+          count = v;
+        });
       });
     } else if (fileMediaType?.isAudio == true) {
       FileAPI.getAudioInfo(file.fullPath, private: widget.private).then((v) {
-        if (v != null) {
-          setState(() {
-            audioFileInfo = v;
-          });
-        }
+        if (disposed) return;
+        setState(() {
+          audioFileInfo = v;
+        });
       });
     }
   }

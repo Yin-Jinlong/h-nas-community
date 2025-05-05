@@ -1,4 +1,4 @@
-import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 
 import 'media_file.dart';

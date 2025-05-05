@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/components/spring_draggable_container.dart';
@@ -11,7 +12,6 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/routes.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/audio_info_exts.dart';
 
 import 'marquee.dart';

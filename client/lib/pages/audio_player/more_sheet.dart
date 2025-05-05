@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/media/media_player.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/audio_info_exts.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 

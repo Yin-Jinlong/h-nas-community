@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/storage_size.dart';
 
 class ServerInfoPage extends StatefulWidget {

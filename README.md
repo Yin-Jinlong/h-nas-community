@@ -6,6 +6,7 @@
 
 - `java` `17+`
 - `mysql` `8+`
+- `rust`
 - `flutter` `^3.7.2`
 - `cmake` `3.1.4+`
 - `nignx` `1.27.4+`

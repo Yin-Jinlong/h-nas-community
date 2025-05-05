@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 
 class ThumbnailModel with ChangeNotifier {
@@ -25,17 +25,15 @@ class ThumbnailModel with ChangeNotifier {
     FilePreview? fp;
     do {
       fp = await FileAPI.getFilePreviewInfo(info.fullPath, private: private);
-      if (fp?.thumbnail == '') {
+      if (fp.thumbnail == '') {
         await Future.delayed(Duration(milliseconds: 500));
       } else {
         break;
       }
     } while (true);
-    if (fp != null) {
-      _cache[info] = fp;
-      onSuccess(fp);
-      notifyListeners();
-    }
+    _cache[info] = fp;
+    onSuccess(fp);
+    notifyListeners();
   }
 
   clear() {

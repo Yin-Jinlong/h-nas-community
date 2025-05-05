@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/settings/user.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -46,13 +46,13 @@ class _LoginQRState extends State<LoginQR> {
     await Future.delayed(Duration(seconds: 1));
     if (disposed) return;
     final r = await UserAPI.loginQR(_qrData!);
-    _status = r?.status;
+    _status = r.status;
     if (_status == LoginQRInfoStatus.invalid) {
     } else if (_status != LoginQRInfoStatus.success) {
       _loopQuery();
-    } else if (_status == LoginQRInfoStatus.success && r?.user != null) {
-      Prefs.token = r?.token;
-      UserS.user = r?.user;
+    } else if (_status == LoginQRInfoStatus.success && r.user != null) {
+      Prefs.token = r.token;
+      UserS.user = r.user;
       navigatorKey.currentState?.pop();
     }
     setState(() {});

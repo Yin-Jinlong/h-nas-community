@@ -1,12 +1,12 @@
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/video_player/more_drawer.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:media_kit_video/media_kit_video_controls/media_kit_video_controls.dart'

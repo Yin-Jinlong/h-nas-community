@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/pages/my/nick_dialog.dart';
 import 'package:h_nas/settings/user.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/toast.dart';
 import 'package:image_picker/image_picker.dart';

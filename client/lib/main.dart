@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:h_nas/api/rhttp_http_provider.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/plugin/notifications_plugin.dart';
 import 'package:h_nas/prefs.dart';
@@ -10,7 +11,6 @@ import 'package:h_nas/routes.dart';
 import 'package:h_nas/settings/theme.dart';
 import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/theme.dart';
-import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -18,9 +18,11 @@ import 'package:universal_platform/universal_platform.dart';
 import 'generated/l10n.dart';
 
 void main() async {
-  Intl.defaultLocale = 'zh';
-  MediaKit.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
+  if (!UniversalPlatform.isWeb) {
+    RHttpHttpProvider.init();
+  }
+  MediaKit.ensureInitialized();
   await Prefs.init();
   await Global.init();
   NotificationsPlugin.init();

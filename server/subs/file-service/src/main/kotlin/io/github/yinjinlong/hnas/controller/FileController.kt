@@ -17,6 +17,7 @@ import io.github.yinjinlong.hnas.utils.*
 import io.github.yinjinlong.spring.boot.annotations.ResponseEmpty
 import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.constraints.NotBlank
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
@@ -230,7 +231,8 @@ class FileController(
     @ResponseEmpty
     fun getFile(
         token: Token?,
-        path: String,
+        @NotBlank
+        @RequestParam path: String,
         @RequestHeader(HttpHeaders.RANGE) rangeStr: String?,
         @DefaultValue("false") download: Boolean,
         @RequestParam(required = false) private: Boolean = false,

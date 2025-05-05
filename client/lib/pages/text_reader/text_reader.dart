@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:h_nas/utils/api.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 
@@ -25,19 +24,13 @@ class _TextReaderPageState extends State<TextReaderPage> {
   }
 
   void _load() {
-    FileAPI.getFileData(
-      file!.fullPath,
-      private: private,
-      contentType: ResponseType.stream,
-    ).then((data) {
-      if (data != null) {
-        data.listen((event) {
-          final str = utf8.decode(event);
-          setState(() {
-            text += str;
-          });
+    FileAPI.getFileData(file!.fullPath, private: private).then((data) {
+      data.listen((event) {
+        final str = utf8.decode(event);
+        setState(() {
+          text += str;
         });
-      }
+      });
     });
   }
 

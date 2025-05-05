@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/main.dart';
@@ -7,7 +8,6 @@ import 'package:h_nas/pages/settings/scan_dialog.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
 import 'package:h_nas/settings/user.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
 

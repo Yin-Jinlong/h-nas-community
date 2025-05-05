@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/switch_button.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/pages/ai/chat_message_view.dart';
-import 'package:h_nas/utils/api.dart';
 import 'package:h_nas/utils/dispose.dart';
 
 import 'Llm.dart';
