@@ -5,7 +5,7 @@ abstract class UserAPI extends API {
 
   static Future<UserInfo?> login(String logid, String password) {
     return API
-        ._post(
+        ._post<JsonObject>(
           '$root/login',
           query: {'logId': logid, 'password': password},
           contentType: ExtraHeaders.contentTypeFormUrlEncoded,
@@ -17,7 +17,7 @@ abstract class UserAPI extends API {
           },
         )
         .then((data) {
-          return data == null ? null : UserInfo.fromJson(jsonDecode(data));
+          return UserInfo.fromJson(data);
         });
   }
 
@@ -32,20 +32,22 @@ abstract class UserAPI extends API {
   }
 
   static Future<UserInfo> getUserInfo() {
-    return API._get('$root/info', headers: API.tokenHeader()).then((data) {
+    return API._get<JsonObject>('$root/info', headers: API.tokenHeader()).then((
+      data,
+    ) {
       return UserInfo.fromJson(data);
     });
   }
 
-  static Future<String?> requestLoginQR() {
-    return API._post('$root/login/qr/request').then((data) {
+  static Future<String> requestLoginQR() {
+    return API._post<String>('$root/login/qr/request').then((data) {
       return data;
     });
   }
 
   static Future<QRGrantInfo> getQRGrantInfo(String id) {
     return API
-        ._post(
+        ._post<JsonObject>(
           '$root/grant/qr/info',
           query: {'id': id},
           headers: {...API.tokenHeader()},
@@ -58,7 +60,7 @@ abstract class UserAPI extends API {
 
   static Future<bool> grant(String id, bool grant) {
     return API
-        ._post(
+        ._post<bool>(
           '$root/grant/qr',
           query: {'id': id, 'grant': grant},
           headers: {...API.tokenHeader()},
@@ -81,9 +83,9 @@ abstract class UserAPI extends API {
 
   static Future<int> getUserCount() {
     return API
-        ._get<String>('$root/count', headers: {...API.tokenHeader()})
+        ._get<int>('$root/count', headers: {...API.tokenHeader()})
         .then((data) {
-          return int.tryParse(data) ?? 0;
+          return data;
         });
   }
 

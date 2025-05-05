@@ -10,13 +10,13 @@ abstract class FileAPI extends API {
 
   static Future<int> getUserStorageUsage({int? uid}) {
     return API
-        ._get(
+        ._get<int>(
           '$root/storage/user/usage',
           query: {if (uid != null) 'uid': uid},
           headers: {...API.tokenHeader()},
         )
         .then((data) {
-          return int.tryParse(data) ?? 0;
+          return data;
         });
   }
 
