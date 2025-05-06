@@ -90,6 +90,7 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                   scale: 0.95 + 0.05 * layerProgress,
                   child: ImageViewer(
                     index: index,
+                    files: widget.files,
                     urls: [
                       for (var file in widget.files)
                         () async {
@@ -103,6 +104,15 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                             );
                           }, (_) {});
                           return c.future;
+                        },
+                    ],
+                    rawUrls: [
+                      for (var file in widget.files)
+                        () async {
+                          return FileAPIURL.file(
+                            file.fullPath,
+                            private: widget.private,
+                          );
                         },
                     ],
                     onChangeIndex: (index) {

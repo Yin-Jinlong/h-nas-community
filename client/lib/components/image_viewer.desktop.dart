@@ -1,13 +1,16 @@
 part of 'image_viewer.dart';
 
 class _DesktopImageViewer extends StatefulWidget {
-  final List<Future<String> Function()> urls;
+  final List<Future<String> Function()> urls, rawUrls;
+  final List<FileInfo> files;
   final int index;
   final void Function(int index) onChangeIndex;
   final Widget? loadingWidget;
 
   const _DesktopImageViewer({
     required this.urls,
+    required this.rawUrls,
+    required this.files,
     required this.index,
     required this.onChangeIndex,
     required this.loadingWidget,
@@ -21,13 +24,13 @@ class _DesktopImageViewer extends StatefulWidget {
 
 class _DesktopImageViewerState extends State<_DesktopImageViewer>
     with TickerProviderStateMixin {
+  final cacheManager = DefaultCacheManager();
+
   double offX = 0, offY = 0, mouseX = 0, mouseY = 0, downX = 0, downY = 0;
 
   double scale = 1, rotate = 0, _targetRotate = 0, flipX = 1, flipY = 1;
 
   ui.Image? img;
-
-  final Dio _dio = Dio();
 
   Size _screenSize = Size.zero;
 
@@ -38,9 +41,24 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
       _flipYAnimController,
       _rotateAnimController;
 
+  final List<bool> _raws = [];
+
   @override
   void initState() {
     super.initState();
+
+    for (int i = 0; i < widget.rawUrls.length; i++) {
+      _raws.add(false);
+      final index = i;
+      widget.rawUrls[i]().then((url) {
+        cacheManager.getFileFromCache(url).then((value) {
+          if (value != null) {
+            _raws[index] = true;
+          }
+        });
+      });
+    }
+
     imgIndex = widget.index;
     _scaleAnimController = AnimationController(
       value: 1,
@@ -106,25 +124,21 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
   load() {
     img = null;
     if (imgIndex < 0 || disposed) return;
-    widget.urls[imgIndex]().then((url) {
-      _dio
-          .get(
-            url,
-            options: Options(
-              responseType: ResponseType.bytes,
-              headers: API.tokenHeader(),
-            ),
-          )
-          .then((res) {
-            ui.decodeImageFromList(res.data, (image) {
-              if (disposed) return;
-              setState(() {
-                img = image;
-                _reset(image);
-              });
-            });
+    (_raws[imgIndex] ? widget.rawUrls[imgIndex] : widget.urls[imgIndex])().then(
+      (url) async {
+        final file = await cacheManager.getSingleFile(
+          url,
+          headers: API.tokenHeader(),
+        );
+        ui.decodeImageFromList(file.readAsBytesSync(), (image) {
+          if (disposed) return;
+          setState(() {
+            img = image;
+            _reset(image);
           });
-    });
+        });
+      },
+    );
   }
 
   _reset(ui.Image img) {
@@ -178,6 +192,12 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
       imgIndex = widget.urls.length - 1;
     }
     widget.onChangeIndex(imgIndex);
+    setState(() {});
+    load();
+  }
+
+  void _showRaw() {
+    _raws[imgIndex] = true;
     setState(() {});
     load();
   }
@@ -241,6 +261,25 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
                     ),
           ),
         ),
+        if (!_raws[imgIndex])
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Opacity(
+              opacity: 0.8,
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: FilledButton(
+                  onPressed: _showRaw,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.grey.withValues(alpha: 0.75),
+                  ),
+                  child: Text(
+                    '${S.current.show_raw_photo}\n${widget.files[imgIndex].size.storageSizeStr}',
+                  ),
+                ),
+              ),
+            ),
+          ),
         Align(
           alignment: Alignment.bottomCenter,
           child: Column(
