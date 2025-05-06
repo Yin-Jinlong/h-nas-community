@@ -371,7 +371,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               final file = files[index];
               return ContextMenuRegion(
                 contextMenu: GenericContextMenu(
+                  buttonStyle: ContextMenuButtonStyle(
+                    textStyle: TextTheme.of(context).bodyLarge,
+                    hoverFgColor: ColorScheme.of(context).onPrimary,
+                  ),
                   buttonConfigs: _fileContextMenuButtons(
+                    context,
                     file,
                     onPlay: () {
                       switch (file.fileMediaType?.type) {

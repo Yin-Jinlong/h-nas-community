@@ -1,6 +1,7 @@
 part of 'home.dart';
 
-List<ContextMenuButtonConfig> _fileContextMenuButtons(
+List<ContextMenuButtonConfig?> _fileContextMenuButtons(
+  BuildContext context,
   FileInfo file, {
   required VoidCallback onPlay,
   required VoidCallback onRename,
@@ -12,27 +13,29 @@ List<ContextMenuButtonConfig> _fileContextMenuButtons(
     if (file.canPlay)
       ContextMenuButtonConfig(
         S.current.media_play,
-        icon: Icon(Icons.play_circle, size: 20),
+        icon: Icon(Icons.play_circle),
         onPressed: onPlay,
       ),
     ContextMenuButtonConfig(
       S.current.rename,
-      icon: Icon(Icons.edit, size: 20),
+      icon: Icon(Icons.edit),
       onPressed: onRename,
     ),
     ContextMenuButtonConfig(
       '${S.current.download} ${file.isFolder ? 'tar.gz' : ''}',
-      icon: Icon(Icons.download, size: 20),
+      icon: Icon(Icons.download),
       onPressed: onDownload,
     ),
+    null,
     ContextMenuButtonConfig(
       S.current.info,
-      icon: Icon(Icons.info, size: 20),
+      icon: Icon(Icons.info),
       onPressed: onInfo,
     ),
+    null,
     ContextMenuButtonConfig(
       S.current.delete,
-      icon: Icon(Icons.delete, size: 20),
+      icon: Icon(Icons.delete, color: ColorScheme.of(context).error),
       onPressed: onDelete,
     ),
   ];
