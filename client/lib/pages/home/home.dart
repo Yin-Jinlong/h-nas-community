@@ -28,6 +28,7 @@ import 'package:h_nas/pages/home/sort_dialog.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
 import 'package:h_nas/settings/user.dart';
+import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/file_task.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';

@@ -3,14 +3,13 @@ part of 'image_viewer.dart';
 class _DesktopImageViewer extends StatefulWidget {
   final List<Future<String> Function()> urls;
   final int index;
-  final VoidCallback onLastImage, onNextImage;
+  final void Function(int index) onChangeIndex;
   final Widget? loadingWidget;
 
   const _DesktopImageViewer({
     required this.urls,
     required this.index,
-    required this.onLastImage,
-    required this.onNextImage,
+    required this.onChangeIndex,
     required this.loadingWidget,
   });
 
@@ -42,6 +41,7 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
   @override
   void initState() {
     super.initState();
+    imgIndex = widget.index;
     _scaleAnimController = AnimationController(
       value: 1,
       vsync: this,
@@ -100,14 +100,13 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
               rotate = _rotateAnimController.value;
             });
           });
+    load();
   }
 
   load() {
-    if (imgIndex == widget.index) return;
     img = null;
-    if (widget.index < 0) return;
-    final i = widget.index;
-    widget.urls[widget.index]().then((url) {
+    if (imgIndex < 0 || disposed) return;
+    widget.urls[imgIndex]().then((url) {
       _dio
           .get(
             url,
@@ -118,9 +117,9 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
           )
           .then((res) {
             ui.decodeImageFromList(res.data, (image) {
+              if (disposed) return;
               setState(() {
                 img = image;
-                imgIndex = i;
                 _reset(image);
               });
             });
@@ -163,9 +162,23 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
     }
   }
 
-  @override
-  void didUpdateWidget(covariant _DesktopImageViewer oldWidget) {
-    super.didUpdateWidget(oldWidget);
+  void _next() {
+    imgIndex++;
+    if (imgIndex == widget.urls.length) {
+      imgIndex = 0;
+    }
+    widget.onChangeIndex(imgIndex);
+    setState(() {});
+    load();
+  }
+
+  void _prev() {
+    imgIndex--;
+    if (imgIndex < 0) {
+      imgIndex = widget.urls.length - 1;
+    }
+    widget.onChangeIndex(imgIndex);
+    setState(() {});
     load();
   }
 
@@ -255,9 +268,9 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
                             _rotateAnimController.animateTo(_targetRotate);
                           });
                         },
-                        onLastImage: widget.onLastImage,
+                        onLastImage: _prev,
                         infoText: '${widget.index + 1}/${widget.urls.length}',
-                        onNextImage: widget.onNextImage,
+                        onNextImage: _next,
                         onRightRotate: () {
                           setState(() {
                             _targetRotate += 90;

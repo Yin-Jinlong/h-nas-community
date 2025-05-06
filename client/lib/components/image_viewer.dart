@@ -9,6 +9,7 @@ import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
+import 'package:h_nas/utils/dispose.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -19,15 +20,14 @@ part 'image_viewer.mobile.dart';
 class ImageViewer extends StatelessWidget {
   final List<Future<String> Function()> urls;
   final int index;
-  final VoidCallback onLastImage, onNextImage;
+  final void Function(int index) onChangeIndex;
   final Widget? loadingWidget;
 
   const ImageViewer({
     super.key,
     required this.urls,
     required this.index,
-    required this.onLastImage,
-    required this.onNextImage,
+    required this.onChangeIndex,
     this.loadingWidget,
   });
 
@@ -37,9 +37,8 @@ class ImageViewer extends StatelessWidget {
       return _DesktopImageViewer(
         urls: urls,
         index: index,
+        onChangeIndex: onChangeIndex,
         loadingWidget: loadingWidget,
-        onLastImage: onLastImage,
-        onNextImage: onNextImage,
       );
     } else {
       return _MobileImageViewer(

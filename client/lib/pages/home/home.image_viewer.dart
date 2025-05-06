@@ -33,26 +33,6 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
 
   late int index;
 
-  _onLastImage() {
-    setState(() {
-      if (index == 0) {
-        index = widget.files.length - 1;
-      } else {
-        index--;
-      }
-    });
-  }
-
-  _onNextImage() {
-    setState(() {
-      if (index == widget.files.length - 1) {
-        index = 0;
-      } else {
-        index++;
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -125,8 +105,12 @@ class _ImageViewerOverlayWidgetState extends State<_ImageViewerOverlayWidget>
                           return c.future;
                         },
                     ],
-                    onLastImage: _onLastImage,
-                    onNextImage: _onNextImage,
+                    onChangeIndex: (index) {
+                      if (disposed) return;
+                      setState(() {
+                        this.index = index;
+                      });
+                    },
                   ),
                 ),
                 Align(
