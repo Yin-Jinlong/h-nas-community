@@ -58,7 +58,17 @@ class _TextReaderPageState extends State<TextReaderPage> {
         padding: EdgeInsets.all(8),
         child:
             markdown
-                ? Markdown(data: text)
+                ? DefaultTextStyle(
+                  style: TextStyle(fontFamily: 'JetBrainsMapleMono'),
+                  child: Markdown(
+                    data: text,
+                    styleSheet: MarkdownStyleSheet.fromTheme(
+                      Theme.of(context),
+                    ).copyWith(
+                      code: TextStyle(fontFamily: 'JetBrainsMapleMono'),
+                    ),
+                  ),
+                )
                 : SingleChildScrollView(
                   child: SizedBox(width: double.infinity, child: Text(text)),
                 ),
