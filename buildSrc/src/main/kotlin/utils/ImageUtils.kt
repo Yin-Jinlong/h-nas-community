@@ -26,6 +26,7 @@ fun Project.configBootJar(
  */
 fun Project.buildImageTask() = tasks.register("image", Exec::class) {
     group = "build"
+    description = "构建Docker镜像"
     dependsOn("bootJar")
     commandLine(
         "docker",
