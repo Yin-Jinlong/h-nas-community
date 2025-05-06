@@ -20,6 +20,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
   late final VideoController _controller;
   late final MediaPlayer player;
   FileInfo? file;
+  FilePreview? preview;
   bool private = false;
   HLSStreamInfo? info;
   List<HLSStreamList> _streamList = [];
@@ -64,6 +65,12 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
     if (argFile == file) return;
     file = argFile;
     private = args[1];
+    Global.thumbnailCache.get(file!, (info) {
+      if (disposed) return;
+      setState(() {
+        preview = info;
+      });
+    }, (err) {});
     FileAPI.getVideoStreams(file!.fullPath, private: private).then((value) {
       if (value.isNotEmpty) {
         _streamList = value;
@@ -131,6 +138,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(file!.name)),
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           Video(
@@ -144,6 +152,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
                   onBitrateIndex: _onBitrateIndex,
                   fit: fit,
                   onFit: _onFit,
+                  preview: preview,
+                  private: private,
                 ),
           ),
         ],

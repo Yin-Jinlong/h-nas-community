@@ -1,4 +1,5 @@
 import 'package:async/async.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
 import 'package:h_nas/api/api.dart';
@@ -27,6 +28,8 @@ class VideoControlsScaffold extends StatefulWidget {
   final void Function(int) onBitrateIndex;
   final void Function(BoxFit) onFit;
   final BoxFit fit;
+  final FilePreview? preview;
+  final bool private;
 
   const VideoControlsScaffold({
     super.key,
@@ -36,6 +39,8 @@ class VideoControlsScaffold extends StatefulWidget {
     required this.onBitrateIndex,
     required this.fit,
     required this.onFit,
+    required this.preview,
+    required this.private,
   });
 
   @override
@@ -56,6 +61,8 @@ class _VideoControlsScaffoldState extends State<VideoControlsScaffold> {
             state: widget.state,
             info: widget.info,
             onBitrateIndex: widget.onBitrateIndex,
+            preview: widget.preview,
+            private: widget.private,
           ),
         ),
       ),
@@ -69,12 +76,16 @@ class _VideoControlsContent extends StatefulWidget {
   final FileInfo file;
   final HLSStreamInfo? info;
   final void Function(int) onBitrateIndex;
+  final FilePreview? preview;
+  final bool private;
 
   const _VideoControlsContent({
     required this.file,
     required this.state,
     required this.info,
     required this.onBitrateIndex,
+    required this.preview,
+    required this.private,
   });
 
   @override
@@ -319,6 +330,19 @@ class _VideoControlsState extends State<_VideoControlsContent>
         },
         child: Stack(
           children: [
+            if (player.playList.value.isEmpty)
+              SizedBox.expand(
+                child: CachedNetworkImage(
+                  imageUrl: FileAPIURL.filePreview(
+                    widget.preview?.preview ?? '',
+                    private: widget.private,
+                  ),
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) {
+                    return Container();
+                  },
+                ),
+              ),
             Align(
               alignment: Alignment.bottomLeft,
               child: _miniProgressBar(context, player.progress ?? 0),
