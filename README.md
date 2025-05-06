@@ -4,27 +4,18 @@
 
 ### 1.配置环境
 
-- `java` `17+`
-- `mysql` `8+`
-- `rust`
-- `flutter` `^3.7.2`
-- `cmake` `3.1.4+`
-- `nignx` `1.27.4+`
-- `dragonfly` or  `redis`
-- `nacos3`
-- `ollama`
-
-`mysql`
-
-- `h_nas` 数据库
-- `user` 用户
-- `123456`密码
-
-可在[application.yaml](server/subs/core/src/main/resources/application.yml)修改
+- [dragonfly](https://www.dragonflydb.io/) or  `redis`
+- [flutter](https://flutter.dev/) `^3.7.2`
+- [java](https://www.oracle.com/java/) `17+`
+- [mysql](https://www.mysql.com/) `8+`
+- [nacos3](https://nacos.io/)
+- [nignx](https://nginx.org/)
+- [ollama](https://ollama.com/)
+- [rust](https://www.rust-lang.org/)
 
 `AI Service`配置：
 
-须在命令行添加jvm参数或环境变量
+[和风天气](https://dev.qweather.com/)：须在命令行添加jvm参数或环境变量
 
 ```text
 -Dqweather.host=api host
@@ -50,26 +41,25 @@ cd client && flutter pub get
 ### 3.项目结构
 
 ```yaml
-.:
-  - buildSrc  # gradle插件
-  - client: # 客户端
-      - android # android端
-      - assets  # 资源目录
-      - lib     # 源码目录
-      - web     # web端
-      - windows # windows端
-  - server:
-      - annotation          # 通用注解
-      - common-data         # 通用数据，前后端通用
-      - entity              # 实体类预先义（接口）
-      - fs                  # 虚拟文件系统
-      - utils               # 通用工具类
-      - subs:
-          - ai-service        # AI服务
-          - broadcast-service # （总）服务广播
-          - core              # 服务核心（非服务）
-          - file-service      # 文件服务
-          - user-service      # 用户服务
+- buildSrc # gradle插件
+- client: # 客户端
+    - android # android端
+    - assets  # 资源目录
+    - lib     # 源码目录
+    - web     # web端
+    - windows # windows端
+- server:
+    - annotation  # 通用注解
+    - common-data # 通用数据，前后端通用
+    - entity      # 实体类预先义（接口）
+    - fs          # 虚拟文件系统
+    - utils       # 通用工具类
+    - subs:
+        - ai-service        # AI服务
+        - broadcast-service # （总）服务广播
+        - core              # 服务核心（非服务）
+        - file-service      # 文件服务
+        - user-service      # 用户服务
 ```
 
 ## 部署
@@ -84,9 +74,7 @@ cd client && flutter pub get
 #### 构建镜像
 
 ```shell
-gradle :server:subs:user-service:image
-gradle :server:subs:file-service:image
-gradle :server:subs:ai-service:image
+gradle image
 ```
 
 #### [docker-compose.yml](server/docker-compose.yml)
@@ -103,9 +91,6 @@ gradle :server:subs:ai-service:image
 ## License
 
 - 主体 `Apache 2.0`
-
-- `FFmpeg` 主体 `LGPL v2.1+`
-
-- `FFmpeg` 部分 `GPL v2+`
+- `FFmpeg` `h264`部分 `GPL v2+`
 
 Copyright (c) 2024-PRESENT Yin-Jinlong@github
