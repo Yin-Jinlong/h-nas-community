@@ -52,6 +52,7 @@ class ImageViewer extends StatelessWidget {
         rawUrls: rawUrls,
         files: files,
         index: index,
+        onChangeIndex: onChangeIndex,
         loadingWidget: loadingWidget,
       );
     }

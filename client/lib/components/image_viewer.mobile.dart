@@ -4,6 +4,7 @@ class _MobileImageViewer extends StatefulWidget {
   final List<Future<String> Function()> urls, rawUrls;
   final List<FileInfo> files;
   final int index;
+  final void Function(int index) onChangeIndex;
   final Widget? loadingWidget;
 
   const _MobileImageViewer({
@@ -11,6 +12,7 @@ class _MobileImageViewer extends StatefulWidget {
     required this.rawUrls,
     required this.files,
     required this.index,
+    required this.onChangeIndex,
     required this.loadingWidget,
   });
 
@@ -63,6 +65,7 @@ class _MobileImageViewerState extends State<_MobileImageViewer> {
           onPageChanged: (index) {
             setState(() {
               this.index = index;
+              widget.onChangeIndex(index);
             });
           },
           builder: (context, index) {
@@ -94,6 +97,18 @@ class _MobileImageViewerState extends State<_MobileImageViewer> {
           loadingBuilder:
               (context, event) =>
                   widget.loadingWidget ?? CircularProgressIndicator(),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              '${widget.index + 1}/${widget.urls.length}',
+              style: TextTheme.of(context).bodyMedium?.copyWith(
+                color: Colors.white.withValues(alpha: 0.4),
+              ),
+            ),
+          ),
         ),
         if (rawMap[index] != true)
           Align(
