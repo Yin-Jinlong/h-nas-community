@@ -264,21 +264,7 @@ class _DesktopImageViewerState extends State<_DesktopImageViewer>
         if (!_raws[imgIndex])
           Align(
             alignment: Alignment.bottomLeft,
-            child: Opacity(
-              opacity: 0.8,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: FilledButton(
-                  onPressed: _showRaw,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.grey.withValues(alpha: 0.75),
-                  ),
-                  child: Text(
-                    '${S.current.show_raw_photo}\n${widget.files[imgIndex].size.storageSizeStr}',
-                  ),
-                ),
-              ),
-            ),
+            child: ShowRawButton(onTap: _showRaw, file: widget.files[imgIndex]),
           ),
         Align(
           alignment: Alignment.bottomCenter,
