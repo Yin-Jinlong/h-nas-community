@@ -85,6 +85,9 @@ class _MobileImageViewerState extends State<_MobileImageViewer> {
                 httpHeaders: API.tokenHeader(),
                 fadeInDuration: durationFast,
                 fadeOutDuration: durationMedium,
+                placeholder: (context, url) {
+                  return Center(child: CircularProgressIndicator());
+                },
                 errorWidget: (context, url, error) {
                   return Icon(
                     url.isEmpty ? Icons.image : Icons.broken_image,
