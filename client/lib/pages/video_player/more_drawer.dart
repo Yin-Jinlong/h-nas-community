@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/switch_button.dart';
+import 'package:h_nas/components/volume_slider.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
@@ -21,6 +22,7 @@ class _MoreDrawerState extends State<MoreDrawer> {
   void initState() {
     super.initState();
     player = Global.player;
+    player.volume.addListener(_render);
     player.codec.addListener(_render);
   }
 
@@ -40,6 +42,7 @@ class _MoreDrawerState extends State<MoreDrawer> {
 
   @override
   void dispose() {
+    player.volume.removeListener(_render);
     player.codec.removeListener(_render);
     super.dispose();
   }
@@ -73,6 +76,13 @@ class _MoreDrawerState extends State<MoreDrawer> {
                   _fitButton(BoxFit.fill, S.current.video_fill),
                   _fitButton(BoxFit.cover, S.current.video_cover),
                 ],
+              ),
+              Divider(color: Colors.grey),
+              VolumeSlider(
+                volume: player.volume.value,
+                onVolume: (volume) {
+                  player.setVolume(volume);
+                },
               ),
             ],
           ),

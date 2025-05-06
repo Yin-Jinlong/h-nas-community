@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
+import 'package:h_nas/components/volume_slider.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/utils/audio_info_exts.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -90,27 +91,6 @@ class _MoreSheetState extends State<MoreSheet> {
     );
   }
 
-  Widget _volume() {
-    return Row(
-      children: [
-        Icon(Icons.volume_down),
-        Expanded(
-          child: Slider(
-            value: player.volume.value,
-            label: '${player.volume.value.toInt()}%',
-            max: 100,
-            divisions: 14,
-            inactiveColor: Colors.grey.withValues(alpha: 0.5),
-            onChanged: (value) {
-              player.setVolume(value);
-            },
-          ),
-        ),
-        Icon(Icons.volume_up),
-      ],
-    );
-  }
-
   Widget _speed() {
     return Row(
       children: [
@@ -156,7 +136,12 @@ class _MoreSheetState extends State<MoreSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (widget.info != null) _info(context, widget.info!),
-            _volume(),
+            VolumeSlider(
+              volume: player.volume.value,
+              onVolume: (volume) {
+                player.setVolume(volume);
+              },
+            ),
             _speed(),
           ],
         ),
