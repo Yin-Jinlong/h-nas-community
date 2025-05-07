@@ -81,6 +81,8 @@ dependencies:
   storage_utility: ^1.0.0
   storage_info: ^1.0.0
   rhttp: ^0.11.1
+  markdown: ^7.3.0
+  flutter_highlight: ^0.7.0
 
 dev_dependencies:
   flutter_test:

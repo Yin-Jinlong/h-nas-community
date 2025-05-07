@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:h_nas/md/code_builder.dart';
 import 'package:h_nas/pages/ai/chat_message.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
@@ -38,7 +39,7 @@ class _ChatMessageViewState extends State<ChatMessageView> {
     super.dispose();
   }
 
-  Widget _llmContent(LlmChatMessage message) {
+  Widget _llmContent(LlmChatMessage message, MarkdownStyleSheet style) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -79,7 +80,12 @@ class _ChatMessageViewState extends State<ChatMessageView> {
                       ),
                     ),
                     if (message.showThink)
-                      MarkdownBody(data: message.think, selectable: true),
+                      MarkdownBody(
+                        data: message.think,
+                        selectable: true,
+                        styleSheet: style,
+                        builders: {'code': CodeBuilder(style)},
+                      ),
                   ],
                 ),
               ),
@@ -91,23 +97,39 @@ class _ChatMessageViewState extends State<ChatMessageView> {
             child: CircularProgressIndicator(strokeWidth: 2),
           )
         else
-          MarkdownBody(data: message.content, selectable: true),
+          MarkdownBody(
+            data: message.content,
+            selectable: true,
+            styleSheet: style,
+            builders: {'code': CodeBuilder(style)},
+          ),
       ],
     );
   }
 
-  Widget _chatContent() {
+  Widget _chatContent(BuildContext context) {
+    final style = MarkdownStyleSheet.fromTheme(
+      Theme.of(context),
+    ).copyWith(code: TextStyle(fontFamily: 'JetBrainsMapleMono'));
     return isUser
-        ? MarkdownBody(data: widget.message.content)
-        : _llmContent(widget.message as LlmChatMessage);
+        ? MarkdownBody(
+          data: widget.message.content,
+          selectable: true,
+          styleSheet: style,
+          builders: {'code': CodeBuilder(style)},
+        )
+        : _llmContent(widget.message as LlmChatMessage, style);
   }
 
-  List<Widget> _content() {
+  List<Widget> _content(BuildContext context) {
     return [
       Icon(isUser ? Icons.person : TDTxNFIcons.nf_md_robot),
       Flexible(
         child: Card(
-          child: Padding(padding: EdgeInsets.all(8), child: _chatContent()),
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: _chatContent(context),
+          ),
         ),
       ),
       SizedBox.square(dimension: 24),
@@ -125,7 +147,10 @@ class _ChatMessageViewState extends State<ChatMessageView> {
             child: IntrinsicWidth(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: isUser ? _content().reversed.toList() : _content(),
+                children:
+                    isUser
+                        ? _content(context).reversed.toList()
+                        : _content(context),
               ),
             ),
           ),
