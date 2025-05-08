@@ -51,7 +51,7 @@ class ChatController(
         @ShouldLogin token: Token,
     ): List<ChatMessageItem> {
         logger.info("getHistory ${token.user}")
-        return chatMemory.get(chatId(token.user)).map {
+        return chatMemory.get(chatId(token.user), 50).map {
             ChatMessageItem(it.messageType.name.lowercase(), it.text)
         }
     }

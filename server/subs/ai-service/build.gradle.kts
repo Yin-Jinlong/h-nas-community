@@ -1,7 +1,6 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import utils.buildImageTask
 import utils.configBootJar
-import java.net.URI
 
 plugins {
     alias(libs.plugins.license)
@@ -9,15 +8,6 @@ plugins {
     alias(libs.plugins.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
-}
-
-repositories {
-    maven("https://repo.spring.io/milestone")
-    maven("https://repo.spring.io/snapshot")
-    maven {
-        name = "Central Portal Snapshots"
-        url = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
-    }
 }
 
 dependencies {
