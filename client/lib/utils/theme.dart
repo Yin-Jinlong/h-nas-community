@@ -66,6 +66,12 @@ extension ThemeUtils on ThemeData {
           borderSide: BorderSide(color: getFromState(colorScheme, states)),
         );
       }),
+      suffixIconColor: WidgetStateColor.resolveWith((states) {
+        return getFromState(colorScheme, states);
+      }),
+      floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
+        return TextStyle(color: getFromState(colorScheme, states));
+      }),
       labelStyle: WidgetStateTextStyle.resolveWith((states) {
         return TextStyle(color: getFromState(colorScheme, states));
       }),
