@@ -6,7 +6,10 @@ import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/main.dart';
+import 'package:h_nas/pages/my/change_password_dialog.dart';
 import 'package:h_nas/pages/my/nick_dialog.dart';
+import 'package:h_nas/prefs.dart';
+import 'package:h_nas/routes.dart';
 import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/toast.dart';
@@ -176,6 +179,24 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
+  void _showChangePasswordDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ChangePasswordDialog(
+          onChangePassword: (o, n) {
+            UserAPI.setPassword(o, n).then((value) {
+              navigatorKey.currentState?.pop();
+              UserS.user = null;
+              Prefs.token = null;
+              navigatorKey.currentState?.pushNamed(Routes.loginOn);
+            });
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = UserS.user;
@@ -248,6 +269,13 @@ class _MyPageState extends State<MyPage> {
                     ),
                     onTap: () {
                       _showNickDialog(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text(S.current.change_password),
+                    trailing: trailing(Container()),
+                    onTap: () {
+                      _showChangePasswordDialog(context);
                     },
                   ),
                 ],

@@ -3,12 +3,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
+import 'package:h_nas/components/password_input.dart';
 import 'package:h_nas/components/tab_page.dart';
 import 'package:h_nas/components/user_avatar.dart';
 import 'package:h_nas/main.dart';
 import 'package:h_nas/pages/login_logon/login_qr.dart';
 import 'package:h_nas/settings/user.dart';
-import 'package:h_nas/utils/edit_field_utils.dart';
 import 'package:h_nas/utils/toast.dart';
 import 'package:universal_platform/universal_platform.dart';
 

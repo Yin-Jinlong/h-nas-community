@@ -144,6 +144,19 @@ class UserController(
         userService.register(username, password)
     }
 
+    @PostMapping("password")
+    fun changePassword(
+        @ShouldLogin token: Token,
+        @RequestParam("old")
+        @Password
+        oldPassword: String,
+        @RequestParam("new")
+        @Password
+        newPassword: String,
+    ) {
+        userService.setPassword(token.user, oldPassword, newPassword)
+    }
+
     @PatchMapping("nick")
     fun setNick(
         @ShouldLogin token: Token,

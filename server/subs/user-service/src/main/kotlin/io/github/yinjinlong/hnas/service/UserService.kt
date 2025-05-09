@@ -49,6 +49,8 @@ interface UserService {
 
     fun logout(token: Token)
 
+    fun setPassword(uid: Uid, oldPassword: String, newPassword: String)
+
     /**
      *
      * @param password 原始密码

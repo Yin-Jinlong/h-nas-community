@@ -82,11 +82,11 @@ abstract class UserAPI extends API {
   }
 
   static Future<int> getUserCount() {
-    return API
-        ._get<int>('$root/count', headers: {...API.tokenHeader()})
-        .then((data) {
-          return data;
-        });
+    return API._get<int>('$root/count', headers: {...API.tokenHeader()}).then((
+      data,
+    ) {
+      return data;
+    });
   }
 
   static Future<List<UserInfo>> getUsers(int stratId, int count) {
@@ -104,6 +104,16 @@ abstract class UserAPI extends API {
   static Future<bool> setNick(String nick) {
     return API
         ._patch('$root/nick', query: {'nick': nick}, headers: API.tokenHeader())
+        .then(API._boolThen);
+  }
+
+  static Future<bool> setPassword(String oldPwd, String newPwd) {
+    return API
+        ._post(
+          '$root/password',
+          query: {'old': oldPwd, 'new': newPwd},
+          headers: API.tokenHeader(),
+        )
         .then(API._boolThen);
   }
 }

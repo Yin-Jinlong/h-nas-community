@@ -158,6 +158,17 @@ class UserServiceImpl(
         Auth.logout(token)
     }
 
+    override fun setPassword(
+        uid: Uid,
+        oldPassword: String,
+        newPassword: String
+    ) {
+        val user = mapper.selectByUidPassword(uid, genPassword(oldPassword)) ?: throw ErrorCode.BAD_REQUEST.error
+        user.password = genPassword(newPassword)
+        mapper.updatePasswordByUid(user)
+        Auth.logoutAll(user.uid)
+    }
+
     @Transactional
     override fun register(username: String, password: String): IUser {
         mapper.selectByUsername(username)?.let {

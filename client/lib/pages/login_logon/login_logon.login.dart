@@ -70,30 +70,10 @@ class _LoginState extends _BaseState<_LoginWidget> {
             validate();
           },
         ),
-        TextFormField(
-          controller: password,
-          obscureText: true,
-          maxLength: 18,
-          decoration: InputDecoration(
-            labelText: S.current.password,
-            hintText: S.current.password,
-            prefixIcon: Icon(Icons.lock),
-            suffixIcon: EditFieldUtils.clearButton(password, () {
-              validate();
-            }),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return S.current.error_empty(S.current.password);
-            }
-            return null;
-          },
-          onTapOutside: (event) {
-            validate();
-          },
-          onChanged: (value) {
-            validate();
-          },
+        PasswordInput(
+          label: S.current.password,
+          password: password,
+          onValidate: validate,
         ),
         Stack(
           children: [

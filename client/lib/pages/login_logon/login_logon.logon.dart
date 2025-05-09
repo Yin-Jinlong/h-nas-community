@@ -58,55 +58,20 @@ class _LogonState extends _BaseState<_LogonWidget> {
             validate();
           },
         ),
-        TextFormField(
-          maxLength: 18,
-          obscureText: true,
-          controller: password,
-          decoration: InputDecoration(
-            labelText: S.current.password,
-            prefixIcon: Icon(Icons.lock),
-            suffixIcon: EditFieldUtils.clearButton(password, () {
-              validate();
-            }),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return S.current.error_empty(S.current.password);
-            }
-            return null;
-          },
-          onTapOutside: (event) {
-            validate();
-          },
-          onChanged: (value) {
-            validate();
-          },
+        PasswordInput(
+          label: S.current.password,
+          password: password,
+          onValidate: validate,
         ),
-        TextFormField(
-          maxLength: 18,
-          obscureText: true,
-          controller: password2,
-          decoration: InputDecoration(
-            labelText: S.current.password2,
-            prefixIcon: Icon(Icons.lock),
-            suffixIcon: EditFieldUtils.clearButton(password2, () {
-              validate();
-            }),
-          ),
+        PasswordInput(
+          label: S.current.password2,
+          password: password2,
+          onValidate: validate,
           validator: (value) {
-            if (value == null || value.isEmpty) {
-              return S.current.error_empty(S.current.password2);
-            }
             if (value != password.text) {
               return S.current.password_not_match;
             }
             return null;
-          },
-          onTapOutside: (event) {
-            validate();
-          },
-          onChanged: (value) {
-            validate();
           },
         ),
         Stack(
