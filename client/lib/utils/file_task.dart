@@ -164,6 +164,7 @@ class UploadFileTask extends FileTask {
               size: size,
               hash: hash,
               private: private,
+              cancelToken: cancelToken,
             );
             if (r) {
               uploaded = end;
@@ -184,6 +185,7 @@ class UploadFileTask extends FileTask {
           size: size,
           hash: hash,
           private: private,
+          cancelToken: cancelToken,
         );
       } finally {
         reader.cancel();
