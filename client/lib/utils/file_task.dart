@@ -116,24 +116,19 @@ class UploadFileTask extends FileTask {
   @override
   String get progressStr => (progress * 100).toStringAsFixed(1);
 
-  Future<List<int>> _readChunk(ChunkedStreamReader<int> reader) async {
-    return await Future.delayed(const Duration(), () async {
-      return await reader.readChunk(4 * 1024 * 1024);
-    });
-  }
-
   Future<String> _calcHash() async {
     final reader = ChunkedStreamReader(file.openRead());
     var output = AccumulatorSink<Digest>();
     var input = sha256.startChunkedConversion(output);
     try {
       while (true) {
-        final chunk = await _readChunk(reader);
+        final chunk = await reader.readChunk(4 * 1024 * 1024);
         if (chunk.isEmpty) {
           break;
         } else {
           input.add(chunk);
         }
+        await Future.delayed(Duration(milliseconds: 16));
       }
     } finally {
       reader.cancel();
