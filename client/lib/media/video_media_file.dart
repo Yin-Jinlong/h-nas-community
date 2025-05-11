@@ -13,7 +13,7 @@ class VideoMediaFile extends MediaFile {
     required this.codec,
     required this.bitrate,
   }) : super(
-         url: FileAPIURL.videoStringM3u8(
+         url: FileAPIURL.videoStreamM3u8(
            file.fullPath,
            private: private,
            codec: codec,
