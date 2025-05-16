@@ -24,16 +24,17 @@ class DioHttpProvider extends HttpProvider {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) {
+    var rt =
+        responseType == 'text' || responseType == null
+            ? dio.ResponseType.plain
+            : dio.ResponseType.values.byName(responseType);
     return client
         .request(
           url,
           data: data,
           options: dio.Options(
             method: method,
-            responseType:
-                responseType == 'text' || responseType == null
-                    ? dio.ResponseType.plain
-                    : dio.ResponseType.values.byName(responseType),
+            responseType: rt,
             headers: headers,
             contentType: contentType,
           ),
@@ -48,7 +49,10 @@ class DioHttpProvider extends HttpProvider {
             headers: res.headers.map.map(
               (key, value) => MapEntry(key, value.join(', ')),
             ),
-            data: res.data,
+            data: switch (rt) {
+              dio.ResponseType.stream => (res.data as dio.ResponseBody).stream,
+              _ => res.data,
+            },
           ),
         );
   }
