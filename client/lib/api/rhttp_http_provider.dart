@@ -1,17 +1,26 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:h_nas/utils/security.dart';
 import 'package:rhttp/rhttp.dart' as rhttp;
 
 import 'http_provider.dart';
 
 class RHttpHttpProvider extends HttpProvider {
+  static final List<String> _cas = [];
+
   static void init() async {
     await rhttp.Rhttp.init();
+    for (final ca in Security.cas) {
+      final text = utf8.decode(ca);
+      _cas.add(text);
+    }
   }
 
   final client = rhttp.RhttpClient.createSync(
-    settings: const rhttp.ClientSettings(
+    settings: rhttp.ClientSettings(
       cookieSettings: rhttp.CookieSettings(),
+      tlsSettings: rhttp.TlsSettings(trustedRootCertificates: _cas),
     ),
   );
 

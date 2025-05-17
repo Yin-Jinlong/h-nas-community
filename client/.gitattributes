@@ -1,3 +1,4 @@
 .metadata text eol=lf
 pubspec.lock text eol=lf
 devtools_options.yaml text eol=lf
+*.zip filter=lfs diff=lfs merge=lfs -text

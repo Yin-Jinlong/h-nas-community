@@ -10,6 +10,7 @@ import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
 import 'package:h_nas/settings/theme.dart';
 import 'package:h_nas/settings/user.dart';
+import 'package:h_nas/utils/security.dart';
 import 'package:h_nas/utils/theme.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -19,6 +20,9 @@ import 'generated/l10n.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Security.init();
+  Security.installCas();
+
   if (!UniversalPlatform.isWeb) {
     RHttpHttpProvider.init();
   }

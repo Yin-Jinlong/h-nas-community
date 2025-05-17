@@ -83,6 +83,7 @@ dependencies:
   rhttp: ^0.11.1
   markdown: ^7.3.0
   flutter_highlight: ^0.7.0
+  archive: ^4.0.7
 
 dev_dependencies:
   flutter_test:
@@ -138,6 +139,9 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
   generate: true
+
+  assets:
+    - assets/certs/
 
   fonts:
     - family: JetBrainsMapleMono
