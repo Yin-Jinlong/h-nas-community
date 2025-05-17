@@ -1,33 +1,32 @@
 mod api;
 
 use crate::api::API;
+use clap::Parser;
+use std::io;
+use std::io::Write;
 use std::net::UdpSocket;
 
-const PORT: i32 = 12000;
-const HOST: &str = "225.1.2.9";
-
 fn main() {
-    let args = std::env::args().collect::<Vec<_>>();
+    let mut api = API::parse();
 
     let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
-    let addr = format!("{}:{}", HOST, PORT);
+    let addr = format!("{}:{}", api.addr, api.group_port);
 
-    let mut file = "api.yml";
-
-    args.get(1).inspect(|v| {
-        if v.len() > 0 {
-            file = v;
-        }
-    });
-
-    let msg = serde_json::to_string(&API::load(file)).unwrap();
+    let msg = serde_json::to_string(&api.to_info()).unwrap();
 
     println!("{}", msg);
 
     loop {
+        if api.count == 0 {
+            break;
+        }
+        print!("\rRemain {}", api.count);
+        io::stdout().flush().unwrap();
+        api.count -= 1;
         socket
             .send_to(msg.as_bytes(), &addr)
             .expect("Failed to send packet");
-        std::thread::sleep(std::time::Duration::from_secs(2));
+        std::thread::sleep(std::time::Duration::from_millis(api.duration));
     }
+    println!();
 }
