@@ -18,12 +18,12 @@
 
     <meta charset="UTF-8">
     <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-    <meta name="description" content="A new Flutter project.">
+    <meta name="description" content="H NAS Web Client">
 
     <!-- iOS meta tags & icons -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="client">
+    <meta name="apple-mobile-web-app-title" content="h nas">
     <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
     <!-- Favicon -->
@@ -38,6 +38,22 @@
         event.preventDefault()
     })
 </script>
-<script src="flutter_bootstrap.js" async></script>
+<script >
+    {{flutter_js}}
+    {{flutter_build_config}}
+
+    const loading = document.createElement('div');
+    document.body.appendChild(loading);
+    loading.textContent = "Loading Entrypoint...";
+    _flutter.loader.load({
+        onEntrypointLoaded: async function(engineInitializer) {
+            loading.textContent = "Initializing engine...";
+            const appRunner = await engineInitializer.initializeEngine();
+
+            loading.textContent = "Running app...";
+            await appRunner.runApp();
+        }
+    });
+</script>
 </body>
 </html>
