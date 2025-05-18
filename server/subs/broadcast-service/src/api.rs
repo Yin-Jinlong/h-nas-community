@@ -1,5 +1,5 @@
+use crate::api_info::APIInfo;
 use clap::{Parser, ValueEnum};
-use serde::{Deserialize, Serialize};
 use std::net::Ipv4Addr;
 
 const PORT: u16 = 12000;
@@ -42,13 +42,6 @@ pub(crate) struct API {
 pub(crate) enum APISchema {
     HTTP,
     HTTPS,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub(crate) struct APIInfo {
-    schema: String,
-    port: u16,
-    path: String,
 }
 
 impl API {

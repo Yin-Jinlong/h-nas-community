@@ -1,4 +1,5 @@
 mod api;
+mod api_info;
 
 use crate::api::API;
 use clap::Parser;
