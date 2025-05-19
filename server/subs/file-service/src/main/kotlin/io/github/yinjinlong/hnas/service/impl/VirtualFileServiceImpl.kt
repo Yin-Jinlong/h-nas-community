@@ -73,6 +73,11 @@ class VirtualFileServiceImpl(
         return DataHelper.dataFile(dataPath(type, hash))
     }
 
+    fun getFileMapping(hash: Hash): IFileMapping {
+        return fileMappingMapper.selectByHash(hash)
+            ?: throw IllegalStateException("file_mapping不存在: $hash")
+    }
+
     private tailrec fun updateParent(path: VirtualPath, op: VirtualFile.() -> Unit) {
         val vf = virtualFileMapper.selectByIdLock(pathIdOrThrow(path))
             ?: throw IllegalStateException("数据库文件不存在: $path")
@@ -271,8 +276,7 @@ class VirtualFileServiceImpl(
 
     override fun getExtra(file: VirtualFile): JsonElement? {
         if (file.hash == null) return null
-        val fm = fileMappingMapper.selectByHash(file.hash!!)
-            ?: throw IllegalStateException("file_mapping 不存在hash: ${file.hash}")
+        val fm = getFileMapping(file.hash!!)
         return fileExtraReaderHelper.getExtra(DataHelper.dataFile(fm.dataPath), MediaType(fm.type, fm.subType)).also {
             virtualFileMapper.updateExtra(file.fid, gson.toJson(it))
         }
@@ -285,13 +289,34 @@ class VirtualFileServiceImpl(
         if (!ai.cover.isNullOrEmpty()) {
             return DataHelper.coverFile(ai.cover!!).apply {
                 if (!exists()) {
-                    val fm = fileMappingMapper.selectByHash(vf.hash!!)
-                        ?: throw IllegalStateException("file_mapping 不存在hash: ${vf.hash}")
+                    val fm = getFileMapping(vf.hash!!)
                     AudioInfoHelper.saveCover(DataHelper.dataFile(fm.dataPath))
                 }
             }
         }
         throw ErrorCode.NO_SUCH_FILE.error
+    }
+
+    override fun getAudioLrc(path: VirtualPath): ByteArray {
+        val vf = getOrThrow(path)
+        val extra = vf.extra ?: return ByteArray(0)
+        if (extra.isJsonObject) {
+            val lrc = extra.asJsonObject.get("lrc")
+            if (lrc.isJsonPrimitive && lrc.asBoolean) {
+                val file = DataHelper.lrcFile(vf.hash!!.pathSafe)
+                return if (!file.exists()) {
+                    val fm = getFileMapping(vf.hash!!)
+                    AudioInfoHelper.getLrc(DataHelper.dataFile(fm.dataPath), MediaType(fm.type, fm.subType))
+                        ?.also {
+                            file.mkParent()
+                            file.writeText(it)
+                        }?.encodeToByteArray() ?: ByteArray(0)
+                } else {
+                    file.readBytes()
+                }
+            }
+        }
+        return ByteArray(0)
     }
 
     @Transactional(rollbackFor = [Exception::class])

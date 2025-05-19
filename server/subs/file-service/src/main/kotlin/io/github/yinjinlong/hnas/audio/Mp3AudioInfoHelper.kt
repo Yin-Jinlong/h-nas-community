@@ -5,6 +5,7 @@ import io.github.yinjinlong.hnas.audio.AudioInfoHelper.toInfo
 import io.github.yinjinlong.hnas.data.AudioFileInfo
 import org.jaudiotagger.audio.mp3.MP3File
 import org.jaudiotagger.audio.mp3.MP3FileReader
+import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.id3.AbstractID3v2Frame
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag
 import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC
@@ -55,6 +56,17 @@ object Mp3AudioInfoHelper {
         return tag.toInfo(af.audioHeader) {
             getMp3Cover(tag)
         }
+    }
+
+    /**
+     * 获取歌词
+     */
+    fun getLrc(file: File): String? {
+        val af = MP3FileReader().read(file) as MP3File
+        if (!af.hasID3v2Tag())
+            return null
+        val tag = af.iD3v2Tag!!
+        return tag.getFirst(FieldKey.LYRICS)
     }
 
 }

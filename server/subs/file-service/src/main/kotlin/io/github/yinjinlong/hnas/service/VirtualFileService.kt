@@ -85,4 +85,9 @@ interface VirtualFileService : VirtualFileManager {
      * 获取音频封面
      */
     fun getAudioCover(path: VirtualPath): File
+
+    /**
+     * 获取音频封面
+     */
+    fun getAudioLrc(path: VirtualPath): ByteArray
 }

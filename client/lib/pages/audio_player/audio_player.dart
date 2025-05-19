@@ -17,6 +17,8 @@ import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/pages/audio_player/play_sheet.dart';
 import 'package:h_nas/utils/audio_info_exts.dart';
+import 'package:h_nas/utils/dispose.dart';
+import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/lrc_utils.dart';
 import 'package:h_nas/utils/time_utils.dart';
 import 'package:lrc/lrc.dart';
@@ -78,8 +80,19 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
 
   _newAudio() {
     lrc = null;
-    if(player.nowPlay.value?.audioInfo?.lrc==true){
-      // TODO
+    var file = player.nowPlay.value;
+    if (file == null) return;
+    if (file.audioInfo?.lrc == true) {
+      FileAPI.getAudioLrc(file.file.fullPath, private: file.private).then((
+        value,
+      ) {
+        if (disposed) return;
+        setState(() {
+          if (value.isNotEmpty) {
+            lrc = Lrc.parse(value);
+          }
+        });
+      });
     }
   }
 

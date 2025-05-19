@@ -4,6 +4,8 @@ import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.service.VirtualFileService
 import io.github.yinjinlong.hnas.token.Token
 import io.github.yinjinlong.hnas.utils.logger
+import io.github.yinjinlong.spring.boot.annotations.ContentType
+import io.github.yinjinlong.spring.boot.annotations.ResponseRaw
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -31,6 +33,19 @@ class CacheFileAudioController(
         logger.info("getAudioCover: ${token?.user} $path $private")
         val p = getPath(private, token?.user, path)
         return virtualFileService.getAudioCover(p)
+    }
+
+    @ResponseRaw
+    @ContentType("text/plain")
+    @GetMapping("audio/lrc")
+    fun getAudioLrc(
+        token: Token?,
+        @RequestParam path: String,
+        @RequestParam(required = false) private: Boolean = false
+    ): ByteArray {
+        logger.info("getAudioLrc: ${token?.user} $path $private")
+        val p = getPath(private, token?.user, path)
+        return virtualFileService.getAudioLrc(p)
     }
 
 }

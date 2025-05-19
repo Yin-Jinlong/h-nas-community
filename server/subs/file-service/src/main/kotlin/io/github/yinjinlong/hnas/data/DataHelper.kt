@@ -17,6 +17,7 @@ object DataHelper {
     private lateinit var CachePath: String
     private lateinit var DataRootPath: Path
     private lateinit var CacheRootPath: Path
+    private lateinit var LrcPath: Path
     private lateinit var DataPath: Path
     private lateinit var ThumbnailPath: Path
     private lateinit var PreviewPath: Path
@@ -29,6 +30,7 @@ object DataHelper {
         DataRootPath = fs.getPath(option.dataRoot)
         CacheRootPath = fs.getPath(option.cacheRoot)
         DataPath = DataRootPath.resolve("data")
+        LrcPath = CacheRootPath.resolve("歌词")
         ThumbnailPath = CacheRootPath.resolve("缩略图")
         PreviewPath = CacheRootPath.resolve("预览图")
         HLSPath = CacheRootPath.resolve("hls")
@@ -49,6 +51,8 @@ object DataHelper {
      * 数据文件：data/data
      */
     fun dataFile(path: String): File = DataPath.file(path)
+
+    fun lrcFile(path: String): File = LrcPath.file(path, ".lrc")
 
     /**
      * 缩略图：cache/缩略图/...

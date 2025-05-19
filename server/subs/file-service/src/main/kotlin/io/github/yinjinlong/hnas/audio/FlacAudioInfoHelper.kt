@@ -4,6 +4,7 @@ import io.github.yinjinlong.hnas.audio.AudioInfoHelper.saveImage
 import io.github.yinjinlong.hnas.audio.AudioInfoHelper.toInfo
 import io.github.yinjinlong.hnas.data.AudioFileInfo
 import org.jaudiotagger.audio.flac.FlacFileReader
+import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.flac.FlacTag
 import java.io.File
 
@@ -41,6 +42,15 @@ object FlacAudioInfoHelper {
         return tag.toInfo(af.audioHeader) {
             getFlacCover(tag)
         }
+    }
+
+    /**
+     * 获取歌词
+     */
+    fun getLrc(file: File): String? {
+        val af = FlacFileReader().read(file)
+        val tag = af.tag as FlacTag
+        return tag.getFirst(FieldKey.LYRICS)
     }
 
 }

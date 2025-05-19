@@ -235,4 +235,17 @@ abstract class FileAPI extends API {
         ._delete('$root/user/avatar', headers: API.tokenHeader())
         .then(API._boolThen);
   }
+
+  static Future<String> getAudioLrc(String path, {required bool private}) {
+    return API
+        ._get<Uint8List>(
+          '$root/audio/lrc',
+          query: _base(path, private),
+          headers: {...API.tokenHeader()},
+          responseType: HttpProvider.bytes,
+        )
+        .then((res) {
+          return utf8.decode(res);
+        });
+  }
 }

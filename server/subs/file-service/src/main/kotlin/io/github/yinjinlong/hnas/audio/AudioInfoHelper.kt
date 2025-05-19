@@ -92,4 +92,17 @@ object AudioInfoHelper {
         }
     }
 
+    /**
+     * 获取音频信息
+     * @param file 文件
+     * @param type 媒体类型
+     */
+    fun getLrc(file: File, type: MediaType): String? {
+        return when (type.subtype) {
+            MediaSubtypeType.AUDIO_MP3 -> Mp3AudioInfoHelper.getLrc(file)
+            MediaSubtypeType.AUDIO_FLAC -> FlacAudioInfoHelper.getLrc(file)
+            else -> null
+        }
+    }
+
 }
