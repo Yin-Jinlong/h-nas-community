@@ -1,13 +1,13 @@
 package io.github.yinjinlong.hnas.audio
 
+import io.github.yinjinlong.hnas.data.AudioFileInfo
 import io.github.yinjinlong.hnas.data.DataHelper
-import io.github.yinjinlong.hnas.entity.AudioInfo
-import io.github.yinjinlong.hnas.entity.FileMapping
 import io.github.yinjinlong.hnas.entity.Hash
 import io.github.yinjinlong.hnas.tika.FileDetector
 import io.github.yinjinlong.hnas.utils.MediaSubtypeType
 import io.github.yinjinlong.hnas.utils.mkParent
 import io.github.yinjinlong.md.sha256
+import org.apache.tika.mime.MediaType
 import org.jaudiotagger.audio.AudioHeader
 import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.Tag
@@ -39,8 +39,7 @@ object AudioInfoHelper {
      * @param hash hash
      * @param coverFn 封面文件生成
      */
-    fun Tag.toInfo(header: AudioHeader, hash: Hash, coverFn: () -> String?) = AudioInfo(
-        hash = hash,
+    fun Tag.toInfo(header: AudioHeader, coverFn: () -> String?) = AudioFileInfo(
         title = getFirst(FieldKey.TITLE),
         subTitle = getFirst(FieldKey.SUBTITLE),
         artists = getFirst(FieldKey.ARTIST),
@@ -52,7 +51,7 @@ object AudioInfoHelper {
         style = getFirst(FieldKey.GENRE),
         bitrate = header.bitRateAsNumber.toInt(),
         comment = getFirst(FieldKey.COMMENT),
-        lrc = getFirst(FieldKey.LYRICS)
+        lrc = getFirst(FieldKey.LYRICS) != null,
     )
 
     /**
@@ -82,14 +81,13 @@ object AudioInfoHelper {
 
     /**
      * 获取音频信息
-     * @param hash hash
-     * @param fm 文件映射
+     * @param file 文件
+     * @param type 媒体类型
      */
-    fun getInfo(hash: Hash, fm: FileMapping): AudioInfo? {
-        val file = DataHelper.dataFile(fm.dataPath)
-        return when (fm.subType) {
-            MediaSubtypeType.AUDIO_MP3 -> Mp3AudioInfoHelper.getInfo(file, hash)
-            MediaSubtypeType.AUDIO_FLAC -> FlacAudioInfoHelper.getInfo(file, hash)
+    fun getInfo(file: File, type: MediaType): AudioFileInfo? {
+        return when (type.subtype) {
+            MediaSubtypeType.AUDIO_MP3 -> Mp3AudioInfoHelper.getInfo(file)
+            MediaSubtypeType.AUDIO_FLAC -> FlacAudioInfoHelper.getInfo(file)
             else -> null
         }
     }

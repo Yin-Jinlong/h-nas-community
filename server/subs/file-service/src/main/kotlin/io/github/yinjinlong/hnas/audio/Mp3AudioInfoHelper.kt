@@ -2,8 +2,7 @@ package io.github.yinjinlong.hnas.audio
 
 import io.github.yinjinlong.hnas.audio.AudioInfoHelper.saveImage
 import io.github.yinjinlong.hnas.audio.AudioInfoHelper.toInfo
-import io.github.yinjinlong.hnas.entity.AudioInfo
-import io.github.yinjinlong.hnas.entity.Hash
+import io.github.yinjinlong.hnas.data.AudioFileInfo
 import org.jaudiotagger.audio.mp3.MP3File
 import org.jaudiotagger.audio.mp3.MP3FileReader
 import org.jaudiotagger.tag.id3.AbstractID3v2Frame
@@ -48,12 +47,12 @@ object Mp3AudioInfoHelper {
     /**
      * 获取音频信息
      */
-    fun getInfo(file: File, hash: Hash): AudioInfo? {
+    fun getInfo(file: File): AudioFileInfo? {
         val af = MP3FileReader().read(file) as MP3File
         if (!af.hasID3v2Tag())
             return null
         val tag = af.iD3v2Tag!!
-        return tag.toInfo(af.audioHeader, hash) {
+        return tag.toInfo(af.audioHeader) {
             getMp3Cover(tag)
         }
     }

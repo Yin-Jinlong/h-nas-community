@@ -11,6 +11,13 @@ extension FileInfoExt on FileInfo {
   MediaType? get fileMediaType =>
       mediaType == null ? null : MediaType.parse(mediaType!);
 
+  AudioFileInfo? get audioFileInfo {
+    if (fileMediaType?.isAudio == true && extra is Map) {
+      return AudioFileInfo.fromJson(extra);
+    }
+    return null;
+  }
+
   bool get canPlay {
     final type = fileMediaType;
     if (type == null) {

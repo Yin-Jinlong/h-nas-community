@@ -27,6 +27,9 @@ fun IVirtualFile.toFileInfo(
             } else
                 it
         },
-        owner = owner
+        owner = owner,
+        extra = if (extra?.isJsonObject == true) extra!!.asJsonObject.apply {
+            addProperty("path", dir.resolve(name).path)
+        } else extra,
     )
 }

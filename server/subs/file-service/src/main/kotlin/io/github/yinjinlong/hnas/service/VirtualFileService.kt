@@ -1,6 +1,5 @@
 package io.github.yinjinlong.hnas.service
 
-import io.github.yinjinlong.hnas.data.AudioFileInfo
 import io.github.yinjinlong.hnas.data.FileRange
 import io.github.yinjinlong.hnas.entity.*
 import io.github.yinjinlong.hnas.fs.VirtualFileManager
@@ -81,11 +80,6 @@ interface VirtualFileService : VirtualFileManager {
         NotDirectoryException::class
     )
     fun getFolderChildrenCount(path: VirtualPath): ChildrenCount
-
-    /**
-     * 获取音频信息
-     */
-    fun getAudioInfo(path: VirtualPath): AudioFileInfo
 
     /**
      * 获取音频封面

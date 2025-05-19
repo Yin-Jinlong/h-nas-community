@@ -15,7 +15,7 @@ interface VirtualFileMapper {
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time, size 
+select fid, name, parent, hash, owner,user, create_time, update_time, size ,extra
 from virtual_file 
 where fid = #{fid}
 """
@@ -52,7 +52,7 @@ limit 1
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time ,size
+select fid, name, parent, hash, owner,user, create_time, update_time , size, extra
 from virtual_file 
 where fid = #{fid} 
 for update
@@ -62,7 +62,7 @@ for update
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time, size
+select fid, name, parent, hash, owner,user, create_time, update_time, size, extra
 from virtual_file 
 where parent = #{parent} 
 order by hash is not null,name
@@ -72,7 +72,7 @@ order by hash is not null,name
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time, size
+select fid, name, parent, hash, owner,user, create_time, update_time, size, extra
 from virtual_file
 where user=#{uid} and fid>#{last} and match(name) against(#{name})
 order by fid
@@ -111,6 +111,13 @@ VALUES (#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{size})
 
     @Update("update virtual_file set update_time = #{time} where fid = #{fid}")
     fun updateUpdateTime(fid: FileId, time: Timestamp): Int
+
+    @Update(
+        """
+update virtual_file set extra = #{extra} where fid = #{fid}
+"""
+    )
+    fun updateExtra(fid: FileId, extra: String)
 
     //******//
     //  删  //

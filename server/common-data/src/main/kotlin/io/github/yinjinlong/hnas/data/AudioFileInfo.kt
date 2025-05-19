@@ -1,7 +1,5 @@
 package io.github.yinjinlong.hnas.data
 
-import io.github.yinjinlong.hnas.entity.IAudioInfo
-
 /**
  * @author YJL
  */
@@ -9,7 +7,8 @@ data class AudioFileInfo(
     /**
      * 音频文件路径
      */
-    val path: String,
+    @Transient
+    val path: String = "",
     /**
      * 标题
      */
@@ -57,25 +56,5 @@ data class AudioFileInfo(
     /**
      * 歌词
      */
-    val lrc: String?
-) {
-    companion object {
-        fun of(path: String, info: IAudioInfo): AudioFileInfo {
-            return AudioFileInfo(
-                path,
-                info.title,
-                info.subTitle,
-                info.artists,
-                path,
-                info.duration,
-                info.album,
-                info.year,
-                info.num,
-                info.style,
-                info.bitrate,
-                info.comment,
-                info.lrc
-            )
-        }
-    }
-}
+    val lrc: Boolean?
+)

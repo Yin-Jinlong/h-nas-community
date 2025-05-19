@@ -16,19 +16,9 @@ class MediaFile extends Media with ChangeNotifier {
         httpHeaders: private ? API.tokenHeader() : null,
       ) {
     type = file.fileMediaType;
+    audioInfo = file.audioFileInfo;
     if (kDebugMode) {
       print(url);
     }
-  }
-
-  Future<AudioFileInfo?> loadInfo() async {
-    if (audioInfo == null && type?.isAudio == true) {
-      if (file.fileMediaType?.isAudio == true) {
-        final v = await FileAPI.getAudioInfo(file.fullPath, private: private);
-        audioInfo = v;
-        notifyListeners();
-      }
-    }
-    return audioInfo;
   }
 }

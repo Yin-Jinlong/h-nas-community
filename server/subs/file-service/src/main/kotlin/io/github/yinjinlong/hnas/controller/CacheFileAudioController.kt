@@ -1,6 +1,5 @@
 package io.github.yinjinlong.hnas.controller
 
-import io.github.yinjinlong.hnas.data.AudioFileInfo
 import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.service.VirtualFileService
 import io.github.yinjinlong.hnas.token.Token
@@ -22,17 +21,6 @@ class CacheFileAudioController(
 ) : WithFS(virtualFileSystemProvider) {
 
     val logger = CacheFileAudioController::class.logger()
-
-    @GetMapping("audio/info")
-    fun getAudioInfo(
-        token: Token?,
-        @RequestParam path: String,
-        @RequestParam(required = false) private: Boolean = false
-    ): AudioFileInfo {
-        logger.info("getAudioInfo: ${token?.user} $path $private")
-        val p = getPath(private, token?.user, path)
-        return virtualFileService.getAudioInfo(p)
-    }
 
     @GetMapping("audio/cover")
     fun getAudioCover(

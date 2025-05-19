@@ -1,11 +1,10 @@
 package io.github.yinjinlong.hnas.service
 
+import com.google.gson.JsonElement
 import io.github.yinjinlong.hnas.entity.*
-import io.github.yinjinlong.hnas.error.ErrorCode
 import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.fs.VirtualFilesystem
 import io.github.yinjinlong.hnas.fs.VirtualPath
-import io.github.yinjinlong.hnas.mapper.AudioInfoMapper
 import io.github.yinjinlong.hnas.mapper.ChildrenCountMapper
 import io.github.yinjinlong.hnas.mapper.VirtualFileMapper
 import java.nio.file.NoSuchFileException
@@ -20,7 +19,6 @@ import java.util.*
 abstract class AbstractVirtualFileService(
     protected val virtualFileMapper: VirtualFileMapper,
     protected val childrenCountMapper: ChildrenCountMapper,
-    protected val audioInfoMapper: AudioInfoMapper,
 ) : VirtualFileService {
 
     protected lateinit var fs: VirtualFilesystem
@@ -99,8 +97,16 @@ abstract class AbstractVirtualFileService(
             ?: throw IllegalStateException("Insert Failed : $vf")
     }
 
+    abstract fun getExtra(file: VirtualFile): JsonElement?
+
     override fun get(path: VirtualPath): IVirtualFile? {
-        return pathId(path)?.let { virtualFileMapper.selectById(it) }
+        return pathId(path)?.let {
+            virtualFileMapper.selectById(it)?.also { vf ->
+                if (vf.extra == null) {
+                    vf.extra = getExtra(vf)
+                }
+            }
+        }
     }
 
     protected fun getOrThrow(path: VirtualPath): IVirtualFile {
@@ -118,7 +124,4 @@ abstract class AbstractVirtualFileService(
             ?: throw NotDirectoryException(path.fullPath)
     }
 
-    protected fun getAudio(vf: IVirtualFile): AudioInfo? {
-        return audioInfoMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_FILE_FORMAT.error)
-    }
 }

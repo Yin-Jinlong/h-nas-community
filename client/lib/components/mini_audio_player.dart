@@ -64,7 +64,8 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
   }
 
   _onAudioInfo() {
-    final info = player.nowPlay.value?.audioInfo;
+    var json = player.nowPlay.value?.file.extra;
+    final info = json == null ? null : AudioFileInfo.fromJson(json);
     if (info == null) return;
     _cachedAudioInfo = info;
     setState(() {});

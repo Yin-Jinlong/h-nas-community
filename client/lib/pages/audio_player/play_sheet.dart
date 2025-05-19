@@ -30,11 +30,6 @@ class _MoreSheetState extends State<PLayListSheet> {
   }
 
   ListTile _item(BuildContext context, int num, MediaFile file) {
-    if (file.audioInfo == null) {
-      file.loadInfo().then((v) {
-        setState(() {});
-      });
-    }
     var playingThis = player.nowPlay.value == file;
     return ListTile(
       leading:

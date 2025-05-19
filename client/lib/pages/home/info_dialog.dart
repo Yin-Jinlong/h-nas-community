@@ -51,20 +51,13 @@ class _InfoDialogState extends State<InfoDialog> {
         });
       });
     } else if (fileMediaType?.isAudio == true) {
-      FileAPI.getAudioInfo(file.fullPath, private: widget.private).then((v) {
-        if (disposed) return;
-        setState(() {
-          audioFileInfo = v;
-        });
-      });
+      audioFileInfo = file.audioFileInfo;
     }
   }
 
   List<TableRow> _folderInfo() {
-    TableRow item(String name, int? v) => _infoRow(
-      name,
-      Text(count == null ? S.current.loading : (v?.toString() ?? '?')),
-    );
+    TableRow item(String name, int? v) =>
+        _infoRow(name, Text(count == null ? '' : (v?.toString() ?? '?')));
 
     return [
       item(S.current.child_file_count, count?.subCount),

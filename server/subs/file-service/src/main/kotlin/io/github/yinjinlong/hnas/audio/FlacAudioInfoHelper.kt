@@ -2,8 +2,7 @@ package io.github.yinjinlong.hnas.audio
 
 import io.github.yinjinlong.hnas.audio.AudioInfoHelper.saveImage
 import io.github.yinjinlong.hnas.audio.AudioInfoHelper.toInfo
-import io.github.yinjinlong.hnas.entity.AudioInfo
-import io.github.yinjinlong.hnas.entity.Hash
+import io.github.yinjinlong.hnas.data.AudioFileInfo
 import org.jaudiotagger.audio.flac.FlacFileReader
 import org.jaudiotagger.tag.flac.FlacTag
 import java.io.File
@@ -35,12 +34,11 @@ object FlacAudioInfoHelper {
     /**
      * 获取音频信息
      * @param file 文件
-     * @param hash 文件hash
      */
-    fun getInfo(file: File, hash: Hash): AudioInfo {
+    fun getInfo(file: File): AudioFileInfo {
         val af = FlacFileReader().read(file)
         val tag = af.tag as FlacTag
-        return tag.toInfo(af.audioHeader, hash) {
+        return tag.toInfo(af.audioHeader) {
             getFlacCover(tag)
         }
     }

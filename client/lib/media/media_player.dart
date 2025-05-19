@@ -98,9 +98,7 @@ class MediaPlayer {
 
         var mediaFile = (list.medias[list.index] as MediaFile);
         nowPlay.value = mediaFile;
-        mediaFile.loadInfo().then((v) {
-          _showNotification();
-        });
+        _showNotification();
       });
 
     Global.isDark.addListener(_showNotification);

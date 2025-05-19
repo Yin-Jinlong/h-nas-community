@@ -78,13 +78,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
 
   _newAudio() {
     lrc = null;
-    player.nowPlay.value?.loadInfo().then((v) {
-      var lrcStr = v?.lrc;
-      if (lrcStr?.isValidLrc == true) {
-        lrc = lrcStr!.toLrc();
-      }
-      setState(() {});
-    });
+    if(player.nowPlay.value?.audioInfo?.lrc==true){
+      // TODO
+    }
   }
 
   _onPlay() {

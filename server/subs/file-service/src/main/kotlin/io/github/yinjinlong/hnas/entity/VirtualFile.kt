@@ -1,8 +1,10 @@
 package io.github.yinjinlong.hnas.entity
 
+import com.google.gson.JsonElement
 import io.github.yinjinlong.hnas.annotation.FulltextIndex
 import io.github.yinjinlong.hnas.converter.HashConverter
 import io.github.yinjinlong.hnas.usertype.HashUserType
+import io.github.yinjinlong.hnas.usertype.JsonUserType
 import jakarta.persistence.*
 import org.hibernate.annotations.Comment
 import org.hibernate.annotations.Type
@@ -69,5 +71,10 @@ data class VirtualFile(
 
     @Column(nullable = false)
     @Comment("文件/目录大小")
-    override var size: Long = 0
+    override var size: Long = 0,
+
+    @Type(value = JsonUserType::class)
+    @Column(columnDefinition = "json")
+    @Comment("文件附加信息")
+    override var extra: JsonElement? = null,
 ) : IVirtualFile

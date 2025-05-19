@@ -25,6 +25,7 @@ data class FileInfo(
     val updateTime: Long,
     val size: Long,
     val owner: Long,
+    val extra: Any?,
 ) : Comparable<FileInfo> {
     override fun compareTo(other: FileInfo): Int {
         val tr = fileType.compareTo(other.fileType)

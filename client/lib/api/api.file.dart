@@ -107,21 +107,6 @@ abstract class FileAPI extends API {
         });
   }
 
-  static Future<AudioFileInfo> getAudioInfo(
-    String path, {
-    required bool private,
-  }) {
-    return API
-        ._get<JsonObject>(
-          '$root/audio/info',
-          query: _base(path, private),
-          headers: {...API.tokenHeader()},
-        )
-        .then((data) {
-          return AudioFileInfo.fromJson(data);
-        });
-  }
-
   static Future<bool> newFolder(String path, {required bool private}) {
     return API
         ._post<bool>(

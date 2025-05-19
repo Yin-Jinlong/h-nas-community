@@ -1,16 +1,18 @@
 package io.github.yinjinlong.hnas.service.impl
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import io.github.yinjinlong.hnas.audio.AudioInfoHelper
 import io.github.yinjinlong.hnas.data.AudioFileInfo
 import io.github.yinjinlong.hnas.data.DataHelper
 import io.github.yinjinlong.hnas.data.FileRange
 import io.github.yinjinlong.hnas.entity.*
 import io.github.yinjinlong.hnas.error.ErrorCode
+import io.github.yinjinlong.hnas.fe.FileExtraReaderHelper
 import io.github.yinjinlong.hnas.fs.VirtualFileAttributes
 import io.github.yinjinlong.hnas.fs.VirtualFileStore
 import io.github.yinjinlong.hnas.fs.VirtualPath
 import io.github.yinjinlong.hnas.fs.attr.FileAttributes
-import io.github.yinjinlong.hnas.mapper.AudioInfoMapper
 import io.github.yinjinlong.hnas.mapper.ChildrenCountMapper
 import io.github.yinjinlong.hnas.mapper.FileMappingMapper
 import io.github.yinjinlong.hnas.mapper.VirtualFileMapper
@@ -18,7 +20,6 @@ import io.github.yinjinlong.hnas.service.AbstractVirtualFileService
 import io.github.yinjinlong.hnas.service.TooManyChildrenException
 import io.github.yinjinlong.hnas.tika.FileDetector
 import io.github.yinjinlong.hnas.utils.del
-import io.github.yinjinlong.hnas.utils.isAudioMediaType
 import io.github.yinjinlong.hnas.utils.isVideoMediaType
 import io.github.yinjinlong.hnas.utils.mkParent
 import io.github.yinjinlong.md.sha256
@@ -45,8 +46,9 @@ class VirtualFileServiceImpl(
     virtualFileMapper: VirtualFileMapper,
     val fileMappingMapper: FileMappingMapper,
     childrenCountMapper: ChildrenCountMapper,
-    audioInfoMapper: AudioInfoMapper,
-) : AbstractVirtualFileService(virtualFileMapper, childrenCountMapper, audioInfoMapper) {
+    val gson: Gson,
+    val fileExtraReaderHelper: FileExtraReaderHelper,
+) : AbstractVirtualFileService(virtualFileMapper, childrenCountMapper) {
 
     override fun newByteChannel(
         path: VirtualPath,
@@ -267,32 +269,24 @@ class VirtualFileServiceImpl(
         }
     }
 
-    @Transactional(rollbackFor = [Exception::class])
-    override fun getAudioInfo(path: VirtualPath): AudioFileInfo {
-        val vf = getOrThrow(path)
-        val ai = getAudio(vf)
-        if (ai != null)
-            return AudioFileInfo.of(path.path, ai)
-        val fm = fileMappingMapper.selectByHash(vf.hash!!)
-            ?: throw IllegalStateException("file_mapping 不存在hash: ${vf.hash}")
-        if (!fm.type.isAudioMediaType)
-            throw ErrorCode.BAD_FILE_FORMAT.error
-        return AudioFileInfo.of(
-            path.path,
-            (AudioInfoHelper.getInfo(vf.hash!!, fm) ?: AudioInfo(hash = path.id))
-                .apply(audioInfoMapper::insert)
-        )
+    override fun getExtra(file: VirtualFile): JsonElement? {
+        if (file.hash == null) return null
+        val fm = fileMappingMapper.selectByHash(file.hash!!)
+            ?: throw IllegalStateException("file_mapping 不存在hash: ${file.hash}")
+        return fileExtraReaderHelper.getExtra(DataHelper.dataFile(fm.dataPath), MediaType(fm.type, fm.subType)).also {
+            virtualFileMapper.updateExtra(file.fid, gson.toJson(it))
+        }
     }
 
     override fun getAudioCover(path: VirtualPath): File {
         val vf = getOrThrow(path)
-        val ai = getAudio(vf)
-            ?: throw ErrorCode.BAD_FILE_FORMAT.error
+        if (vf.hash == null) throw ErrorCode.BAD_REQUEST.error
+        val ai = gson.fromJson(vf.extra, AudioFileInfo::class.java)
         if (!ai.cover.isNullOrEmpty()) {
             return DataHelper.coverFile(ai.cover!!).apply {
                 if (!exists()) {
-                    val fm = fileMappingMapper.selectByHash(ai.hash)
-                        ?: throw IllegalStateException("file_mapping 不存在hash: ${ai.hash}")
+                    val fm = fileMappingMapper.selectByHash(vf.hash!!)
+                        ?: throw IllegalStateException("file_mapping 不存在hash: ${vf.hash}")
                     AudioInfoHelper.saveCover(DataHelper.dataFile(fm.dataPath))
                 }
             }
@@ -383,9 +377,6 @@ class VirtualFileServiceImpl(
             val fm = fileMappingMapper.selectByHash(hash)
                 ?: throw IllegalStateException("hash=$hash not found in mapping")
             fileMappingMapper.deleteById(hash)
-            if (fm.type.isAudioMediaType) {
-                audioInfoMapper.deleteById(hash)
-            }
             DataHelper.dataFile(fm.dataPath).del()
             if (fm.preview)
                 DataHelper.previewFile(fm.dataPath).del()

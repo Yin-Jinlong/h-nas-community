@@ -1,5 +1,6 @@
 package io.github.yinjinlong.hnas.entity
 
+import com.google.gson.JsonElement
 import java.sql.Timestamp
 
 typealias FileId = Hash
@@ -26,6 +27,8 @@ interface IVirtualFile {
     var updateTime: Timestamp
 
     var size: Long
+
+    var extra: JsonElement?
 
     companion object {
         const val NAME_LENGTH = 128

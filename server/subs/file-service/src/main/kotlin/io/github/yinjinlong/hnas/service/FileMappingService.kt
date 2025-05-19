@@ -63,10 +63,10 @@ interface FileMappingService {
     /**
      * 获取视频流信息
      */
-    fun getVideoLiveStreamM3u8(path: VirtualPath, codec: String, bitrate: Int,private: Boolean): StringBuilder
+    fun getVideoLiveStreamM3u8(path: VirtualPath, codec: String, bitrate: Int, private: Boolean): StringBuilder
 
     /**
      * 获取视频流信息
      */
-    fun getVideoLiveStreamFile(path: VirtualPath, codec: String, bitrate: Int,index: String): File
+    fun getVideoLiveStreamFile(path: VirtualPath, codec: String, bitrate: Int, index: String): File
 }
