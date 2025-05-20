@@ -36,7 +36,6 @@ object AudioInfoHelper {
     /**
      * 转换音频信息
      * @param header 音频头
-     * @param hash hash
      * @param coverFn 封面文件生成
      */
     fun Tag.toInfo(header: AudioHeader, coverFn: () -> String?) = AudioFileInfo(
@@ -51,7 +50,7 @@ object AudioInfoHelper {
         style = getFirst(FieldKey.GENRE),
         bitrate = header.bitRateAsNumber.toInt(),
         comment = getFirst(FieldKey.COMMENT),
-        lrc = getFirst(FieldKey.LYRICS) != null,
+        lrc = !getFirst(FieldKey.LYRICS).isNullOrBlank(),
     )
 
     /**
