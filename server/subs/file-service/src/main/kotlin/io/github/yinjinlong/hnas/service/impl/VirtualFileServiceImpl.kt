@@ -276,6 +276,10 @@ class VirtualFileServiceImpl(
 
     override fun getExtra(file: VirtualFile): JsonElement? {
         if (file.hash == null) return null
+        // 锁住记录
+        val vf = virtualFileMapper.selectByIdLock(file.fid)
+        if (vf?.extra != null) // 确保还没初始化额外信息
+            return vf.extra
         val fm = getFileMapping(file.hash!!)
         return fileExtraReaderHelper.getExtra(DataHelper.dataFile(fm.dataPath), MediaType(fm.type, fm.subType)).also {
             virtualFileMapper.updateExtra(file.fid, gson.toJson(it))
