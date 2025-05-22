@@ -9,14 +9,19 @@ import java.sql.Timestamp
  */
 @Mapper
 interface VirtualFileMapper {
+
+    companion object {
+        const val TABLE = IVirtualFile.TABLE
+    }
+
     //******//
     //  查  //
     //******//
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time, size ,extra
-from virtual_file 
+select fid, name, parent, hash, owner, user, create_time, update_time, size, extra
+from $TABLE 
 where fid = #{fid}
 """
     )
@@ -25,25 +30,19 @@ where fid = #{fid}
     @Select(
         """
 select update_time
-from virtual_file 
+from $TABLE 
 where fid = #{fid}
 """
     )
     fun selectUpdateTimeById(id: FileId): Timestamp?
 
-    @Select(
-        """
-select fid
-from virtual_file 
-where name = #{name} and parent = #{parent}
-"""
-    )
+    @Select(" select fid from $TABLE where name = #{name} and parent = #{parent}")
     fun selectIdByNameParent(name: String, parent: FileId): FileId?
 
     @Select(
         """
 select fid
-from virtual_file 
+from $TABLE 
 where user = #{user} and parent = #{parent}
 limit 1
 """
@@ -52,8 +51,8 @@ limit 1
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time , size, extra
-from virtual_file 
+select fid, name, parent, hash, owner, user, create_time, update_time, size, extra
+from $TABLE 
 where fid = #{fid} 
 for update
 """
@@ -62,8 +61,8 @@ for update
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time, size, extra
-from virtual_file 
+select fid, name, parent, hash, owner, user, create_time, update_time, size, extra
+from $TABLE 
 where parent = #{parent} 
 order by hash is not null,name
 """
@@ -72,8 +71,8 @@ order by hash is not null,name
 
     @Select(
         """
-select fid, name, parent, hash, owner,user, create_time, update_time, size, extra
-from virtual_file
+select fid, name, parent, hash, owner, user, create_time, update_time, size, extra
+from $TABLE
 where user=#{uid} and fid>#{last} and match(name) against(#{name})
 order by fid
 limit #{limit}
@@ -93,7 +92,7 @@ limit #{limit}
 
     @Insert(
         """
-insert into virtual_file(hash, name, parent, owner,user,size) 
+insert into $TABLE(hash, name, parent, owner,user,size) 
 VALUES (#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{size})
 """
     )
@@ -103,18 +102,18 @@ VALUES (#{hash}, #{name}, #{parent}, #{owner}, #{user}, #{size})
     //  改  //
     //******//
 
-    @Update("update virtual_file set name = #{name} where fid = #{fid}")
+    @Update("update $TABLE set name = #{name} where fid = #{fid}")
     fun updateName(fid: FileId, name: String): Int
 
-    @Update("update virtual_file set size = #{size} where fid = #{fid}")
+    @Update("update $TABLE set size = #{size} where fid = #{fid}")
     fun updateSize(fid: FileId, size: Long): Int
 
-    @Update("update virtual_file set update_time = #{time} where fid = #{fid}")
+    @Update("update $TABLE set update_time = #{time} where fid = #{fid}")
     fun updateUpdateTime(fid: FileId, time: Timestamp): Int
 
     @Update(
         """
-update virtual_file set extra = #{extra} where fid = #{fid}
+update $TABLE set extra = #{extra} where fid = #{fid}
 """
     )
     fun updateExtra(fid: FileId, extra: String)
@@ -123,6 +122,6 @@ update virtual_file set extra = #{extra} where fid = #{fid}
     //  删  //
     //******//
 
-    @Delete("delete from virtual_file where fid = #{id}")
+    @Delete("delete from $TABLE where fid = #{id}")
     fun deleteById(id: FileId): Int
 }

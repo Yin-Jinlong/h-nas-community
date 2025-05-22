@@ -26,6 +26,8 @@ interface IUser {
     }
 
     companion object {
+        const val TABLE = "user"
+
         const val ROLE_USER = "user"
         const val ROLE_ADMIN = "admin"
     }

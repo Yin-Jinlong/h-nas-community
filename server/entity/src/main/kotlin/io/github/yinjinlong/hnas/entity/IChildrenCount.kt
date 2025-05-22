@@ -17,4 +17,8 @@ interface IChildrenCount {
      */
     var subsCount: Int
 
+    companion object {
+        const val TABLE = "children_count"
+    }
+
 }

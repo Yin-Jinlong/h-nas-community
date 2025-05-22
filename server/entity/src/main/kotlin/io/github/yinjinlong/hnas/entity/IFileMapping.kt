@@ -14,4 +14,7 @@ interface IFileMapping : FileWithType {
 
     var size: Long
 
+    companion object{
+        const val TABLE = "file_mapping"
+    }
 }
