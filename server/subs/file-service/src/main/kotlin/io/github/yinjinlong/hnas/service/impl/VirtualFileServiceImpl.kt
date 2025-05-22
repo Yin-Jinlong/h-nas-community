@@ -193,7 +193,7 @@ class VirtualFileServiceImpl(
             val buf = ByteArray(1024 * 1024)
             var read = 0L
             while (true) {
-                val len = ins.read(buf)
+                val len = ins.read(buf,  0, minOf((range.size - read).toInt(), buf.size))
                 if (len <= 0)
                     break
                 rf.write(buf, 0, len)
