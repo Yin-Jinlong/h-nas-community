@@ -55,6 +55,8 @@ class FileMappingServiceImpl(
         propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
     }
 
+    override val table = FileMappingMapper.TABLE
+
     override fun getMapping(hash: Hash): IFileMapping? {
         return fileMappingMapper.selectByHash(hash)
     }
@@ -66,7 +68,7 @@ class FileMappingServiceImpl(
 
     @Transactional
     override fun getSize(hash: Hash): Long {
-        val fm = fileMappingMapper.selectByHashLock(hash) ?: throw IllegalArgumentException("hash not found")
+        val fm = fileMappingMapper.selectByHashLock(hash) ?: notfound(hash)
         if (fm.size < 0) {
             fm.size = File(fm.dataPath).length()
             fileMappingMapper.updateSize(hash, fm.size)
@@ -76,14 +78,14 @@ class FileMappingServiceImpl(
 
     override fun getMediaType(hash: Hash): String {
         return fileMappingMapper.selectMediaTypeByHash(hash)
-            ?: throw IllegalStateException("no mapping: $hash")
+            ?: notfound(hash)
     }
 
     private fun updatePreview(hash: Hash, preview: Boolean) {
         val ts = transactionManager.getTransaction(transactionDefinition)
         try {
             val fm = fileMappingMapper.selectByHashLock(hash)
-                ?: throw IllegalStateException("FileMapping not found: $hash")
+                ?: notfound(hash)
             fileMappingMapper.updatePreview(fm.hash, preview)
             transactionManager.commit(ts)
         } catch (e: Exception) {
@@ -182,7 +184,7 @@ class FileMappingServiceImpl(
 
     fun checkVideo(vf: IVirtualFile): FileMapping {
         val fm = fileMappingMapper.selectByHash(vf.hash ?: throw ErrorCode.BAD_REQUEST.error)
-            ?: throw IllegalStateException("no mapping: ${vf.hash}")
+            ?: notfound(vf.hash)
         if (!fm.type.isVideoMediaType)
             throw ErrorCode.BAD_FILE_FORMAT.data(vf.name)
         return fm
@@ -274,7 +276,7 @@ class FileMappingServiceImpl(
         val chapterFile = DataHelper.hlsSubFile(vf.hash!!.pathSafe, "chapter")
         return if (!chapterFile.exists()) {
             val fm = getMapping(vf.hash!!)
-                ?: throw IllegalStateException("no mapping: ${vf.hash}")
+                ?: notfound(vf.hash)
             val chapters = VideoChapterHelper.getChapter(DataHelper.dataFile(fm.dataPath))
             chapters.map {
                 ChapterInfo(it.start_time, it.tags?.title ?: "")

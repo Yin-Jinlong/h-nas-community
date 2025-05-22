@@ -11,7 +11,7 @@ import java.net.InetAddress
 /**
  * @author YJL
  */
-interface UserService {
+interface UserService : IService {
 
     /**
      *

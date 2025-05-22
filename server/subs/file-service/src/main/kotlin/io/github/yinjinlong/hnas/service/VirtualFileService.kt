@@ -14,7 +14,7 @@ import java.nio.file.NotDirectoryException
 /**
  * @author YJL
  */
-interface VirtualFileService : VirtualFileManager {
+interface VirtualFileService : VirtualFileManager, IService {
 
     /**
      * 判断路径文件是否存在

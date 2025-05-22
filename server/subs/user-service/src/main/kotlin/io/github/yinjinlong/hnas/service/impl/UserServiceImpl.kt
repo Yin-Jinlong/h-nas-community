@@ -34,6 +34,8 @@ class UserServiceImpl(
     val gson: Gson,
 ) : UserService {
 
+    override val table = UserMapper.TABLE
+
     fun genQRID() = Random.nextBytes(12).base64Url
 
     fun qrIdKey(id: String) = "qr_id:$id"
@@ -113,7 +115,7 @@ class UserServiceImpl(
                     status = LoginQRInfoStatus.SUCCESS,
                     user = UserInfo.of(
                         it.scannedUser?.let { uid -> mapper.selectByUid(uid) }
-                            ?: throw IllegalStateException("用户id不存在：${it.scannedUser}")
+                            ?: notfound(it.scannedUser)
                     )
                 )
             )

@@ -22,6 +22,7 @@ import io.github.yinjinlong.hnas.tika.FileDetector
 import io.github.yinjinlong.hnas.utils.del
 import io.github.yinjinlong.hnas.utils.isVideoMediaType
 import io.github.yinjinlong.hnas.utils.mkParent
+import io.github.yinjinlong.hnas.utils.notMatch
 import io.github.yinjinlong.md.sha256
 import org.apache.tika.mime.MediaType
 import org.springframework.stereotype.Service
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.io.BufferedInputStream
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.RandomAccessFile
 import java.nio.channels.SeekableByteChannel
 import java.nio.file.*
@@ -59,7 +61,7 @@ class VirtualFileServiceImpl(
         if (vf.hash == null)
             throw IllegalArgumentException("非文件: $path")
         val fm = fileMappingMapper.selectByHash(vf.hash!!)
-            ?: throw IllegalStateException("文件映射不存在: $path")
+            ?: mappingNotfound(vf.hash)
         return Files.newByteChannel(DataHelper.dataFile(fm.dataPath).toPath())
     }
 
@@ -75,12 +77,12 @@ class VirtualFileServiceImpl(
 
     fun getFileMapping(hash: Hash): IFileMapping {
         return fileMappingMapper.selectByHash(hash)
-            ?: throw IllegalStateException("file_mapping不存在: $hash")
+            ?: mappingNotfound(hash)
     }
 
     private tailrec fun updateParent(path: VirtualPath, op: VirtualFile.() -> Unit) {
         val vf = virtualFileMapper.selectByIdLock(pathIdOrThrow(path))
-            ?: throw IllegalStateException("数据库文件不存在: $path")
+            ?: notfound(path)
         vf.op()
         val p = path.parent
         if (p same path)
@@ -107,7 +109,7 @@ class VirtualFileServiceImpl(
         dataPath: String,
     ) {
         if (size != dataFile.length())
-            throw IllegalArgumentException("文件大小不匹配: $path")
+            notMatch("文件大小不匹配", size, dataFile.length(), path)
         val parent = path.parent
         virtualFileMapper.insert(
             VirtualFile(
@@ -122,7 +124,7 @@ class VirtualFileServiceImpl(
         updateParentSize(parent, size)
 
         val time = virtualFileMapper.selectUpdateTimeById(path.id)
-            ?: throw IllegalStateException("数据库文件不存在: $path")
+            ?: notfound(path)
 
         updateParentUpdateTime(parent, time)
         updateCount(parent, 1)
@@ -132,7 +134,7 @@ class VirtualFileServiceImpl(
             val type = FileDetector.detect(ins, path.name)
             val fileHash = Hash(ins.use { it.sha256 })
             if (hash != fileHash)
-                throw IllegalStateException("文件hash不匹配: $fileHash!=$hash")
+                notMatch("文件hash不匹配", hash, fileHash, path)
             fileMappingMapper.insert(
                 FileMapping(
                     hash = hash,
@@ -176,7 +178,7 @@ class VirtualFileServiceImpl(
             if (fileSize == 0L) {
                 tmpFile.createNewFile()
             } else if (!tmpFile.exists())
-                throw IllegalArgumentException("文件不存在: $path")
+                throw FileNotFoundException("文件不存在: $path")
             val type = tmpFile.inputStream().buffered().use {
                 FileDetector.detect(it, path.name)
             }
@@ -193,7 +195,7 @@ class VirtualFileServiceImpl(
             val buf = ByteArray(1024 * 1024)
             var read = 0L
             while (true) {
-                val len = ins.read(buf,  0, minOf((range.size - read).toInt(), buf.size))
+                val len = ins.read(buf, 0, minOf((range.size - read).toInt(), buf.size))
                 if (len <= 0)
                     break
                 rf.write(buf, 0, len)
@@ -211,7 +213,7 @@ class VirtualFileServiceImpl(
 
     private tailrec fun updateCount(path: VirtualPath, dSubCount: Int, dSubsCount: Int = dSubCount) {
         val cc = childrenCountMapper.selectByFidLock(path.id)
-            ?: throw IllegalStateException("children_count 不存在目录：$path id: ${path.id}")
+            ?: childrenCountNotfound(path)
         childrenCountMapper.updateCount(cc.fid, cc.subCount + dSubCount, cc.subsCount + dSubsCount)
         if (path.isRoot)
             return
@@ -241,7 +243,7 @@ class VirtualFileServiceImpl(
         childrenCountMapper.insert(id)
         updateParentUpdateTime(
             p, virtualFileMapper.selectUpdateTimeById(id)
-                ?: throw IllegalStateException("数据库没有文件: ${dir.fullPath}")
+                ?: notfound(dir)
         )
         updateCount(p, 1)
     }
@@ -380,7 +382,7 @@ class VirtualFileServiceImpl(
         val hash = vf.hash
         if (hash == null) {
             val counts = childrenCountMapper.selectByFid(vf.fid)
-                ?: throw IllegalStateException("children_count 不存在目录：${path.fullPath}")
+                ?: childrenCountNotfound(path)
             if (counts.subsCount > 100)
                 throw TooManyChildrenException(path.fullPath)
             else if (counts.subsCount > 0) {
@@ -404,7 +406,7 @@ class VirtualFileServiceImpl(
         updateCount(parent, -1)
         if (count == 1) {
             val fm = fileMappingMapper.selectByHash(hash)
-                ?: throw IllegalStateException("hash=$hash not found in mapping")
+                ?: mappingNotfound(hash)
             fileMappingMapper.deleteById(hash)
             DataHelper.dataFile(fm.dataPath).del()
             if (fm.preview)

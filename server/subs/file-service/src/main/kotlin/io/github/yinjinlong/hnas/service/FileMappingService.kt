@@ -11,8 +11,7 @@ import java.io.File
 /**
  * @author YJL
  */
-interface FileMappingService {
-
+interface FileMappingService : IService {
     /**
      * 获取映射
      */

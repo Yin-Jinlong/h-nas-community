@@ -6,7 +6,9 @@ import io.github.yinjinlong.hnas.fs.VirtualFileSystemProvider
 import io.github.yinjinlong.hnas.fs.VirtualFilesystem
 import io.github.yinjinlong.hnas.fs.VirtualPath
 import io.github.yinjinlong.hnas.mapper.ChildrenCountMapper
+import io.github.yinjinlong.hnas.mapper.FileMappingMapper
 import io.github.yinjinlong.hnas.mapper.VirtualFileMapper
+import io.github.yinjinlong.hnas.utils.dbRecordNotFound
 import java.nio.file.NoSuchFileException
 import java.nio.file.NotDirectoryException
 import java.util.*
@@ -43,6 +45,12 @@ abstract class AbstractVirtualFileService(
             else
                 fs.getUserPath(user, *names.toTypedArray())
         }
+
+    override val table = VirtualFileMapper.TABLE
+
+    protected fun mappingNotfound(hash: Hash?): Nothing = dbRecordNotFound(FileMappingMapper.TABLE, hash)
+
+    protected fun childrenCountNotfound(dir: VirtualPath?): Nothing = dbRecordNotFound(ChildrenCountMapper.TABLE, dir)
 
     override fun exists(path: VirtualPath): Boolean {
         return pathId(path) != null
