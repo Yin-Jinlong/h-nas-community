@@ -74,7 +74,7 @@ class CacheFileVideoController(
         @PathVariable("codec") codec: String,
         @PathVariable("bitrate") bitrate: Int,
     ): String {
-        logger.info("getVideoStreamM3u8: ${token?.user} $path $private")
+        logger.info("getVideoStreamM3u8: ${token?.user} $path $private $codec $bitrate")
         val p = getPath(private, token?.user, path)
         return fileMappingService.getVideoLiveStreamM3u8(p, codec, bitrate, private).toString()
     }
@@ -88,7 +88,7 @@ class CacheFileVideoController(
         @PathVariable("bitrate") bitrate: Int,
         @PathVariable("index") index: String,
     ): File {
-        logger.info("getVideoStream: ${token?.user} $path $private")
+        logger.info("getVideoStream: ${token?.user} $path $private $codec $bitrate $index")
         val p = getPath(private, token?.user, URLDecoder.decode(path, Charsets.UTF_8))
         return fileMappingService.getVideoLiveStreamFile(p, codec, bitrate, index)
     }
