@@ -12,8 +12,9 @@ plugins {
 
 dependencies {
     implementation(serviceCore())
+    implementation(libs.spring.ai.starter.model.chat.memory)
     implementation(platform(libs.spring.ai.bom))
-    implementation(libs.spring.ai.spring.boot.autoconfigure)
+    // implementation(libs.spring.ai.spring.boot.autoconfigure)
     implementation(libs.spring.ai.ollama.spring.boot.starter)
     implementation(libs.lunar)
 

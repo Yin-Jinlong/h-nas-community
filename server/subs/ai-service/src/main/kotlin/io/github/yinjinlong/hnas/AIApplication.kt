@@ -17,5 +17,6 @@ class AIApplication(
 ) : CoreApplication(redisTemplate)
 
 fun main(vararg args: String) {
+    System.setProperty("nacos.logging.default.config.enabled", "false")
     runApplication<AIApplication>(*args)
 }

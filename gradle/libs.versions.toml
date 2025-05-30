@@ -1,7 +1,7 @@
 [versions]
 apache-commons-ccompress = "1.27.1"
 ffmpeg-gpl = "7.1-1.5.11"
-gson = "2.13.0"
+gson = "2.13.1"
 hibernate = "7.0.1.Final"
 jaudiotagger = "2.3.14"
 javacv = "1.5.11"
@@ -9,17 +9,17 @@ javacv-gpu = "4.9.0-1.5.10"
 jbossLogging = "3.6.1.Final"
 jedis = "5.2.0"
 junitJupiter = "5.12.2"
-kotlin = "2.1.20"
-kotlinx-coroutines-core = "1.10.1"
+kotlin = "2.1.21"
+kotlinx-coroutines-core = "1.10.2"
 license = "0.9.8"
 lunar = "1.7.4"
 mybatis-spring-boot = "3.0.4"
 nacos-spring-cloud = "2023.0.3.2"
 pdfbox = "3.0.3"
-spring = "3.4.4"
-spring-ai = "1.0.0-M6"
+spring = "3.4.6"
+spring-ai = "1.0.0"
 spring-boot-apiStarter = "0.4.2"
-spring-core = "6.2.5"
+spring-core = "6.2.7"
 spring-dependency-management = "1.1.7"
 spring-cloud = "4.2.1"
 tika = "3.1.0"
@@ -46,8 +46,8 @@ lunar = { module = "cn.6tail:lunar", version.ref = "lunar" }
 mybatis-spring-boot-starter-test = { module = "org.mybatis.spring.boot:mybatis-spring-boot-starter-test", version.ref = "mybatis-spring-boot" }
 pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai" }
-spring-ai-ollama-spring-boot-starter = { module = "org.springframework.ai:spring-ai-ollama-spring-boot-starter", version.ref = "spring-ai" }
-spring-ai-spring-boot-autoconfigure = { module = "org.springframework.ai:spring-ai-spring-boot-autoconfigure", version.ref = "spring-ai" }
+spring-ai-ollama-spring-boot-starter = { module = "org.springframework.ai:spring-ai-starter-model-ollama" }
+spring-ai-starter-model-chat-memory = { module = "org.springframework.ai:spring-ai-starter-model-chat-memory" }
 spring-boot-api-starter = { module = "io.github.yin-jinlong:spring-boot-api-starter", version.ref = "spring-boot-apiStarter" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring" }
