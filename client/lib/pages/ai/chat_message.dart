@@ -6,12 +6,18 @@ class ChatMessage with ChangeNotifier {
   final ChatRole role;
   String _value;
 
+  bool _end = false;
+
+  bool get isEnded => _end;
+
   String get content => _value;
 
   ChatMessage(this.role, String content) : _value = content;
 
   factory ChatMessage.user(String content) {
-    return ChatMessage(ChatRole.user, content);
+    var message = ChatMessage(ChatRole.user, content);
+    message.end();
+    return message;
   }
 
   factory ChatMessage.llm({String content = ''}) {
@@ -19,8 +25,13 @@ class ChatMessage with ChangeNotifier {
   }
 
   void append(String content) {
+    if (_end) throw Exception('消息已结束');
     _value += content;
     notifyListeners();
+  }
+
+  void end() {
+    _end = true;
   }
 }
 
@@ -32,22 +43,41 @@ class LlmChatMessage extends ChatMessage {
 
   bool get hasThink => _value.startsWith(thinkStart);
 
-  bool get thinking => hasThink && !_value.contains(thinkEnd);
+  bool get thinking => hasThink && _count(thinkStart) != _count(thinkEnd);
 
   LlmChatMessage() : super(ChatRole.llm, '');
 
   String get think {
     if (!hasThink) return '';
-    final endIndex = _value.indexOf(thinkEnd);
+    if (thinking) {
+      return _value.replaceAll(thinkStart, '').replaceAll(thinkEnd, '');
+    }
+    final endIndex = _value.lastIndexOf(thinkEnd);
     return endIndex < 0
         ? _value.substring(thinkStart.length)
-        : _value.substring(thinkStart.length, endIndex);
+        : _value
+            .substring(thinkStart.length, endIndex)
+            .replaceAll(thinkStart, '')
+            .replaceAll(thinkEnd, '');
   }
 
   @override
   String get content {
     if (!hasThink) return _value;
-    final endIndex = _value.indexOf(thinkEnd);
-    return endIndex < 0 ? '' : _value.substring(endIndex + thinkEnd.length);
+    if (thinking) return '';
+    final endIndex = _value.lastIndexOf(thinkEnd);
+    return endIndex < 0 ? '' : _value.substring(endIndex);
+  }
+
+  int _count(String str) {
+    var count = 0;
+    var index = 0;
+    while (index < _value.length) {
+      final startIndex = _value.indexOf(str, index);
+      if (startIndex < 0) break;
+      count++;
+      index = startIndex + str.length;
+    }
+    return count;
   }
 }

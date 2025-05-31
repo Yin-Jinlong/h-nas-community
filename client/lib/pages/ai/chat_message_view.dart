@@ -98,7 +98,7 @@ class _ChatMessageViewState extends State<ChatMessageView> {
           )
         else
           MarkdownBody(
-            data: message.content,
+            data: message.content + (message.isEnded ? '' : ' |'),
             selectable: true,
             styleSheet: style,
             builders: {'code': CodeBuilder(style)},

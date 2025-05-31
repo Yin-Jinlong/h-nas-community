@@ -18,50 +18,52 @@ class SSEClient {
     required String url,
     required Map<String, String> header,
     JsonObject? body,
-  }) {
+  }) async* {
     StreamController<String> streamController = StreamController();
-    while (true) {
-      try {
-        _client = http.Client();
-        var request = http.Request("POST", Uri.parse(url));
 
-        header.forEach((key, value) {
-          request.headers[key] = value;
-        });
+    try {
+      _client = http.Client();
+      var request = http.Request("POST", Uri.parse(url));
 
-        if (body != null) {
-          request.body = jsonEncode(body);
-        }
+      header.forEach((key, value) {
+        request.headers[key] = value;
+      });
 
-        Future<http.StreamedResponse> response = _client
-            .send(request)
-            .timeout(Duration(minutes: 5));
-
-        response.asStream().listen(
-          (data) {
-            data.stream
-                .transform(Utf8Decoder())
-                .listen(
-                  (dataLine) {
-                    streamController.add(dataLine);
-                  },
-                  onError: (e, s) {
-                    _log('---ERROR---');
-                    _log(e);
-                  },
-                );
-          },
-          onError: (e, s) {
-            _log('---ERROR---');
-            _log(e);
-          },
-        );
-      } catch (e) {
-        _log('---ERROR---');
-        _log(e);
+      if (body != null) {
+        request.body = jsonEncode(body);
       }
-      return streamController.stream;
+
+      Future<http.StreamedResponse> response = _client
+          .send(request)
+          .timeout(Duration(minutes: 5));
+
+      response.asStream().listen(
+        (data) {
+          data.stream
+              .transform(Utf8Decoder())
+              .listen(
+                (dataLine) {
+                  streamController.sink.add(dataLine);
+                },
+                onDone: () {
+                  streamController.sink.close();
+                },
+                onError: (e, s) {
+                  _log('---ERROR---');
+                  _log(e);
+                },
+              );
+        },
+        onError: (e, s) {
+          _log('---ERROR---');
+          _log(e);
+        },
+      );
+    } catch (e) {
+      _log('---ERROR---');
+      _log(e);
     }
+    yield* streamController.stream;
   }
 
   void dispose() {

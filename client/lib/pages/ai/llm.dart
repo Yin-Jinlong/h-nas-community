@@ -14,27 +14,36 @@ class Llm with ChangeNotifier {
 
   Iterable<ChatMessage> get history => _history;
 
-  Stream<String> send(String prompt, {required bool enableTool}) async* {
+  Stream<String> send(String prompt) async* {
     final userMessage = ChatMessage.user(prompt);
     final llmMessage = ChatMessage.llm();
     _history.addAll([userMessage, llmMessage]);
 
     notifyListeners();
 
-    _client = SSEClient();
-    final res = _client!.open(
-      url: AIAPIURL.chat(),
-      header: {
-        ...API.tokenHeader(),
-        Headers.contentTypeHeader: Headers.jsonContentType,
-      },
-      body: {'message': prompt, 'tool': enableTool},
-    );
+    final stream = StreamController<String>();
 
-    yield* res.map((event) {
-      llmMessage.append(event);
-      return event;
-    });
+    _client = SSEClient();
+    _client!
+        .open(
+          url: AIAPIURL.chat(),
+          header: {
+            ...API.tokenHeader(),
+            Headers.contentTypeHeader: Headers.jsonContentType,
+          },
+          body: {'message': prompt},
+        )
+        .listen(
+          (event) {
+            llmMessage.append(event);
+            stream.add(event);
+          },
+          onDone: () {
+            llmMessage.end();
+          },
+        );
+
+    yield* stream.stream;
 
     notifyListeners();
   }

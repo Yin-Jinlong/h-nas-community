@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/components/switch_button.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/pages/ai/chat_message_view.dart';
 import 'package:h_nas/utils/dispose.dart';
 
@@ -51,7 +49,7 @@ class _AIPageState extends State<AIPage> {
     super.initState();
     hintIndex = random.nextInt(hints.length);
     provider.addListener(_render);
-    final llm = ChatMessage.llm(content: '有什么问题欢迎向我提问。');
+    final llm = ChatMessage.llm(content: '有什么问题欢迎向我提问。')..end();
     provider.history = [llm];
     _loadHistory();
     _changeHint();
@@ -66,7 +64,7 @@ class _AIPageState extends State<AIPage> {
       for (final msg in value) {
         provider.add(switch (msg.role) {
           'user' => ChatMessage.user(msg.content),
-          'assistant' => ChatMessage.llm(content: msg.content),
+          'assistant' => ChatMessage.llm(content: msg.content)..end(),
           _ => throw Exception('unknown role ${msg.role}'),
         });
       }
@@ -113,9 +111,7 @@ class _AIPageState extends State<AIPage> {
                 Expanded(
                   child: TextField(
                     controller: textController,
-                    decoration: InputDecoration(
-                      hintText: hints[hintIndex],
-                    ),
+                    decoration: InputDecoration(hintText: hints[hintIndex]),
                   ),
                 ),
                 IconButton(
@@ -124,9 +120,7 @@ class _AIPageState extends State<AIPage> {
                     if (text.isEmpty) {
                       text = hints[hintIndex];
                     }
-                    provider
-                        .send(text, enableTool: enableTool)
-                        .listen((event) {});
+                    provider.send(text).listen((event) {});
                     textController.clear();
                   },
                   icon: Icon(Icons.send),
@@ -135,24 +129,7 @@ class _AIPageState extends State<AIPage> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 6),
-              child: Row(
-                children: [
-                  SwitchButton(
-                    selected: enableTool,
-                    onPressed: () {
-                      setState(() {
-                        enableTool = !enableTool;
-                        hintIndex = random.nextInt(hints.length);
-                      });
-                    },
-                    child: Text(
-                      S.current.ai_tool_status(
-                        enableTool ? S.current.enabled : S.current.disabled,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: Row(children: []),
             ),
             Expanded(
               child: SingleChildScrollView(
