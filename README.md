@@ -32,6 +32,12 @@
 ./gradlew --refresh-dependencies
 ```
 
+生成前端国际化文件。`l10`需要构建，见[l10n](tools/l10n)
+
+```shell
+l10n --dir <clinet/l10n目录>
+```
+
 前端项目
 
 ```shell
