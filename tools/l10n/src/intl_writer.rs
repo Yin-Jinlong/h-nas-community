@@ -1,11 +1,12 @@
 use crate::intl::Intl;
+use crate::intl_item::IntlItem;
 use crate::writer::Writer;
 
 pub(crate) trait IntlMainWriter: Writer {
-    fn write_intls(&mut self, intls: &Vec<Intl>) {
+    fn write_intls(&mut self, intls: &Vec<IntlItem>) {
         let def = intls
             .iter()
-            .find(|&item| item.default)
+            .find(|&item| item.intl.default)
             .expect("Must has at least one default intl");
 
         self.write_time_comment();
@@ -25,7 +26,7 @@ abstract class L {
   static const L defaultL = ",
         );
 
-        self.write_str(&def.class_name());
+        self.write_str(&def.intl.class_name());
 
         self.write_str(
             r".instance;
@@ -60,7 +61,7 @@ abstract class L {
         );
 
         self.writeln();
-        self.write_def_messages(&def);
+        self.write_def_messages(&def.intl);
 
         self.write_str(
             r"}
@@ -86,15 +87,15 @@ class _LDelegate extends LocalizationsDelegate<L> {
         );
     }
 
-    fn write_imports(&mut self, intls: &Vec<Intl>) {
+    fn write_imports(&mut self, intls: &Vec<IntlItem>) {
         for item in intls {
             self.write_str("import '");
-            self.write_str(&item.file_name());
+            self.write_str(&item.intl.file_name());
             self.write_str("';\n");
         }
     }
 
-    fn write_supported_locales(&mut self, intls: &Vec<Intl>) {
+    fn write_supported_locales(&mut self, intls: &Vec<IntlItem>) {
         self.write_str(
             r"  static const List<Locale> supportedLocales = <Locale>[
 ",
@@ -102,7 +103,7 @@ class _LDelegate extends LocalizationsDelegate<L> {
 
         for item in intls {
             self.write_str("    ");
-            self.write_str(&item.to_locale());
+            self.write_str(&item.intl.to_locale());
             self.write_str(",");
             self.writeln();
         }
@@ -110,7 +111,7 @@ class _LDelegate extends LocalizationsDelegate<L> {
         self.write_str(r"  ];");
     }
 
-    fn write_locales(&mut self, intls: &Vec<Intl>) {
+    fn write_locales(&mut self, intls: &Vec<IntlItem>) {
         self.write_str(
             r"
   static Map<Locale, L> locales = {
@@ -119,9 +120,9 @@ class _LDelegate extends LocalizationsDelegate<L> {
 
         for item in intls {
             self.write_str("    ");
-            self.write_str(&item.to_locale());
+            self.write_str(&item.intl.to_locale());
             self.write_str(": ");
-            self.write_str(&item.class_name());
+            self.write_str(&item.intl.class_name());
             self.write_str(".instance,\n");
         }
 

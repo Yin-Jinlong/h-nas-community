@@ -77,6 +77,7 @@ impl Intl {
     pub fn write_to(&self, dir: &PathBuf) {
         let file =
             File::create(&format!("{}/{}", dir.to_str().unwrap(), self.file_name())).unwrap();
+        println!("Generating {}...", self.file_name());
         let mut writer = BufWriter::new(file);
 
         writer.write_time_comment();
