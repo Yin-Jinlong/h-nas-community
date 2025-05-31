@@ -138,7 +138,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-  generate: true
+  generate: false
 
   assets:
     - assets/certs/
@@ -150,7 +150,3 @@ flutter:
     - family: JetBrainsMonoNerd
       fonts:
         - asset: assets/fonts/JetBrainsMonoNerdFont-Medium.ttf
-
-flutter_intl:
-  main_locale: zh
-  enabled: true
