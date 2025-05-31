@@ -7,7 +7,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:h_nas/api/api.dart';
 import 'package:h_nas/api/http_provider.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/file_utils.dart';
 
 enum FileTaskStatus {
@@ -27,11 +27,11 @@ enum FileTaskStatus {
   error;
 
   String get text => switch (this) {
-    pending => S.current.pending,
-    processing => S.current.processing,
-    paused => S.current.paused,
-    done => S.current.done,
-    error => S.current.error,
+    pending => L.current.pending,
+    processing => L.current.processing,
+    paused => L.current.paused,
+    done => L.current.done,
+    error => L.current.error,
   };
 }
 

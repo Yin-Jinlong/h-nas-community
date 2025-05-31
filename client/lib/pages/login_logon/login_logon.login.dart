@@ -53,13 +53,13 @@ class _LoginState extends _BaseState<_LoginWidget> {
         TextFormField(
           controller: logid,
           decoration: InputDecoration(
-            labelText: S.current.username,
-            hintText: '${S.current.username}/id',
+            labelText: L.current.username,
+            hintText: '${L.current.username}/id',
             prefixIcon: Icon(Icons.person),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return S.current.error_empty('${S.current.username}/id');
+              return L.current.error_empty('${L.current.username}/id');
             }
             return null;
           },
@@ -71,7 +71,7 @@ class _LoginState extends _BaseState<_LoginWidget> {
           },
         ),
         PasswordInput(
-          label: S.current.password,
+          label: L.current.password,
           password: password,
           onValidate: validate,
         ),
@@ -81,7 +81,7 @@ class _LoginState extends _BaseState<_LoginWidget> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: widget.onGotoLogon,
-                child: Text(S.current.goto_logon),
+                child: Text(L.current.goto_logon),
               ),
             ),
           ],
@@ -93,7 +93,7 @@ class _LoginState extends _BaseState<_LoginWidget> {
             minimumSize: Size(double.infinity, 50),
           ),
           onPressed: isValid ? _login : null,
-          child: Text(S.current.login),
+          child: Text(L.current.login),
         ),
       ],
     );

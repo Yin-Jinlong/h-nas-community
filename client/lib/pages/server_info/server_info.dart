@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/storage_size.dart';
 
 class ServerInfoPage extends StatefulWidget {
@@ -44,48 +44,48 @@ class _UserManagementPageState extends State<ServerInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(S.current.server_info)),
+      appBar: AppBar(title: Text(L.current.server_info)),
       body: SingleChildScrollView(
         child: DataTable(
           columns: [
-            DataColumn(label: Text(S.current.info_item)),
-            DataColumn(label: Text(S.current.info_value)),
+            DataColumn(label: Text(L.current.info_item)),
+            DataColumn(label: Text(L.current.info_value)),
           ],
           rows: [
             DataRow(
               cells: [
-                DataCell(Text(S.current.info_root_sub)),
+                DataCell(Text(L.current.info_root_sub)),
                 DataCell(
-                  Text(rootCount?.subCount.toString() ?? S.current.loading),
+                  Text(rootCount?.subCount.toString() ?? L.current.loading),
                 ),
               ],
             ),
             DataRow(
               cells: [
-                DataCell(Text(S.current.info_root_subs)),
+                DataCell(Text(L.current.info_root_subs)),
                 DataCell(
-                  Text(rootCount?.subsCount.toString() ?? S.current.loading),
+                  Text(rootCount?.subsCount.toString() ?? L.current.loading),
                 ),
               ],
             ),
             DataRow(
               cells: [
-                DataCell(Text(S.current.info_root_size)),
+                DataCell(Text(L.current.info_root_size)),
                 DataCell(
-                  Text(rootInfo?.size.storageSizeStr ?? S.current.loading),
+                  Text(rootInfo?.size.storageSizeStr ?? L.current.loading),
                 ),
               ],
             ),
             DataRow(
               cells: [
-                DataCell(Text(S.current.info_user_count)),
-                DataCell(Text(userCount?.toString() ?? S.current.loading)),
+                DataCell(Text(L.current.info_user_count)),
+                DataCell(Text(userCount?.toString() ?? L.current.loading)),
               ],
             ),
             DataRow(
               cells: [
-                DataCell(Text(S.current.info_user_storage_usage)),
-                DataCell(Text(userUsage?.storageSizeStr ?? S.current.loading)),
+                DataCell(Text(L.current.info_user_storage_usage)),
+                DataCell(Text(userUsage?.storageSizeStr ?? L.current.loading)),
               ],
             ),
           ],

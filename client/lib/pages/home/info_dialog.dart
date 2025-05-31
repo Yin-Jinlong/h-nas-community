@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/user_avatar.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:h_nas/utils/time_utils.dart';
-
-import '../../generated/l10n.dart';
 
 class InfoDialog extends StatefulWidget {
   final FileInfo file;
@@ -60,32 +59,32 @@ class _InfoDialogState extends State<InfoDialog> {
         _infoRow(name, Text(count == null ? '' : (v?.toString() ?? '?')));
 
     return [
-      item(S.current.child_file_count, count?.subCount),
-      item(S.current.children_file_count, count?.subsCount),
+      item(L.current.child_file_count, count?.subCount),
+      item(L.current.children_file_count, count?.subsCount),
     ];
   }
 
   List<TableRow> _audioInfo() {
     TableRow item(String name, String? v, {String nullDef = '?'}) => _infoRow(
       name,
-      Text(audioFileInfo == null ? S.current.loading : v ?? nullDef),
+      Text(audioFileInfo == null ? L.current.loading : v ?? nullDef),
     );
 
     return [
-      item(S.current.title, audioFileInfo?.title),
-      item(S.current.subtitle, audioFileInfo?.subTitle),
-      item(S.current.artists, audioFileInfo?.artists),
+      item(L.current.title, audioFileInfo?.title),
+      item(L.current.subtitle, audioFileInfo?.subTitle),
+      item(L.current.artists, audioFileInfo?.artists),
       item(
-        S.current.duration,
+        L.current.duration,
         audioFileInfo?.duration.shortTimeStr,
         nullDef: '??:??',
       ),
-      item(S.current.album, audioFileInfo?.album),
-      item(S.current.audio_year, audioFileInfo?.year),
-      item(S.current.audio_num, audioFileInfo?.num?.toString()),
-      item(S.current.audio_style, audioFileInfo?.style),
-      item(S.current.bitrate, '${audioFileInfo?.bitrate.toString()} kbps'),
-      item(S.current.audio_comment, audioFileInfo?.comment, nullDef: ''),
+      item(L.current.album, audioFileInfo?.album),
+      item(L.current.audio_year, audioFileInfo?.year),
+      item(L.current.audio_num, audioFileInfo?.num?.toString()),
+      item(L.current.audio_style, audioFileInfo?.style),
+      item(L.current.bitrate, '${audioFileInfo?.bitrate.toString()} kbps'),
+      item(L.current.audio_comment, audioFileInfo?.comment, nullDef: ''),
     ];
   }
 
@@ -100,30 +99,30 @@ class _InfoDialogState extends State<InfoDialog> {
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: [
             _infoRow(
-              S.current.file_info_path,
+              L.current.file_info_path,
               Text('${file.dir}${file.dir == '/' ? '' : '/'}${file.name}'),
             ),
-            _infoRow(S.current.file_info_file_type, Text(file.fileType.name)),
+            _infoRow(L.current.file_info_file_type, Text(file.fileType.name)),
             if (file.isFile)
               _infoRow(
-                S.current.file_info_media_type,
+                L.current.file_info_media_type,
                 Text(file.mediaType ?? '?'),
               ),
             _infoRow(
-              S.current.create_time,
+              L.current.create_time,
               Text(
                 DateTime.fromMillisecondsSinceEpoch(file.createTime).toString(),
               ),
             ),
             _infoRow(
-              S.current.update_time,
+              L.current.update_time,
               Text(
                 DateTime.fromMillisecondsSinceEpoch(file.updateTime).toString(),
               ),
             ),
-            _infoRow(S.current.file_size, Text(file.size.storageSizeStr)),
+            _infoRow(L.current.file_size, Text(file.size.storageSizeStr)),
             _infoRow(
-              S.current.file_info_owner,
+              L.current.file_info_owner,
               Row(
                 children: [
                   UserAvatar(user: file.owner, size: 30),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/empty.dart';
 import 'package:h_nas/components/spring_draggable_container.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/pages/transmission/transmission.view.dart';
 import 'package:h_nas/utils/file_task.dart';
@@ -57,10 +56,10 @@ class _TransmissionPageState extends State<TransmissionPage>
 
   List<DataColumn> _tableColumns({List<DataColumn> extras = const []}) {
     return [
-      DataColumn(label: Text(S.current.file_name)),
-      DataColumn(label: Text(S.current.file_size)),
+      DataColumn(label: Text(L.current.file_name)),
+      DataColumn(label: Text(L.current.file_size)),
       ...extras,
-      DataColumn(label: Text(S.current.operation)),
+      DataColumn(label: Text(L.current.operation)),
     ];
   }
 
@@ -82,20 +81,20 @@ class _TransmissionPageState extends State<TransmissionPage>
           children: [
             onStart != null
                 ? IconButton(
-                  tooltip: S.current.start,
+                  tooltip: L.current.start,
                   onPressed: () {},
                   icon: Icon(Icons.play_arrow),
                 )
                 : Container(),
             onPause != null
                 ? IconButton(
-                  tooltip: S.current.pause,
+                  tooltip: L.current.pause,
                   onPressed: onPause,
                   icon: Icon(Icons.pause),
                 )
                 : Container(),
             IconButton(
-              tooltip: S.current.cancel,
+              tooltip: L.current.cancel,
               onPressed: onRemove,
               icon: Icon(Icons.clear),
             ),
@@ -114,11 +113,11 @@ class _TransmissionPageState extends State<TransmissionPage>
         dividerThickness: 0,
         columns: _tableColumns(
           extras: [
-            DataColumn(label: Text(S.current.status)),
+            DataColumn(label: Text(L.current.status)),
             DataColumn(
-              label: Text(S.current.progress),
+              label: Text(L.current.progress),
               numeric: true,
-              tooltip: S.current.progress,
+              tooltip: L.current.progress,
             ),
           ],
         ),
@@ -254,20 +253,20 @@ class _TransmissionPageState extends State<TransmissionPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.current.transmission),
+        title: Text(L.current.transmission),
         actions: [
           IconButton(
-            tooltip: S.current.start_all,
+            tooltip: L.current.start_all,
             onPressed: () {},
             icon: Icon(Icons.play_arrow),
           ),
           IconButton(
-            tooltip: S.current.pause_all,
+            tooltip: L.current.pause_all,
             onPressed: () {},
             icon: Icon(Icons.pause),
           ),
           IconButton(
-            tooltip: S.current.delete_all,
+            tooltip: L.current.delete_all,
             onPressed: () {},
             icon: Icon(Icons.delete_forever),
           ),
@@ -286,7 +285,7 @@ class _TransmissionPageState extends State<TransmissionPage>
                   padding: EdgeInsets.only(right: 8),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [Icon(Icons.upload), Text(S.current.upload)],
+                    children: [Icon(Icons.upload), Text(L.current.upload)],
                   ),
                 ),
               ),
@@ -299,7 +298,7 @@ class _TransmissionPageState extends State<TransmissionPage>
                   padding: EdgeInsets.only(right: 8),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [Icon(Icons.download), Text(S.current.download)],
+                    children: [Icon(Icons.download), Text(L.current.download)],
                   ),
                 ),
               ),
@@ -329,7 +328,7 @@ class _TransmissionPageState extends State<TransmissionPage>
             _tabController.index == 0
                 ? SpringDraggableContainer(
                   child: FloatingActionButton(
-                    tooltip: S.current.upload,
+                    tooltip: L.current.upload,
                     shape: const CircleBorder(),
                     onPressed: () {},
                     child: Icon(Icons.upload_file),

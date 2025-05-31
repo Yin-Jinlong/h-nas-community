@@ -33,9 +33,9 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
     });
     setState(() {
       if (_url.isEmpty) {
-        _apiHostErrorText = S.current.empty_content;
+        _apiHostErrorText = L.current.empty_content;
       } else if (!_urlRegExp.hasMatch(_url)) {
-        _apiHostErrorText = S.current.bad_host_addr;
+        _apiHostErrorText = L.current.bad_host_addr;
       }
     });
     return _apiHostErrorText == null;
@@ -71,7 +71,7 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog.adaptive(
-      title: Text(S.current.set_host_addr),
+      title: Text(L.current.set_host_addr),
       content: Row(
         children: [
           Expanded(
@@ -83,7 +83,7 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
                 keyboardType: TextInputType.url,
                 decoration: InputDecoration(
                   helperText: 'http://127.0.0.1:8888/api',
-                  labelText: S.current.server_addr,
+                  labelText: L.current.server_addr,
                   hintText: _oldURL.isEmpty ? '' : _oldURL,
                   errorText: _apiHostErrorText,
                 ),
@@ -119,7 +119,7 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
           onPressed: () {
             navigatorKey.currentState?.pop();
           },
-          child: Text(S.current.cancel),
+          child: Text(L.current.cancel),
         ),
         TextButton(
           onPressed:
@@ -130,7 +130,7 @@ class _ApiHostDialogState extends State<_ApiHostDialog> {
                       _setAPIHost();
                     }
                   },
-          child: Text(S.current.ok),
+          child: Text(L.current.ok),
         ),
       ],
     );

@@ -10,9 +10,7 @@ import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/components/marquee.dart';
 import 'package:h_nas/components/tag.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/main.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/audio_player/more_sheet.dart';
 import 'package:h_nas/pages/audio_player/play_sheet.dart';
@@ -166,14 +164,14 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       ),
       if (wide)
         IconButton(
-          tooltip: S.current.replay_10s,
+          tooltip: L.current.replay_10s,
           onPressed: () {
             _seekBackward(const Duration(seconds: 10));
           },
           icon: Icon(Icons.replay_10, size: size),
         ),
       IconButton(
-        tooltip: S.current.audio_previous,
+        tooltip: L.current.audio_previous,
         onPressed: () {
           player.previous();
         },
@@ -187,7 +185,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         child: Hero(
           tag: 'play_pause',
           child: IconButton(
-            tooltip: player.playing ? S.current.pause : S.current.media_play,
+            tooltip: player.playing ? L.current.pause : L.current.media_play,
             onPressed: () {
               player.playPause();
             },
@@ -200,7 +198,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         ),
       ),
       IconButton(
-        tooltip: S.current.audio_next,
+        tooltip: L.current.audio_next,
         onPressed: () {
           player.next();
         },
@@ -208,14 +206,14 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
       ),
       if (wide)
         IconButton(
-          tooltip: S.current.forward_10s,
+          tooltip: L.current.forward_10s,
           onPressed: () {
             _seekForward(const Duration(seconds: 10));
           },
           icon: Icon(Icons.forward_10, size: size),
         ),
       IconButton(
-        tooltip: S.current.playlist,
+        tooltip: L.current.playlist,
         onPressed: () {
           _showPlayListSheet(context);
         },
@@ -257,7 +255,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         [
           LrcLine(
             timestamp: Duration(),
-            lyrics: S.current.no_lrc,
+            lyrics: L.current.no_lrc,
             type: LrcTypes.simple,
           ),
         ];
@@ -328,7 +326,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
         if (player.speed.value != 1)
           Tag(text: '${player.speed.value.toStringAsFixed(2)}×'),
         IconButton(
-          tooltip: S.current.more,
+          tooltip: L.current.more,
           onPressed: () {
             _showMoreSheet(context);
           },
@@ -386,7 +384,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage>
   Widget _lrcView({required VoidCallback onTap}) {
     return lrc != null
         ? LrcView(lrc: lrc!, onTap: onTap)
-        : Clickable(onTap: onTap, child: Center(child: Text(S.current.no_lrc)));
+        : Clickable(onTap: onTap, child: Center(child: Text(L.current.no_lrc)));
   }
 
   Widget _narrowModeMain() {

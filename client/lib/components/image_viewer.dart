@@ -8,7 +8,6 @@ import 'package:h_nas/api/api.dart';
 import 'package:h_nas/cache/cache_manager.dart';
 import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/components/show_raw_button.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:photo_view/photo_view_gallery.dart';

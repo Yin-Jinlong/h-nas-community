@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/storage_size.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -24,7 +24,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(S.current.user_management)),
+      appBar: AppBar(title: Text(L.current.user_management)),
       body: SizedBox.expand(
         child: Column(
           children: [
@@ -38,16 +38,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   ),
                   GridColumn(
                     columnName: _UserData.usernameName,
-                    label: Center(child: Text(S.current.info_username)),
+                    label: Center(child: Text(L.current.info_username)),
                   ),
                   GridColumn(
                     columnName: _UserData.nickName,
-                    label: Center(child: Text(S.current.info_nick)),
+                    label: Center(child: Text(L.current.info_nick)),
                   ),
                   GridColumn(
                     columnName: _UserData.usageName,
                     label: Center(
-                      child: Text(S.current.info_user_storage_usage),
+                      child: Text(L.current.info_user_storage_usage),
                     ),
                   ),
                 ],
@@ -113,7 +113,7 @@ class _UserDatSource extends DataGridSource {
               DataGridCell(columnName: _UserData.nickName, value: e.nick),
               DataGridCell(
                 columnName: _UserData.usageName,
-                value: e.usage?.storageSizeStr ?? S.current.loading,
+                value: e.usage?.storageSizeStr ?? L.current.loading,
               ),
             ],
           );

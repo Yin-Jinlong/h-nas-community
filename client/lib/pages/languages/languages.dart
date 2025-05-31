@@ -1,25 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/prefs.dart';
-
-import '../../generated/l10n.dart';
-
-enum LanguageTagName {
-  en('en', 'English'),
-  zh('zh', '中文');
-
-  final String tag, name;
-
-  const LanguageTagName(this.tag, this.name);
-
-  static LanguageTagName? fromLanguageTag(String tag) {
-    for (final l in values) {
-      if (l.tag == tag) {
-        return l;
-      }
-    }
-    return null;
-  }
-}
 
 class LanguagesPage extends StatefulWidget {
   final Function(Locale) onLocaleChanged;
@@ -33,32 +14,29 @@ class LanguagesPage extends StatefulWidget {
 }
 
 class _LanguagesPageState extends State<LanguagesPage> {
-  String groupValue = Prefs.locale.toLanguageTag();
+  Locale groupValue = Prefs.locale;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.current.language),
+        title: Text(L.current.language),
         backgroundColor: ColorScheme.of(context).primary,
       ),
       body: ListView(
         children: [
-          for (final l in S.delegate.supportedLocales)
+          for (final l in L.locales.entries)
             ListTile(
-              title: Text(
-                LanguageTagName.fromLanguageTag(l.toLanguageTag())?.name ??
-                    '???',
-              ),
+              title: Text(l.value.localName),
               leading: Radio(
-                value: l.toLanguageTag(),
+                value: l.key,
                 groupValue: groupValue,
                 onChanged: (v) {},
               ),
               onTap: () {
                 setState(() {
-                  groupValue = l.toLanguageTag();
-                  widget.onLocaleChanged(l);
+                  groupValue = l.key;
+                  widget.onLocaleChanged(l.key);
                 });
               },
             ),

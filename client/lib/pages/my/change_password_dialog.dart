@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/password_input.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 
 class ChangePasswordDialog extends StatefulWidget {
   final void Function(String o, String n) onChangePassword;
@@ -26,7 +26,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.current.change_password),
+      title: Text(L.current.change_password),
       content: Form(
         key: _formKey,
         child: IntrinsicHeight(
@@ -34,22 +34,22 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             spacing: 12,
             children: [
               PasswordInput(
-                label: S.current.password_old,
+                label: L.current.password_old,
                 password: passwordOld,
                 onValidate: validate,
               ),
               PasswordInput(
-                label: S.current.password_new,
+                label: L.current.password_new,
                 password: password,
                 onValidate: validate,
               ),
               PasswordInput(
-                label: S.current.password2,
+                label: L.current.password2,
                 password: password2,
                 onValidate: validate,
                 validator: (value) {
                   if (value != password.text) {
-                    return S.current.password_not_match;
+                    return L.current.password_not_match;
                   }
                   return null;
                 },
@@ -69,7 +69,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                           );
                         }
                         : null,
-                child: Text(S.current.ok),
+                child: Text(L.current.ok),
               ),
             ],
           ),

@@ -7,8 +7,7 @@ import 'package:dio/dio.dart' as dio;
 import 'package:h_nas/api/dio_http_provider.dart';
 import 'package:h_nas/api/http_provider.dart';
 import 'package:h_nas/api/rhttp_http_provider.dart';
-import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
 import 'package:h_nas/settings/user.dart';
@@ -215,7 +214,7 @@ void _parseData(String data) {
       Future.delayed(const Duration(milliseconds: 600), () {
         UserS.user = null;
         Prefs.token = null;
-        Toast.showError(S.current.please_login);
+        Toast.showError(L.current.please_login);
         if (navigatorKey.currentState?.canPop() ?? false) {
           navigatorKey.currentState?.pop();
         }

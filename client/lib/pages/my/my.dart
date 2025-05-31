@@ -4,8 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/user_avatar.dart';
-import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/pages/my/change_password_dialog.dart';
 import 'package:h_nas/pages/my/nick_dialog.dart';
 import 'package:h_nas/prefs.dart';
@@ -41,7 +40,7 @@ class _MyPageState extends State<MyPage> {
         return NickDialog(
           onNick: (nick) {
             if (nick.isEmpty) {
-              Toast.showError(S.current.error_empty(S.current.info_nick));
+              Toast.showError(L.current.error_empty(L.current.info_nick));
             } else {
               UserAPI.setNick(nick).then((value) {
                 if (value) {
@@ -146,11 +145,11 @@ class _MyPageState extends State<MyPage> {
               style: TextTheme.of(context).bodyLarge ?? TextStyle(),
               child: Column(
                 children: [
-                  _dialogItem([Text(S.current.avatar_show)], () {
+                  _dialogItem([Text(L.current.avatar_show)], () {
                     navigatorKey.currentState?.pop();
                     _showAvatarPreviewDialog(context);
                   }),
-                  _dialogItem([Text(S.current.avatar_change)], () {
+                  _dialogItem([Text(L.current.avatar_change)], () {
                     ImagePicker().pickImage(source: ImageSource.gallery).then((
                       value,
                     ) {
@@ -159,7 +158,7 @@ class _MyPageState extends State<MyPage> {
                       _setAvatar(file);
                     });
                   }),
-                  _dialogItem([Text(S.current.avatar_delete)], () {
+                  _dialogItem([Text(L.current.avatar_delete)], () {
                     _deleteAvatar().then((value) {
                       if (value) {
                         _updateAvatar();
@@ -167,7 +166,7 @@ class _MyPageState extends State<MyPage> {
                     });
                   }),
                   Divider(color: Colors.grey),
-                  _dialogItem([Text(S.current.cancel)], () {
+                  _dialogItem([Text(L.current.cancel)], () {
                     navigatorKey.currentState?.pop();
                   }),
                 ],
@@ -212,7 +211,7 @@ class _MyPageState extends State<MyPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(S.current.my)),
+      appBar: AppBar(title: Text(L.current.my)),
       body: Padding(
         padding: EdgeInsets.only(top: 12),
         child: ListView(
@@ -232,7 +231,7 @@ class _MyPageState extends State<MyPage> {
                       ),
                       child: Row(
                         children: [
-                          Text(S.current.avatar),
+                          Text(L.current.avatar),
                           Expanded(child: Container()),
                           trailing(
                             UserAvatar(
@@ -253,7 +252,7 @@ class _MyPageState extends State<MyPage> {
                     ),
                   ),
                   ListTile(
-                    title: Text(S.current.info_username),
+                    title: Text(L.current.info_username),
                     trailing: trailing(
                       Text(
                         user.username,
@@ -263,7 +262,7 @@ class _MyPageState extends State<MyPage> {
                     onTap: () {},
                   ),
                   ListTile(
-                    title: Text(S.current.info_nick),
+                    title: Text(L.current.info_nick),
                     trailing: trailing(
                       Text(user.nick, style: TextTheme.of(context).bodyLarge),
                     ),
@@ -272,7 +271,7 @@ class _MyPageState extends State<MyPage> {
                     },
                   ),
                   ListTile(
-                    title: Text(S.current.change_password),
+                    title: Text(L.current.change_password),
                     trailing: trailing(Container()),
                     onTap: () {
                       _showChangePasswordDialog(context);

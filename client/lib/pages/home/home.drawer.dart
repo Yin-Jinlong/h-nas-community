@@ -11,7 +11,7 @@ _showAboutDialog(BuildContext context) {
       );
     },
   ).then((v) {
-    S.load(Global.locale);
+    L.load(Global.locale);
   });
 }
 
@@ -30,10 +30,10 @@ Drawer _drawer(
       children: [
         _DrawerHeader(onLogin: onLogin, onLogout: onLogout),
         Tooltip(
-          message: S.current.theme,
+          message: L.current.theme,
           child: ListTile(
             leading: Icon(TDTxNFIcons.nf_md_tshirt_crew),
-            title: Text(S.current.theme),
+            title: Text(L.current.theme),
             onTap: () {
               navigatorKey.currentState?.pushNamed(Routes.theme);
             },
@@ -41,9 +41,9 @@ Drawer _drawer(
         ),
         if (UserS.adminMode)
           Tooltip(
-            message: S.current.server_info,
+            message: L.current.server_info,
             child: ListTile(
-              title: Text(S.current.server_info),
+              title: Text(L.current.server_info),
               leading: Icon(Icons.admin_panel_settings),
               onTap: () {
                 navigatorKey.currentState?.pushNamed(Routes.serverInfo);
@@ -52,9 +52,9 @@ Drawer _drawer(
           ),
         if (UserS.adminMode)
           Tooltip(
-            message: S.current.user_management,
+            message: L.current.user_management,
             child: ListTile(
-              title: Text(S.current.user_management),
+              title: Text(L.current.user_management),
               leading: Icon(Icons.people),
               onTap: () {
                 navigatorKey.currentState?.pushNamed(Routes.userManagement);
@@ -63,13 +63,13 @@ Drawer _drawer(
           ),
         if (!UniversalPlatform.isWeb)
           Tooltip(
-            message: S.current.transmission,
+            message: L.current.transmission,
             child: ListTile(
               leading: Icon(Icons.swap_vert),
               title: Badge(
                 label: Text('$taskCount'),
                 isLabelVisible: taskCount > 0,
-                child: Text(S.current.transmission),
+                child: Text(L.current.transmission),
               ),
               onTap: () {
                 navigatorKey.currentState?.pushNamed(Routes.transmission);
@@ -77,30 +77,30 @@ Drawer _drawer(
             ),
           ),
         Tooltip(
-          message: S.current.language,
+          message: L.current.language,
           child: ListTile(
             leading: Icon(Icons.language),
-            title: Text(S.current.language),
+            title: Text(L.current.language),
             onTap: () {
               navigatorKey.currentState?.pushNamed(Routes.languages);
             },
           ),
         ),
         Tooltip(
-          message: S.current.about,
+          message: L.current.about,
           child: ListTile(
             leading: Icon(Icons.info),
-            title: Text(S.current.about),
+            title: Text(L.current.about),
             onTap: () {
               _showAboutDialog(context);
             },
           ),
         ),
         Tooltip(
-          message: S.current.settings,
+          message: L.current.settings,
           child: ListTile(
             leading: Icon(Icons.settings),
-            title: Text(S.current.settings),
+            title: Text(L.current.settings),
             onTap: () {
               navigatorKey.currentState?.pushNamed(Routes.settings);
             },
@@ -136,7 +136,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
       spacing: 8,
       children: [
         UserAvatar(user: UserS.user?.uid, withHero: true),
-        ElevatedButton(onPressed: widget.onLogin, child: Text(S.current.login)),
+        ElevatedButton(onPressed: widget.onLogin, child: Text(L.current.login)),
       ],
     );
   }
@@ -176,7 +176,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
                       onTap: () {
                         Clipboard.setData(ClipboardData(text: user.username));
                         Toast.showSuccess(
-                          S.current.action_success(S.current.copy),
+                          L.current.action_success(L.current.copy),
                         );
                       },
                       child: Row(
@@ -212,7 +212,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
                               ClipboardData(text: user.uid.toString()),
                             );
                             Toast.showSuccess(
-                              S.current.action_success(S.current.copy),
+                              L.current.action_success(L.current.copy),
                             );
                           },
                           child: Text(
@@ -240,7 +240,7 @@ class _DrawerHeaderState extends State<_DrawerHeader> {
         Align(
           alignment: Alignment.topRight,
           child: IconButton(
-            tooltip: S.current.logout,
+            tooltip: L.current.logout,
             onPressed: widget.onLogout,
             icon: Icon(Icons.logout),
           ),

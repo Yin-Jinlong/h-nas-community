@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 
 class TransmissionView extends StatefulWidget {
   final Widget donePage;
@@ -61,7 +61,7 @@ class _TransmissionViewState extends State<TransmissionView>
                     _tabController.animateTo(0);
                   });
                 },
-                child: Text(S.current.processing),
+                child: Text(L.current.processing),
               ),
               FilledButton(
                 style: FilledButton.styleFrom(
@@ -79,7 +79,7 @@ class _TransmissionViewState extends State<TransmissionView>
                     _tabController.animateTo(1);
                   });
                 },
-                child: Text(S.current.done),
+                child: Text(L.current.done),
               ),
             ],
           ),
@@ -87,10 +87,7 @@ class _TransmissionViewState extends State<TransmissionView>
         Expanded(
           child: TabBarView(
             controller: _tabController,
-            children: [
-              widget.progressingPage,
-              widget.donePage,
-            ],
+            children: [widget.progressingPage, widget.donePage],
           ),
         ),
       ],

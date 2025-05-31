@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/main.dart';
-import 'package:h_nas/pages/languages/languages.dart';
 import 'package:h_nas/pages/settings/scan_dialog.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/routes.dart';
@@ -41,7 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           if (UserS.user?.admin ?? false)
             ListTile(
-              title: Text(S.current.admin_mode),
+              title: Text(L.current.admin_mode),
               leading: const Icon(Icons.admin_panel_settings),
               trailing: Switch(value: UserS.adminMode, onChanged: _onAdminMode),
               onTap: () {
@@ -51,13 +48,8 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             leading: const Icon(Icons.language),
             trailing: const Icon(Icons.keyboard_arrow_right),
-            title: Text(S.current.language),
-            subtitle: Text(
-              LanguageTagName.fromLanguageTag(
-                    Global.locale.toLanguageTag(),
-                  )?.name ??
-                  '???',
-            ),
+            title: Text(L.current.language),
+            subtitle: Text(L.current.localName),
             onTap: () {
               navigatorKey.currentState?.pushNamed(Routes.languages).then((v) {
                 setState(() {});
@@ -66,7 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           if (!UniversalPlatform.isWeb)
             ListTile(
-              title: Text(S.current.storage),
+              title: Text(L.current.storage),
               leading: const Icon(Icons.storage),
               onTap: () {
                 Navigator.of(context).pushNamed(Routes.storage);
@@ -74,8 +66,8 @@ class _SettingsPageState extends State<SettingsPage> {
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ListTile(
-            title: Text(S.current.server_addr),
-            subtitle: Text('${S.current.now}${API.API_ROOT}'),
+            title: Text(L.current.server_addr),
+            subtitle: Text('${L.current.now}${API.API_ROOT}'),
             onTap: () async {
               await _showHostDialog(context);
               setState(() {});

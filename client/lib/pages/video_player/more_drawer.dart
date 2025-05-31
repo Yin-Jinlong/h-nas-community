@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/components/switch_button.dart';
 import 'package:h_nas/components/volume_slider.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 
@@ -54,7 +53,7 @@ class _MoreDrawerState extends State<MoreDrawer> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Text(S.current.video_codec),
+              Text(L.current.video_codec),
               for (var codec in player.codecs.value)
                 Row(
                   children: [
@@ -69,12 +68,12 @@ class _MoreDrawerState extends State<MoreDrawer> {
                   ],
                 ),
               Divider(color: Colors.grey),
-              Text(S.current.video_fit),
+              Text(L.current.video_fit),
               Wrap(
                 children: [
-                  _fitButton(BoxFit.contain, S.current.video_contain),
-                  _fitButton(BoxFit.fill, S.current.video_fill),
-                  _fitButton(BoxFit.cover, S.current.video_cover),
+                  _fitButton(BoxFit.contain, L.current.video_contain),
+                  _fitButton(BoxFit.fill, L.current.video_fill),
+                  _fitButton(BoxFit.cover, L.current.video_cover),
                 ],
               ),
               Divider(color: Colors.grey),

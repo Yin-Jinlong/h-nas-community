@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/plugin/broadcast_plugin.dart';
 import 'package:h_nas/utils/dispose.dart';
 
@@ -38,7 +37,7 @@ class _ScanDialogState extends State<ScanDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          Text(S.current.scanning),
+          Text(L.current.scanning),
           SizedBox.square(
             dimension: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
@@ -74,7 +73,7 @@ class _ScanDialogState extends State<ScanDialog> {
           onPressed: () {
             navigatorKey.currentState?.pop();
           },
-          child: Text(S.current.cancel),
+          child: Text(L.current.cancel),
         ),
       ],
     );

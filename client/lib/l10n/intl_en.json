@@ -1,11 +1,10 @@
 {
-  "@@locale": "en",
+  "@": "English",
+  "@language_code": "en",
   "about": "About",
   "action_success": "{action} success",
   "admin_mode": "Admin mode",
-  "ai_tool_status": "Tool {status}",
   "album": "Album",
-  "app_name": "H NAS",
   "application": "Application",
   "artists": "Artists",
   "audio_comment": "Comment",

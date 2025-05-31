@@ -19,7 +19,7 @@ class _LogonState extends _BaseState<_LogonWidget> {
   void _logon() {
     UserAPI.logon(logid.text, password.text).then((res) {
       if (res == true) {
-        Toast.showSuccess(S.current.action_success(S.current.logon));
+        Toast.showSuccess(L.current.action_success(L.current.logon));
         widget.onGotoLogin();
       }
     });
@@ -41,13 +41,13 @@ class _LogonState extends _BaseState<_LogonWidget> {
         TextFormField(
           controller: logid,
           decoration: InputDecoration(
-            labelText: S.current.username,
-            hintText: S.current.username,
+            labelText: L.current.username,
+            hintText: L.current.username,
             prefixIcon: Icon(Icons.person),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return S.current.error_empty(S.current.username);
+              return L.current.error_empty(L.current.username);
             }
             return null;
           },
@@ -59,17 +59,17 @@ class _LogonState extends _BaseState<_LogonWidget> {
           },
         ),
         PasswordInput(
-          label: S.current.password,
+          label: L.current.password,
           password: password,
           onValidate: validate,
         ),
         PasswordInput(
-          label: S.current.password2,
+          label: L.current.password2,
           password: password2,
           onValidate: validate,
           validator: (value) {
             if (value != password.text) {
-              return S.current.password_not_match;
+              return L.current.password_not_match;
             }
             return null;
           },
@@ -80,7 +80,7 @@ class _LogonState extends _BaseState<_LogonWidget> {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: widget.onGotoLogin,
-                child: Text(S.current.goto_login),
+                child: Text(L.current.goto_login),
               ),
             ),
           ],
@@ -92,7 +92,7 @@ class _LogonState extends _BaseState<_LogonWidget> {
             minimumSize: Size(double.infinity, 50),
           ),
           onPressed: isValid ? _logon : null,
-          child: Text(S.current.logon),
+          child: Text(L.current.logon),
         ),
       ],
     );

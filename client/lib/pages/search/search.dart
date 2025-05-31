@@ -3,8 +3,7 @@ import 'package:h_nas/anim/scale_animated_switcher.dart';
 import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/empty.dart';
 import 'package:h_nas/components/file_preview_view.dart';
-import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/storage_size.dart';
@@ -162,7 +161,7 @@ class _SearchPageState extends State<SearchPage> {
                     onPressed: () {
                       navigatorKey.currentState?.pop();
                     },
-                    child: Text(S.current.cancel),
+                    child: Text(L.current.cancel),
                   ),
                 ],
               ),
@@ -179,7 +178,7 @@ class _SearchPageState extends State<SearchPage> {
                   if (index == files.length) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Text(S.current.no_more)],
+                      children: [Text(L.current.no_more)],
                     );
                   }
                   final file = files[index];
@@ -207,7 +206,7 @@ class _SearchPageState extends State<SearchPage> {
                   dimension: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                Text(S.current.loading),
+                Text(L.current.loading),
               ],
             ),
         ],

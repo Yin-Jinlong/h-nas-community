@@ -7,9 +7,7 @@ import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/clickable.dart';
 import 'package:h_nas/components/cover_view.dart';
 import 'package:h_nas/components/spring_draggable_container.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/main.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/routes.dart';
 import 'package:h_nas/utils/audio_info_exts.dart';
@@ -199,7 +197,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
               tag: 'play_pause',
               child: IconButton(
                 tooltip:
-                    player.playing ? S.current.pause : S.current.media_play,
+                    player.playing ? L.current.pause : L.current.media_play,
                 onPressed: () {
                   player.playPause();
                 },
@@ -210,7 +208,7 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer>
               ),
             ),
             IconButton(
-              tooltip: S.current.close,
+              tooltip: L.current.close,
               onPressed: widget.onClose,
               icon: Icon(Icons.close),
             ),

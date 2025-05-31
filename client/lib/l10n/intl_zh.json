@@ -1,9 +1,10 @@
 {
-  "@@locale": "zh",
+  "@default": true,
+  "@": "中文简体",
+  "@language_code": "zh",
   "about": "关于",
   "action_success": "{action}成功",
   "admin_mode": "管理员模式",
-  "ai_tool_status": "工具{status}",
   "album": "专辑",
   "app_name": "H NAS",
   "application": "应用程序",

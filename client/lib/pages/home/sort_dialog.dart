@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 
 enum SortType { name, createTime, updateTime, size }
 
@@ -52,7 +51,7 @@ class _SortDialogState extends State<SortDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.current.sort),
+      title: Text(L.current.sort),
       content: IntrinsicHeight(
         child: Column(
           children: [
@@ -61,22 +60,22 @@ class _SortDialogState extends State<SortDialog> {
                 _sortItem(
                   SortType.name,
                   Icons.sort_by_alpha,
-                  tooltip: S.current.name,
+                  tooltip: L.current.name,
                 ),
                 _sortItem(
                   SortType.createTime,
                   Icons.timer,
-                  tooltip: S.current.create_time,
+                  tooltip: L.current.create_time,
                 ),
                 _sortItem(
                   SortType.updateTime,
                   Icons.av_timer,
-                  tooltip: S.current.update_time,
+                  tooltip: L.current.update_time,
                 ),
                 _sortItem(
                   SortType.size,
                   Icons.storage,
-                  tooltip: S.current.file_size,
+                  tooltip: L.current.file_size,
                 ),
               ],
             ),
@@ -86,7 +85,7 @@ class _SortDialogState extends State<SortDialog> {
               children: [
                 IconButton(
                   isSelected: isAsc,
-                  tooltip: S.current.sort_asc,
+                  tooltip: L.current.sort_asc,
                   onPressed: () {
                     setState(() {
                       isAsc = true;
@@ -100,7 +99,7 @@ class _SortDialogState extends State<SortDialog> {
                 ),
                 IconButton(
                   isSelected: !isAsc,
-                  tooltip: S.current.sort_desc,
+                  tooltip: L.current.sort_desc,
                   onPressed: () {
                     setState(() {
                       isAsc = false;
@@ -125,20 +124,20 @@ class _SortDialogState extends State<SortDialog> {
               isAsc = true;
             });
           },
-          child: Text(S.current.default_),
+          child: Text(L.current.default_),
         ),
         TextButton(
           onPressed: () {
             navigatorKey.currentState?.pop();
           },
-          child: Text(S.current.cancel),
+          child: Text(L.current.cancel),
         ),
         TextButton(
           onPressed: () {
             widget.onSort(type, isAsc);
             navigatorKey.currentState?.pop();
           },
-          child: Text(S.current.ok),
+          child: Text(L.current.ok),
         ),
       ],
     );

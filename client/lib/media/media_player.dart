@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_file.dart';
 import 'package:h_nas/media/video_media_file.dart';
@@ -27,10 +26,10 @@ enum PlayMode {
 
   String get name {
     return switch (this) {
-      PlayMode.none => S.current.play_sequential,
-      PlayMode.single => S.current.play_repeat,
-      PlayMode.loop => S.current.play_repeat_list,
-      PlayMode.random => S.current.play_random,
+      PlayMode.none => L.current.play_sequential,
+      PlayMode.single => L.current.play_repeat,
+      PlayMode.loop => L.current.play_repeat_list,
+      PlayMode.random => L.current.play_random,
     };
   }
 }

@@ -12,29 +12,29 @@ List<ContextMenuButtonConfig?> _fileContextMenuButtons(
   return [
     if (file.canPlay)
       ContextMenuButtonConfig(
-        S.current.media_play,
+        L.current.media_play,
         icon: Icon(Icons.play_circle),
         onPressed: onPlay,
       ),
     ContextMenuButtonConfig(
-      S.current.rename,
+      L.current.rename,
       icon: Icon(Icons.edit),
       onPressed: onRename,
     ),
     ContextMenuButtonConfig(
-      '${S.current.download} ${file.isFolder ? 'tar.gz' : ''}',
+      '${L.current.download} ${file.isFolder ? 'tar.gz' : ''}',
       icon: Icon(Icons.download),
       onPressed: onDownload,
     ),
     null,
     ContextMenuButtonConfig(
-      S.current.info,
+      L.current.info,
       icon: Icon(Icons.info),
       onPressed: onInfo,
     ),
     null,
     ContextMenuButtonConfig(
-      S.current.delete,
+      L.current.delete,
       icon: Icon(Icons.delete, color: ColorScheme.of(context).error),
       onPressed: onDelete,
     ),

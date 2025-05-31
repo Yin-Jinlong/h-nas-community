@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/main.dart';
 import 'package:h_nas/prefs.dart';
 import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/dispose.dart';
@@ -88,7 +86,7 @@ class _LoginQRState extends State<LoginQR> {
                     children: [
                       Icon(Icons.check, color: Colors.green, size: 50),
                       Text(
-                        S.current.scanned,
+                        L.current.scanned,
                         style: TextStyle(color: Colors.green, fontSize: 20),
                       ),
                     ],

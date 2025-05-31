@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/settings/user.dart';
 
 class NickDialog extends StatefulWidget {
@@ -17,11 +17,11 @@ class _NickDialogState extends State<NickDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.current.info_nick),
+      title: Text(L.current.info_nick),
       content: TextField(
         controller: _controller,
         decoration: InputDecoration(
-          labelText: S.current.info_nick,
+          labelText: L.current.info_nick,
           hintText: UserS.user?.nick,
         ),
       ),
@@ -30,13 +30,13 @@ class _NickDialogState extends State<NickDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text(S.current.cancel),
+          child: Text(L.current.cancel),
         ),
         TextButton(
           onPressed: () {
             widget.onNick(_controller.text);
           },
-          child: Text(S.current.ok),
+          child: Text(L.current.ok),
         ),
       ],
     );

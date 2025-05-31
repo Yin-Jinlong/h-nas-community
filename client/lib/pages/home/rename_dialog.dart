@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/main.dart';
 import 'package:h_nas/utils/edit_field_utils.dart';
 
 class RenameDialog extends StatefulWidget {
@@ -37,7 +35,7 @@ class _RenameDialogState extends State<RenameDialog> {
               TextFormField(
                 controller: _controller,
                 decoration: InputDecoration(
-                  labelText: S.current.new_name,
+                  labelText: L.current.new_name,
                   hintText: widget.file.name,
                   suffix: EditFieldUtils.clearButton(_controller, () {
                     setState(() {});
@@ -45,10 +43,10 @@ class _RenameDialogState extends State<RenameDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return S.current.error_empty(S.current.new_name);
+                    return L.current.error_empty(L.current.new_name);
                   } else if (Global.nameNotRegex.hasMatch(value)) {
-                    return S.current.error_contains(
-                      S.current.new_name,
+                    return L.current.error_contains(
+                      L.current.new_name,
                       Global.nameNoChars,
                     );
                   } else {
@@ -71,7 +69,7 @@ class _RenameDialogState extends State<RenameDialog> {
           onPressed: () {
             navigatorKey.currentState?.pop();
           },
-          child: Text(S.current.cancel),
+          child: Text(L.current.cancel),
         ),
         TextButton(
           onPressed:
@@ -80,7 +78,7 @@ class _RenameDialogState extends State<RenameDialog> {
                     widget.onRename(_controller.text);
                   }
                   : null,
-          child: Text(S.current.ok),
+          child: Text(L.current.ok),
         ),
       ],
     );

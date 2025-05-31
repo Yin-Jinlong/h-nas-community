@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/edit_field_utils.dart';
 
 class PasswordInput extends StatelessWidget {
@@ -32,10 +32,10 @@ class PasswordInput extends StatelessWidget {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return S.current.error_empty(label);
+          return L.current.error_empty(label);
         }
         if (value.length < 8) {
-          return S.current.password_too_short;
+          return L.current.password_too_short;
         }
         return validator?.call(value);
       },

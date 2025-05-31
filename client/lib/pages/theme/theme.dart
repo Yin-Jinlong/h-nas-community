@@ -2,10 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/settings/theme.dart';
-
-import '../../generated/l10n.dart';
 
 class ThemePage extends StatefulWidget {
   const ThemePage({super.key});
@@ -82,9 +80,9 @@ class _ThemePageState extends State<ThemePage> {
             Wrap(
               spacing: 8,
               children: [
-                FilledButton(onPressed: () {}, child: Text(S.current.button)),
-                ElevatedButton(onPressed: () {}, child: Text(S.current.button)),
-                TextButton(onPressed: () {}, child: Text(S.current.button)),
+                FilledButton(onPressed: () {}, child: Text(L.current.button)),
+                ElevatedButton(onPressed: () {}, child: Text(L.current.button)),
+                TextButton(onPressed: () {}, child: Text(L.current.button)),
               ],
             ),
             Wrap(
@@ -110,8 +108,8 @@ class _ThemePageState extends State<ThemePage> {
             ),
             TextFormField(
               decoration: InputDecoration(
-                labelText: S.current.title,
-                hintText: S.current.title,
+                labelText: L.current.title,
+                hintText: L.current.title,
               ),
             ),
             SliderTheme(
@@ -149,7 +147,7 @@ class _ThemePageState extends State<ThemePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(S.current.theme)),
+      appBar: AppBar(title: Text(L.current.theme)),
       body: Padding(
         padding: EdgeInsets.all(8),
         child: Column(
@@ -166,7 +164,7 @@ class _ThemePageState extends State<ThemePage> {
                     });
                   },
                 ),
-                Text(S.current.theme_auto),
+                Text(L.current.theme_auto),
                 Radio(
                   value: Brightness.light,
                   groupValue: _brightness,
@@ -180,7 +178,7 @@ class _ThemePageState extends State<ThemePage> {
                             });
                           },
                 ),
-                Text(S.current.theme_light),
+                Text(L.current.theme_light),
                 Radio(
                   value: Brightness.dark,
                   groupValue: _brightness,
@@ -194,7 +192,7 @@ class _ThemePageState extends State<ThemePage> {
                             });
                           },
                 ),
-                Text(S.current.theme_dark),
+                Text(L.current.theme_dark),
               ],
             ),
             Padding(
@@ -203,7 +201,7 @@ class _ThemePageState extends State<ThemePage> {
                 onPressed: () {
                   _showColorPicker();
                 },
-                child: Text(S.current.pick_color),
+                child: Text(L.current.pick_color),
               ),
             ),
             Divider(),
@@ -259,7 +257,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog>
     final size = MediaQuery.of(context).size;
     final hsv = HSVColor.fromColor(pickerColor);
     return AlertDialog(
-      title: Text(S.current.pick_color),
+      title: Text(L.current.pick_color),
       content: IntrinsicHeight(
         child: Column(
           spacing: 8,
@@ -267,9 +265,9 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog>
             TabBar(
               controller: _controller,
               tabs: [
-                Text(S.current.color_picker_set),
-                Text(S.current.color_picker_broad),
-                Text(S.current.color_picker_bar),
+                Text(L.current.color_picker_set),
+                Text(L.current.color_picker_broad),
+                Text(L.current.color_picker_bar),
               ],
             ),
             SizedBox(
@@ -310,7 +308,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog>
           onPressed: () {
             navigatorKey.currentState?.pop();
           },
-          child: Text(S.current.cancel),
+          child: Text(L.current.cancel),
         ),
         FilledButton(
           onPressed:
@@ -319,7 +317,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog>
                   : () {
                     widget.onCommit(pickerColor);
                   },
-          child: Text(S.current.ok),
+          child: Text(L.current.ok),
         ),
       ],
     );

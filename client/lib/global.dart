@@ -15,6 +15,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+export 'l10n/intl.dart';
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 const Duration durationFast = Duration(milliseconds: 200);
 const Duration durationMedium = Duration(milliseconds: 300);
 const Duration durationSlow = Duration(milliseconds: 500);

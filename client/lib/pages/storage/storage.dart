@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/plugin/storage_plugin.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:h_nas/utils/storage_size.dart';
@@ -182,7 +182,7 @@ class _CacheCleanPageState extends State<StoragePage> {
             onClean != null
                 ? FilledButton(
                   onPressed: _end ? onClean : null,
-                  child: Text(S.current.clean),
+                  child: Text(L.current.clean),
                 )
                 : null,
       ),
@@ -192,7 +192,7 @@ class _CacheCleanPageState extends State<StoragePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(S.current.storage)),
+      appBar: AppBar(title: Text(L.current.storage)),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: Column(
@@ -246,7 +246,7 @@ class _CacheCleanPageState extends State<StoragePage> {
                                 style: TextStyle(fontSize: 40),
                               ),
                               Text(
-                                '${S.current.total} ${total.storageSizeStr}',
+                                '${L.current.total} ${total.storageSizeStr}',
                                 style: TextStyle(fontSize: 20),
                               ),
                             ],
@@ -259,16 +259,16 @@ class _CacheCleanPageState extends State<StoragePage> {
               ],
             ),
             _storageItem(
-              S.current.cache,
+              L.current.cache,
               cache.storageSizeStr,
               onClean: _clean,
             ),
             _storageItem(
-              S.current.application,
+              L.current.application,
               app.storageSizeStr,
               onClean: null,
             ),
-            _storageItem(S.current.data, data.storageSizeStr, onClean: null),
+            _storageItem(L.current.data, data.storageSizeStr, onClean: null),
           ],
         ),
       ),

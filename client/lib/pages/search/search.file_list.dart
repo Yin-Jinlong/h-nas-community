@@ -9,7 +9,7 @@ Widget _fileListItem(
   return ListTile(
     key: ValueKey(file.fullPath),
     title: Text(file.name),
-    subtitle: Text(file.dir.isEmpty ? S.current.folder_root : file.dir),
+    subtitle: Text(file.dir.isEmpty ? L.current.folder_root : file.dir),
     leading: IconTheme(
       data: IconThemeData(color: ColorScheme.of(context).primary),
       child: FilePreviewView(fileInfo: file, private: private),

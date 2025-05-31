@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/main.dart';
-
-import '../../generated/l10n.dart';
 
 class NewFolderDialog extends StatefulWidget {
   final Function(String name) onCreate;
@@ -20,7 +17,7 @@ class _NewFolderDialogState extends State<NewFolderDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.current.create_new_folder),
+      title: Text(L.current.create_new_folder),
       content: Form(
         key: form,
         child: IntrinsicHeight(
@@ -33,15 +30,15 @@ class _NewFolderDialogState extends State<NewFolderDialog> {
                 },
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: S.current.folder_name,
+                  labelText: L.current.folder_name,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return S.current.error_empty(S.current.folder_name);
+                    return L.current.error_empty(L.current.folder_name);
                   }
                   if (Global.nameNotRegex.hasMatch(value)) {
-                    return S.current.error_contains(
-                      S.current.folder_name,
+                    return L.current.error_contains(
+                      L.current.folder_name,
                       Global.nameNoChars,
                     );
                   }
@@ -57,7 +54,7 @@ class _NewFolderDialogState extends State<NewFolderDialog> {
       ),
       actions: [
         TextButton(
-          child: Text(S.current.cancel),
+          child: Text(L.current.cancel),
           onPressed: () {
             navigatorKey.currentState?.pop();
           },
@@ -69,7 +66,7 @@ class _NewFolderDialogState extends State<NewFolderDialog> {
                     widget.onCreate(name);
                   }
                   : null,
-          child: Text(S.current.ok),
+          child: Text(L.current.ok),
         ),
       ],
     );

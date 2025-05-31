@@ -428,7 +428,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
             spacing: 8,
             children: [
               Tooltip(
-                message: S.current.photo_flip,
+                message: L.current.photo_flip,
                 child: IconButton.filledTonal(
                   onPressed: () {
                     widget.onFlip();
@@ -437,7 +437,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: S.current.photo_rotate_left,
+                message: L.current.photo_rotate_left,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.greenAccent,
@@ -449,7 +449,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: S.current.photo_previous,
+                message: L.current.photo_previous,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(backgroundColor: Colors.green),
                   onPressed: () {
@@ -467,7 +467,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 child: Text(widget.infoText),
               ),
               Tooltip(
-                message: S.current.photo_next,
+                message: L.current.photo_next,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(backgroundColor: Colors.green),
                   onPressed: () {
@@ -477,7 +477,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: S.current.photo_rotate_right,
+                message: L.current.photo_rotate_right,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.greenAccent,
@@ -489,7 +489,7 @@ class _ImageViewerControllerState extends State<_ImageViewerController> {
                 ),
               ),
               Tooltip(
-                message: S.current.reset,
+                message: L.current.reset,
                 child: IconButton.filledTonal(
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.redAccent,

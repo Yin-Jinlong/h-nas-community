@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_scankit/flutter_scankit.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/dispose.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -94,7 +93,7 @@ class _QRScanPageState extends State<QRScanPage> {
                         : () {
                           _grant(false);
                         },
-                child: Text(S.current.cancel),
+                child: Text(L.current.cancel),
               ),
               FilledButton(
                 onPressed:
@@ -103,7 +102,7 @@ class _QRScanPageState extends State<QRScanPage> {
                         : () {
                           _grant(true);
                         },
-                child: Text(S.current.login),
+                child: Text(L.current.login),
               ),
             ],
           ),
@@ -123,7 +122,7 @@ class _QRScanPageState extends State<QRScanPage> {
         actions: [
           if (_result == null)
             IconButton(
-              tooltip: S.current.photo_album,
+              tooltip: L.current.photo_album,
               onPressed: () {
                 _controller.pickPhoto();
               },

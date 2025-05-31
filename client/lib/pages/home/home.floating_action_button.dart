@@ -11,11 +11,11 @@ extension on _HomePageState {
         activeIcon: Icons.close,
         children: [
           SpeedDialChild(
-            label: S.current.create_new_folder,
+            label: L.current.create_new_folder,
             child: Icon(Icons.create_new_folder),
             onTap: () {
               if (UserS.user == null) {
-                Toast.showError(S.current.please_login);
+                Toast.showError(L.current.please_login);
               } else {
                 _newFolderMenu(context);
               }
@@ -24,11 +24,11 @@ extension on _HomePageState {
           SpeedDialChild(
             foregroundColor: ColorScheme.of(context).onSecondary,
             backgroundColor: ColorScheme.of(context).secondary,
-            label: S.current.upload,
+            label: L.current.upload,
             child: Icon(Icons.upload),
             onTap: () {
               if (UserS.user == null) {
-                Toast.showError(S.current.please_login);
+                Toast.showError(L.current.please_login);
               } else {
                 _onUploadMenu(nowDir);
               }

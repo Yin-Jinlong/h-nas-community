@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:h_nas/anim/scale_animated_switcher.dart';
 import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/clickable.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
 import 'package:h_nas/media/media_player.dart';
 import 'package:h_nas/pages/video_player/more_drawer.dart';
@@ -159,7 +158,7 @@ class _VideoControlsState extends State<_VideoControlsContent>
     return Row(
       children: [
         IconButton(
-          tooltip: player.playing ? S.current.pause : S.current.media_play,
+          tooltip: player.playing ? L.current.pause : L.current.media_play,
           onPressed: () {
             player.playPause();
             setState(() {});
@@ -205,8 +204,8 @@ class _VideoControlsState extends State<_VideoControlsContent>
         IconButton(
           tooltip:
               _isFullscreen(context)
-                  ? S.current.exit_fullscreen
-                  : S.current.fullscreen,
+                  ? L.current.exit_fullscreen
+                  : L.current.fullscreen,
           onPressed: () {
             setState(() {
               _toggleFullscreen(context);
@@ -288,7 +287,7 @@ class _VideoControlsState extends State<_VideoControlsContent>
             CircularProgressIndicator(),
             Text(
               widget.info == null
-                  ? S.current.loading
+                  ? L.current.loading
                   : '${((int.tryParse(widget.info!.data) ?? 0) / 10).toStringAsFixed(1)}%',
               style: TextStyle(color: Colors.white),
             ),

@@ -6,13 +6,11 @@ import 'package:h_nas/api/api.dart';
 import 'package:h_nas/components/password_input.dart';
 import 'package:h_nas/components/tab_page.dart';
 import 'package:h_nas/components/user_avatar.dart';
-import 'package:h_nas/main.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/pages/login_logon/login_qr.dart';
 import 'package:h_nas/settings/user.dart';
 import 'package:h_nas/utils/toast.dart';
 import 'package:universal_platform/universal_platform.dart';
-
-import '../../generated/l10n.dart';
 
 part 'login_logon.base.dart';
 part 'login_logon.login.dart';
@@ -74,14 +72,14 @@ class _LogInOnPageState extends State<LogInOnPage> {
                 Row(
                   children: [
                     IconButton(
-                      tooltip: S.current.back,
+                      tooltip: L.current.back,
                       onPressed: () {
                         navigatorKey.currentState?.pop();
                       },
                       icon: Icon(Icons.arrow_back),
                     ),
                     Text(
-                      pageIndex == 0 ? S.current.login : S.current.logon,
+                      pageIndex == 0 ? L.current.login : L.current.logon,
                       style: TextTheme.of(context).headlineSmall,
                     ),
                   ],
@@ -138,7 +136,7 @@ class _LogInOnPageState extends State<LogInOnPage> {
               _qr = false;
             });
           },
-          child: Text(S.current.back_password_login),
+          child: Text(L.current.back_password_login),
         ),
       ],
     );
@@ -149,7 +147,7 @@ class _LogInOnPageState extends State<LogInOnPage> {
       return Align(
         alignment: Alignment.topRight,
         child: Tooltip(
-          message: S.current.scan_login,
+          message: L.current.scan_login,
           child: ClipPath(
             clipper: _QRClipper(),
             child: TextButton(

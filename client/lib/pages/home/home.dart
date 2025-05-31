@@ -18,9 +18,7 @@ import 'package:h_nas/components/image_viewer.dart';
 import 'package:h_nas/components/mini_audio_player.dart';
 import 'package:h_nas/components/spring_draggable_container.dart';
 import 'package:h_nas/components/user_avatar.dart';
-import 'package:h_nas/generated/l10n.dart';
 import 'package:h_nas/global.dart';
-import 'package:h_nas/main.dart';
 import 'package:h_nas/pages/home/info_dialog.dart';
 import 'package:h_nas/pages/home/new_folder_dialog.dart';
 import 'package:h_nas/pages/home/rename_dialog.dart';
@@ -86,7 +84,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<void> updateFiles() async {
     // 没有配置服务器
     if (API.API_ROOT.isEmpty) {
-      Toast.showError(S.current.error_set_server_addr);
+      Toast.showError(L.current.error_set_server_addr);
       return;
     }
     // 先清空数据
@@ -302,7 +300,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   _onUploadMenu(String dir) async {
     if (UniversalPlatform.isWeb) {
-      Toast.showError(S.current.web_not_support(S.current.value_upload_file));
+      Toast.showError(L.current.web_not_support(L.current.value_upload_file));
       return;
     }
     final result = await FilePicker.platform.pickFiles();
@@ -349,7 +347,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.upload, size: 40),
-                        Text(S.current.drop_to_upload),
+                        Text(L.current.drop_to_upload),
                       ],
                     ),
                   ),
@@ -465,7 +463,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Global.uploadTasks.add(task);
         task.start();
       } else {
-        Toast.showError(S.current.only_support_upload_file);
+        Toast.showError(L.current.only_support_upload_file);
       }
     }
   }
@@ -487,7 +485,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       appBar: AppBar(
         actions: [
           IconButton(
-            tooltip: S.current.search,
+            tooltip: L.current.search,
             onPressed: () {
               navigatorKey.currentState?.pushNamed(
                 Routes.search,
@@ -503,7 +501,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             icon: Icon(TDTxNFIcons.nf_md_robot),
           ),
           IconButton(
-            tooltip: S.current.sort,
+            tooltip: L.current.sort,
             onPressed: () {
               _showSortDialog(context);
             },
@@ -523,11 +521,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     items: [
                       DropdownMenuItem(
                         value: false,
-                        child: Text(S.current.root_public),
+                        child: Text(L.current.root_public),
                       ),
                       DropdownMenuItem(
                         value: true,
-                        child: Text(S.current.root_private),
+                        child: Text(L.current.root_private),
                       ),
                     ],
                     onChanged: (value) {
@@ -549,7 +547,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           items: [
                             BreadCrumbItem(
                               content: Text(
-                                S.current.folder_root,
+                                L.current.folder_root,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               onTap: () {

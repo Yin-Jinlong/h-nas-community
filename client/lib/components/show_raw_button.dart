@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/generated/l10n.dart';
+import 'package:h_nas/global.dart';
 import 'package:h_nas/utils/storage_size.dart';
 
 class ShowRawButton extends StatelessWidget {
@@ -21,7 +21,7 @@ class ShowRawButton extends StatelessWidget {
             backgroundColor: Colors.grey.withValues(alpha: 0.75),
           ),
           child: Text(
-            '${S.current.show_raw_photo}\n${file.size.storageSizeStr}',
+            '${L.current.show_raw_photo}\n${file.size.storageSizeStr}',
           ),
         ),
       ),
