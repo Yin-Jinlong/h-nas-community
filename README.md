@@ -5,12 +5,12 @@
 ### 1.配置环境
 
 - [dragonfly](https://www.dragonflydb.io/) or  `redis`
-- [flutter](https://flutter.dev/) `^3.7.2`
+- [flutter](https://flutter.dev/) `^3.32.1`
 - [java](https://www.oracle.com/java/) `17+`
-- [mysql](https://www.mysql.com/) `8+`
+- [mysql](https://www.mysql.com/) `9+`
 - [nacos3](https://nacos.io/)
 - [nignx](https://nginx.org/)
-- [ollama](https://ollama.com/)
+- [ollama](https://ollama.com/)`0.8+`
 - [rust](https://www.rust-lang.org/)
 
 `AI Service`配置：
