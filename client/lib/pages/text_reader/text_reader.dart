@@ -1,9 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:h_nas/api/api.dart';
-import 'package:h_nas/md/code_builder.dart';
+import 'package:h_nas/md/markdown.dart';
 import 'package:h_nas/utils/file_utils.dart';
 import 'package:h_nas/utils/media_type.dart';
 
@@ -53,9 +52,6 @@ class _TextReaderPageState extends State<TextReaderPage> {
   @override
   Widget build(BuildContext context) {
     final markdown = file?.fileMediaType?.subType == MediaType.subTypeMarkdown;
-    final style = MarkdownStyleSheet.fromTheme(
-      Theme.of(context),
-    ).copyWith(code: TextStyle(fontFamily: 'JetBrainsMapleMono'));
     return Scaffold(
       appBar: AppBar(title: Text(file?.name ?? '')),
       body: Padding(
@@ -64,11 +60,7 @@ class _TextReaderPageState extends State<TextReaderPage> {
             markdown
                 ? DefaultTextStyle(
                   style: TextStyle(fontFamily: 'JetBrainsMapleMono'),
-                  child: Markdown(
-                    data: text,
-                    builders: {'code': CodeBuilder(style)},
-                    styleSheet: style,
-                  ),
+                  child: Markdown(data: text),
                 )
                 : SingleChildScrollView(
                   child: SizedBox(width: double.infinity, child: Text(text)),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:h_nas/md/code_builder.dart';
+import 'package:h_nas/md/markdown.dart';
 import 'package:h_nas/pages/ai/chat_message.dart';
 import 'package:tdtx_nf_icons/tdtx_nf_icons.dart';
 
@@ -39,7 +38,7 @@ class _ChatMessageViewState extends State<ChatMessageView> {
     super.dispose();
   }
 
-  Widget _llmContent(LlmChatMessage message, MarkdownStyleSheet style) {
+  Widget _llmContent(LlmChatMessage message) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -79,13 +78,7 @@ class _ChatMessageViewState extends State<ChatMessageView> {
                         ),
                       ),
                     ),
-                    if (message.showThink)
-                      MarkdownBody(
-                        data: message.think,
-                        selectable: true,
-                        styleSheet: style,
-                        builders: {'code': CodeBuilder(style)},
-                      ),
+                    if (message.showThink) Markdown(data: message.think),
                   ],
                 ),
               ),
@@ -97,28 +90,15 @@ class _ChatMessageViewState extends State<ChatMessageView> {
             child: CircularProgressIndicator(strokeWidth: 2),
           )
         else
-          MarkdownBody(
-            data: message.content + (message.isEnded ? '' : ' |'),
-            selectable: true,
-            styleSheet: style,
-            builders: {'code': CodeBuilder(style)},
-          ),
+          Markdown(data: message.content + (message.isEnded ? '' : ' |')),
       ],
     );
   }
 
   Widget _chatContent(BuildContext context) {
-    final style = MarkdownStyleSheet.fromTheme(
-      Theme.of(context),
-    ).copyWith(code: TextStyle(fontFamily: 'JetBrainsMapleMono'));
     return isUser
-        ? MarkdownBody(
-          data: widget.message.content,
-          selectable: true,
-          styleSheet: style,
-          builders: {'code': CodeBuilder(style)},
-        )
-        : _llmContent(widget.message as LlmChatMessage, style);
+        ? Markdown(data: widget.message.content)
+        : _llmContent(widget.message as LlmChatMessage);
   }
 
   List<Widget> _content(BuildContext context) {
