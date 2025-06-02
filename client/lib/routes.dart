@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:h_nas/global.dart';
 
 import 'pages/pages.dart';
 
@@ -44,5 +45,115 @@ class Routes {
       videoPlayer => const VideoPlayerPage(),
       _ => const HomePage(),
     };
+  }
+}
+
+class AppPageRoute extends PageRoute<dynamic> {
+  AppPageRoute({required this.onLocaleChanged, super.settings});
+
+  final void Function(Locale) onLocaleChanged;
+  @override
+  Color? barrierColor;
+
+  @override
+  String? barrierLabel;
+
+  @override
+  bool maintainState = true;
+
+  @override
+  Duration get transitionDuration => durationMedium;
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    return Routes.pageBuilder(
+      settings,
+      context,
+      onLocaleChanged: onLocaleChanged,
+    );
+  }
+
+  @override
+  TickerFuture didPush() {
+    controller?.duration = transitionDuration;
+    return super.didPush();
+  }
+
+  @override
+  bool didPop(dynamic result) {
+    controller?.reverseDuration = reverseTransitionDuration;
+    return super.didPop(result);
+  }
+
+  @override
+  DelegatedTransitionBuilder? get delegatedTransition => _delegatedTransition;
+
+  static Widget? _delegatedTransition(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    bool allowSnapshotting,
+    Widget? child,
+  ) {
+    final PageTransitionsTheme theme = Theme.of(context).pageTransitionsTheme;
+    final TargetPlatform platform = Theme.of(context).platform;
+    final DelegatedTransitionBuilder? themeDelegatedTransition = theme
+        .delegatedTransition(platform);
+    return themeDelegatedTransition != null
+        ? themeDelegatedTransition(
+          context,
+          animation,
+          secondaryAnimation,
+          allowSnapshotting,
+          child,
+        )
+        : null;
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return _AppTransitionsBuilder.instance.buildTransitions(
+      this,
+      context,
+      animation,
+      secondaryAnimation,
+      child,
+    );
+  }
+}
+
+class _AppTransitionsBuilder extends PageTransitionsBuilder {
+  const _AppTransitionsBuilder();
+
+  static const _AppTransitionsBuilder instance = _AppTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+      child: MatrixTransition(
+        animation: animation,
+        child: child,
+        onTransform:
+            (animationValue) =>
+                Matrix4.identity()
+                  ..scale(0.9 + 0.1 * Curves.easeOut.transform(animationValue)),
+      ),
+    );
   }
 }

@@ -100,33 +100,7 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: navigatorKey,
       navigatorObservers: [BotToastNavigatorObserver()],
       onGenerateRoute: (settings) {
-        return PageRouteBuilder(
-          settings: settings,
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return Routes.pageBuilder(
-              settings,
-              context,
-              onLocaleChanged: _setLocale,
-            );
-          },
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeInOut,
-              ),
-              child: MatrixTransition(
-                animation: animation,
-                child: child,
-                onTransform:
-                    (animationValue) =>
-                        Matrix4.identity()..scale(
-                          0.9 + 0.1 * Curves.easeOut.transform(animationValue),
-                        ),
-              ),
-            );
-          },
-        );
+        return AppPageRoute(settings: settings, onLocaleChanged: _setLocale);
       },
     );
   }
