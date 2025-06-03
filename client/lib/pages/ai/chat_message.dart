@@ -66,7 +66,7 @@ class LlmChatMessage extends ChatMessage {
     if (!hasThink) return _value;
     if (thinking) return '';
     final endIndex = _value.lastIndexOf(thinkEnd);
-    return endIndex < 0 ? '' : _value.substring(endIndex);
+    return endIndex < 0 ? '' : _value.substring(endIndex + thinkEnd.length);
   }
 
   int _count(String str) {
