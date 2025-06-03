@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:h_nas/api/api.dart';
 import 'package:h_nas/pages/ai/chat_message_view.dart';
 import 'package:h_nas/utils/dispose.dart';
@@ -18,36 +19,20 @@ class AIPage extends StatefulWidget {
 class _AIPageState extends State<AIPage> {
   final textController = TextEditingController();
   final provider = Llm();
-  bool enableTool = false;
-  late int hintIndex;
-  static const List<String> hintsWithoutTool = [
-    '你是谁',
-    '你能做什么',
-    '系统是干什么的',
-    '系统介绍',
-    '项目链接',
-    '讲个笑话',
-    '来玩成语接龙吧',
-    '帮我翻译',
-    '写篇小小说',
-  ];
-  static const List<String> hintsWithTool = [
-    ...hintsWithoutTool,
-    '现在几点了',
-    '信阳市天气怎么样',
-    "今日黄历",
-    "今天多少号",
-    "今天的宜忌",
-    "今年是什么年",
-  ];
+  int hintIndex=0;
+
   final random = Random();
 
-  List<String> get hints => enableTool ? hintsWithTool : hintsWithoutTool;
+  List<String> hints = ['你是谁'];
 
   @override
   void initState() {
     super.initState();
-    hintIndex = random.nextInt(hints.length);
+
+    rootBundle.loadString('assets/ai/hints.txt').then((value) {
+      hints = value.split('\n');
+      hintIndex = random.nextInt(hints.length);
+    });
     provider.addListener(_render);
     final llm = ChatMessage.llm(content: '有什么问题欢迎向我提问。')..end();
     provider.history = [llm];

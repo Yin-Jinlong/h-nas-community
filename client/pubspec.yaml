@@ -142,6 +142,7 @@ flutter:
 
   assets:
     - assets/certs/
+    - assets/ai/
 
   fonts:
     - family: JetBrainsMapleMono
