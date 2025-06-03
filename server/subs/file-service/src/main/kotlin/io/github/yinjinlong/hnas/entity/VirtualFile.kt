@@ -61,11 +61,11 @@ data class VirtualFile(
     @Comment("文件所在用户")
     override var user: Uid = 0,
 
-    @Column(nullable = false, columnDefinition = "timestamp default current_timestamp")
+    @Column(nullable = false, columnDefinition = "timestamp(6) default current_timestamp(6)")
     @Comment("文件创建时间")
     override var createTime: Timestamp = Timestamp(0),
 
-    @Column(nullable = false, columnDefinition = "timestamp default current_timestamp on update current_timestamp")
+    @Column(nullable = false, columnDefinition = "timestamp(6) default current_timestamp(6) on update current_timestamp(6)")
     @Comment("文件修改时间")
     override var updateTime: Timestamp = Timestamp(0),
 
