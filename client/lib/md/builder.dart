@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:h_nas/md/code.dart';
 import 'package:h_nas/md/list.dart';
 import 'package:markdown/markdown.dart' as md;
 
@@ -18,6 +19,8 @@ final Map<String, MarkdownElementBuilder> markdownBuilders = {
   'h4': md_h4,
   'p': md_p,
   'ul': md_ul,
+  'code': md_code,
+  'pre': md_pre,
 };
 
 class MarkdownTextSizes {
@@ -44,6 +47,7 @@ class MarkdownStyle {
   MarkdownStyle({
     this.color = Colors.black,
     this.headlineBase = const TextStyle(fontWeight: FontWeight.bold),
+    this.codeBase = const TextStyle(fontFamily: 'JetBrainsMapleMono'),
     this.textSizes = const MarkdownTextSizes(),
     this.paragraphBase = const TextStyle(),
   }) : headline1 = headlineBase.copyWith(
@@ -73,11 +77,12 @@ class MarkdownStyle {
        paragraph = paragraphBase.copyWith(
          color: color,
          fontSize: textSizes.body,
-       );
+       ),
+       code = codeBase.copyWith(color: color);
 
   final Color color;
   final MarkdownTextSizes textSizes;
-  final TextStyle headlineBase, paragraphBase;
+  final TextStyle headlineBase, paragraphBase, codeBase;
 
   late final TextStyle headline1,
       headline2,
@@ -85,7 +90,8 @@ class MarkdownStyle {
       headline4,
       headline5,
       headline6,
-      paragraph;
+      paragraph,
+      code;
 }
 
 extension Builder on Map<String, MarkdownElementBuilder> {
