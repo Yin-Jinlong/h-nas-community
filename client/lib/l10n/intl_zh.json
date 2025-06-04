@@ -1,6 +1,6 @@
 {
-  "@default": true,
   "@": "中文简体",
+  "@default": true,
   "@language_code": "zh",
   "about": "关于",
   "action_success": "{action}成功",
@@ -61,6 +61,7 @@
   "file_info_path": "文件路径",
   "file_name": "文件名",
   "file_size": "文件大小",
+  "files": "文件",
   "folder_name": "目录名",
   "folder_root": "根目录",
   "forward_10s": "前进10s",

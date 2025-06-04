@@ -1,4 +1,4 @@
-part of 'home.dart';
+part of 'file_list.dart';
 
 List<ContextMenuButtonConfig?> _fileContextMenuButtons(
   BuildContext context,

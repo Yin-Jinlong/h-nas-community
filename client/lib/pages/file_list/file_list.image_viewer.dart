@@ -1,4 +1,4 @@
-part of 'home.dart';
+part of 'file_list.dart';
 
 class _ImageViewerOverlayWidget extends StatefulWidget {
   final int index;

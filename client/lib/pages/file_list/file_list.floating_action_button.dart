@@ -1,6 +1,6 @@
-part of 'home.dart';
+part of 'file_list.dart';
 
-extension on _HomePageState {
+extension on _FileListPageState {
   Widget _floatingActionButton(BuildContext context) {
     return SpringDraggableContainer(
       child: SpeedDial(

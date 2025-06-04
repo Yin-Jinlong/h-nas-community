@@ -8,6 +8,7 @@ class Routes {
   static const String ai = '/ai';
   static const String audioPlayer = '/audio_player';
   static const String languages = '/languages';
+  static const String fileList = '/file_list';
   static const String loginOn = '/login_on';
   static const String my = '/my';
   static const String qrScan = '/qr_scan';
@@ -26,6 +27,7 @@ class Routes {
       home => const HomePage(),
       ai => const AIPage(),
       audioPlayer => const AudioPlayerPage(),
+      fileList => const FileListPage(),
       languages => const LanguagesPage(),
       loginOn => const LogInOnPage(),
       my => const MyPage(),

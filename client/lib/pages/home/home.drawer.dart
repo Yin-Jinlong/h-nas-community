@@ -1,6 +1,6 @@
 part of 'home.dart';
 
-_showAboutDialog(BuildContext context) {
+void _showAboutDialog(BuildContext context) {
   showAdaptiveDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -11,13 +11,12 @@ _showAboutDialog(BuildContext context) {
       );
     },
   ).then((v) {
-    L.load(Global.locale);
+    L.load(Global.locale.value);
   });
 }
 
 Drawer _drawer(
   BuildContext context, {
-  required VoidCallback onLogin,
   required VoidCallback onLogout,
 }) {
   final taskCount =
@@ -28,7 +27,9 @@ Drawer _drawer(
     child: ListView(
       padding: EdgeInsets.zero,
       children: [
-        _DrawerHeader(onLogin: onLogin, onLogout: onLogout),
+        _DrawerHeader(onLogin: (){
+          navigatorKey.currentState?.pushNamed(Routes.loginOn);
+        }, onLogout: onLogout),
         Tooltip(
           message: L.current.theme,
           child: ListTile(

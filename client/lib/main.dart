@@ -42,17 +42,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  _setLocale(Locale l) {
-    setState(() {
-      L.delegate.load(l);
-      Prefs.setLocale(l);
-      Global.locale = l;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
+
+    Global.locale.addListener(() {
+      if (!mounted) return;
+      var locale = Global.locale.value;
+      L.load(locale);
+      Prefs.setLocale(locale);
+    });
+
     ThemeS.addThemeModeListener(() {
       setState(() {});
     });
@@ -90,7 +90,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'H NAS',
-        locale: Global.locale,
+        locale: Global.locale.value,
         localizationsDelegates: L.localizationsDelegates,
         supportedLocales: L.supportedLocales,
         themeMode: ThemeS.themeMode,
@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
         scrollBehavior: const _ScrollBehavior(),
         navigatorKey: navigatorKey,
         onGenerateRoute: (settings) {
-          return AppPageRoute(settings: settings, onLocaleChanged: _setLocale);
+          return AppPageRoute(settings: settings);
         },
       ),
     );
