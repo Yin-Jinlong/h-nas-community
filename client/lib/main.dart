@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:h_nas/api/rhttp_http_provider.dart';
 import 'package:h_nas/global.dart';
@@ -13,6 +12,7 @@ import 'package:h_nas/utils/security.dart';
 import 'package:h_nas/utils/theme.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:toastification/toastification.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 void main() async {
@@ -86,22 +86,22 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'H NAS',
-      builder: BotToastInit(),
-      locale: Global.locale,
-      localizationsDelegates: [...L.localizationsDelegates],
-      supportedLocales: L.supportedLocales,
-      themeMode: ThemeS.themeMode,
-      theme: ThemeUtils.fromColor(ThemeS.themeColor, Brightness.light),
-      darkTheme: ThemeUtils.fromColor(ThemeS.themeColor, Brightness.dark),
-      scrollBehavior: const _ScrollBehavior(),
-      navigatorKey: navigatorKey,
-      navigatorObservers: [BotToastNavigatorObserver()],
-      onGenerateRoute: (settings) {
-        return AppPageRoute(settings: settings, onLocaleChanged: _setLocale);
-      },
+    return ToastificationWrapper(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'H NAS',
+        locale: Global.locale,
+        localizationsDelegates: L.localizationsDelegates,
+        supportedLocales: L.supportedLocales,
+        themeMode: ThemeS.themeMode,
+        theme: ThemeUtils.fromColor(ThemeS.themeColor, Brightness.light),
+        darkTheme: ThemeUtils.fromColor(ThemeS.themeColor, Brightness.dark),
+        scrollBehavior: const _ScrollBehavior(),
+        navigatorKey: navigatorKey,
+        onGenerateRoute: (settings) {
+          return AppPageRoute(settings: settings, onLocaleChanged: _setLocale);
+        },
+      ),
     );
   }
 }
