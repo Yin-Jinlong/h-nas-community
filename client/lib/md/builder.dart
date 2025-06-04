@@ -113,13 +113,17 @@ extension Builder on Map<String, MarkdownElementBuilder> {
 InlineSpan md_block(
   List<InlineSpan> children, {
   required TextStyle defTextStyle,
+  EdgeInsetsGeometry padding = EdgeInsets.zero,
 }) {
   return WidgetSpan(
     child: SizedBox(
       width: double.infinity,
-      child: DefaultTextStyle(
-        style: defTextStyle,
-        child: Text.rich(TextSpan(children: children)),
+      child: Padding(
+        padding: padding,
+        child: DefaultTextStyle(
+          style: defTextStyle,
+          child: Text.rich(TextSpan(children: children)),
+        ),
       ),
     ),
   );
@@ -141,5 +145,6 @@ InlineSpan md_p(BuildContext context, md.Element ele, MarkdownStyle style) {
   return md_block(
     md_inline(context, ele, style),
     defTextStyle: style.paragraph,
+    padding: EdgeInsets.symmetric(vertical: style.paragraph.fontSize! * 0.25),
   );
 }

@@ -8,7 +8,11 @@ InlineSpan _headline(
   required TextStyle headlineStyle,
   required MarkdownStyle style,
 }) {
-  return md_block(md_inline(context, ele, style), defTextStyle: headlineStyle);
+  return md_block(
+    md_inline(context, ele, style),
+    defTextStyle: headlineStyle,
+    padding: EdgeInsets.symmetric(vertical: headlineStyle.fontSize! * 0.25),
+  );
 }
 
 InlineSpan md_h1(BuildContext context, md.Element ele, MarkdownStyle style) {
