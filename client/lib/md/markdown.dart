@@ -51,16 +51,21 @@ class _MarkdownState extends State<Markdown> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      style: TextStyle(color: ColorScheme.of(context).onSurface),
-      child: SizedBox(
-        width: double.infinity,
-        child: SelectableText.rich(
-          TextSpan(
-            children: [
-              for (final node in _astNodes)
-                markdownBuilders.build(context, node),
-            ],
+    var markdownStyle = MarkdownStyle(color: ColorScheme.of(context).onSurface);
+    return SelectionArea(
+      child: DefaultTextStyle(
+        style: markdownStyle.paragraph,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            width: double.infinity,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  for (final node in _astNodes)
+                    markdownBuilders.build(context, node, style: markdownStyle),
+                ],
+              ),
+            ),
           ),
         ),
       ),
