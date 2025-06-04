@@ -40,7 +40,7 @@ abstract class Global {
     version: '',
     buildNumber: '',
   );
-  static Locale locale = Prefs.locale;
+  static ValueNotifier<Locale> locale = ValueNotifier(Prefs.locale);
   static ValueNotifier<bool> isDark = ValueNotifier(false);
 
   static final thumbnailCache = ThumbnailModel(private: false);
@@ -74,5 +74,6 @@ abstract class Global {
     uploadTasks.dispose();
     downloadTasks.dispose();
     isDark.dispose();
+    locale.dispose();
   }
 }

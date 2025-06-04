@@ -21,16 +21,12 @@ class Routes {
   static const String userManagement = '/user_management';
   static const String videoPlayer = '/video_player';
 
-  static pageBuilder(
-    RouteSettings routeSettings,
-    BuildContext context, {
-    required void Function(Locale) onLocaleChanged,
-  }) {
+  static pageBuilder(RouteSettings routeSettings, BuildContext context) {
     return switch (routeSettings.name) {
       home => const HomePage(),
       ai => const AIPage(),
       audioPlayer => const AudioPlayerPage(),
-      languages => LanguagesPage(onLocaleChanged: onLocaleChanged),
+      languages => const LanguagesPage(),
       loginOn => const LogInOnPage(),
       my => const MyPage(),
       qrScan => const QRScanPage(),
@@ -48,10 +44,20 @@ class Routes {
   }
 }
 
-class AppPageRoute extends PageRoute<dynamic> {
-  AppPageRoute({required this.onLocaleChanged, super.settings});
+class AppPage extends Page<dynamic> {
+  const AppPage({super.name, super.arguments});
 
-  final void Function(Locale) onLocaleChanged;
+  @override
+  Route<dynamic> createRoute(BuildContext context) {
+    return AppPageRoute(
+      settings: RouteSettings(name: name, arguments: arguments),
+    );
+  }
+}
+
+class AppPageRoute extends PageRoute<dynamic> {
+  AppPageRoute({super.settings});
+
   @override
   Color? barrierColor;
 
@@ -70,11 +76,7 @@ class AppPageRoute extends PageRoute<dynamic> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    return Routes.pageBuilder(
-      settings,
-      context,
-      onLocaleChanged: onLocaleChanged,
-    );
+    return Routes.pageBuilder(settings, context);
   }
 
   @override

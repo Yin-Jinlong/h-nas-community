@@ -3,9 +3,7 @@ import 'package:h_nas/global.dart';
 import 'package:h_nas/prefs.dart';
 
 class LanguagesPage extends StatefulWidget {
-  final Function(Locale) onLocaleChanged;
-
-  const LanguagesPage({super.key, required this.onLocaleChanged});
+  const LanguagesPage({super.key});
 
   @override
   State createState() {
@@ -36,7 +34,7 @@ class _LanguagesPageState extends State<LanguagesPage> {
               onTap: () {
                 setState(() {
                   groupValue = l.key;
-                  widget.onLocaleChanged(l.key);
+                  Global.locale.value = l.key;
                 });
               },
             ),
